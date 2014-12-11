@@ -15,8 +15,8 @@
     <version>0.20-SNAPSHOT</version>
 
     <scm>
-        <connection>scm:git:https://github.com/turnonline/ctoolkit-bulkloader.git</connection>
-        <developerConnection>scm:git:https://github.com/turnonline/ctoolkit-bulkloader.git</developerConnection>
+        <connection>scm:git:[fetch=]git@github.com:turnonline/ctoolkit-bulkloader.git</connection>
+        <developerConnection>scm:git:[push=]git@github.com:turnonline/ctoolkit-bulkloader.git</developerConnection>
         <url>https://github.com/turnonline/ctoolkit-bulkloader</url>
     </scm>
 
