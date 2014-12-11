@@ -1,0 +1,40 @@
+<changesets>
+    <changeset version="1" author="Atok" comment="blabla">
+        <model>
+            <kindOp op="remove" kind="kind" reason="reason1"/>
+            <kindOp op="clean" kind="kind"/>
+            <kindPropOp op="add" kind="kind" property="prop1" defVal="boolean" newName="True" reason="len tak"/>
+            <kindPropOp op="remove" kind="kind" property="prop1" reason="len tak"/>
+            <kindPropOp op="update" kind="kind" property="prop1" newName="newName" newType="newType" migrateValue="true"
+                        reason="len tak"/>
+        </model>
+        <entities>
+            <entity kind="Member" key="666" op="delete"/>
+            <entity kind="Member" key="666">
+                <properties name="prop1" type="type1" value="value1"/>
+                <properties name="prop2" type="type2" value="value2"/>
+                <properties name="prop3" type="type3" value="value3"/>
+            </entity>
+        </entities>
+    </changeset>
+    <changeset version="2" author="Atok2" comment="blabla">
+        <model>
+        </model>
+        <entities>
+            <entity kind="Member" key="666" op="delete"/>
+        </entities>
+    </changeset>
+    <changeset version="3" author="Atok3" comment="blabla">
+        <model>
+        </model>
+        <entities>
+            <entity kind="Member" key="666" op="delete"/>
+        </entities>
+    </changeset>
+    <changeset version="4" author="Atok4" comment="blabla">
+        <entities>
+            <entity kind="Member" key="666" op="delete"/>
+            <entity kind="Member" key="666" op="delete"/>
+        </entities>
+    </changeset>
+</changesets>

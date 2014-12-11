@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6//EN"
+        "https://github.com/gwtproject/gwt/raw/2.6.0/distro-source/core/src/gwt-module.dtd">
+
+<module rename-to="bulkloader">
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="com.google.gwt.inject.Inject"/>
+    <inherits name="com.google.gwt.activity.Activity"/>
+
+    <inherits name="com.comvai.auth.Auth"/>
+    <inherits name="com.comvai.gwt.CGwt"/>
+
+    <source path="client"/>
+    <source path="retired"/>
+
+    <entry-point class="org.ctoolkit.bulkloader.client.BulkLoader"/>
+
+</module>

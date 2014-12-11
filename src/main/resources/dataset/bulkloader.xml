@@ -1,0 +1,3 @@
+<bulk-loader>
+    <changesets-per-task>1</changesets-per-task>
+</bulk-loader>

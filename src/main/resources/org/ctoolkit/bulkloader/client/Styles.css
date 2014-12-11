@@ -1,0 +1,28 @@
+html {
+    background: -moz-linear-gradient(#AACCCC, #EEFFFF) no-repeat scroll 0 0;
+    height: 100%;
+}
+
+body {
+    background: none;
+}
+
+.busy-indicator {
+    background: #f5f5dc;
+    border: 1px solid #ffe4c4;
+    padding: 5px;
+    margin: -1px 0 0 -100px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 200px;
+    text-align: center;
+    border-radius: 0 0 5px 5px;
+    color: #777;
+    font-weight: bold;
+    -moz-transition: 0.5s opacity ease-in;
+}
+
+.busy-indicator-hidden {
+    opacity: 0;
+}

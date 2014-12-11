@@ -1,0 +1,28 @@
+<changesets>
+    <changeset version="1" author="Atok" comment="parent cild test1">
+        <model>
+        </model>
+        <entities>
+            <entity kind="Parent" id="1">
+                <property name="strprop1" type="string" value="1"/>
+                <property name="boolprop2" type="boolean" value="true"/>
+                <property name="floatprop3" type="float" value="12.34"/>
+            </entity>
+            <entity kind="Child" id="1" parentKind="Parent" parentId="1">
+                <property name="childProp" type="float" value="33.0"/>
+            </entity>
+            <entity kind="Child" id="2" parentKind="Parent" parentId="1">
+                <property name="childProp" type="float" value="79.0"/>
+            </entity>
+        </entities>
+    </changeset>
+    <changeset version="2" author="Atok" comment="parent cild test2">
+        <entities>
+            <entity kind="Parent" id="2">
+                <property name="strprop1" type="string" value="2"/>
+                <property name="boolprop2" type="boolean" value="false"/>
+                <property name="floatprop3" type="float" value="45.67"/>
+            </entity>
+        </entities>
+    </changeset>
+</changesets>

@@ -1,0 +1,8 @@
+<export-jobs>
+    <export-job name="ejob1">
+        <kinds>
+            <kind name="Child"/>
+            <kind name="Parent"/>
+        </kinds>
+    </export-job>
+</export-jobs>
