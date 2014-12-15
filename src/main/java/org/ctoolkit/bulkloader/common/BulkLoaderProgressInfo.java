@@ -155,17 +155,17 @@ public class BulkLoaderProgressInfo
     /**
      * @param state the state to set
      */
-    public void setState( String state )
+    public void setState( ProgressState state )
     {
-        setProp( BulkLoaderConstants.PROP_STATE, state );
+        setProp( BulkLoaderConstants.PROP_STATE, state.name() );
     }
 
     /**
      * @param state the state to set
      */
-    public void setState( ProgressState state )
+    public void setState( String state )
     {
-        setProp( BulkLoaderConstants.PROP_STATE, state.name() );
+        setProp( BulkLoaderConstants.PROP_STATE, state );
     }
 
     /**
