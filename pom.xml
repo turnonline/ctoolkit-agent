@@ -15,13 +15,13 @@
     <version>0.20-SNAPSHOT</version>
 
     <scm>
-        <connection>scm:git:[fetch=]git@github.com:turnonline/ctoolkit-bulkloader.git</connection>
-        <developerConnection>scm:git:[push=]git@github.com:turnonline/ctoolkit-bulkloader.git</developerConnection>
-        <url>https://github.com/turnonline/ctoolkit-bulkloader</url>
+        <connection>scm:git:[fetch=]git@github.com:turnonline/ctoolkit-agent.git</connection>
+        <developerConnection>scm:git:[push=]git@github.com:turnonline/ctoolkit-agent.git</developerConnection>
+        <url>https://github.com/turnonline/ctoolkit-agent</url>
     </scm>
 
     <issueManagement>
-        <url>https://github.com/turnonline/ctoolkit-bulkloader/issues</url>
+        <url>https://github.com/turnonline/ctoolkit-agent/issues</url>
     </issueManagement>
 
     <developers>
