@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>com.comvai.maven</groupId>
+        <artifactId>comvai-gae-app</artifactId>
+        <version>1.10</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.ctoolkit.agent</groupId>
+    <artifactId>ctoolkit-agent</artifactId>
+    <packaging>war</packaging>
+    <version>0.1-SNAPSHOT</version>
+
+    <scm>
+        <connection>scm:git:[fetch=]git@github.com:turnonline/ctoolkit-agent.git</connection>
+        <developerConnection>scm:git:[push=]git@github.com:turnonline/ctoolkit-agent.git</developerConnection>
+        <url>https://github.com/turnonline/ctoolkit-agent</url>
+    </scm>
+
+    <issueManagement>
+        <url>https://github.com/turnonline/ctoolkit-agent/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <name>Aurel Medvegy</name>
+            <id>medvegy</id>
+            <email>medvegy@comvai.com</email>
+        </developer>
+        <developer>
+            <name>Ondrej Jaura</name>
+            <id>jaura</id>
+            <email>ondrej.jaura@gmail.com</email>
+        </developer>
+    </developers>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <!-- Enabling this option results in of additional JAR file with classifier classes
+                     along with standard WAR file and may be used as standard dependency. -->
+                    <attachClasses>true</attachClasses>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.appengine</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <configuration>
+                    <!--Do not store the administrator sign-in credentials.-->
+                    <noCookies>true</noCookies>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>gae-deps</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
+        <!--  GUICE DEPENDENCIES -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+
+        <!--  Dependencies for testing -->
+        <!-- jmockit must be before junit -->
+        <dependency>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.comvai.test</groupId>
+            <artifactId>gae-test</artifactId>
+            <version>0.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cpsuite</groupId>
+            <artifactId>cpsuite</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <!-- Overrides versions from the comvai-gae-backend pom.xml -->
+        <gae.version>1.9.17a</gae.version>
+    </properties>
+
+</project>
