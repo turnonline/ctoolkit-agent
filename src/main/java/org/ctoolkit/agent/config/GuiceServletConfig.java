@@ -8,7 +8,7 @@ import org.ctoolkit.agent.AgentModule;
 /**
  * Application guice module.
  *
- * @author <a href="mailto:medvegy@comvai.com">Aurel Medvegy</a>
+ * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 public class GuiceServletConfig
         extends com.google.inject.servlet.GuiceServletContextListener

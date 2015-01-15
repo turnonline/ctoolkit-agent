@@ -10,7 +10,7 @@ import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author <a href="mailto:medvegy@comvai.com">Aurel Medvegy</a>
+ * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 public class UseCaseEnvironment
         extends ServiceConfigModule
