@@ -114,6 +114,10 @@
             <artifactId>objectify</artifactId>
             <version>5.1.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
 
         <!--  Dependencies for testing -->
         <!-- jmockit must be before junit -->
