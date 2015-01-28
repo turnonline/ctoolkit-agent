@@ -37,7 +37,7 @@ public class EntitySchemaEndpoint
     }
 
     @ApiMethod( name = "entityschema.list", path = "entityschema", httpMethod = ApiMethod.HttpMethod.GET )
-    public List<EntitySchema> getEntitySchemas( @Nullable @Named( "entityKindStart" ) String entityKindStart,
+    public List<EntitySchema> getEntitySchemas( @Nullable @Named( "kindStart" ) String kindStart,
                                                 com.google.appengine.api.users.User authUser )
     {
         EntitySchema schema = new EntitySchema();
