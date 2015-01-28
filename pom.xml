@@ -42,7 +42,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven-war-plugin.version}</version>
                 <configuration>
                     <!-- Enabling this option results in of additional JAR file with classifier classes
                      along with standard WAR file and may be used as standard dependency. -->
@@ -142,8 +142,75 @@
     </dependencies>
 
     <properties>
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
         <!-- Overrides versions from the comvai-gae-backend pom.xml -->
         <gae.version>1.9.17a</gae.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>google</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>${maven-war-plugin.version}</version>
+                        <configuration>
+                            <webXml>${project.build.directory}/generated-sources/appengine-endpoints/WEB-INF/web.xml
+                            </webXml>
+                            <webResources>
+                                <resource>
+                                    <!-- this is relative to the pom.xml directory -->
+                                    <directory>${project.build.directory}/generated-sources/appengine-endpoints
+                                    </directory>
+                                    <!-- the list has a default value of ** -->
+                                    <includes>
+                                        <include>WEB-INF/*.discovery</include>
+                                        <include>WEB-INF/*.api</include>
+                                    </includes>
+                                </resource>
+                            </webResources>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-maven-plugin</artifactId>
+                        <configuration>
+                            <!--Do not store the administrator sign-in credentials.-->
+                            <noCookies>true</noCookies>
+                            <enableJarClasses>false</enableJarClasses>
+                            <!-- Comment in the below snippet to bind to all IPs instead of just localhost -->
+                            <!-- address>0.0.0.0</address>
+                            <port>8080</port -->
+                            <!-- Comment in the below snippet to enable local debugging with a remove debugger
+                                 like those included with Eclipse or IntelliJ -->
+                            <!-- jvmFlags>
+                              <jvmFlag>-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n</jvmFlag>
+                            </jvmFlags -->
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>endpoints_get_client_lib</goal>
+                                    <goal>endpoints_get_discovery_doc</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.appengine</groupId>
+                    <artifactId>appengine-endpoints</artifactId>
+                    <version>${gae.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

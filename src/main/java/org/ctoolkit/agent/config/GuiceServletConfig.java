@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 import org.ctoolkit.agent.AgentModule;
+import org.ctoolkit.agent.AgentServletModule;
 
 /**
  * Application guice module.
@@ -16,6 +17,8 @@ public class GuiceServletConfig
     @Override
     protected Injector getInjector()
     {
-        return Guice.createInjector( Stage.DEVELOPMENT, new AgentModule() );
+        return Guice.createInjector( Stage.DEVELOPMENT,
+                new AgentModule(),
+                new AgentServletModule() );
     }
 }

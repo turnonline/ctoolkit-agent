@@ -11,4 +11,14 @@ import com.googlecode.objectify.annotation.Subclass;
 public class DataSetUpgrade
         extends DataSetJob
 {
+    private static final long serialVersionUID = 1L;
+
+    public DataSetUpgrade()
+    {
+    }
+
+    public DataSetUpgrade( Long id )
+    {
+        super( id );
+    }
 }
