@@ -2,6 +2,8 @@ package org.ctoolkit.agent.restapi.resource;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Unindex;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,7 +14,8 @@ import java.util.Date;
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 @Entity
-abstract class DataSetJob
+@Index
+public abstract class DataSetJob
         implements Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -25,6 +28,9 @@ abstract class DataSetJob
     private boolean completed;
 
     private Date completedAt;
+
+    @Unindex
+    private String authorized;
 
     public DataSetJob()
     {
@@ -68,5 +74,27 @@ abstract class DataSetJob
     public void setCompletedAt( Date completedAt )
     {
         this.completedAt = completedAt;
+    }
+
+    public String getAuthorized()
+    {
+        return authorized;
+    }
+
+    public void setAuthorized( String authorized )
+    {
+        this.authorized = authorized;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "DataSetJob{" +
+                "id=" + id +
+                ", dataSetId=" + dataSetId +
+                ", completed=" + completed +
+                ", completedAt=" + completedAt +
+                ", authorized='" + authorized + '\'' +
+                '}';
     }
 }

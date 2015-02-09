@@ -26,7 +26,8 @@ public class UseCaseEnvironment
                 new LocalBlobstoreServiceTestConfig(),
                 new LocalTaskQueueTestConfig().setQueueXmlPath( "src/main/webapp/WEB-INF/queue.xml" )
                         .setDisableAutoTaskExecution( false )
-                        .setCallbackClass( LocalTaskQueueTestConfig.DeferredTaskCallback.class ) ) );
+                        .setCallbackClass( LocalTaskQueueTestConfig.DeferredTaskCallback.class )
+                        .setTaskExecutionLatch( latch ) ) );
     }
 
     @Override
@@ -34,10 +35,12 @@ public class UseCaseEnvironment
     {
         // setting the SystemProperty.Environment.Value.Development
         System.setProperty( "com.google.appengine.runtime.environment", "Development" );
+
+        install( new AgentModule() );
     }
 
     protected void await( long seconds ) throws InterruptedException
     {
-        latch.await( seconds, TimeUnit.MILLISECONDS );
+        latch.await( seconds, TimeUnit.SECONDS );
     }
 }

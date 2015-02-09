@@ -1,0 +1,15 @@
+<changeset author="aurel.medvegy@ctoolkit.org" comment="Init data">
+    <model>
+        <kindOp op="drop" kind="Config"/>
+    </model>
+    <entities>
+        <entity kind="Config" id="101" parentKind="User" parentId="101">
+            <property name="integrationName" type="string" value="pohorelec___test"/>
+            <property name="domains" type="list-key" value="Domain:localhost/iphone4,Domain:localhost/iphone5"/>
+        </entity>
+        <entity kind="Config" id="102" parentKind="User" parentId="102">
+            <property name="integrationName" type="string" value="medvegy"/>
+            <property name="domains" type="list-key" value="Domain:localhost/iphone_4,Domain:localhost/iphone_5"/>
+        </entity>
+    </entities>
+</changeset>

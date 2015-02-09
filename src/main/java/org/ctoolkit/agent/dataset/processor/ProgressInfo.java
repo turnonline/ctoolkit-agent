@@ -19,7 +19,7 @@ public class ProgressInfo
 
     private final static String PROP_SUBVERSION = "__agent_prop_subversion";
 
-    private final static String PROP_MAXVERSION = "__agent_prop_maxversion";
+    private final static String PROP_MAX_VERSION = "__agent_prop_maxversion";
 
     private final static String PROP_CURSOR = "__agent_prop_cursor";
 
@@ -136,6 +136,16 @@ public class ProgressInfo
     }
 
     /**
+     * Returns the boolean indication whether current data set job has successfully completed or not.
+     *
+     * @return true if current data set job has successfully completed or not
+     */
+    public boolean isCompleted()
+    {
+        return getState() == State.COMPLETED;
+    }
+
+    /**
      * Returns the overall progress state.
      *
      * @return the overall progress state
@@ -148,21 +158,21 @@ public class ProgressInfo
     /**
      * Sets the overall progress state.
      *
-     * @param state the state to be set as enum
-     */
-    public void setState( State state )
-    {
-        setProperty( PROP_STATE, state.name() );
-    }
-
-    /**
-     * Sets the overall progress state.
-     *
      * @param state the state to be set as string
      */
     public void setState( String state )
     {
         setProperty( PROP_STATE, state );
+    }
+
+    /**
+     * Sets the overall progress state.
+     *
+     * @param state the state to be set as enum
+     */
+    public void setState( State state )
+    {
+        setProperty( PROP_STATE, state.name() );
     }
 
     /**
@@ -222,7 +232,7 @@ public class ProgressInfo
      */
     public void setMaxVersion( Long maxVersion )
     {
-        setLongValue( PROP_MAXVERSION, maxVersion );
+        setLongValue( PROP_MAX_VERSION, maxVersion );
     }
 
     /**
@@ -289,7 +299,7 @@ public class ProgressInfo
         {
             for ( State s : EnumSet.allOf( State.class ) )
             {
-                lookup.put( s.getState(), s );
+                lookup.put( s.state, s );
             }
         }
 
@@ -303,11 +313,6 @@ public class ProgressInfo
         public static State get( String state )
         {
             return lookup.get( state );
-        }
-
-        public String getState()
-        {
-            return state;
         }
     }
 }

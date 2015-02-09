@@ -3,13 +3,20 @@ package org.ctoolkit.agent.restapi;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiReference;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.ctoolkit.agent.dataset.processor.DataSetProcessor;
+import org.ctoolkit.agent.dataset.processor.UpgradeCompletedEvent;
 import org.ctoolkit.agent.restapi.resource.DataSetExport;
 import org.ctoolkit.agent.restapi.resource.DataSetUpgrade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Date;
+
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /**
  * The data set REST API endpoint.
@@ -21,6 +28,37 @@ import java.util.Date;
 public class DataSetEndpoint
 {
     private static final Logger log = LoggerFactory.getLogger( DataSetEndpoint.class );
+
+    private final DataSetProcessor processor;
+
+    @Inject
+    public DataSetEndpoint( DataSetProcessor processor, EventBus eventBus )
+    {
+        this.processor = processor;
+
+        eventBus.register( this );
+    }
+
+    @Subscribe
+    public void handleDataSetUpgradeCompleted( UpgradeCompletedEvent event )
+    {
+        Long id = event.getNotificationId();
+        DataSetUpgrade upgrade = ofy().load().type( DataSetUpgrade.class ).id( id ).now();
+
+        if ( upgrade != null )
+        {
+            upgrade.setCompleted( true );
+            upgrade.setCompletedAt( new Date() );
+
+            ofy().save().entity( upgrade ).now();
+        }
+        else
+        {
+            log.warn( "DataSetUpgrade instance has not found for Id = " + event.getNotificationId() );
+        }
+
+        log.info( "Upgrade has completed: " + upgrade );
+    }
 
     @ApiMethod( name = "dataset.upgrade.get", path = "dataset.upgrade/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public DataSetUpgrade getUpgrade( @Named( "id" ) Long id, com.google.appengine.api.users.User authUser )
@@ -41,6 +79,16 @@ public class DataSetEndpoint
     {
         log.info( "User: " + authUser );
         log.info( "DataSetUpgrade: " + upgrade );
+
+        Long dataSetId = upgrade.getDataSetId();
+
+        upgrade.setCompletedAt( null );
+        upgrade.setCompleted( false );
+        upgrade.setAuthorized( authUser == null ? null : authUser.getEmail() );
+
+        ofy().save().entity( upgrade ).now();
+
+        processor.upgrade( dataSetId, upgrade.getId() );
 
         return upgrade;
     }

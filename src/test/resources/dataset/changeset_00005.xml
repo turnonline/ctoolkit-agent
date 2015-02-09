@@ -1,0 +1,17 @@
+<changeset author="aurel.medvegy@ctoolkit.org" comment="Init data">
+    <model>
+        <kindOp op="drop" kind="NumberSeries"/>
+    </model>
+    <entities>
+        <entity kind="NumberSeries" id="1" parentKey="User:101::Config:101">
+            <property name="period" type="int" value="2014"/>
+            <property name="updatedDate" type="date" value="1399542400000"/>
+            <property name="prefix" type="string"/>
+        </entity>
+        <entity kind="NumberSeries" id="2" parentKey="User:102::Config:102">
+            <property name="period" type="int" value="2015"/>
+            <property name="updatedDate" type="date" value="1399642400000"/>
+            <property name="prefix" type="string"/>
+        </entity>
+    </entities>
+</changeset>

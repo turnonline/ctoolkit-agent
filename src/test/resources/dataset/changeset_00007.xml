@@ -1,0 +1,19 @@
+<changeset author="aurel.medvegy@ctoolkit.org" comment="Init data">
+    <model>
+        <kindOp op="drop" kind="Domain"/>
+    </model>
+    <entities>
+        <entity kind="Domain" name="localhost/iphone_4">
+            <property name="type" type="string" value="PRODUCT"/>
+            <property name="subdomain" type="string"/>
+            <property name="productId" type="long" value="3"/>
+            <property name="createdDate" type="date" value="1319549319"/>
+        </entity>
+        <entity kind="Domain" name="localhost/iphone_5">
+            <property name="type" type="string" value="PRODUCT"/>
+            <property name="subdomain" type="string"/>
+            <property name="productId" type="long" value="4"/>
+            <property name="createdDate" type="date" value="1319549319"/>
+        </entity>
+    </entities>
+</changeset>

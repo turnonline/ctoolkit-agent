@@ -7,7 +7,7 @@ import com.googlecode.objectify.annotation.Subclass;
  *
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
-@Subclass
+@Subclass( index = true )
 public class DataSetExport
         extends DataSetJob
 {

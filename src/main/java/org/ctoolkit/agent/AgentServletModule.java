@@ -2,10 +2,13 @@ package org.ctoolkit.agent;
 
 import com.google.api.server.spi.ServletInitializationParameters;
 import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
+import com.googlecode.objectify.ObjectifyFilter;
 import org.ctoolkit.agent.restapi.AgentEndpointConfig;
 import org.ctoolkit.agent.restapi.DataSetEndpoint;
 import org.ctoolkit.agent.restapi.DiffSetEndpoint;
 import org.ctoolkit.agent.restapi.EntitySchemaEndpoint;
+
+import javax.inject.Singleton;
 
 /**
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
@@ -27,5 +30,8 @@ public class AgentServletModule
                 .setClientIdWhitelistEnabled( false ).build();
 
         this.serveGuiceSystemServiceServlet( "/_ah/spi/*", params );
+
+        bind( ObjectifyFilter.class ).in( Singleton.class );
+        filter( "/*" ).through( ObjectifyFilter.class );
     }
 }

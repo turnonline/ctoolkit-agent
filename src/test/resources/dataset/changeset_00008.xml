@@ -1,0 +1,19 @@
+<changeset author="aurel.medvegy@ctoolkit.org" comment="Init data">
+    <model>
+        <kindOp op="drop" kind="User"/>
+    </model>
+    <entities>
+        <entity kind="User" id="101">
+            <property name="config" type="key" value="User:101::Config:101"/>
+            <property name="email" type="string" value="pohorelec@comvai.com"/>
+            <property name="vatPayer" type="boolean" value="true"/>
+            <property name="country" type="key" value="Country:1"/>
+        </entity>
+        <entity kind="User" id="102">
+            <property name="config" type="key" value="User:102::Config:102"/>
+            <property name="email" type="string" value="aurel.medvegy@ctoolkit.org"/>
+            <property name="vatPayer" type="boolean" value="false"/>
+            <property name="country" type="key" value="Country:3"/>
+        </entity>
+    </entities>
+</changeset>
