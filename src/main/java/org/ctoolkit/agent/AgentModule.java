@@ -15,6 +15,7 @@ import org.ctoolkit.agent.dataset.reader.impl.ChangeSetVersionImpl;
 import org.ctoolkit.agent.dataset.reader.impl.DataSetMultipleXmlReader;
 import org.ctoolkit.agent.datastore.DataStore;
 import org.ctoolkit.agent.datastore.bigtable.BigTableDataStore;
+import org.ctoolkit.agent.restapi.EventBusSubscription;
 import org.ctoolkit.agent.restapi.resource.DataSetExport;
 import org.ctoolkit.agent.restapi.resource.DataSetJob;
 import org.ctoolkit.agent.restapi.resource.DataSetUpgrade;
@@ -40,6 +41,7 @@ public class AgentModule
         bind( DataStore.class ).to( BigTableDataStore.class ).in( Singleton.class );
         // default event bus
         bind( EventBus.class ).in( Singleton.class );
+        bind( EventBusSubscription.class ).in( Singleton.class );
 
         requestStaticInjection( UpgradeTask.class );
 

@@ -17,7 +17,7 @@ public class GuiceServletConfig
     @Override
     protected Injector getInjector()
     {
-        return Guice.createInjector( Stage.DEVELOPMENT,
+        return Guice.createInjector( Stage.PRODUCTION,
                 new AgentModule(),
                 new AgentServletModule() );
     }

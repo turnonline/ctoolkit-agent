@@ -3,10 +3,7 @@ package org.ctoolkit.agent.restapi;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiReference;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.ctoolkit.agent.dataset.processor.DataSetProcessor;
-import org.ctoolkit.agent.dataset.processor.UpgradeCompletedEvent;
 import org.ctoolkit.agent.restapi.resource.DataSetExport;
 import org.ctoolkit.agent.restapi.resource.DataSetUpgrade;
 import org.slf4j.Logger;
@@ -32,32 +29,9 @@ public class DataSetEndpoint
     private final DataSetProcessor processor;
 
     @Inject
-    public DataSetEndpoint( DataSetProcessor processor, EventBus eventBus )
+    public DataSetEndpoint( DataSetProcessor processor )
     {
         this.processor = processor;
-
-        eventBus.register( this );
-    }
-
-    @Subscribe
-    public void handleDataSetUpgradeCompleted( UpgradeCompletedEvent event )
-    {
-        Long id = event.getNotificationId();
-        DataSetUpgrade upgrade = ofy().load().type( DataSetUpgrade.class ).id( id ).now();
-
-        if ( upgrade != null )
-        {
-            upgrade.setCompleted( true );
-            upgrade.setCompletedAt( new Date() );
-
-            ofy().save().entity( upgrade ).now();
-        }
-        else
-        {
-            log.warn( "DataSetUpgrade instance has not found for Id = " + event.getNotificationId() );
-        }
-
-        log.info( "Upgrade has completed: " + upgrade );
     }
 
     @ApiMethod( name = "dataset.upgrade.get", path = "dataset.upgrade/{id}", httpMethod = ApiMethod.HttpMethod.GET )
