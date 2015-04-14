@@ -68,6 +68,7 @@ public class KindPropOp
      * @param op           the operation to be executed
      * @param kind         the entity kind the operation to be executed on
      * @param property     the entity kind property the operation to be executed on
+     * @param type         the property type
      * @param defVal       the property default value
      * @param newName      the property new name
      * @param newType      the property new type

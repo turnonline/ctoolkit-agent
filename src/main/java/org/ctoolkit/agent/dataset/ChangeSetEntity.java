@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * The bean holding the Entity change description.
  * Examples:
- * <p/>
  * 1) entity with only kind specified
  * <pre>
  * {@code
@@ -96,6 +95,9 @@ public class ChangeSetEntity
 
     /**
      * Copy constructor
+     *
+     * @param other an instance to copy
+     * @param copyProperties properties are copied as well if <code>true</code>
      */
     public ChangeSetEntity( final ChangeSetEntity other, boolean copyProperties )
     {

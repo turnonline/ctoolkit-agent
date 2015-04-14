@@ -29,6 +29,7 @@ public interface DataSetProcessor
      * @param progress the progress info as a upgrade starting point
      * @param dataSet  the data set as a source for upgrade
      * @return the current progress info, suitable for upgrade chaining
+     * @throws AgentException if upgrade failed
      */
     ProgressInfo upgrade( @Nonnull ProgressInfo progress, @Nonnull DataSet dataSet )
             throws AgentException;

@@ -13,11 +13,14 @@ public interface ChangeSetVersionService
 {
     /**
      * Returns the current meta-data of the datastore schema.
+     * @return an instance of the {@link org.ctoolkit.agent.dataset.processor.ChangeSetVersion} class.
      */
     ChangeSetVersion getCurrentChangeSetVersion();
 
     /**
      * Updates the meta-data of the datastore schema.
+     *
+     * @param version a change set version value
      */
     void saveChangeSetVersionInfo( ChangeSetVersion version );
 

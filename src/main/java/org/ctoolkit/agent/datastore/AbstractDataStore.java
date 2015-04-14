@@ -61,7 +61,7 @@ public abstract class AbstractDataStore
      * @param property the name of the property to be added
      * @param type     the type of the property
      * @param defVal   the default value of the property
-     * @throws AgentException
+     * @throws AgentException if the specified property cannot be added to the specified entity.
      */
     protected abstract void addEntityProperty( String kind, String property, String type, String defVal )
             throws AgentException;
@@ -81,7 +81,7 @@ public abstract class AbstractDataStore
      * @param property the name of the property to be added
      * @param type     the type of the property
      * @param newValue the new value of the property
-     * @throws AgentException
+     * @throws AgentException if the specified property cannot be updated in the specified entity.
      */
     protected abstract void updateEntityPropertyValue( String kind, String property, String type, String newValue )
             throws AgentException;
@@ -98,6 +98,7 @@ public abstract class AbstractDataStore
      *
      * @param entity the entity to be added
      * @return the change set entity with assigned identifier
+     * @throws AgentException if the specified entity cannot be added.
      */
     protected abstract ChangeSetEntity addEntity( ChangeSetEntity entity ) throws AgentException;
 

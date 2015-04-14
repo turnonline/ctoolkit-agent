@@ -74,6 +74,8 @@ public class ChangeSet
     /**
      * Creates an empty, initialized change set.
      *
+     * @param version a version value
+     * @param author an author value
      * @return the empty initialized change set instance
      */
     public static ChangeSet createChangeSet( Long version, String author )
@@ -103,6 +105,9 @@ public class ChangeSet
     /**
      * Creates an empty, initialized change set
      *
+     * @param version a version value
+     * @param subVersion a subversion value
+     * @param author an author value
      * @return the empty initialized change set instance
      */
     public static ChangeSet createChangeSet( Long version, Long subVersion, String author )

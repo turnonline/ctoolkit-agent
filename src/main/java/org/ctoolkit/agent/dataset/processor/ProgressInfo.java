@@ -86,6 +86,7 @@ public class ProgressInfo
      * Constructor.
      *
      * @param version    the version of data set to start processing
+     * @param subVersion the subversion of data set to start processing
      * @param maxVersion the max version of data set to process
      * @param cursor     the marker of the current point of processing
      * @param state      the overall progress state
@@ -123,7 +124,7 @@ public class ProgressInfo
 
     /**
      * Sets the property.
-     * <p/>
+     *
      * It associates the specified property value with the specified property key.
      * If this previously contained a mapping for the property key, the old value is replaced by the specified value.
      *

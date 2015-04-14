@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The datastore data set processor engine implementation.
- * <p/>
+ * <p>
  * Note: no direct access to underlying datastore but through {@link DataStore} interface.
  *
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>

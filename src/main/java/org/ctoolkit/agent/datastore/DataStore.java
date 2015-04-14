@@ -57,7 +57,7 @@ public interface DataStore
 
     /**
      * Return data set for given Id.
-     * <p/>
+     * <p>
      * Note: there is a specific built-in data set returned for Id = 0 to process data sets from local file system
      * under '/dataset' directory.
      *
