@@ -4,6 +4,7 @@ import com.comvai.test.gae.ServiceConfigModule;
 import com.google.appengine.tools.development.testing.LocalBlobstoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalModulesServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 
@@ -22,6 +23,7 @@ public class UseCaseEnvironment
     {
         construct( new LocalServiceTestHelper(
                 new LocalMemcacheServiceTestConfig(),
+                new LocalModulesServiceTestConfig(),
                 new LocalDatastoreServiceTestConfig().setDefaultHighRepJobPolicyUnappliedJobPercentage( 0 ),
                 new LocalBlobstoreServiceTestConfig(),
                 new LocalTaskQueueTestConfig().setQueueXmlPath( "src/main/webapp/WEB-INF/queue.xml" )

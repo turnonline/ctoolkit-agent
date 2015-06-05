@@ -1,13 +1,13 @@
 package org.ctoolkit.agent.restapi.resource;
 
-import com.googlecode.objectify.annotation.Subclass;
+import com.googlecode.objectify.annotation.EntitySubclass;
 
 /**
  * The job resource to describe data set upgrade job details.
  *
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
-@Subclass( index = true )
+@EntitySubclass( index = true )
 public class DataSetUpgrade
         extends DataSetJob
 {

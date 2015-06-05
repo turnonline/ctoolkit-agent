@@ -1,8 +1,6 @@
 package org.ctoolkit.agent.dataset.processor.impl;
 
 import com.google.guiceberry.junit4.GuiceBerryRule;
-import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.util.Closeable;
 import org.ctoolkit.agent.UseCaseEnvironment;
 import org.ctoolkit.agent.dataset.processor.DataSetProcessor;
 import org.junit.After;
@@ -22,7 +20,7 @@ public class DataSetProcessorBeanTest
     public final GuiceBerryRule guiceBerry = new GuiceBerryRule( UseCaseEnvironment.class );
 
     // objectify helper
-    private Closeable session;
+    //private Closeable session; TODO commented till objectify upgrade to 5.x
 
     @Inject
     private DataSetProcessor processor;
@@ -38,13 +36,13 @@ public class DataSetProcessorBeanTest
     @Before
     public void setUp()
     {
-        session = ObjectifyService.begin();
+        //session = ObjectifyService.begin();TODO commented till objectify upgrade to 5.x
     }
 
     @After
     public void tearDown()
     {
-        session.close();
+        //session.close();TODO commented till objectify upgrade to 5.x
     }
 
 }

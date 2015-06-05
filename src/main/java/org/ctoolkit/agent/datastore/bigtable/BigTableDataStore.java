@@ -10,10 +10,13 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.modules.ModulesService;
+import com.google.appengine.api.modules.ModulesServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import org.ctoolkit.agent.Constants;
 import org.ctoolkit.agent.common.AgentException;
 import org.ctoolkit.agent.dataset.ChangeSet;
 import org.ctoolkit.agent.dataset.ChangeSetEntity;
@@ -281,9 +284,23 @@ public class BigTableDataStore
     @Override
     public void addToQueue( DeferredTask runnable )
     {
+        String queueName = Constants.AGENT_QUEUE_NAME;
         TaskOptions options = TaskOptions.Builder.withDefaults();
 
-        Queue queue = QueueFactory.getDefaultQueue();
+        ModulesService modulesService = ModulesServiceFactory.getModulesService();
+
+        String module = modulesService.getCurrentModule();
+        String version = modulesService.getCurrentVersion();
+        String hostname = modulesService.getVersionHostname( module, version );
+
+        // header added to make sure run against current module (even non default module)
+        // see https://code.google.com/p/googleappengine/issues/detail?id=10457
+        options.header( "Host", hostname );
+
+        logger.info( "Enqueued in queue: " + queueName + ",  module: " + module + ", version: " + version
+                + ", Module hostname: " + hostname );
+
+        Queue queue = QueueFactory.getQueue( queueName );
         queue.add( options.payload( runnable ) );
     }
 
