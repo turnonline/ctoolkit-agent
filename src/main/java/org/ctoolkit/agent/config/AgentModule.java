@@ -32,6 +32,14 @@ import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityM
 import org.ctoolkit.agent.service.impl.datastore.mapper.EntityFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportMetadataFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportToImportMetadataMapper;
+import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
+import org.ctoolkit.agent.service.impl.datastore.rule.NewNameChangeRule;
+import org.ctoolkit.agent.service.impl.datastore.rule.NewNameNewTypeChangeRule;
+import org.ctoolkit.agent.service.impl.datastore.rule.NewNameNewTypeNewValueChangeRule;
+import org.ctoolkit.agent.service.impl.datastore.rule.NewNameNewValueChangeRule;
+import org.ctoolkit.agent.service.impl.datastore.rule.NewTypeChangeRule;
+import org.ctoolkit.agent.service.impl.datastore.rule.NewTypeNewValueChangeRule;
+import org.ctoolkit.agent.service.impl.datastore.rule.NewValueChangeRule;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
 
 import javax.inject.Singleton;
@@ -60,6 +68,15 @@ public class AgentModule
         bind( PipelineService.class ).to( PipelineServiceImpl.class ).in( Singleton.class );
         bind( EventBus.class ).in( Singleton.class );
         bind( AuditEvent.class ).in( Singleton.class );
+
+        bind( ChangeRuleEngine.class ).in( Singleton.class );
+        bind( NewNameChangeRule.class ).in( Singleton.class );
+        bind( NewTypeChangeRule.class ).in( Singleton.class );
+        bind( NewValueChangeRule.class ).in( Singleton.class );
+        bind( NewNameNewTypeChangeRule.class).in( Singleton.class );
+        bind( NewNameNewValueChangeRule.class).in( Singleton.class );
+        bind( NewTypeNewValueChangeRule.class).in( Singleton.class );
+        bind( NewNameNewTypeNewValueChangeRule.class ).in( Singleton.class );
 
         ObjectifyService.register( ImportMetadata.class );
         ObjectifyService.register( ImportMetadataItem.class );
@@ -103,7 +120,7 @@ public class AgentModule
 
     @Provides
     @Singleton
-    public MapReduceSettings getSettings()
+    public MapReduceSettings provideMapReduceSettings()
     {
         return new MapReduceSettings.Builder()
                 .setBucketName( null )

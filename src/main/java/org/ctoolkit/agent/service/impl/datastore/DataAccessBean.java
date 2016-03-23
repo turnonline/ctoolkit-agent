@@ -9,6 +9,8 @@ import com.googlecode.objectify.Key;
 import ma.glasnost.orika.MapperFacade;
 import org.ctoolkit.agent.model.ChangeSetEntity;
 import org.ctoolkit.agent.service.DataAccess;
+import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
+import org.ctoolkit.agent.service.impl.datastore.rule.IChangeRule;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -34,20 +36,20 @@ public class DataAccessBean
 
     private final EntityPool pool;
 
-    private final EntityEncoder encoder;
-
     private final MapperFacade mapper;
+
+    private final ChangeRuleEngine changeRuleEngine;
 
     @Inject
     protected DataAccessBean( DatastoreService datastore,
                               EntityPool pool,
-                              EntityEncoder encoder,
-                              MapperFacade mapper )
+                              MapperFacade mapper,
+                              ChangeRuleEngine changeRuleEngine )
     {
         this.datastore = datastore;
         this.pool = pool;
-        this.encoder = encoder;
         this.mapper = mapper;
+        this.changeRuleEngine = changeRuleEngine;
     }
 
     @Override
@@ -110,24 +112,19 @@ public class DataAccessBean
             {
                 for ( Entity entity : entList )
                 {
-                    // TODO: implement different use cases - find out suitable design pattern
                     // property exists - change property
-                    if ( entity.getProperties().containsKey( property ) )
+                    IChangeRule changeRule = changeRuleEngine.provideRule( newName, newType, newVal );
+                    String name = changeRule.getName( property, newName );
+                    Object value = changeRule.getValue( entity.getProperty( property ), newType, newVal );
+
+                    // remove old property if exists
+                    if (entity.getProperties().containsKey( property ))
                     {
-                        if ( newName != null || newType != null )
-                        {
-                            entity.setProperty( newName, encoder.decodeProperty( newType, newVal ) );
-                        }
-                        else
-                        {
-                            entity.setProperty( property, encoder.decodeProperty( newType, newVal ) );
-                        }
+                        entity.removeProperty( property );
                     }
-                    // property does not exists - add new property
-                    else
-                    {
-                        entity.setProperty( property, encoder.decodeProperty( newType, newVal ) );
-                    }
+
+                    // create new migrated property
+                    entity.setProperty( name, value );
 
                     pool.put( entity );
                 }
@@ -192,7 +189,7 @@ public class DataAccessBean
     @SuppressWarnings( "unchecked" )
     public <T> T find( Class<T> entity, String key )
     {
-        return (T) ofy().load().key( Key.create(key) ).now();
+        return ( T ) ofy().load().key( Key.create( key ) ).now();
     }
 
     @Override

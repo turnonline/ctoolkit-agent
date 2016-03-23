@@ -25,7 +25,6 @@ import javax.inject.Inject;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-// TODO: create mapper for Import > ImportMetadata
 public class ChangeSetServiceBean
         implements ChangeSetService
 {

@@ -18,6 +18,7 @@ import java.util.List;
 
 /**
  * Datastore entity encoder
+ *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class EntityEncoder
