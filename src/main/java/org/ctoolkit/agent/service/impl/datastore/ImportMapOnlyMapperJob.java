@@ -1,10 +1,12 @@
 package org.ctoolkit.agent.service.impl.datastore;
 
 import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.mapreduce.MapOnlyMapper;
 import com.google.inject.Injector;
 import org.ctoolkit.agent.model.ChangeSet;
+import org.ctoolkit.agent.model.JobState;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.util.XmlUtils;
 
@@ -25,6 +27,9 @@ public class ImportMapOnlyMapperJob
     @Inject
     private transient ChangeSetService changeSetService;
 
+    @Inject
+    private transient DatastoreService datastoreService;
+
     @Override
     public void map( Entity item )
     {
@@ -34,5 +39,9 @@ public class ImportMapOnlyMapperJob
 
         ChangeSet changeSet = XmlUtils.unmarshall( new ByteArrayInputStream( xml.getBytes() ), ChangeSet.class );
         changeSetService.importChangeSet( changeSet );
+
+        // update state to COMPLETED_SUCCESSFULLY
+        item.setProperty( "state", JobState.COMPLETED_SUCCESSFULLY.name() );
+        datastoreService.put( item );
     }
 }

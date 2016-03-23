@@ -17,7 +17,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-@Entity
+@Entity( name = "_ImportMetadata" )
 public class ImportMetadata
         extends BaseEntity
 {
@@ -79,6 +79,26 @@ public class ImportMetadata
         return item;
     }
 
+    public void reset()
+    {
+        for ( ImportMetadataItem item : getItems() )
+        {
+            item.setState( JobState.RUNNING );
+        }
+    }
+
+    public int getProcessedItems() {
+        int processed = 0;
+
+        for (ImportMetadataItem item : getItems()) {
+            if (item.getState() == JobState.COMPLETED_SUCCESSFULLY) {
+                processed++;
+            }
+        }
+
+        return processed;
+    }
+
     public void save()
     {
         List<ImportMetadataItem> temp = Lists.newArrayList( items );
@@ -133,7 +153,6 @@ public class ImportMetadata
     public String toString()
     {
         return "ImportMetadata{" +
-                "items=" + items +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 "} " + super.toString();
     }

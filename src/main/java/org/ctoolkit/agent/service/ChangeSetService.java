@@ -69,7 +69,7 @@ public interface ChangeSetService
      * @param key key of {@link org.ctoolkit.agent.model.ImportMetadata}
      * @return {@link JobInfo}
      */
-    JobInfo getJobInfo( String key );
+    JobInfo getImportJobInfo( String key );
 
     /**
      * Process import data change set

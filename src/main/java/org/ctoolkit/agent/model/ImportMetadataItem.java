@@ -13,7 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-@Entity
+@Entity( name = "_ImportMetadataItem" )
 public class ImportMetadataItem
         extends BaseEntity
 {
@@ -24,6 +24,8 @@ public class ImportMetadataItem
     private ImportMetadata importMetadata;
 
     private byte[] xml;
+
+    private JobState state;
 
     public ImportMetadataItem()
     {
@@ -53,6 +55,16 @@ public class ImportMetadataItem
         this.xml = xml;
     }
 
+    public JobState getState()
+    {
+        return state;
+    }
+
+    public void setState( JobState state )
+    {
+        this.state = state;
+    }
+
     @OnSave
     private void updateObjectifyRefs()
     {
@@ -68,6 +80,7 @@ public class ImportMetadataItem
     {
         return "ImportMetadataItem{" +
                 "xml.length=" + xml.length +
+                ", state=" + state +
                 "} " + super.toString();
     }
 }

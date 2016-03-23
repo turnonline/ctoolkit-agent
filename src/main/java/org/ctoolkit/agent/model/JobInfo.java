@@ -82,8 +82,8 @@ public class JobInfo
     @Override
     public String toString()
     {
-        return "ProgressInfo{" +
-                "id=" + id +
+        return "JobInfo{" +
+                "id='" + id + '\'' +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", totalItems=" + totalItems +
                 ", processedItems=" + processedItems +

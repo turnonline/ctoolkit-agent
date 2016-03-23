@@ -5,6 +5,7 @@ import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
 import com.google.appengine.tools.pipeline.PipelineService;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
+import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.agent.model.ChangeSet;
 import org.ctoolkit.agent.model.ChangeSetEntity;
 import org.ctoolkit.agent.model.ChangeSetModelKindOp;
@@ -56,13 +57,14 @@ public class ChangeSetServiceBean
     public ImportMetadata createImportMetadata( ImportMetadata importMetadata )
     {
         importMetadata.save();
-        return dataAccess.create( importMetadata );
+        return importMetadata;
     }
 
     @Override
     public ImportMetadata updateImportMetadata( ImportMetadata importMetadata )
     {
-        return dataAccess.update( importMetadata );
+        importMetadata.save();
+        return importMetadata;
     }
 
     @Override
@@ -82,20 +84,26 @@ public class ChangeSetServiceBean
     {
         ImportMetadata importMetadata = getImportMetadata( key );
 
+        // check if mapReduceJob is running
+        if ( importMetadata.getMapReduceJobId() != null )
+        {
+            JobInfo previousJobInfo = getImportJobInfo( key );
+            if ( previousJobInfo.getState() == JobState.RUNNING )
+            {
+                throw new ProcessAlreadyRunning( "ImportJob process is alredy running: " + importMetadata.getMapReduceJobId() );
+            }
+        }
+
         String id = MapJob.start( jobSpecificationFactory.createImportJobSpecification( key ).get(), mapReduceSettings );
         importMetadata.setMapReduceJobId( id );
-
-        updateImportMetadata( importMetadata );
+        importMetadata.reset();
+        importMetadata.save();
     }
 
     @Override
     public void cancelImportJob( String key )
     {
         ImportMetadata importMetadata = getImportMetadata( key );
-        if ( importMetadata == null )
-        {
-            throw new ObjectNotFoundException( "ImportMetadata not found for key: " + key );
-        }
 
         try
         {
@@ -111,10 +119,6 @@ public class ChangeSetServiceBean
     public void deleteImportJob( String key )
     {
         ImportMetadata importMetadata = getImportMetadata( key );
-        if ( importMetadata == null )
-        {
-            throw new ObjectNotFoundException( "ImportMetadata not found for key: " + key );
-        }
 
         try
         {
@@ -127,13 +131,9 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public JobInfo getJobInfo( String key )
+    public JobInfo getImportJobInfo( String key )
     {
         ImportMetadata importMetadata = getImportMetadata( key );
-        if ( importMetadata == null )
-        {
-            throw new ObjectNotFoundException( "ImportMetadata not found for key: " + key );
-        }
 
         try
         {
@@ -143,7 +143,7 @@ public class ChangeSetServiceBean
             jobInfo.setMapReduceJobId( importMetadata.getMapReduceJobId() );
             jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
             jobInfo.setStackTrace( pipelineJobInfo.getError() );
-            jobInfo.setProcessedItems( -1 ); // TODO: implement
+            jobInfo.setProcessedItems( importMetadata.getProcessedItems() );
             jobInfo.setTotalItems( importMetadata.getItemsCount() );
 
             return jobInfo;

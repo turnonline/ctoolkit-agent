@@ -93,7 +93,7 @@ public class ImportEndpoint
         try
         {
             service.startImportJob( key );
-            return service.getJobInfo( key );
+            return service.getImportJobInfo( key );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -112,7 +112,7 @@ public class ImportEndpoint
         try
         {
             service.cancelImportJob( key );
-            return service.getJobInfo( key );
+            return service.getImportJobInfo( key );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -148,7 +148,7 @@ public class ImportEndpoint
 
         try
         {
-            return service.getJobInfo( key );
+            return service.getImportJobInfo( key );
         }
         catch ( ObjectNotFoundException e )
         {

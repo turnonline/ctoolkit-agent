@@ -7,7 +7,6 @@ import com.google.appengine.tools.mapreduce.MapSpecification;
 import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
 import com.google.appengine.tools.mapreduce.outputs.NoOutput;
 import com.google.inject.assistedinject.Assisted;
-import org.ctoolkit.agent.model.ImportMetadataItem;
 
 import javax.inject.Inject;
 
@@ -35,7 +34,7 @@ public class ImportJobMapSpecificationProvider
     @SuppressWarnings( "unchecked" )
     public MapSpecification<Entity, Entity, Entity> get()
     {
-        Query query = new Query( ImportMetadataItem.class.getSimpleName() ).setAncestor( KeyFactory.stringToKey( parentKey ) );
+        Query query = new Query( "_ImportMetadataItem" ).setAncestor( KeyFactory.stringToKey( parentKey ) );
         DatastoreInput input = new DatastoreInput( query, SHARD_COUNT );
 
         return new MapSpecification.Builder<>( input, mapper, new NoOutput<Entity, Entity>() )
