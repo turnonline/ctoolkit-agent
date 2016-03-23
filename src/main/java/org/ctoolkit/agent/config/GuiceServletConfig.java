@@ -3,8 +3,6 @@ package org.ctoolkit.agent.config;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
-import org.ctoolkit.agent.AgentModule;
-import org.ctoolkit.agent.AgentServletModule;
 
 /**
  * Application guice module.
