@@ -104,6 +104,11 @@ public class ChangeSetServiceBean
     {
         ImportMetadata importMetadata = getImportMetadata( key );
 
+        if ( importMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
+
         try
         {
             pipelineService.cancelPipeline( importMetadata.getMapReduceJobId() );
@@ -119,6 +124,11 @@ public class ChangeSetServiceBean
     {
         ImportMetadata importMetadata = getImportMetadata( key );
 
+        if ( importMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
+
         try
         {
             pipelineService.deletePipelineRecords( importMetadata.getMapReduceJobId(), true, false );
@@ -133,6 +143,11 @@ public class ChangeSetServiceBean
     public JobInfo getImportJobInfo( String key )
     {
         ImportMetadata importMetadata = getImportMetadata( key );
+
+        if ( importMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
 
         try
         {
