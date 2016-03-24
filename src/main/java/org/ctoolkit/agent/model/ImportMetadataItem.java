@@ -1,12 +1,6 @@
 package org.ctoolkit.agent.model;
 
-import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Ignore;
-import com.googlecode.objectify.annotation.OnSave;
-import com.googlecode.objectify.annotation.Parent;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Import metadata item entity
@@ -15,72 +9,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Entity( name = "_ImportMetadataItem" )
 public class ImportMetadataItem
-        extends BaseEntity
+        extends BaseMetadataItem<ImportMetadata>
 {
-    @Parent
-    private Ref<ImportMetadata> importMetadataRef;
-
-    @Ignore
-    private ImportMetadata importMetadata;
-
-    private byte[] xml;
-
-    private JobState state;
-
     public ImportMetadataItem()
     {
     }
 
-    public ImportMetadataItem( ImportMetadata importMetadata )
+    public ImportMetadataItem( ImportMetadata metadata )
     {
-        this.importMetadata = importMetadata;
-    }
-
-    public ImportMetadata getImportMetadata()
-    {
-        if ( importMetadata == null )
-        {
-            importMetadata = importMetadataRef.get();
-        }
-        return importMetadata;
-    }
-
-    public byte[] getXml()
-    {
-        return xml;
-    }
-
-    public void setXml( byte[] xml )
-    {
-        this.xml = xml;
-    }
-
-    public JobState getState()
-    {
-        return state;
-    }
-
-    public void setState( JobState state )
-    {
-        this.state = state;
-    }
-
-    @OnSave
-    private void updateObjectifyRefs()
-    {
-        if ( importMetadataRef == null )
-        {
-            checkNotNull( importMetadata, "ImportMetadata is mandatory to create a new persisted ImportMetadataItem!" );
-            importMetadataRef = Ref.create( importMetadata );
-        }
+        super( metadata );
     }
 
     @Override
     public String toString()
     {
-        return "ImportMetadataItem{" +
-                "xml.length=" + xml.length +
-                ", state=" + state +
-                "} " + super.toString();
+        return "ImportMetadataItem{} " + super.toString();
     }
 }

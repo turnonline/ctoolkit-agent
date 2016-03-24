@@ -16,6 +16,10 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.TypeFactory;
 import org.ctoolkit.agent.annotation.ImportJob;
+import org.ctoolkit.agent.model.ChangeMetadata;
+import org.ctoolkit.agent.model.ChangeMetadataItem;
+import org.ctoolkit.agent.model.ExportMetadata;
+import org.ctoolkit.agent.model.ExportMetadataItem;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
 import org.ctoolkit.agent.service.ChangeSetService;
@@ -80,6 +84,10 @@ public class AgentModule
 
         ObjectifyService.register( ImportMetadata.class );
         ObjectifyService.register( ImportMetadataItem.class );
+        ObjectifyService.register( ChangeMetadata.class );
+        ObjectifyService.register( ChangeMetadataItem.class );
+        ObjectifyService.register( ExportMetadata.class );
+        ObjectifyService.register( ExportMetadataItem.class );
 
         requestStaticInjection( ImportMapOnlyMapperJob.class );
     }
