@@ -1,0 +1,5 @@
+<changeset author="aurel.medvegy@ctoolkit.org" comment="Init data">
+    <model>
+        <kindPropsOp op="change" property="extId" newValue="20" kind="Country"/>
+    </model>
+</changeset>

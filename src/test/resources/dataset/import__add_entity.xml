@@ -1,0 +1,7 @@
+<changeset author="aurel.medvegy@ctoolkit.org" comment="Init data">
+    <entities>
+        <entity id="1" kind="Country">
+            <property name="code" type="string" value="EN"/>
+        </entity>
+    </entities>
+</changeset>

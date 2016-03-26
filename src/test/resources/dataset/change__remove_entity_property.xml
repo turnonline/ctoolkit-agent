@@ -1,0 +1,5 @@
+<changeset author="aurel.medvegy@ctoolkit.org" comment="Init data">
+    <model>
+        <kindPropsOp op="remove" property="label" kind="Country"/>
+    </model>
+</changeset>
