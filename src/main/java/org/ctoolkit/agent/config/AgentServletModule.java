@@ -6,6 +6,8 @@ import com.google.appengine.tools.mapreduce.MapReduceServlet;
 import com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet;
 import com.googlecode.objectify.ObjectifyFilter;
 import org.ctoolkit.agent.rest.AgentEndpointConfig;
+import org.ctoolkit.agent.rest.ChangeEndpoint;
+import org.ctoolkit.agent.rest.ExportEndpoint;
 import org.ctoolkit.agent.rest.ImportEndpoint;
 
 import javax.inject.Singleton;
@@ -24,6 +26,8 @@ public class AgentServletModule
         ServletInitializationParameters params = ServletInitializationParameters.builder()
                 .addServiceClass( AgentEndpointConfig.class )
                 .addServiceClass( ImportEndpoint.class )
+                .addServiceClass( ChangeEndpoint.class )
+                .addServiceClass( ExportEndpoint.class )
                 // this is important, otherwise we cannot use certificates from third-party applications
                 .setClientIdWhitelistEnabled( false ).build();
 

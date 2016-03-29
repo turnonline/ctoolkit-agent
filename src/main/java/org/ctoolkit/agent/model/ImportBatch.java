@@ -9,7 +9,8 @@ import java.util.List;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class Import
+public class ImportBatch
+        implements ISet
 {
     private String key;
 
@@ -19,9 +20,10 @@ public class Import
 
     private Date updateDate;
 
-    private List<Item> items = new ArrayList<>();
+    private List<ImportItem> items = new ArrayList<>();
 
-    public static class Item
+    public static class ImportItem
+            implements ISetItem
     {
         private String key;
 
@@ -76,7 +78,7 @@ public class Import
         {
             return "Item{" +
                     "key='" + key + '\'' +
-                    ", xml.length=" + xml.length +
+                    ", xml.length=" + (xml != null ? xml.length : null) +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
                     '}';
@@ -123,12 +125,12 @@ public class Import
         this.updateDate = updateDate;
     }
 
-    public List<Item> getItems()
+    public List<ImportItem> getItems()
     {
         return items;
     }
 
-    public void setItems( List<Item> items )
+    public void setItems( List<ImportItem> items )
     {
         this.items = items;
     }

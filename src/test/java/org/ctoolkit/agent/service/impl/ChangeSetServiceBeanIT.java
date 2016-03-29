@@ -3,17 +3,23 @@ package org.ctoolkit.agent.service.impl;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
+import com.google.common.base.Charsets;
 import com.google.guiceberry.junit4.GuiceBerryRule;
 import org.ctoolkit.agent.UseCaseEnvironment;
 import org.ctoolkit.agent.model.ChangeSet;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.util.XmlUtils;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xml.sax.InputSource;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -49,6 +55,9 @@ public class ChangeSetServiceBeanIT
     @Before
     public void setUp()
     {
+        // ignore white spaces when comparing XMLs
+        XMLUnit.setIgnoreWhitespace( true );
+
         DROP_ENTITY = load( "change__drop_entity.xml" );
         CLEAN_ENTITY = load( "change__clean_entity.xml" );
         ADD_ENTITY = load( "import__add_entity.xml" );
@@ -70,6 +79,8 @@ public class ChangeSetServiceBeanIT
             datastoreService.delete( entity.getKey() );
         }
     }
+
+    // -- importChangeSet
 
     @Test
     public void importChangeSet_DropEntity() throws Exception
@@ -230,6 +241,25 @@ public class ChangeSetServiceBeanIT
             assertEquals( 20L, entity.getProperty( "extId" ) );
         }
     }
+
+    // -- exportChangeSet
+
+    @Test
+    public void exportChangeSet() throws Exception
+    {
+        createRecord();
+
+        byte[] export = service.exportChangeSet( "Country" );
+
+        InputStream actual = new ByteArrayInputStream( export );
+        InputStream expected = ChangeSetServiceBeanIT.class.getResourceAsStream( "/export/country.xml" );
+
+        System.out.println(new String(export, Charsets.UTF_8));
+
+        XMLAssert.assertXMLEqual( new InputSource( expected ), new InputSource( actual ) );
+    }
+
+    // -- private helpers
 
     private void createRecord()
     {

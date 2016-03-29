@@ -15,6 +15,8 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.TypeFactory;
+import org.ctoolkit.agent.annotation.ChangeJob;
+import org.ctoolkit.agent.annotation.ExportJob;
 import org.ctoolkit.agent.annotation.ImportJob;
 import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.model.ChangeMetadataItem;
@@ -25,15 +27,23 @@ import org.ctoolkit.agent.model.ImportMetadataItem;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
+import org.ctoolkit.agent.service.impl.datastore.ChangeJobMapSpecificationProvider;
+import org.ctoolkit.agent.service.impl.datastore.ChangeMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.DataAccessBean;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
+import org.ctoolkit.agent.service.impl.datastore.ExportJobMapSpecificationProvider;
+import org.ctoolkit.agent.service.impl.datastore.ExportMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.ImportJobMapSpecificationProvider;
 import org.ctoolkit.agent.service.impl.datastore.ImportMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.agent.service.impl.datastore.MapSpecificationProvider;
+import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeMetadataFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityMapper;
+import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeToChangeMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.EntityFactory;
+import org.ctoolkit.agent.service.impl.datastore.mapper.ExportMetadataFactory;
+import org.ctoolkit.agent.service.impl.datastore.mapper.ExportToExportMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportMetadataFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportToImportMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
@@ -60,6 +70,8 @@ public class AgentModule
     {
         install( new FactoryModuleBuilder()
                 .implement( MapSpecificationProvider.class, ImportJob.class, ImportJobMapSpecificationProvider.class )
+                .implement( MapSpecificationProvider.class, ChangeJob.class, ChangeJobMapSpecificationProvider.class )
+                .implement( MapSpecificationProvider.class, ExportJob.class, ExportJobMapSpecificationProvider.class )
                 .build( JobSpecificationFactory.class ) );
 
         bind( EntityPool.class ).in( Singleton.class );
@@ -77,9 +89,9 @@ public class AgentModule
         bind( NewNameChangeRule.class ).in( Singleton.class );
         bind( NewTypeChangeRule.class ).in( Singleton.class );
         bind( NewValueChangeRule.class ).in( Singleton.class );
-        bind( NewNameNewTypeChangeRule.class).in( Singleton.class );
-        bind( NewNameNewValueChangeRule.class).in( Singleton.class );
-        bind( NewTypeNewValueChangeRule.class).in( Singleton.class );
+        bind( NewNameNewTypeChangeRule.class ).in( Singleton.class );
+        bind( NewNameNewValueChangeRule.class ).in( Singleton.class );
+        bind( NewTypeNewValueChangeRule.class ).in( Singleton.class );
         bind( NewNameNewTypeNewValueChangeRule.class ).in( Singleton.class );
 
         ObjectifyService.register( ImportMetadata.class );
@@ -90,6 +102,8 @@ public class AgentModule
         ObjectifyService.register( ExportMetadataItem.class );
 
         requestStaticInjection( ImportMapOnlyMapperJob.class );
+        requestStaticInjection( ChangeMapOnlyMapperJob.class );
+        requestStaticInjection( ExportMapOnlyMapperJob.class );
     }
 
     @Provides
@@ -113,15 +127,28 @@ public class AgentModule
     @Provides
     @Singleton
     public MapperFacade provideMapperFacade( MapperFactory factory,
+                                             // mappers
                                              ChangeSetEntityToEntityMapper changeSetEntityToEntityMapper,
-                                             EntityFactory entityFactory,
                                              ImportToImportMetadataMapper importToImportMetadataMapper,
-                                             ImportMetadataFactory importMetadataFactory )
+                                             ExportToExportMetadataMapper exportToExportMetadataMapper,
+                                             ChangeToChangeMetadataMapper changeToChangeMetadataMapper,
+                                             // factories
+                                             EntityFactory entityFactory,
+                                             ImportMetadataFactory importMetadataFactory,
+                                             ExportMetadataFactory exportMetadataFactory,
+                                             ChangeMetadataFactory changeMetadataFactory )
     {
+        // register custom mappers
         factory.registerMapper( changeSetEntityToEntityMapper );
         factory.registerMapper( importToImportMetadataMapper );
+        factory.registerMapper( exportToExportMetadataMapper );
+        factory.registerMapper( changeToChangeMetadataMapper );
+
+        // register factories
         factory.registerObjectFactory( entityFactory, TypeFactory.valueOf( Entity.class ) );
         factory.registerObjectFactory( importMetadataFactory, TypeFactory.valueOf( ImportMetadata.class ) );
+        factory.registerObjectFactory( exportMetadataFactory, TypeFactory.valueOf( ExportMetadata.class ) );
+        factory.registerObjectFactory( changeMetadataFactory, TypeFactory.valueOf( ChangeMetadata.class ) );
 
         return factory.getMapperFacade();
     }

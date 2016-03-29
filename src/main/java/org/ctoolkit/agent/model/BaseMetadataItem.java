@@ -78,7 +78,7 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public String toString()
     {
         return "MetadataItem{" +
-                "xml.length=" + xml.length +
+                "xml.length=" + (xml != null ? xml.length : null) +
                 ", state=" + state +
                 "} " + super.toString();
     }

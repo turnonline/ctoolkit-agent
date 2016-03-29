@@ -4,12 +4,16 @@ import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
 import com.google.appengine.tools.pipeline.PipelineService;
+import com.google.common.base.Charsets;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
+import org.ctoolkit.agent.model.BaseMetadata;
+import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.model.ChangeSet;
 import org.ctoolkit.agent.model.ChangeSetEntity;
 import org.ctoolkit.agent.model.ChangeSetModelKindOp;
 import org.ctoolkit.agent.model.ChangeSetModelKindPropOp;
+import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.JobInfo;
 import org.ctoolkit.agent.model.JobState;
@@ -17,6 +21,7 @@ import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.JobSpecificationFactory;
+import org.ctoolkit.agent.util.XmlUtils;
 
 import javax.inject.Inject;
 
@@ -60,10 +65,38 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    public ChangeMetadata createChangeMetadata( ChangeMetadata changeMetadata )
+    {
+        changeMetadata.save();
+        return changeMetadata;
+    }
+
+    @Override
+    public ExportMetadata createExportMetadata( ExportMetadata exportMetadata )
+    {
+        exportMetadata.save();
+        return exportMetadata;
+    }
+
+    @Override
     public ImportMetadata updateImportMetadata( ImportMetadata importMetadata )
     {
         importMetadata.save();
         return importMetadata;
+    }
+
+    @Override
+    public ChangeMetadata updateChangeMetadata( ChangeMetadata changeMetadata )
+    {
+        changeMetadata.save();
+        return changeMetadata;
+    }
+
+    @Override
+    public ExportMetadata updateExportMetadata( ExportMetadata exportMetadata )
+    {
+        exportMetadata.save();
+        return exportMetadata;
     }
 
     @Override
@@ -73,9 +106,33 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    public ChangeMetadata getChangeMetadata( String key )
+    {
+        return dataAccess.find( ChangeMetadata.class, key );
+    }
+
+    @Override
+    public ExportMetadata getExportMetadata( String key )
+    {
+        return dataAccess.find( ExportMetadata.class, key );
+    }
+
+    @Override
     public void deleteImportMetadata( String key )
     {
         dataAccess.delete( ImportMetadata.class, key );
+    }
+
+    @Override
+    public void deleteChangeMetadata( String key )
+    {
+        dataAccess.delete( ChangeMetadata.class, key );
+    }
+
+    @Override
+    public void deleteExportMetadata( String key )
+    {
+        dataAccess.delete( ExportMetadata.class, key );
     }
 
     @Override
@@ -89,7 +146,7 @@ public class ChangeSetServiceBean
             JobInfo previousJobInfo = getImportJobInfo( key );
             if ( previousJobInfo.getState() == JobState.RUNNING )
             {
-                throw new ProcessAlreadyRunning( "ImportJob process is alredy running: " + importMetadata.getMapReduceJobId() );
+                throw new ProcessAlreadyRunning( "ImportJob process is already running: " + importMetadata.getMapReduceJobId() );
             }
         }
 
@@ -97,6 +154,48 @@ public class ChangeSetServiceBean
         importMetadata.setMapReduceJobId( id );
         importMetadata.reset();
         importMetadata.save();
+    }
+
+    @Override
+    public void startChangeJob( String key )
+    {
+        ChangeMetadata changeMetadata = getChangeMetadata( key );
+
+        // check if mapReduceJob is running
+        if ( changeMetadata.getMapReduceJobId() != null )
+        {
+            JobInfo previousJobInfo = getChangeJobInfo( key );
+            if ( previousJobInfo.getState() == JobState.RUNNING )
+            {
+                throw new ProcessAlreadyRunning( "ChangeJob process is already running: " + changeMetadata.getMapReduceJobId() );
+            }
+        }
+
+        String id = MapJob.start( jobSpecificationFactory.createChangeJobSpecification( key ).get(), mapReduceSettings );
+        changeMetadata.setMapReduceJobId( id );
+        changeMetadata.reset();
+        changeMetadata.save();
+    }
+
+    @Override
+    public void startExportJob( String key )
+    {
+        ExportMetadata exportMetadata = getExportMetadata( key );
+
+        // check if mapReduceJob is running
+        if ( exportMetadata.getMapReduceJobId() != null )
+        {
+            JobInfo previousJobInfo = getExportJobInfo( key );
+            if ( previousJobInfo.getState() == JobState.RUNNING )
+            {
+                throw new ProcessAlreadyRunning( "ExportJob process is already running: " + exportMetadata.getMapReduceJobId() );
+            }
+        }
+
+        String id = MapJob.start( jobSpecificationFactory.createExportJobSpecification( key ).get(), mapReduceSettings );
+        exportMetadata.setMapReduceJobId( id );
+        exportMetadata.reset();
+        exportMetadata.save();
     }
 
     @Override
@@ -116,6 +215,46 @@ public class ChangeSetServiceBean
         catch ( NoSuchObjectException e )
         {
             throw new ObjectNotFoundException( "Map reduce job not found for id: " + importMetadata.getMapReduceJobId(), e );
+        }
+    }
+
+    @Override
+    public void cancelChangeJob( String key )
+    {
+        ChangeMetadata changeMetadata = getChangeMetadata( key );
+
+        if ( changeMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
+
+        try
+        {
+            pipelineService.cancelPipeline( changeMetadata.getMapReduceJobId() );
+        }
+        catch ( NoSuchObjectException e )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not found for id: " + changeMetadata.getMapReduceJobId(), e );
+        }
+    }
+
+    @Override
+    public void cancelExportJob( String key )
+    {
+        ExportMetadata exportMetadata = getExportMetadata( key );
+
+        if ( exportMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
+
+        try
+        {
+            pipelineService.cancelPipeline( exportMetadata.getMapReduceJobId() );
+        }
+        catch ( NoSuchObjectException e )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not found for id: " + exportMetadata.getMapReduceJobId(), e );
         }
     }
 
@@ -140,6 +279,46 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    public void deleteChangeJob( String key )
+    {
+        ChangeMetadata changeMetadata = getChangeMetadata( key );
+
+        if ( changeMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
+
+        try
+        {
+            pipelineService.deletePipelineRecords( changeMetadata.getMapReduceJobId(), true, false );
+        }
+        catch ( NoSuchObjectException e )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not found for key: " + changeMetadata.getMapReduceJobId(), e );
+        }
+    }
+
+    @Override
+    public void deleteExportJob( String key )
+    {
+        ExportMetadata exportMetadata = getExportMetadata( key );
+
+        if ( exportMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
+
+        try
+        {
+            pipelineService.deletePipelineRecords( exportMetadata.getMapReduceJobId(), true, false );
+        }
+        catch ( NoSuchObjectException e )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not found for key: " + exportMetadata.getMapReduceJobId(), e );
+        }
+    }
+
+    @Override
     public JobInfo getImportJobInfo( String key )
     {
         ImportMetadata importMetadata = getImportMetadata( key );
@@ -149,27 +328,43 @@ public class ChangeSetServiceBean
             throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
         }
 
-        try
-        {
-            com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = pipelineService.getJobInfo( importMetadata.getMapReduceJobId() );
-            JobInfo jobInfo = new JobInfo();
-            jobInfo.setId( key );
-            jobInfo.setMapReduceJobId( importMetadata.getMapReduceJobId() );
-            jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
-            jobInfo.setStackTrace( pipelineJobInfo.getError() );
-            jobInfo.setProcessedItems( importMetadata.getProcessedItems() );
-            jobInfo.setTotalItems( importMetadata.getItemsCount() );
+        return getJobInfoInternal(importMetadata, key);
+    }
 
-            return jobInfo;
-        }
-        catch ( NoSuchObjectException e )
+    @Override
+    public JobInfo getChangeJobInfo( String key )
+    {
+        ChangeMetadata changeMetadata = getChangeMetadata( key );
+
+        if ( changeMetadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not found for key: " + importMetadata.getMapReduceJobId(), e );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
         }
+
+        return getJobInfoInternal(changeMetadata, key);
+    }
+
+    @Override
+    public JobInfo getExportJobInfo( String key )
+    {
+        ExportMetadata exportMetadata = getExportMetadata( key );
+
+        if ( exportMetadata.getMapReduceJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+        }
+
+        return getJobInfoInternal(exportMetadata, key);
     }
 
     @Override
     public void importChangeSet( ChangeSet changeSet )
+    {
+        changeChangeSet( changeSet );
+    }
+
+    @Override
+    public void changeChangeSet( ChangeSet changeSet )
     {
         // apply model changes
         if ( changeSet.hasModel() )
@@ -253,6 +448,36 @@ public class ChangeSetServiceBean
             }
 
             pool.flush();
+        }
+    }
+
+    @Override
+    public byte[] exportChangeSet( String entity )
+    {
+        ChangeSet changeSet = dataAccess.exportChangeSet( entity );
+        return XmlUtils.marshall( changeSet ).getBytes( Charsets.UTF_8 );
+    }
+
+    // -- private helpers
+
+
+    private JobInfo getJobInfoInternal( BaseMetadata baseMetadata, String key) {
+        try
+        {
+            com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = pipelineService.getJobInfo( baseMetadata.getMapReduceJobId() );
+            JobInfo jobInfo = new JobInfo();
+            jobInfo.setId( key );
+            jobInfo.setMapReduceJobId( baseMetadata.getMapReduceJobId() );
+            jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
+            jobInfo.setStackTrace( pipelineJobInfo.getError() );
+            jobInfo.setProcessedItems( baseMetadata.getProcessedItems() );
+            jobInfo.setTotalItems( baseMetadata.getItemsCount() );
+
+            return jobInfo;
+        }
+        catch ( NoSuchObjectException e )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not found for key: " + baseMetadata.getMapReduceJobId(), e );
         }
     }
 }

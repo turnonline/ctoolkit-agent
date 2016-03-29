@@ -11,6 +11,8 @@ import com.googlecode.objectify.annotation.Entity;
 public class ExportMetadataItem
         extends BaseMetadataItem<ExportMetadata>
 {
+    private String entityToExport;
+
     public ExportMetadataItem()
     {
     }
@@ -20,9 +22,21 @@ public class ExportMetadataItem
         super( metadata );
     }
 
+    public String getEntityToExport()
+    {
+        return entityToExport;
+    }
+
+    public void setEntityToExport( String entityToExport )
+    {
+        this.entityToExport = entityToExport;
+    }
+
     @Override
     public String toString()
     {
-        return "ExportMetadataItem{} " + super.toString();
+        return "ExportMetadataItem{" +
+                "entityToExport='" + entityToExport + '\'' +
+                "} " + super.toString();
     }
 }

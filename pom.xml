@@ -146,6 +146,12 @@
             <groupId>cpsuite</groupId>
             <artifactId>cpsuite</artifactId>
         </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <scope>test</scope>
+            <version>${xmlunit.version}</version>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -157,6 +163,7 @@
         <!-- jmockit settings for OpenJDK otherwise throws 'IllegalStateException: To run on OpenJDK 64-Bit Server VM use -javaagent..' -->
         <jmockit.setting>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
         </jmockit.setting>
+        <xmlunit.version>1.6</xmlunit.version>
     </properties>
 
     <profiles>

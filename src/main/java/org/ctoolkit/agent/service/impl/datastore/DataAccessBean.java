@@ -7,6 +7,8 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Key;
 import ma.glasnost.orika.MapperFacade;
+import org.ctoolkit.agent.model.ChangeSet;
+import org.ctoolkit.agent.model.ChangeSetEntities;
 import org.ctoolkit.agent.model.ChangeSetEntity;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
@@ -57,6 +59,25 @@ public class DataAccessBean
     {
         Entity entity = mapper.map( csEntity, Entity.class );
         pool.put( entity );
+    }
+
+    @Override
+    public ChangeSet exportChangeSet( String entityName )
+    {
+        ChangeSet changeSet = new ChangeSet();
+        changeSet.setComment( "Export for entity " + entityName );
+        changeSet.setAuthor( "ctoolkit-agent" );
+        changeSet.setEntities( new ChangeSetEntities() );
+
+        Query query = new Query( entityName );
+        PreparedQuery preparedQuery = datastore.prepare( query );
+        for ( Entity entity : preparedQuery.asIterable() )
+        {
+            ChangeSetEntity changeSetEntity = mapper.map( entity, ChangeSetEntity.class );
+            changeSet.getEntities().getEntity().add( changeSetEntity );
+        }
+
+        return changeSet;
     }
 
     @Override
@@ -118,7 +139,7 @@ public class DataAccessBean
                     Object value = changeRule.getValue( entity.getProperty( property ), newType, newVal );
 
                     // remove old property if exists
-                    if (entity.getProperties().containsKey( property ))
+                    if ( entity.getProperties().containsKey( property ) )
                     {
                         entity.removeProperty( property );
                     }

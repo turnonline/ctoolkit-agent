@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.service;
 
+import org.ctoolkit.agent.model.ChangeSet;
 import org.ctoolkit.agent.model.ChangeSetEntity;
 
 /**
@@ -15,6 +16,14 @@ public interface DataAccess
      * @param entity the entity to be added
      */
     void addEntity( ChangeSetEntity entity );
+
+    /**
+     * Export {@link ChangeSet} for specified entity name
+     *
+     * @param entityName name of entity
+     * @return {@link ChangeSet}
+     */
+    ChangeSet exportChangeSet( String entityName );
 
     /**
      * Removes all entries from the entity of given kind.

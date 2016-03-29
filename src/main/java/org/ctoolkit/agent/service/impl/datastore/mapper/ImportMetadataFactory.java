@@ -2,7 +2,7 @@ package org.ctoolkit.agent.service.impl.datastore.mapper;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.ObjectFactory;
-import org.ctoolkit.agent.model.Import;
+import org.ctoolkit.agent.model.ImportBatch;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.service.DataAccess;
 
@@ -25,7 +25,7 @@ public class ImportMetadataFactory
     @Override
     public ImportMetadata create( Object o, MappingContext mappingContext )
     {
-        Import asImport = ( Import ) o;
+        ImportBatch asImport = ( ImportBatch ) o;
         if ( asImport.getKey() != null )
         {
             return dataAccess.find( ImportMetadata.class, asImport.getKey() );
