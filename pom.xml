@@ -9,7 +9,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.ctoolkit.agent</groupId>
+    <groupId>org.ctoolkit.migration</groupId>
     <artifactId>ctoolkit-agent</artifactId>
     <packaging>war</packaging>
     <version>0.2-SNAPSHOT</version>
