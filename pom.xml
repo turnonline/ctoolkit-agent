@@ -10,16 +10,21 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ctoolkit.migration</groupId>
-    <artifactId>ctoolkit-agent</artifactId>
-    <packaging>war</packaging>
+    <artifactId>ctoolkit-agent-parent</artifactId>
+    <packaging>pom</packaging>
     <version>0.2-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:[fetch=]git@github.com:turnonline/ctoolkit-agent.git</connection>
         <developerConnection>scm:git:[push=]git@github.com:turnonline/ctoolkit-agent.git</developerConnection>
         <url>https://github.com/turnonline/ctoolkit-agent</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
+
+    <modules>
+        <module>ctoolkit-agent-resources</module>
+        <module>ctoolkit-agent</module>
+    </modules>
 
     <issueManagement>
         <url>https://github.com/turnonline/ctoolkit-agent/issues</url>
@@ -42,24 +47,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>${maven-war-plugin.version}</version>
-                <configuration>
-                    <!-- Enabling this option results in of additional JAR file with classifier classes
-                     along with standard WAR file and may be used as standard dependency. -->
-                    <attachClasses>true</attachClasses>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.google.appengine</groupId>
-                <artifactId>appengine-maven-plugin</artifactId>
-                <configuration>
-                    <!--Do not store the administrator sign-in credentials.-->
-                    <noCookies>true</noCookies>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.17</version>
                 <configuration>
@@ -69,90 +56,25 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>gae-deps</artifactId>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
-        <!--  GUICE DEPENDENCIES -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-servlet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.objectify</groupId>
-            <artifactId>objectify</artifactId>
-            <version>4.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.appengine.tools</groupId>
-            <artifactId>appengine-mapreduce</artifactId>
-            <version>0.8.5</version>
-        </dependency>
-        <dependency>
-            <groupId>ma.glasnost.orika</groupId>
-            <artifactId>orika-core</artifactId>
-            <version>${orika.version}</version>
-        </dependency>
-
-        <!--  Dependencies for testing -->
-        <!-- jmockit must be before junit -->
-        <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <version>${jmockit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.comvai.test</groupId>
-            <artifactId>gae-test</artifactId>
-            <version>0.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cpsuite</groupId>
-            <artifactId>cpsuite</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>xmlunit</groupId>
-            <artifactId>xmlunit</artifactId>
-            <scope>test</scope>
-            <version>${xmlunit.version}</version>
-        </dependency>
-    </dependencies>
+    <profiles>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <properties>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
@@ -161,75 +83,10 @@
         <orika.version>1.4.6</orika.version>
         <jmockit.version>1.18</jmockit.version>
         <!-- jmockit settings for OpenJDK otherwise throws 'IllegalStateException: To run on OpenJDK 64-Bit Server VM use -javaagent..' -->
-        <jmockit.setting>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
+        <jmockit.setting>
+            -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
         </jmockit.setting>
         <xmlunit.version>1.6</xmlunit.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>google</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>${maven-war-plugin.version}</version>
-                        <configuration>
-                            <webXml>${project.build.directory}/generated-sources/appengine-endpoints/WEB-INF/web.xml
-                            </webXml>
-                            <webResources>
-                                <resource>
-                                    <!-- this is relative to the pom.xml directory -->
-                                    <directory>${project.build.directory}/generated-sources/appengine-endpoints
-                                    </directory>
-                                    <!-- the list has a default value of ** -->
-                                    <includes>
-                                        <include>WEB-INF/*.discovery</include>
-                                        <include>WEB-INF/*.api</include>
-                                    </includes>
-                                </resource>
-                            </webResources>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.google.appengine</groupId>
-                        <artifactId>appengine-maven-plugin</artifactId>
-                        <configuration>
-                            <!--Do not store the administrator sign-in credentials.-->
-                            <noCookies>true</noCookies>
-                            <enableJarClasses>false</enableJarClasses>
-                            <!-- Comment in the below snippet to bind to all IPs instead of just localhost -->
-                            <!-- address>0.0.0.0</address>
-                            <port>8080</port -->
-                            <!-- Comment in the below snippet to enable local debugging with a remove debugger
-                                 like those included with Eclipse or IntelliJ -->
-                            <!-- jvmFlags>
-                              <jvmFlag>-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n</jvmFlag>
-                            </jvmFlags -->
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>endpoints_get_client_lib</goal>
-                                    <goal>endpoints_get_discovery_doc</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>com.google.appengine</groupId>
-                    <artifactId>appengine-endpoints</artifactId>
-                    <version>${gae.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
 </project>
