@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Key;
 import ma.glasnost.orika.MapperFacade;
+import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.ChangeRuleEngine;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.IChangeRule;
@@ -211,6 +212,21 @@ public class DataAccessBean
     public <T> T find( Class<T> entity, String key )
     {
         return ( T ) ofy().load().key( Key.create( key ) ).now();
+    }
+
+    @Override
+    public <T> List<T> find( Class<T> type, Filter filter )
+    {
+        com.googlecode.objectify.cmd.Query<T> query = ofy().load().type( type )
+                .limit( filter.getLength() )
+                .offset( filter.getStart() );
+
+        if ( filter.getOrderBy() != null )
+        {
+            query = filter.isAscending() ? query.order( filter.getOrderBy() ) : query.order( "-" + filter.getOrderBy() );
+        }
+
+        return query.list();
     }
 
     @Override

@@ -14,6 +14,8 @@ public class ImportBatch
 {
     private String key;
 
+    private String name;
+
     private String mapReduceJobId;
 
     private Date createDate;
@@ -26,6 +28,8 @@ public class ImportBatch
             implements ISetItem
     {
         private String key;
+
+        private String name;
 
         private byte[] xml;
 
@@ -41,6 +45,16 @@ public class ImportBatch
         public void setKey( String key )
         {
             this.key = key;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public void setName( String name )
+        {
+            this.name = name;
         }
 
         public byte[] getXml()
@@ -78,6 +92,7 @@ public class ImportBatch
         {
             return "Item{" +
                     "key='" + key + '\'' +
+                    ", name=" + name +
                     ", xml.length=" + (xml != null ? xml.length : null) +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
@@ -93,6 +108,17 @@ public class ImportBatch
     public void setKey( String key )
     {
         this.key = key;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public void setName( String name )
+    {
+        this.name = name;
     }
 
     public String getMapReduceJobId()
@@ -140,6 +166,7 @@ public class ImportBatch
     {
         return "Import{" +
                 "key='" + key + '\'' +
+                ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +

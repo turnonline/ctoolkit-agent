@@ -3,17 +3,26 @@ package org.ctoolkit.migration.agent.rest;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiReference;
+import com.google.api.server.spi.config.DefaultValue;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.model.ChangeBatch;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
+import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
+import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Endpoint for DB change
@@ -35,6 +44,8 @@ public class ChangeEndpoint
         this.service = service;
         this.mapper = mapper;
     }
+
+    // -- change CRUD
 
     @ApiMethod( name = "change.create", path = "change", httpMethod = ApiMethod.HttpMethod.POST )
     public ChangeBatch createChange( ChangeBatch changeBatch, User authUser )
@@ -81,6 +92,84 @@ public class ChangeEndpoint
         ChangeMetadata changeMetadataBe = service.getChangeMetadata( id );
         return mapper.map( changeMetadataBe, ChangeBatch.class );
     }
+
+    @ApiMethod( name = "change.list", path = "change", httpMethod = ApiMethod.HttpMethod.GET )
+    public List<ChangeBatch> listChange( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
+                                         @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
+                                         @Nullable @Named( "orderBy" ) String orderBy,
+                                         @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
+                                         User authUser ) throws Exception
+    {
+        Filter filter = new Filter.Builder<>()
+                .start( start )
+                .length( length )
+                .orderBy( orderBy )
+                .ascending( ascending )
+                .build();
+
+        List<ChangeMetadata> changeMetadataListBe = service.getChangeMetadataList( filter );
+        List<ChangeBatch> changeBatchList = new ArrayList<>();
+        for ( ChangeMetadata changeMetadataBe : changeMetadataListBe )
+        {
+            changeBatchList.add( mapper.map( changeMetadataBe, ChangeBatch.class ) );
+        }
+
+        return changeBatchList;
+    }
+
+    // -- change item CRUD
+
+    @ApiMethod( name = "change.item.create", path = "change/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
+    public ChangeBatch.ChangeItem createChangeItem( @Named( "metadataId" ) String metadataId, ChangeBatch.ChangeItem changeBatchItem, User authUser )
+    {
+        Map<Object, Object> props = new HashMap<>();
+        props.put( "metadataId", metadataId );
+        MappingContext ctx = new MappingContext( props );
+
+        ChangeMetadataItem changeMetadataItem = mapper.map( changeBatchItem, ChangeMetadataItem.class, ctx );
+        ChangeMetadataItem changeMetadataItemBe = service.createChangeMetadataItem( changeMetadataItem );
+
+        return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
+    }
+
+    @ApiMethod( name = "change.item.update", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
+    public ChangeBatch.ChangeItem updateChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ChangeBatch.ChangeItem changeBatchItem, User authUser ) throws Exception
+    {
+        if ( service.getChangeMetadataItem( id ) == null )
+        {
+            throw new NotFoundException( "Change item not found for id: " + id );
+        }
+
+        ChangeMetadataItem changeMetadataItem = mapper.map( changeBatchItem, ChangeMetadataItem.class );
+        ChangeMetadataItem changeMetadataItemBe = service.updateChangeMetadataItem( changeMetadataItem );
+
+        return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
+    }
+
+    @ApiMethod( name = "change.item.delete", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
+    public void deleteChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    {
+        if ( service.getChangeMetadataItem( id ) == null )
+        {
+            throw new NotFoundException( "Change item not found for id: " + id );
+        }
+
+        service.deleteChangeMetadataItem( id );
+    }
+
+    @ApiMethod( name = "change.item.get", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
+    public ChangeBatch.ChangeItem getChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    {
+        if ( service.getChangeMetadataItem( id ) == null )
+        {
+            throw new NotFoundException( "Change item not found for id: " + id );
+        }
+
+        ChangeMetadataItem changeMetadataItemBe = service.getChangeMetadataItem( id );
+        return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
+    }
+
+    // -- job CRUD
 
     @ApiMethod( name = "change.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public JobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception

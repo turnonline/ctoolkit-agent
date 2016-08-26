@@ -14,6 +14,8 @@ public class ChangeBatch
 {
     private String key;
 
+    private String name;
+
     private String mapReduceJobId;
 
     private Date createDate;
@@ -26,6 +28,8 @@ public class ChangeBatch
             implements ISetItem
     {
         private String key;
+
+        private String name;
 
         private byte[] xml;
 
@@ -41,6 +45,18 @@ public class ChangeBatch
         public void setKey( String key )
         {
             this.key = key;
+        }
+
+        @Override
+        public String getName()
+        {
+            return name;
+        }
+
+        @Override
+        public void setName( String name )
+        {
+            this.name = name;
         }
 
         public byte[] getXml()
@@ -78,6 +94,7 @@ public class ChangeBatch
         {
             return "Item{" +
                     "key='" + key + '\'' +
+                    ", name=" + name +
                     ", xml.length=" + (xml != null ? xml.length : null) +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
@@ -93,6 +110,18 @@ public class ChangeBatch
     public void setKey( String key )
     {
         this.key = key;
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public void setName( String name )
+    {
+        this.name = name;
     }
 
     public String getMapReduceJobId()
@@ -140,6 +169,7 @@ public class ChangeBatch
     {
         return "Change{" +
                 "key='" + key + '\'' +
+                ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +

@@ -10,6 +10,10 @@ public interface ISet
 {
     void setKey(String key);
 
+    void setName(String name);
+
+    String getName();
+
     void setMapReduceJobId(String mapReduceJobId);
 
     void setCreateDate(Date createDate);

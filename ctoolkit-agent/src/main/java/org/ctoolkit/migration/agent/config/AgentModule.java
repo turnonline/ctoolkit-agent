@@ -38,13 +38,17 @@ import org.ctoolkit.migration.agent.service.impl.datastore.ImportJobMapSpecifica
 import org.ctoolkit.migration.agent.service.impl.datastore.ImportMapOnlyMapperJob;
 import org.ctoolkit.migration.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.MapSpecificationProvider;
+import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeItemToChangeMetadataItemMapper;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeMetadataFactory;
+import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeMetadataItemFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityMapper;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeToChangeMetadataMapper;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.EntityFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ExportMetadataFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ExportToExportMetadataMapper;
+import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ImportItemToImportMetadataItemMapper;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ImportMetadataFactory;
+import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ImportMetadataItemFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ImportToImportMetadataMapper;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.ChangeRuleEngine;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewNameChangeRule;
@@ -132,11 +136,18 @@ public class AgentModule
                                              ImportToImportMetadataMapper importToImportMetadataMapper,
                                              ExportToExportMetadataMapper exportToExportMetadataMapper,
                                              ChangeToChangeMetadataMapper changeToChangeMetadataMapper,
+
+                                             ImportItemToImportMetadataItemMapper importItemToImportMetadataItemMapper,
+                                             ChangeItemToChangeMetadataItemMapper changeItemToChangeMetadataItemMapper,
+
                                              // factories
                                              EntityFactory entityFactory,
                                              ImportMetadataFactory importMetadataFactory,
                                              ExportMetadataFactory exportMetadataFactory,
-                                             ChangeMetadataFactory changeMetadataFactory )
+                                             ChangeMetadataFactory changeMetadataFactory,
+
+                                             ImportMetadataItemFactory importMetadataItemFactory,
+                                             ChangeMetadataItemFactory changeMetadataItemFactory )
     {
         // register custom mappers
         factory.registerMapper( changeSetEntityToEntityMapper );
@@ -144,11 +155,17 @@ public class AgentModule
         factory.registerMapper( exportToExportMetadataMapper );
         factory.registerMapper( changeToChangeMetadataMapper );
 
+        factory.registerMapper( importItemToImportMetadataItemMapper );
+        factory.registerMapper( changeItemToChangeMetadataItemMapper );
+
         // register factories
         factory.registerObjectFactory( entityFactory, TypeFactory.valueOf( Entity.class ) );
         factory.registerObjectFactory( importMetadataFactory, TypeFactory.valueOf( ImportMetadata.class ) );
         factory.registerObjectFactory( exportMetadataFactory, TypeFactory.valueOf( ExportMetadata.class ) );
         factory.registerObjectFactory( changeMetadataFactory, TypeFactory.valueOf( ChangeMetadata.class ) );
+
+        factory.registerObjectFactory( importMetadataItemFactory, TypeFactory.valueOf( ImportMetadataItem.class ) );
+        factory.registerObjectFactory( changeMetadataItemFactory, TypeFactory.valueOf( ChangeMetadataItem.class ) );
 
         return factory.getMapperFacade();
     }

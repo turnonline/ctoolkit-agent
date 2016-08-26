@@ -14,6 +14,8 @@ public class ExportBatch
 {
     private String key;
 
+    private String name;
+
     private String mapReduceJobId;
 
     private Date createDate;
@@ -26,6 +28,8 @@ public class ExportBatch
             implements ISetItem
     {
         private String key;
+
+        private String name;
 
         private byte[] xml;
 
@@ -43,6 +47,18 @@ public class ExportBatch
         public void setKey( String key )
         {
             this.key = key;
+        }
+
+        @Override
+        public String getName()
+        {
+            return name;
+        }
+
+        @Override
+        public void setName( String name )
+        {
+            this.name = name;
         }
 
         public byte[] getXml()
@@ -90,6 +106,7 @@ public class ExportBatch
         {
             return "Item{" +
                     "key='" + key + '\'' +
+                    ", name=" + name +
                     ", xml.length=" + (xml != null ? xml.length : null) +
                     ", entityToExport='" + entityToExport + '\'' +
                     ", createDate=" + createDate +
@@ -106,6 +123,18 @@ public class ExportBatch
     public void setKey( String key )
     {
         this.key = key;
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public void setName( String name )
+    {
+        this.name = name;
     }
 
     public String getMapReduceJobId()
@@ -153,6 +182,7 @@ public class ExportBatch
     {
         return "Export{" +
                 "key='" + key + '\'' +
+                ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +

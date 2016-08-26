@@ -3,17 +3,22 @@ package org.ctoolkit.migration.agent.rest;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiReference;
+import com.google.api.server.spi.config.DefaultValue;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.model.ExportBatch;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
+import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Endpoint for DB export
@@ -35,6 +40,8 @@ public class ExportEndpoint
         this.service = service;
         this.mapper = mapper;
     }
+
+    // -- export CRUD
 
     @ApiMethod( name = "export.create", path = "export", httpMethod = ApiMethod.HttpMethod.POST )
     public ExportBatch createExport( ExportBatch exportBatch, User authUser )
@@ -81,6 +88,32 @@ public class ExportEndpoint
         ExportMetadata exportMetadataBe = service.getExportMetadata( id );
         return mapper.map( exportMetadataBe, ExportBatch.class );
     }
+
+    @ApiMethod( name = "export.list", path = "export", httpMethod = ApiMethod.HttpMethod.GET )
+    public List<ExportBatch> listImport( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
+                                         @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
+                                         @Nullable @Named( "orderBy" ) String orderBy,
+                                         @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
+                                         User authUser ) throws Exception
+    {
+        Filter filter = new Filter.Builder<>()
+                .start( start )
+                .length( length )
+                .orderBy( orderBy )
+                .ascending( ascending )
+                .build();
+
+        List<ExportMetadata> exportMetadataListBe = service.getExportMetadataList( filter );
+        List<ExportBatch> exportBatchList = new ArrayList<>();
+        for ( ExportMetadata exportMetadataBe : exportMetadataListBe )
+        {
+            exportBatchList.add( mapper.map( exportMetadataBe, ExportBatch.class ) );
+        }
+
+        return exportBatchList;
+    }
+
+    // -- job CRUD
 
     @ApiMethod( name = "export.job.start", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public JobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception

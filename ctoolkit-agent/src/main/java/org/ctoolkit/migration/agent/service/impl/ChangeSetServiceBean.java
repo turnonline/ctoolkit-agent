@@ -9,8 +9,11 @@ import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
+import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
+import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
+import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
@@ -24,6 +27,7 @@ import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindPropOp;
 import org.ctoolkit.migration.agent.util.XmlUtils;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Implementation of {@link ChangeSetService}
@@ -65,10 +69,30 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    public ImportMetadataItem createImportMetadataItem( ImportMetadataItem importMetadataItem )
+    {
+        ImportMetadata importMetadata = importMetadataItem.getMetadata();
+        importMetadata.getItems().add( importMetadataItem );
+        importMetadata.save();
+
+        return importMetadataItem;
+    }
+
+    @Override
     public ChangeMetadata createChangeMetadata( ChangeMetadata changeMetadata )
     {
         changeMetadata.save();
         return changeMetadata;
+    }
+
+    @Override
+    public ChangeMetadataItem createChangeMetadataItem( ChangeMetadataItem changeMetadataItem )
+    {
+        ChangeMetadata changeMetadata = changeMetadataItem.getMetadata();
+        changeMetadata.getItems().add( changeMetadataItem );
+        changeMetadata.save();
+
+        return changeMetadataItem;
     }
 
     @Override
@@ -86,10 +110,22 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    public ImportMetadataItem updateImportMetadataItem( ImportMetadataItem importMetadataItem )
+    {
+        return dataAccess.update( importMetadataItem );
+    }
+
+    @Override
     public ChangeMetadata updateChangeMetadata( ChangeMetadata changeMetadata )
     {
         changeMetadata.save();
         return changeMetadata;
+    }
+
+    @Override
+    public ChangeMetadataItem updateChangeMetadataItem( ChangeMetadataItem changeMetadataItem )
+    {
+        return dataAccess.update( changeMetadataItem );
     }
 
     @Override
@@ -106,9 +142,21 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    public ImportMetadataItem getImportMetadataItem( String key )
+    {
+        return dataAccess.find( ImportMetadataItem.class, key );
+    }
+
+    @Override
     public ChangeMetadata getChangeMetadata( String key )
     {
         return dataAccess.find( ChangeMetadata.class, key );
+    }
+
+    @Override
+    public ChangeMetadataItem getChangeMetadataItem( String key )
+    {
+        return dataAccess.find( ChangeMetadataItem.class, key );
     }
 
     @Override
@@ -118,15 +166,51 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    public List<ImportMetadata> getImportMetadataList( Filter filter )
+    {
+        return dataAccess.find( ImportMetadata.class, filter );
+    }
+
+    @Override
+    public List<ChangeMetadata> getChangeMetadataList( Filter filter )
+    {
+        return dataAccess.find( ChangeMetadata.class, filter );
+    }
+
+    @Override
+    public List<ExportMetadata> getExportMetadataList( Filter filter )
+    {
+        return dataAccess.find( ExportMetadata.class, filter );
+    }
+
+    @Override
     public void deleteImportMetadata( String key )
     {
         dataAccess.delete( ImportMetadata.class, key );
     }
 
     @Override
+    public void deleteImportMetadataItem( String key )
+    {
+        ImportMetadataItem importMetadataItem = dataAccess.find( ImportMetadataItem.class, key );
+        ImportMetadata importMetadata = importMetadataItem.getMetadata();
+        importMetadata.getItems().remove( importMetadataItem );
+        importMetadata.save();
+    }
+
+    @Override
     public void deleteChangeMetadata( String key )
     {
         dataAccess.delete( ChangeMetadata.class, key );
+    }
+
+    @Override
+    public void deleteChangeMetadataItem( String key )
+    {
+        ChangeMetadataItem changeMetadataItem = dataAccess.find( ChangeMetadataItem.class, key );
+        ChangeMetadata changeMetadata = changeMetadataItem.getMetadata();
+        changeMetadata.getItems().remove( changeMetadataItem );
+        changeMetadata.save();
     }
 
     @Override

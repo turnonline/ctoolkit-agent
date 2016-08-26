@@ -22,6 +22,8 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     @Ignore
     private PARENT metadata;
 
+    private String name;
+
     private byte[] xml;
 
     private JobState state;
@@ -42,6 +44,16 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
             metadata = metadataRef.get();
         }
         return metadata;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
     }
 
     public byte[] getXml()
@@ -79,6 +91,7 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     {
         return "MetadataItem{" +
                 "xml.length=" + (xml != null ? xml.length : null) +
+                ", name=" + name +
                 ", state=" + state +
                 "} " + super.toString();
     }

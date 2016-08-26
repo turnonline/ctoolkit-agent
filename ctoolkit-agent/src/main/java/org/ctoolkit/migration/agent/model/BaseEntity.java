@@ -1,5 +1,6 @@
 package org.ctoolkit.migration.agent.model;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.OnSave;
 
@@ -86,6 +87,21 @@ public class BaseEntity
     public int hashCode()
     {
         return id != null ? id.hashCode() : 0;
+    }
+
+    /**
+     * Returns the unique string identification unique across all entities.
+     *
+     * @return the unique string identification
+     */
+    public String getKey()
+    {
+        if ( id == null )
+        {
+            return null;
+        }
+
+        return Key.create( this ).getString();
     }
 
     /**

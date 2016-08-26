@@ -15,6 +15,10 @@ public interface ISetItem
 
     String getKey();
 
+    void setName(String name);
+
+    String getName();
+
     void setCreateDate(Date createDate);
 
     void setUpdateDate(Date updateDate);

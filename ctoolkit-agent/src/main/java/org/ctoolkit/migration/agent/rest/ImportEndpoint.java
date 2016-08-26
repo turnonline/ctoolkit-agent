@@ -3,17 +3,26 @@ package org.ctoolkit.migration.agent.rest;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiReference;
+import com.google.api.server.spi.config.DefaultValue;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
+import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.ImportBatch;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
+import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Endpoint for DB import
@@ -35,6 +44,8 @@ public class ImportEndpoint
         this.service = service;
         this.mapper = mapper;
     }
+
+    // -- import CRUD
 
     @ApiMethod( name = "import.create", path = "import", httpMethod = ApiMethod.HttpMethod.POST )
     public ImportBatch createImport( ImportBatch importBatch, User authUser )
@@ -81,6 +92,84 @@ public class ImportEndpoint
         ImportMetadata importMetadataBe = service.getImportMetadata( id );
         return mapper.map( importMetadataBe, ImportBatch.class );
     }
+
+    @ApiMethod( name = "import.list", path = "import", httpMethod = ApiMethod.HttpMethod.GET )
+    public List<ImportBatch> listImport( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
+                                         @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
+                                         @Nullable @Named( "orderBy" ) String orderBy,
+                                         @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
+                                         User authUser ) throws Exception
+    {
+        Filter filter = new Filter.Builder<>()
+                .start( start )
+                .length( length )
+                .orderBy( orderBy )
+                .ascending( ascending )
+                .build();
+
+        List<ImportMetadata> importMetadataListBe = service.getImportMetadataList( filter );
+        List<ImportBatch> importBatchList = new ArrayList<>();
+        for ( ImportMetadata importMetadataBe : importMetadataListBe )
+        {
+            importBatchList.add( mapper.map( importMetadataBe, ImportBatch.class ) );
+        }
+
+        return importBatchList;
+    }
+
+    // -- import item CRUD
+
+    @ApiMethod( name = "import.item.create", path = "import/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
+    public ImportBatch.ImportItem createImportItem( @Named( "metadataId" ) String metadataId, ImportBatch.ImportItem importBatchItem, User authUser )
+    {
+        Map<Object, Object> props = new HashMap<>();
+        props.put( "metadataId", metadataId );
+        MappingContext ctx = new MappingContext( props );
+
+        ImportMetadataItem importMetadataItem = mapper.map( importBatchItem, ImportMetadataItem.class, ctx );
+        ImportMetadataItem importMetadataItemBe = service.createImportMetadataItem( importMetadataItem );
+
+        return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
+    }
+
+    @ApiMethod( name = "import.item.update", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
+    public ImportBatch.ImportItem updateImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ImportBatch.ImportItem importBatchItem, User authUser ) throws Exception
+    {
+        if ( service.getImportMetadataItem( id ) == null )
+        {
+            throw new NotFoundException( "Import item not found for id: " + id );
+        }
+
+        ImportMetadataItem importMetadataItem = mapper.map( importBatchItem, ImportMetadataItem.class );
+        ImportMetadataItem importMetadataItemBe = service.updateImportMetadataItem( importMetadataItem );
+
+        return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
+    }
+
+    @ApiMethod( name = "import.item.delete", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
+    public void deleteImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    {
+        if ( service.getImportMetadataItem( id ) == null )
+        {
+            throw new NotFoundException( "Import item not found for id: " + id );
+        }
+
+        service.deleteImportMetadataItem( id );
+    }
+
+    @ApiMethod( name = "import.item.get", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
+    public ImportBatch.ImportItem getImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    {
+        if ( service.getImportMetadataItem( id ) == null )
+        {
+            throw new NotFoundException( "Import item not found for id: " + id );
+        }
+
+        ImportMetadataItem importMetadataItemBe = service.getImportMetadataItem( id );
+        return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
+    }
+
+    // -- job CRUD
 
     @ApiMethod( name = "import.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public JobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception

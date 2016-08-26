@@ -1,10 +1,15 @@
 package org.ctoolkit.migration.agent.service;
 
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
+import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
+import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
+import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
+
+import java.util.List;
 
 /**
  * ChangeSet service API
@@ -22,12 +27,28 @@ public interface ChangeSetService
     ImportMetadata createImportMetadata( ImportMetadata importMetadata );
 
     /**
+     * Create new {@link ImportMetadataItem}
+     *
+     * @param importMetadataItem {@link ImportMetadataItem}
+     * @return persisted {@link ImportMetadataItem}
+     */
+    ImportMetadataItem createImportMetadataItem( ImportMetadataItem importMetadataItem );
+
+    /**
      * Create new {@link ChangeMetadata}
      *
      * @param changeMetadata {@link ChangeMetadata}
      * @return persisted {@link ChangeMetadata}
      */
     ChangeMetadata createChangeMetadata( ChangeMetadata changeMetadata );
+
+    /**
+     * Create new {@link ChangeMetadataItem}
+     *
+     * @param changeMetadataItem {@link ChangeMetadataItem}
+     * @return persisted {@link ChangeMetadataItem}
+     */
+    ChangeMetadataItem createChangeMetadataItem( ChangeMetadataItem changeMetadataItem );
 
     /**
      * Create new {@link ExportMetadata}
@@ -46,12 +67,28 @@ public interface ChangeSetService
     ImportMetadata updateImportMetadata( ImportMetadata importMetadata );
 
     /**
+     * Update existing {@link ImportMetadataItem}
+     *
+     * @param importMetadataItem {@link ImportMetadataItem}
+     * @return updated {@link ImportMetadataItem}
+     */
+    ImportMetadataItem updateImportMetadataItem( ImportMetadataItem importMetadataItem );
+
+    /**
      * Update existing {@link ChangeMetadata}
      *
      * @param changeMetadata {@link ChangeMetadata}
      * @return updated {@link ChangeMetadata}
      */
     ChangeMetadata updateChangeMetadata( ChangeMetadata changeMetadata );
+
+    /**
+     * Update existing {@link ChangeMetadataItem}
+     *
+     * @param changeMetadataItem {@link ChangeMetadataItem}
+     * @return updated {@link ChangeMetadataItem}
+     */
+    ChangeMetadataItem updateChangeMetadataItem( ChangeMetadataItem changeMetadataItem );
 
     /**
      * Update existing {@link ExportMetadata}
@@ -70,12 +107,28 @@ public interface ChangeSetService
     ImportMetadata getImportMetadata( String key );
 
     /**
+     * Get {@link ImportMetadataItem} for specified key
+     *
+     * @param key key of {@link ImportMetadataItem}
+     * @return {@link ImportMetadataItem}
+     */
+    ImportMetadataItem getImportMetadataItem( String key );
+
+    /**
      * Get {@link ChangeMetadata} for specified key
      *
      * @param key key of {@link ChangeMetadata}
      * @return {@link ChangeMetadata}
      */
     ChangeMetadata getChangeMetadata( String key );
+
+    /**
+     * Get {@link ChangeMetadataItem} for specified key
+     *
+     * @param key key of {@link ChangeMetadataItem}
+     * @return {@link ChangeMetadataItem}
+     */
+    ChangeMetadataItem getChangeMetadataItem( String key );
 
     /**
      * Get {@link ExportMetadata} for specified key
@@ -86,6 +139,30 @@ public interface ChangeSetService
     ExportMetadata getExportMetadata( String key );
 
     /**
+     * Get list of {@link ImportMetadata}
+     *
+     * @param filter of {@link Filter}
+     * @return list {@link ImportMetadata}
+     */
+    List<ImportMetadata> getImportMetadataList( Filter filter );
+
+    /**
+     * Get list of {@link ChangeMetadata}
+     *
+     * @param filter of {@link Filter}
+     * @return list {@link ChangeMetadata}
+     */
+    List<ChangeMetadata> getChangeMetadataList( Filter filter );
+
+    /**
+     * Get list of {@link ExportMetadata}
+     *
+     * @param filter of {@link Filter}
+     * @return list {@link ExportMetadata}
+     */
+    List<ExportMetadata> getExportMetadataList( Filter filter );
+
+    /**
      * Delete {@link ImportMetadata} for specified key
      *
      * @param key key of {@link ImportMetadata}
@@ -93,11 +170,25 @@ public interface ChangeSetService
     void deleteImportMetadata( String key );
 
     /**
+     * Delete {@link ImportMetadataItem} for specified key
+     *
+     * @param key key of {@link ImportMetadataItem}
+     */
+    void deleteImportMetadataItem( String key );
+
+    /**
      * Delete {@link ChangeMetadata} for specified key
      *
      * @param key key of {@link ChangeMetadata}
      */
     void deleteChangeMetadata( String key );
+
+    /**
+     * Delete {@link ChangeMetadataItem} for specified key
+     *
+     * @param key key of {@link ChangeMetadataItem}
+     */
+    void deleteChangeMetadataItem( String key );
 
     /**
      * Delete {@link ExportMetadata} for specified key

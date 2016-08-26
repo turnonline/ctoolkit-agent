@@ -1,7 +1,10 @@
 package org.ctoolkit.migration.agent.service;
 
+import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
+
+import java.util.List;
 
 /**
  * The datastore interface as an abstraction over potential many underlying datastores.
@@ -95,6 +98,16 @@ public interface DataAccess
      * @return entity
      */
     <T> T find( Class<T> type, String key );
+
+    /**
+     * Get entities by specified filter
+     *
+     * @param type class type
+     * @param filter filter for list
+     * @param <T>  entity type
+     * @return entity
+     */
+    <T> List<T> find( Class<T> type, Filter filter);
 
     /**
      * Delete entity

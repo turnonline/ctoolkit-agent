@@ -3,6 +3,7 @@ package org.ctoolkit.migration.agent.model;
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Ignore;
+import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
 
 import java.util.ArrayList;
@@ -21,6 +22,9 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 {
     private String mapReduceJobId;
 
+    @Index
+    private String name;
+
     private List<Ref<ITEM>> itemsRef = new ArrayList<>();
 
     @Ignore
@@ -28,6 +32,16 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     @Ignore
     private boolean itemsLoaded;
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
 
     public String getMapReduceJobId()
     {
@@ -135,6 +149,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
             if ( !items.contains( originItem.get() ) )
             {
                 iterator.remove();
+                ofy().delete().key( originItem.getKey() ).now();
             }
         }
 
@@ -157,6 +172,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     {
         return "Metadata{" +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", name='" + name + '\'' +
                 "} " + super.toString();
     }
 }

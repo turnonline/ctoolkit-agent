@@ -11,7 +11,7 @@ import org.ctoolkit.migration.agent.model.ISet;
 import org.ctoolkit.migration.agent.model.ISetItem;
 
 /**
- * Mapper for frontend to backend model beans
+ * Mapper for frontend to backend metadata model beans
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
@@ -22,10 +22,13 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
     @SuppressWarnings( "unchecked" )
     public void mapAtoB( F set, B metadata, MappingContext context )
     {
+        metadata.setName( set.getName() );
+
         for ( ISetItem anItem : set.getItems() )
         {
             BI item = metadata.getItemByIdOrCreateNewOne( getMetadataItemId( anItem ) );
             item.setXml( anItem.getXml() );
+            item.setName( anItem.getName() );
 
             extraMapAItemToBItem( ( FI ) anItem, item );
         }
@@ -35,6 +38,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
     public void mapBtoA( B metadata, F set, MappingContext context )
     {
         set.setKey( createMetadataKey( metadata ) );
+        set.setName( metadata.getName() );
         set.setMapReduceJobId( metadata.getMapReduceJobId() );
         set.setCreateDate( metadata.getCreateDate() );
         set.setUpdateDate( metadata.getUpdateDate() );
@@ -43,7 +47,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
         {
             FI anItem = newItem();
             anItem.setKey( createMetadataItemKey( metadata, item ) );
-            anItem.setXml( item.getXml() );
+            anItem.setName( item.getName() );
             anItem.setCreateDate( item.getCreateDate() );
             anItem.setUpdateDate( item.getUpdateDate() );
 
