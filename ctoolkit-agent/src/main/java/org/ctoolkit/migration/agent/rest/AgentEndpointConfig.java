@@ -14,7 +14,7 @@ import com.google.api.server.spi.config.ApiNamespace;
         version = "v1",
         description = "REST API for cloud datastore data migration management.",
         documentationLink = "https://c-toolkit.appspot.com/docs",
-        namespace = @ApiNamespace( ownerDomain = "ctoolkit.org", ownerName = "Comvai, s.r.o." )
+        namespace = @ApiNamespace( ownerDomain = "api.ctoolkit.org", ownerName = "Comvai, s.r.o." )
 )
 public class AgentEndpointConfig
 {
