@@ -1,9 +1,12 @@
 package org.ctoolkit.migration.agent.service;
 
+import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
+import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.Filter;
+import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
@@ -266,7 +269,7 @@ public interface ChangeSetService
      * @param key key of {@link ImportMetadata}
      * @return {@link JobInfo}
      */
-    JobInfo getImportJobInfo( String key );
+    ImportJobInfo getImportJobInfo( String key );
 
     /**
      * Return map reduce job info
@@ -274,7 +277,7 @@ public interface ChangeSetService
      * @param key key of {@link ChangeMetadata}
      * @return {@link JobInfo}
      */
-    JobInfo getChangeJobInfo( String key );
+    ChangeJobInfo getChangeJobInfo( String key );
 
     /**
      * Return map reduce job info
@@ -282,7 +285,7 @@ public interface ChangeSetService
      * @param key key of {@link ExportMetadata}
      * @return {@link JobInfo}
      */
-    JobInfo getExportJobInfo( String key );
+    ExportJobInfo getExportJobInfo( String key );
 
     /**
      * Process import data change set

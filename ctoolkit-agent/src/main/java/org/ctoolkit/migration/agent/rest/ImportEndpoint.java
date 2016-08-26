@@ -13,9 +13,9 @@ import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.ImportBatch;
+import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
-import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -47,8 +47,8 @@ public class ImportEndpoint
 
     // -- import CRUD
 
-    @ApiMethod( name = "import.create", path = "import", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportBatch createImport( ImportBatch importBatch, User authUser )
+    @ApiMethod( name = "import.insert", path = "import", httpMethod = ApiMethod.HttpMethod.POST )
+    public ImportBatch insertImport( ImportBatch importBatch, User authUser )
     {
         ImportMetadata importMetadata = mapper.map( importBatch, ImportMetadata.class );
         ImportMetadata importMetadataBe = service.createImportMetadata( importMetadata );
@@ -119,8 +119,8 @@ public class ImportEndpoint
 
     // -- import item CRUD
 
-    @ApiMethod( name = "import.item.create", path = "import/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportBatch.ImportItem createImportItem( @Named( "metadataId" ) String metadataId, ImportBatch.ImportItem importBatchItem, User authUser )
+    @ApiMethod( name = "import.item.insert", path = "import/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
+    public ImportBatch.ImportItem insertImportItem( @Named( "metadataId" ) String metadataId, ImportBatch.ImportItem importBatchItem, User authUser )
     {
         Map<Object, Object> props = new HashMap<>();
         props.put( "metadataId", metadataId );
@@ -172,7 +172,7 @@ public class ImportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "import.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public JobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
         {
@@ -191,7 +191,7 @@ public class ImportEndpoint
     }
 
     @ApiMethod( name = "import.job.cancel", path = "import/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
-    public JobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
         {
@@ -228,7 +228,7 @@ public class ImportEndpoint
     }
 
     @ApiMethod( name = "import.job.progress", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public JobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
         {

@@ -12,10 +12,10 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.model.ChangeBatch;
+import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.model.Filter;
-import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -47,8 +47,8 @@ public class ChangeEndpoint
 
     // -- change CRUD
 
-    @ApiMethod( name = "change.create", path = "change", httpMethod = ApiMethod.HttpMethod.POST )
-    public ChangeBatch createChange( ChangeBatch changeBatch, User authUser )
+    @ApiMethod( name = "change.insert", path = "change", httpMethod = ApiMethod.HttpMethod.POST )
+    public ChangeBatch insertChange( ChangeBatch changeBatch, User authUser )
     {
         ChangeMetadata changeMetadata = mapper.map( changeBatch, ChangeMetadata.class );
         ChangeMetadata changeMetadataBe = service.createChangeMetadata( changeMetadata );
@@ -119,8 +119,8 @@ public class ChangeEndpoint
 
     // -- change item CRUD
 
-    @ApiMethod( name = "change.item.create", path = "change/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
-    public ChangeBatch.ChangeItem createChangeItem( @Named( "metadataId" ) String metadataId, ChangeBatch.ChangeItem changeBatchItem, User authUser )
+    @ApiMethod( name = "change.item.insert", path = "change/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
+    public ChangeBatch.ChangeItem insertChangeItem( @Named( "metadataId" ) String metadataId, ChangeBatch.ChangeItem changeBatchItem, User authUser )
     {
         Map<Object, Object> props = new HashMap<>();
         props.put( "metadataId", metadataId );
@@ -172,7 +172,7 @@ public class ChangeEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "change.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public JobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ChangeJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
         {
@@ -191,7 +191,7 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "change.job.cancel", path = "change/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
-    public JobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ChangeJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
         {
@@ -228,7 +228,7 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "change.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public JobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ChangeJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
         {

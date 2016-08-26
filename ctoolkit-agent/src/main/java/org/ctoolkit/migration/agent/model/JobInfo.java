@@ -1,11 +1,11 @@
 package org.ctoolkit.migration.agent.model;
 
 /**
- * Progress info
+ * Job info
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class JobInfo
+public abstract class JobInfo
 {
     private String id;
 

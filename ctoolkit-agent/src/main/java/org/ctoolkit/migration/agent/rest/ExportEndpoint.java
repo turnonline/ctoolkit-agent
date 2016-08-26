@@ -11,9 +11,9 @@ import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.model.ExportBatch;
+import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.Filter;
-import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -43,8 +43,8 @@ public class ExportEndpoint
 
     // -- export CRUD
 
-    @ApiMethod( name = "export.create", path = "export", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportBatch createExport( ExportBatch exportBatch, User authUser )
+    @ApiMethod( name = "export.insert", path = "export", httpMethod = ApiMethod.HttpMethod.POST )
+    public ExportBatch insertExport( ExportBatch exportBatch, User authUser )
     {
         ExportMetadata exportMetadata = mapper.map( exportBatch, ExportMetadata.class );
         ExportMetadata exportMetadataBe = service.createExportMetadata( exportMetadata );
@@ -116,7 +116,7 @@ public class ExportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "export.job.start", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public JobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ExportJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getExportMetadata( id ) == null )
         {
@@ -135,7 +135,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "export.job.cancel", path = "export/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
-    public JobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ExportJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getExportMetadata( id ) == null )
         {
@@ -172,7 +172,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "export.job.progress", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public JobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ExportJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getExportMetadata( id ) == null )
         {

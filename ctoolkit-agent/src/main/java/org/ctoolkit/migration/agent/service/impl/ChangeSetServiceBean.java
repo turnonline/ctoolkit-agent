@@ -8,10 +8,13 @@ import com.google.common.base.Charsets;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
+import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
+import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.Filter;
+import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
@@ -403,7 +406,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public JobInfo getImportJobInfo( String key )
+    public ImportJobInfo getImportJobInfo( String key )
     {
         ImportMetadata importMetadata = getImportMetadata( key );
 
@@ -412,11 +415,11 @@ public class ChangeSetServiceBean
             throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
         }
 
-        return getJobInfoInternal(importMetadata, key);
+        return getJobInfoInternal(importMetadata, new ImportJobInfo(), key);
     }
 
     @Override
-    public JobInfo getChangeJobInfo( String key )
+    public ChangeJobInfo getChangeJobInfo( String key )
     {
         ChangeMetadata changeMetadata = getChangeMetadata( key );
 
@@ -425,11 +428,11 @@ public class ChangeSetServiceBean
             throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
         }
 
-        return getJobInfoInternal(changeMetadata, key);
+        return getJobInfoInternal(changeMetadata, new ChangeJobInfo(), key);
     }
 
     @Override
-    public JobInfo getExportJobInfo( String key )
+    public ExportJobInfo getExportJobInfo( String key )
     {
         ExportMetadata exportMetadata = getExportMetadata( key );
 
@@ -438,7 +441,7 @@ public class ChangeSetServiceBean
             throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
         }
 
-        return getJobInfoInternal(exportMetadata, key);
+        return getJobInfoInternal(exportMetadata, new ExportJobInfo(), key);
     }
 
     @Override
@@ -545,11 +548,10 @@ public class ChangeSetServiceBean
     // -- private helpers
 
 
-    private JobInfo getJobInfoInternal( BaseMetadata baseMetadata, String key) {
+    private <T extends JobInfo> T getJobInfoInternal( BaseMetadata baseMetadata, T jobInfo, String key) {
         try
         {
             com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = pipelineService.getJobInfo( baseMetadata.getMapReduceJobId() );
-            JobInfo jobInfo = new JobInfo();
             jobInfo.setId( key );
             jobInfo.setMapReduceJobId( baseMetadata.getMapReduceJobId() );
             jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
