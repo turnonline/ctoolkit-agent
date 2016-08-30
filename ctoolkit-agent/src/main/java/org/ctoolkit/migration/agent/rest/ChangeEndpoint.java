@@ -47,7 +47,7 @@ public class ChangeEndpoint
 
     // -- change CRUD
 
-    @ApiMethod( name = "change.insert", path = "change", httpMethod = ApiMethod.HttpMethod.POST )
+    @ApiMethod( name = "changeBatch.insert", path = "change", httpMethod = ApiMethod.HttpMethod.POST )
     public ChangeBatch insertChange( ChangeBatch changeBatch, User authUser )
     {
         ChangeMetadata changeMetadata = mapper.map( changeBatch, ChangeMetadata.class );
@@ -56,7 +56,7 @@ public class ChangeEndpoint
         return mapper.map( changeMetadataBe, ChangeBatch.class );
     }
 
-    @ApiMethod( name = "change.update", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
+    @ApiMethod( name = "changeBatch.update", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
     public ChangeBatch updateChange( @Named( "id" ) String id, ChangeBatch changeBatch, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
@@ -70,7 +70,7 @@ public class ChangeEndpoint
         return mapper.map( changeMetadataBe, ChangeBatch.class );
     }
 
-    @ApiMethod( name = "change.delete", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
+    @ApiMethod( name = "changeBatch.delete", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteChange( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
@@ -81,7 +81,7 @@ public class ChangeEndpoint
         service.deleteChangeMetadata( id );
     }
 
-    @ApiMethod( name = "change.get", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "changeBatch.get", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeBatch getChange( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
@@ -93,7 +93,7 @@ public class ChangeEndpoint
         return mapper.map( changeMetadataBe, ChangeBatch.class );
     }
 
-    @ApiMethod( name = "change.list", path = "change", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "changeBatch.list", path = "change", httpMethod = ApiMethod.HttpMethod.GET )
     public List<ChangeBatch> listChange( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
                                          @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
                                          @Nullable @Named( "orderBy" ) String orderBy,
@@ -119,7 +119,7 @@ public class ChangeEndpoint
 
     // -- change item CRUD
 
-    @ApiMethod( name = "change.item.insert", path = "change/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
+    @ApiMethod( name = "changeBatch.item.insert", path = "change/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
     public ChangeBatch.ChangeItem insertChangeItem( @Named( "metadataId" ) String metadataId, ChangeBatch.ChangeItem changeBatchItem, User authUser )
     {
         Map<Object, Object> props = new HashMap<>();
@@ -132,7 +132,7 @@ public class ChangeEndpoint
         return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
     }
 
-    @ApiMethod( name = "change.item.update", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
+    @ApiMethod( name = "changeBatch.item.update", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
     public ChangeBatch.ChangeItem updateChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ChangeBatch.ChangeItem changeBatchItem, User authUser ) throws Exception
     {
         if ( service.getChangeMetadataItem( id ) == null )
@@ -146,7 +146,7 @@ public class ChangeEndpoint
         return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
     }
 
-    @ApiMethod( name = "change.item.delete", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
+    @ApiMethod( name = "changeBatch.item.delete", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadataItem( id ) == null )
@@ -157,7 +157,7 @@ public class ChangeEndpoint
         service.deleteChangeMetadataItem( id );
     }
 
-    @ApiMethod( name = "change.item.get", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "changeBatch.item.get", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeBatch.ChangeItem getChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadataItem( id ) == null )
@@ -171,7 +171,7 @@ public class ChangeEndpoint
 
     // -- job CRUD
 
-    @ApiMethod( name = "change.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
+    @ApiMethod( name = "changeBatch.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public ChangeJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
@@ -190,7 +190,7 @@ public class ChangeEndpoint
         }
     }
 
-    @ApiMethod( name = "change.job.cancel", path = "change/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
+    @ApiMethod( name = "changeBatch.job.cancel", path = "change/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
     public ChangeJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
@@ -209,7 +209,7 @@ public class ChangeEndpoint
         }
     }
 
-    @ApiMethod( name = "change.job.delete", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
+    @ApiMethod( name = "changeBatch.job.delete", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )
@@ -227,7 +227,7 @@ public class ChangeEndpoint
         }
     }
 
-    @ApiMethod( name = "change.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "changeBatch.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getChangeMetadata( id ) == null )

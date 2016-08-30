@@ -47,7 +47,7 @@ public class ImportEndpoint
 
     // -- import CRUD
 
-    @ApiMethod( name = "import.insert", path = "import", httpMethod = ApiMethod.HttpMethod.POST )
+    @ApiMethod( name = "importBatch.insert", path = "import", httpMethod = ApiMethod.HttpMethod.POST )
     public ImportBatch insertImport( ImportBatch importBatch, User authUser )
     {
         ImportMetadata importMetadata = mapper.map( importBatch, ImportMetadata.class );
@@ -56,7 +56,7 @@ public class ImportEndpoint
         return mapper.map( importMetadataBe, ImportBatch.class );
     }
 
-    @ApiMethod( name = "import.update", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
+    @ApiMethod( name = "importBatch.update", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
     public ImportBatch updateImport( @Named( "id" ) String id, ImportBatch importBatch, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
@@ -70,7 +70,7 @@ public class ImportEndpoint
         return mapper.map( importMetadataBe, ImportBatch.class );
     }
 
-    @ApiMethod( name = "import.delete", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
+    @ApiMethod( name = "importBatch.delete", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteImport( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
@@ -81,7 +81,7 @@ public class ImportEndpoint
         service.deleteImportMetadata( id );
     }
 
-    @ApiMethod( name = "import.get", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "importBatch.get", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ImportBatch getImport( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
@@ -93,7 +93,7 @@ public class ImportEndpoint
         return mapper.map( importMetadataBe, ImportBatch.class );
     }
 
-    @ApiMethod( name = "import.list", path = "import", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "importBatch.list", path = "import", httpMethod = ApiMethod.HttpMethod.GET )
     public List<ImportBatch> listImport( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
                                          @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
                                          @Nullable @Named( "orderBy" ) String orderBy,
@@ -119,7 +119,7 @@ public class ImportEndpoint
 
     // -- import item CRUD
 
-    @ApiMethod( name = "import.item.insert", path = "import/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
+    @ApiMethod( name = "importBatch.item.insert", path = "import/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
     public ImportBatch.ImportItem insertImportItem( @Named( "metadataId" ) String metadataId, ImportBatch.ImportItem importBatchItem, User authUser )
     {
         Map<Object, Object> props = new HashMap<>();
@@ -132,7 +132,7 @@ public class ImportEndpoint
         return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
     }
 
-    @ApiMethod( name = "import.item.update", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
+    @ApiMethod( name = "importBatch.item.update", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
     public ImportBatch.ImportItem updateImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ImportBatch.ImportItem importBatchItem, User authUser ) throws Exception
     {
         if ( service.getImportMetadataItem( id ) == null )
@@ -146,7 +146,7 @@ public class ImportEndpoint
         return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
     }
 
-    @ApiMethod( name = "import.item.delete", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
+    @ApiMethod( name = "importBatch.item.delete", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadataItem( id ) == null )
@@ -157,7 +157,7 @@ public class ImportEndpoint
         service.deleteImportMetadataItem( id );
     }
 
-    @ApiMethod( name = "import.item.get", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "importBatch.item.get", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ImportBatch.ImportItem getImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadataItem( id ) == null )
@@ -171,7 +171,7 @@ public class ImportEndpoint
 
     // -- job CRUD
 
-    @ApiMethod( name = "import.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
+    @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public ImportJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
@@ -190,7 +190,7 @@ public class ImportEndpoint
         }
     }
 
-    @ApiMethod( name = "import.job.cancel", path = "import/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
+    @ApiMethod( name = "importBatch.job.cancel", path = "import/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
     public ImportJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
@@ -209,7 +209,7 @@ public class ImportEndpoint
         }
     }
 
-    @ApiMethod( name = "import.job.delete", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
+    @ApiMethod( name = "importBatch.job.delete", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
@@ -227,7 +227,7 @@ public class ImportEndpoint
         }
     }
 
-    @ApiMethod( name = "import.job.progress", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
+    @ApiMethod( name = "importBatch.job.progress", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ImportJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         if ( service.getImportMetadata( id ) == null )
