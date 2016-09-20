@@ -33,6 +33,31 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>${gwt.version}</version>
+                <configuration>
+                    <skip>false</skip>
+                    <deploy>${project.build.directory}/deploy</deploy>
+                    <logLevel>INFO</logLevel>
+                    <extraJvmArgs>-Xmx512m</extraJvmArgs>
+                    <style>OBFUSCATED</style>
+                </configuration>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <modules>
+                                <module>org.ctoolkit.migration.agent.MigrationAgentResources</module>
+                            </modules>
+                        </configuration>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

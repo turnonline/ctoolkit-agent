@@ -87,6 +87,7 @@
             -javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
         </jmockit.setting>
         <xmlunit.version>1.6</xmlunit.version>
+        <gwt.version>2.7.0</gwt.version>
     </properties>
 
 </project>

@@ -232,6 +232,6 @@ public class DataAccessBean
     @Override
     public <T> void delete( Class<T> entity, String key )
     {
-        ofy().delete().type( entity ).id( key ).now();
+        ofy().delete().key( Key.create( key ) ).now();
     }
 }
