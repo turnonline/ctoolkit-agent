@@ -47,37 +47,60 @@ import java.util.List;
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChangeSetEntity implements Serializable
+public class ChangeSetEntity
+        implements Serializable
 {
-    @XmlAttribute(name = "key")
+    @XmlAttribute( name = "key" )
     private String key;
 
-    @XmlAttribute(name = "kind")
+    @XmlAttribute( name = "kind" )
     private String kind;
 
-    @XmlAttribute(name = "id")
+    @XmlAttribute( name = "id" )
     private Long id;
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute( name = "name" )
     private String name;
 
-    @XmlAttribute(name =  "parentKey")
+    @XmlAttribute( name = "parentKey" )
     private String parentKey;
 
-    @XmlAttribute(name = "parentKind")
+    @XmlAttribute( name = "parentKind" )
     private String parentKind;
 
-    @XmlAttribute(name = "parentId")
+    @XmlAttribute( name = "parentId" )
     private Long parentId;
 
-    @XmlAttribute(name = "parentName")
+    @XmlAttribute( name = "parentName" )
     private String parentName;
 
     /**
      * Optional entity properties
      */
     @XmlElement( name = "property" )
-    private List<ChangeSetEntityProperty> properties;
+    private List<ChangeSetEntityProperty> property;
+
+    public ChangeSetEntity()
+    {
+    }
+
+    public ChangeSetEntity( ChangeSetEntity other )
+    {
+        setKey( other.getKey() );
+        setKind( other.getKind() );
+        setId( other.getId() );
+        setName( other.getName() );
+        setParentKey( other.getParentKey() );
+        setParentKind( other.getParentKind() );
+        setParentId( other.getParentId() );
+        setParentName( other.getParentName() );
+
+        for ( ChangeSetEntityProperty otherProperty : other.getProperty() )
+        {
+            getProperty().add( new ChangeSetEntityProperty( otherProperty ) );
+        }
+    }
+
 
     public String getKey()
     {
@@ -159,17 +182,18 @@ public class ChangeSetEntity implements Serializable
         this.parentName = parentName;
     }
 
-    public List<ChangeSetEntityProperty> getProperties()
+    public List<ChangeSetEntityProperty> getProperty()
     {
-        if (properties == null) {
-            properties = new ArrayList<>(  );
+        if ( property == null )
+        {
+            property = new ArrayList<>();
         }
-        return properties;
+        return property;
     }
 
-    public void setProperties( List<ChangeSetEntityProperty> properties )
+    public void setProperty( List<ChangeSetEntityProperty> property )
     {
-        this.properties = properties;
+        this.property = property;
     }
 
     /**
@@ -179,7 +203,7 @@ public class ChangeSetEntity implements Serializable
      */
     public boolean hasProperties()
     {
-        return !getProperties().isEmpty();
+        return !getProperty().isEmpty();
     }
 
     @Override
@@ -194,7 +218,7 @@ public class ChangeSetEntity implements Serializable
                 ", parentKind='" + parentKind + '\'' +
                 ", parentId=" + parentId +
                 ", parentName='" + parentName + '\'' +
-                ", properties=" + properties +
+                ", property=" + property +
                 '}';
     }
 }

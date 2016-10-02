@@ -454,12 +454,12 @@ public class ChangeSetServiceBean
     public void changeChangeSet( ChangeSet changeSet )
     {
         // apply model changes
-        if ( changeSet.hasModel() )
+        if ( changeSet.hasModelObject() )
         {
             // process KindOps
-            if ( changeSet.getModel().hasKindOps() )
+            if ( changeSet.getModel().hasKindOpsObject() )
             {
-                for ( ChangeSetModelKindOp kindOp : changeSet.getModel().getKindOps() )
+                for ( ChangeSetModelKindOp kindOp : changeSet.getModel().getKindOp() )
                 {
                     switch ( kindOp.getOp() )
                     {
@@ -482,9 +482,9 @@ public class ChangeSetServiceBean
             }
 
             // process KindPropOps
-            if ( changeSet.getModel().hasKindPropOps() )
+            if ( changeSet.getModel().hasKindPropOpsObject() )
             {
-                for ( ChangeSetModelKindPropOp kindPropOp : changeSet.getModel().getKindPropOps() )
+                for ( ChangeSetModelKindPropOp kindPropOp : changeSet.getModel().getKindPropsOp() )
                 {
                     switch ( kindPropOp.getOp() )
                     {

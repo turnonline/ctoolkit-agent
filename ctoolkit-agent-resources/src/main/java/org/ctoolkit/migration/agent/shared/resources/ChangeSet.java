@@ -58,9 +58,9 @@ public class ChangeSet implements Serializable
         this.model = model;
     }
 
-    public boolean hasModel()
+    public boolean hasModelObject()
     {
-        return getModel() != null && ( getModel().hasKindOps() || getModel().hasKindPropOps() );
+        return getModel() != null && ( getModel().hasKindOpsObject() || getModel().hasKindPropOpsObject() );
     }
 
     public ChangeSetEntities getEntities()

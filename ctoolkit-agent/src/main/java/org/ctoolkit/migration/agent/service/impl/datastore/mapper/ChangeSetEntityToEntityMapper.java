@@ -44,7 +44,7 @@ public class ChangeSetEntityToEntityMapper
         // changeSetEntity up the properties
         if ( changeSetEntity.hasProperties() )
         {
-            for ( ChangeSetEntityProperty prop : changeSetEntity.getProperties() )
+            for ( ChangeSetEntityProperty prop : changeSetEntity.getProperty() )
             {
                 if ( null == prop.getValue() )
                 {
@@ -69,7 +69,7 @@ public class ChangeSetEntityToEntityMapper
         for ( Map.Entry<String, Object> pairs : entity.getProperties().entrySet() )
         {
             ChangeSetEntityProperty property = encoder.encodeProperty( pairs.getKey(), pairs.getValue() );
-            changeSetEntity.getProperties().add( property );
+            changeSetEntity.getProperty().add( property );
         }
     }
 }

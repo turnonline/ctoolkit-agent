@@ -17,7 +17,8 @@ import java.io.Serializable;
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChangeSetEntityProperty implements Serializable
+public class ChangeSetEntityProperty
+        implements Serializable
 {
     /**
      * Supported change set entity property types
@@ -56,13 +57,13 @@ public class ChangeSetEntityProperty implements Serializable
 
     public static final String PROPERTY_TYPE_LIST_STRING = "list-string";
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute( name = "name" )
     private String name;
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute( name = "type" )
     private String type;
 
-    @XmlAttribute(name = "value")
+    @XmlAttribute( name = "value" )
     private String value;
 
     /**
@@ -70,6 +71,13 @@ public class ChangeSetEntityProperty implements Serializable
      */
     public ChangeSetEntityProperty()
     {
+    }
+
+    public ChangeSetEntityProperty( ChangeSetEntityProperty other )
+    {
+        setName( other.getName() );
+        setType( other.getType() );
+        setValue( other.getValue() );
     }
 
     /**

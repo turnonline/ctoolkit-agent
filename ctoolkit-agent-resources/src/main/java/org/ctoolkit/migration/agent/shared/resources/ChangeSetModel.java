@@ -19,58 +19,58 @@ public class ChangeSetModel implements Serializable
      * Optional Kind operations descriptors
      */
     @XmlElement( name = "kindOp" )
-    private List<ChangeSetModelKindOp> kindOps;
+    private List<ChangeSetModelKindOp> kindOp;
 
     /**
      * Optional Kind property operations descriptors
      */
     @XmlElement( name = "kindPropsOp" )
-    private List<ChangeSetModelKindPropOp> kindPropOps;
+    private List<ChangeSetModelKindPropOp> kindPropsOp;
 
-    public List<ChangeSetModelKindOp> getKindOps()
+    public List<ChangeSetModelKindOp> getKindOp()
     {
-        if ( kindOps == null )
+        if ( kindOp == null )
         {
-            kindOps = new ArrayList<>();
+            kindOp = new ArrayList<>();
         }
-        return kindOps;
+        return kindOp;
     }
 
-    public void setKindOps( List<ChangeSetModelKindOp> kindOps )
+    public void setKindOp( List<ChangeSetModelKindOp> kindOp )
     {
-        this.kindOps = kindOps;
+        this.kindOp = kindOp;
     }
 
-    public boolean hasKindOps()
+    public boolean hasKindOpsObject()
     {
-        return !getKindOps().isEmpty();
+        return !getKindOp().isEmpty();
     }
 
-    public List<ChangeSetModelKindPropOp> getKindPropOps()
+    public List<ChangeSetModelKindPropOp> getKindPropsOp()
     {
-        if ( kindPropOps == null )
+        if ( kindPropsOp == null )
         {
-            kindPropOps = new ArrayList<>();
+            kindPropsOp = new ArrayList<>();
         }
-        return kindPropOps;
+        return kindPropsOp;
     }
 
-    public void setKindPropOps( List<ChangeSetModelKindPropOp> kindPropOps )
+    public void setKindPropsOp( List<ChangeSetModelKindPropOp> kindPropsOp )
     {
-        this.kindPropOps = kindPropOps;
+        this.kindPropsOp = kindPropsOp;
     }
 
-    public boolean hasKindPropOps()
+    public boolean hasKindPropOpsObject()
     {
-        return !getKindPropOps().isEmpty();
+        return !getKindPropsOp().isEmpty();
     }
 
     @Override
     public String toString()
     {
         return "ChangeSetModel{" +
-                "kindOps=" + kindOps +
-                ", kindPropOps=" + kindPropOps +
+                "kindOp=" + kindOp +
+                ", kindPropsOp=" + kindPropsOp +
                 '}';
     }
 }
