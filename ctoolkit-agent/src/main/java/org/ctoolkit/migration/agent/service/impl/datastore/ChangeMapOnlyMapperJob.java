@@ -39,7 +39,7 @@ public class ChangeMapOnlyMapperJob
         injector.injectMembers( this );
 
         Blob data = ( Blob ) item.getProperty( "data" );
-        ISetItem.DataType dataType = ( ISetItem.DataType ) item.getProperty( "dataType" );
+        ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
         ChangeSet changeSet;
 
         switch ( dataType )

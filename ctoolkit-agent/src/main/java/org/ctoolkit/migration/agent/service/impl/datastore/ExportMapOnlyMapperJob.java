@@ -38,7 +38,7 @@ public class ExportMapOnlyMapperJob
         injector.injectMembers( this );
 
         String entityToExport = ( String ) item.getProperty( "entityToExport" );
-        ISetItem.DataType dataType = ( ISetItem.DataType ) item.getProperty( "dataType" );
+        ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
         String data;
 
         ChangeSet changeSet = changeSetService.exportChangeSet( entityToExport );

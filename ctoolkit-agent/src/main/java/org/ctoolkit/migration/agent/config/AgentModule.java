@@ -176,8 +176,8 @@ public class AgentModule
     {
         return new MapReduceSettings.Builder()
                 .setBucketName( null )
-                .setWorkerQueueName( "ctoolkit-migration" )
-                .setModule( "ctoolkit-migration" )
+                .setWorkerQueueName( "ctoolkit-agent" )
+                .setModule( "ctoolkit-agent" )
                 .build();
     }
 }
