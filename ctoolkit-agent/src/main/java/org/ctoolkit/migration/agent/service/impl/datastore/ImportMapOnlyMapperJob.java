@@ -3,8 +3,11 @@ package org.ctoolkit.migration.agent.service.impl.datastore;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.google.appengine.tools.mapreduce.MapOnlyMapper;
+import com.google.common.base.Charsets;
 import com.google.inject.Injector;
+import org.ctoolkit.migration.agent.model.ISetItem;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
@@ -35,9 +38,28 @@ public class ImportMapOnlyMapperJob
     {
         injector.injectMembers( this );
 
-        Blob xml = ( Blob ) item.getProperty( "xml" );
+        Blob data = ( Blob ) item.getProperty( "data" );
+        ISetItem.DataType dataType = ( ISetItem.DataType ) item.getProperty( "dataType" );
+        ChangeSet changeSet;
 
-        ChangeSet changeSet = XmlUtils.unmarshall( new ByteArrayInputStream( xml.getBytes() ), ChangeSet.class );
+        switch ( dataType )
+        {
+            case JSON:
+            {
+                changeSet = new Gson().fromJson( new String( data.getBytes(), Charsets.UTF_8 ), ChangeSet.class );
+                break;
+            }
+            case XML:
+            {
+                changeSet = XmlUtils.unmarshall( new ByteArrayInputStream( data.getBytes() ), ChangeSet.class );
+                break;
+            }
+            default:
+            {
+                throw new IllegalArgumentException( "Unknown data type: '" + dataType + "'" );
+            }
+        }
+
         changeSetService.importChangeSet( changeSet );
 
         // update state to COMPLETED_SUCCESSFULLY

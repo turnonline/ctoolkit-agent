@@ -7,9 +7,18 @@ import java.util.Date;
  */
 public interface ISetItem
 {
-    byte[] getXml();
+    enum DataType {
+        XML,
+        JSON
+    }
 
-    void setXml(byte[] xml);
+    byte[] getData();
+
+    void setData( byte[] data );
+
+    DataType getDataType();
+
+    void setDataType(DataType dataType);
 
     void setKey(String key);
 

@@ -27,7 +27,8 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
         for ( ISetItem anItem : set.getItems() )
         {
             BI item = metadata.getItemByIdOrCreateNewOne( getMetadataItemId( anItem ) );
-            item.setXml( anItem.getXml() );
+            item.setData( anItem.getData() );
+            item.setDataType( anItem.getDataType() );
             item.setName( anItem.getName() );
 
             extraMapAItemToBItem( ( FI ) anItem, item );
@@ -50,7 +51,8 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
             anItem.setName( item.getName() );
             anItem.setCreateDate( item.getCreateDate() );
             anItem.setUpdateDate( item.getUpdateDate() );
-            anItem.setXml( item.getXml() );
+            anItem.setData( item.getData() );
+            anItem.setDataType( item.getDataType() );
 
             extraMapBItemToAItem( item, anItem );
 

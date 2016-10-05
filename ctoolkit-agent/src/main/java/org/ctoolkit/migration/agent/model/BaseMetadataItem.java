@@ -24,7 +24,9 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
 
     private String name;
 
-    private byte[] xml;
+    private byte[] data;
+
+    private ISetItem.DataType dataType;
 
     private JobState state;
 
@@ -56,14 +58,24 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         this.name = name;
     }
 
-    public byte[] getXml()
+    public byte[] getData()
     {
-        return xml;
+        return data;
     }
 
-    public void setXml( byte[] xml )
+    public void setData( byte[] data )
     {
-        this.xml = xml;
+        this.data = data;
+    }
+
+    public ISetItem.DataType getDataType()
+    {
+        return dataType;
+    }
+
+    public void setDataType( ISetItem.DataType dataType )
+    {
+        this.dataType = dataType;
     }
 
     public JobState getState()
@@ -90,7 +102,8 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public String toString()
     {
         return "MetadataItem{" +
-                "xml.length=" + (xml != null ? xml.length : null) +
+                "data.length=" + ( data != null ? data.length : null) +
+                ", dataType=" + dataType +
                 ", name=" + name +
                 ", state=" + state +
                 "} " + super.toString();

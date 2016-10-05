@@ -249,12 +249,13 @@ public class ChangeSetServiceBeanIT
     {
         createRecord();
 
-        byte[] export = service.exportChangeSet( "Country" );
+        ChangeSet export = service.exportChangeSet( "Country" );
+        byte[] data = XmlUtils.marshall( export ).getBytes( Charsets.UTF_8 );
 
-        InputStream actual = new ByteArrayInputStream( export );
+        InputStream actual = new ByteArrayInputStream( data );
         InputStream expected = ChangeSetServiceBeanIT.class.getResourceAsStream( "/export/country.xml" );
 
-        System.out.println(new String(export, Charsets.UTF_8));
+        System.out.println(new String(data, Charsets.UTF_8));
 
         XMLAssert.assertXMLEqual( new InputSource( expected ), new InputSource( actual ) );
     }

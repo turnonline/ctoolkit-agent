@@ -31,7 +31,9 @@ public class ImportBatch
 
         private String name;
 
-        private byte[] xml;
+        private byte[] data;
+
+        private DataType dataType;
 
         private Date createDate;
 
@@ -57,14 +59,26 @@ public class ImportBatch
             this.name = name;
         }
 
-        public byte[] getXml()
+        public byte[] getData()
         {
-            return xml;
+            return data;
         }
 
-        public void setXml( byte[] xml )
+        public void setData( byte[] data )
         {
-            this.xml = xml;
+            this.data = data;
+        }
+
+        @Override
+        public DataType getDataType()
+        {
+            return dataType;
+        }
+
+        @Override
+        public void setDataType( DataType dataType )
+        {
+            this.dataType = dataType;
         }
 
         public Date getCreateDate()
@@ -93,7 +107,7 @@ public class ImportBatch
             return "Item{" +
                     "key='" + key + '\'' +
                     ", name=" + name +
-                    ", xml.length=" + (xml != null ? xml.length : null) +
+                    ", data.length=" + ( data != null ? data.length : null) +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
                     '}';

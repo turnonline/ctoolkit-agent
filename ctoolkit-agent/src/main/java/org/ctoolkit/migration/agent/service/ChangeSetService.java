@@ -305,7 +305,7 @@ public interface ChangeSetService
      * Process change data change set
      *
      * @param entity entity object to export
-     * @return byte array containing change set data
+     * @return change set containing change set data
      */
-    byte[] exportChangeSet( final String entity );
+    ChangeSet exportChangeSet( final String entity );
 }

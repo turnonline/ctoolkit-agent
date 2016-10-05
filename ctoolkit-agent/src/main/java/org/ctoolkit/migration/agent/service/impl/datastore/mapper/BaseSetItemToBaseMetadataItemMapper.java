@@ -18,7 +18,8 @@ public abstract class BaseSetItemToBaseMetadataItemMapper<FI extends ISetItem, B
     public void mapAtoB( FI setItem, BI metadataItem, MappingContext context )
     {
         metadataItem.setName( setItem.getName() );
-        metadataItem.setXml( setItem.getXml() );
+        metadataItem.setData( setItem.getData() );
+        metadataItem.setDataType( setItem.getDataType() );
     }
 
     @Override
@@ -28,6 +29,7 @@ public abstract class BaseSetItemToBaseMetadataItemMapper<FI extends ISetItem, B
         setItem.setName( metadataItem.getName() );
         setItem.setCreateDate( metadataItem.getCreateDate() );
         setItem.setUpdateDate( metadataItem.getUpdateDate() );
-        setItem.setXml( metadataItem.getXml() );
+        setItem.setData( metadataItem.getData() );
+        setItem.setDataType( metadataItem.getDataType() );
     }
 }

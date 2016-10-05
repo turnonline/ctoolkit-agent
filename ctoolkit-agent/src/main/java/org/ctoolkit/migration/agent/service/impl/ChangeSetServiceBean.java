@@ -4,7 +4,6 @@ import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
 import com.google.appengine.tools.pipeline.PipelineService;
-import com.google.common.base.Charsets;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
@@ -27,7 +26,6 @@ import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindOp;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindPropOp;
-import org.ctoolkit.migration.agent.util.XmlUtils;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -539,10 +537,9 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public byte[] exportChangeSet( String entity )
+    public ChangeSet exportChangeSet( String entity )
     {
-        ChangeSet changeSet = dataAccess.exportChangeSet( entity );
-        return XmlUtils.marshall( changeSet ).getBytes( Charsets.UTF_8 );
+        return dataAccess.exportChangeSet( entity );
     }
 
     // -- private helpers

@@ -42,7 +42,7 @@ public class XmlUtils
             JAXBContext jaxbContext = JAXBContext.newInstance(classes.toArray(new Class[classes.size()]));
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             JAXBElement<T> jaxbElement = unmarshaller.unmarshal(new StreamSource(source), classToBeBound);
-            return (T) jaxbElement.getValue();
+            return jaxbElement.getValue();
         } catch (JAXBException e) {
             throw new RuntimeException("Error occur during unmarshalling class: " + classToBeBound, e);
         }
