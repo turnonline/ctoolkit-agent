@@ -39,6 +39,8 @@ public class ChangeBatch
 
         private DataType dataType;
 
+        private JobState state;
+
         private Date createDate;
 
         private Date updateDate;
@@ -57,6 +59,18 @@ public class ChangeBatch
         public String getName()
         {
             return name;
+        }
+
+        @Override
+        public void setState( JobState state )
+        {
+            this.state = state;
+        }
+
+        @Override
+        public JobState getState()
+        {
+            return state;
         }
 
         @Override
@@ -114,6 +128,8 @@ public class ChangeBatch
                     "key='" + key + '\'' +
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null) +
+                    ", dataType=" + dataType +
+                    ", state=" + state +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
                     '}';

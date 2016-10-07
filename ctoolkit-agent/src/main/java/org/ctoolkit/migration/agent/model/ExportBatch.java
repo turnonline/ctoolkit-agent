@@ -39,6 +39,8 @@ public class ExportBatch
 
         private DataType dataType;
 
+        private JobState state;
+
         private String entityToExport;
 
         private Date createDate;
@@ -59,6 +61,18 @@ public class ExportBatch
         public String getName()
         {
             return name;
+        }
+
+        @Override
+        public void setState( JobState state )
+        {
+            this.state = state;
+        }
+
+        @Override
+        public JobState getState()
+        {
+            return state;
         }
 
         @Override
@@ -127,6 +141,8 @@ public class ExportBatch
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null ) +
                     ", entityToExport='" + entityToExport + '\'' +
+                    ", dataType=" + dataType +
+                    ", state=" + state +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
                     '}';

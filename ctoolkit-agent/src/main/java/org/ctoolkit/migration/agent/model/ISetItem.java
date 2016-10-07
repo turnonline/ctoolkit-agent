@@ -28,6 +28,10 @@ public interface ISetItem
 
     String getName();
 
+    void setState(JobState state);
+
+    JobState getState();
+
     void setCreateDate(Date createDate);
 
     void setUpdateDate(Date updateDate);

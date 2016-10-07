@@ -30,6 +30,7 @@ public abstract class BaseSetItemToBaseMetadataItemMapper<FI extends ISetItem, B
         setItem.setCreateDate( metadataItem.getCreateDate() );
         setItem.setUpdateDate( metadataItem.getUpdateDate() );
         setItem.setData( metadataItem.getData() );
+        setItem.setState( metadataItem.getState() );
         setItem.setDataType( metadataItem.getDataType() );
     }
 }
