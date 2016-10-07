@@ -40,8 +40,6 @@ public class ImportMapOnlyMapperJob
     @Inject
     transient ChannelService channelService;
 
-    private static int count = 0;
-
     @Override
     public void map( Entity item )
     {
@@ -81,12 +79,6 @@ public class ImportMapOnlyMapperJob
         {
             jobState = JobState.STOPPED_BY_ERROR;
         }
-
-        if (count < 5) {
-            jobState = JobState.STOPPED_BY_ERROR;
-        }
-
-        count++;
 
         // update state
         item.setProperty( "state", jobState.name() );
