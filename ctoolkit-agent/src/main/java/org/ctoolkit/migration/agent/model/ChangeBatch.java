@@ -10,7 +10,7 @@ import java.util.List;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class ChangeBatch
-        implements ISet
+        implements ISet<ChangeJobInfo>
 {
     private String key;
 
@@ -18,9 +18,13 @@ public class ChangeBatch
 
     private String mapReduceJobId;
 
+    private String token;
+
     private Date createDate;
 
     private Date updateDate;
+
+    private ChangeJobInfo jobInfo;
 
     private List<ChangeItem> items = new ArrayList<>();
 
@@ -148,6 +152,16 @@ public class ChangeBatch
         this.mapReduceJobId = mapReduceJobId;
     }
 
+    public String getToken()
+    {
+        return token;
+    }
+
+    public void setToken( String token )
+    {
+        this.token = token;
+    }
+
     public Date getCreateDate()
     {
         return createDate;
@@ -168,6 +182,18 @@ public class ChangeBatch
         this.updateDate = updateDate;
     }
 
+    @Override
+    public void setJobInfo( ChangeJobInfo jobInfo )
+    {
+        this.jobInfo = ( ChangeJobInfo ) jobInfo;
+    }
+
+    @Override
+    public ChangeJobInfo getJobInfo()
+    {
+        return jobInfo;
+    }
+
     public List<ChangeItem> getItems()
     {
         return items;
@@ -185,8 +211,10 @@ public class ChangeBatch
                 "key='" + key + '\'' +
                 ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", token='" + token + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
+                ", jobInfo=" + jobInfo +
                 ", items=" + items +
                 '}';
     }

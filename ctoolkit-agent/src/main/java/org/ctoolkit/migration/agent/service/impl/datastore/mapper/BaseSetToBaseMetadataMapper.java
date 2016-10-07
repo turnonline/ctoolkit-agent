@@ -15,7 +15,7 @@ import org.ctoolkit.migration.agent.model.ISetItem;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends BaseMetadata<BI>, FI extends ISetItem, BI extends BaseMetadataItem<B>>
+public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends BaseMetadata<BI>, FI extends ISetItem, BI extends BaseMetadataItem<B>>
         extends CustomMapper<F, B>
 {
     @Override
@@ -23,6 +23,8 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
     public void mapAtoB( F set, B metadata, MappingContext context )
     {
         metadata.setName( set.getName() );
+
+        extraMapAToB( set, metadata );
 
         for ( ISetItem anItem : set.getItems() )
         {
@@ -43,6 +45,9 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
         set.setMapReduceJobId( metadata.getMapReduceJobId() );
         set.setCreateDate( metadata.getCreateDate() );
         set.setUpdateDate( metadata.getUpdateDate() );
+        set.setToken( metadata.getToken() );
+
+        extraMapBToA( metadata, set );
 
         for ( BI item : metadata.getItems() )
         {
@@ -58,6 +63,16 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet, B extends Base
 
             addItem( set, anItem );
         }
+    }
+
+    protected void extraMapAToB( F set, B metadata )
+    {
+
+    }
+
+    protected void extraMapBToA( B metadata, F set )
+    {
+
     }
 
     protected void extraMapAItemToBItem( FI anItem, BI item )

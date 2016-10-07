@@ -25,6 +25,8 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     @Index
     private String name;
 
+    private String token;
+
     private List<Ref<ITEM>> itemsRef = new ArrayList<>();
 
     @Ignore
@@ -41,6 +43,16 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     public void setName( String name )
     {
         this.name = name;
+    }
+
+    public String getToken()
+    {
+        return token;
+    }
+
+    public void setToken( String token )
+    {
+        this.token = token;
     }
 
     public String getMapReduceJobId()
@@ -173,6 +185,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         return "Metadata{" +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", name='" + name + '\'' +
+                ", token='" + token + '\'' +
                 "} " + super.toString();
     }
 }

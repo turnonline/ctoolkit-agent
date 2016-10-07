@@ -1,5 +1,7 @@
 package org.ctoolkit.migration.agent.config;
 
+import com.google.appengine.api.channel.ChannelService;
+import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -115,6 +117,13 @@ public class AgentModule
     public DatastoreService provideDatastoreService()
     {
         return DatastoreServiceFactory.getDatastoreService();
+    }
+
+    @Provides
+    @Singleton
+    public ChannelService provideChannelService()
+    {
+        return ChannelServiceFactory.getChannelService();
     }
 
     @Provides

@@ -6,19 +6,25 @@ import java.util.List;
 /**
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public interface ISet
+public interface ISet<JI extends JobInfo>
 {
-    void setKey(String key);
+    void setKey( String key );
 
-    void setName(String name);
+    void setName( String name );
 
     String getName();
 
-    void setMapReduceJobId(String mapReduceJobId);
+    void setMapReduceJobId( String mapReduceJobId );
 
-    void setCreateDate(Date createDate);
+    void setToken( String token );
 
-    void setUpdateDate(Date updateDate);
+    void setCreateDate( Date createDate );
+
+    void setUpdateDate( Date updateDate );
+
+    void setJobInfo( JI jobInfo );
+
+    JI getJobInfo();
 
     List<? extends ISetItem> getItems();
 }

@@ -10,7 +10,7 @@ import java.util.List;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class ExportBatch
-        implements ISet
+        implements ISet<ExportJobInfo>
 {
     private String key;
 
@@ -18,9 +18,13 @@ public class ExportBatch
 
     private String mapReduceJobId;
 
+    private String token;
+
     private Date createDate;
 
     private Date updateDate;
+
+    private ExportJobInfo jobInfo;
 
     private List<ExportItem> items = new ArrayList<>();
 
@@ -121,7 +125,7 @@ public class ExportBatch
             return "Item{" +
                     "key='" + key + '\'' +
                     ", name=" + name +
-                    ", data.length=" + ( data != null ? data.length : null) +
+                    ", data.length=" + ( data != null ? data.length : null ) +
                     ", entityToExport='" + entityToExport + '\'' +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
@@ -161,6 +165,16 @@ public class ExportBatch
         this.mapReduceJobId = mapReduceJobId;
     }
 
+    public String getToken()
+    {
+        return token;
+    }
+
+    public void setToken( String token )
+    {
+        this.token = token;
+    }
+
     public Date getCreateDate()
     {
         return createDate;
@@ -181,6 +195,18 @@ public class ExportBatch
         this.updateDate = updateDate;
     }
 
+    @Override
+    public void setJobInfo( ExportJobInfo jobInfo )
+    {
+        this.jobInfo = jobInfo;
+    }
+
+    @Override
+    public ExportJobInfo getJobInfo()
+    {
+        return jobInfo;
+    }
+
     public List<ExportItem> getItems()
     {
         return items;
@@ -198,8 +224,10 @@ public class ExportBatch
                 "key='" + key + '\'' +
                 ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", token='" + token + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
+                ", jobInfo=" + jobInfo +
                 ", items=" + items +
                 '}';
     }

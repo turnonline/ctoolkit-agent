@@ -1,5 +1,6 @@
 package org.ctoolkit.migration.agent.service.impl;
 
+import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
@@ -26,6 +27,8 @@ import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindOp;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindPropOp;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -38,6 +41,8 @@ import java.util.List;
 public class ChangeSetServiceBean
         implements ChangeSetService
 {
+    private static final Logger log = LoggerFactory.getLogger( ChangeSetServiceBean.class );
+
     private final EntityPool pool;
 
     private final DataAccess dataAccess;
@@ -48,18 +53,22 @@ public class ChangeSetServiceBean
 
     private final PipelineService pipelineService;
 
+    private final ChannelService channelService;
+
     @Inject
     public ChangeSetServiceBean( EntityPool pool,
                                  DataAccess dataAccess,
                                  JobSpecificationFactory jobSpecificationFactory,
                                  MapReduceSettings mapReduceSettings,
-                                 PipelineService pipelineService )
+                                 PipelineService pipelineService,
+                                 ChannelService channelService )
     {
         this.pool = pool;
         this.dataAccess = dataAccess;
         this.jobSpecificationFactory = jobSpecificationFactory;
         this.mapReduceSettings = mapReduceSettings;
         this.pipelineService = pipelineService;
+        this.channelService = channelService;
     }
 
     @Override
@@ -236,7 +245,9 @@ public class ChangeSetServiceBean
         }
 
         String id = MapJob.start( jobSpecificationFactory.createImportJobSpecification( key ).get(), mapReduceSettings );
+        String token = channelService.createChannel( key );
         importMetadata.setMapReduceJobId( id );
+        importMetadata.setToken( token );
         importMetadata.reset();
         importMetadata.save();
     }
@@ -408,12 +419,7 @@ public class ChangeSetServiceBean
     {
         ImportMetadata importMetadata = getImportMetadata( key );
 
-        if ( importMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
-        }
-
-        return getJobInfoInternal(importMetadata, new ImportJobInfo(), key);
+        return getJobInfoInternal( importMetadata, new ImportJobInfo(), key );
     }
 
     @Override
@@ -421,12 +427,7 @@ public class ChangeSetServiceBean
     {
         ChangeMetadata changeMetadata = getChangeMetadata( key );
 
-        if ( changeMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
-        }
-
-        return getJobInfoInternal(changeMetadata, new ChangeJobInfo(), key);
+        return getJobInfoInternal( changeMetadata, new ChangeJobInfo(), key );
     }
 
     @Override
@@ -434,12 +435,7 @@ public class ChangeSetServiceBean
     {
         ExportMetadata exportMetadata = getExportMetadata( key );
 
-        if ( exportMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
-        }
-
-        return getJobInfoInternal(exportMetadata, new ExportJobInfo(), key);
+        return getJobInfoInternal( exportMetadata, new ExportJobInfo(), key );
     }
 
     @Override
@@ -544,23 +540,34 @@ public class ChangeSetServiceBean
 
     // -- private helpers
 
+    private <T extends JobInfo> T getJobInfoInternal( BaseMetadata baseMetadata, T jobInfo, String key )
+    {
+        com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = null;
 
-    private <T extends JobInfo> T getJobInfoInternal( BaseMetadata baseMetadata, T jobInfo, String key) {
-        try
+        if ( baseMetadata.getMapReduceJobId() != null )
         {
-            com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = pipelineService.getJobInfo( baseMetadata.getMapReduceJobId() );
-            jobInfo.setId( key );
-            jobInfo.setMapReduceJobId( baseMetadata.getMapReduceJobId() );
+            try
+            {
+                pipelineJobInfo = pipelineService.getJobInfo( baseMetadata.getMapReduceJobId() );
+            }
+            catch ( NoSuchObjectException e )
+            {
+                log.error( "Map reduce job not found for key: " + baseMetadata.getMapReduceJobId(), e );
+            }
+        }
+
+        jobInfo.setId( key );
+        jobInfo.setMapReduceJobId( baseMetadata.getMapReduceJobId() );
+        jobInfo.setProcessedItems( baseMetadata.getProcessedItems() );
+        jobInfo.setTotalItems( baseMetadata.getItemsCount() );
+        jobInfo.setToken( baseMetadata.getToken() );
+
+        if ( pipelineJobInfo != null )
+        {
             jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
             jobInfo.setStackTrace( pipelineJobInfo.getError() );
-            jobInfo.setProcessedItems( baseMetadata.getProcessedItems() );
-            jobInfo.setTotalItems( baseMetadata.getItemsCount() );
+        }
 
-            return jobInfo;
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for key: " + baseMetadata.getMapReduceJobId(), e );
-        }
+        return jobInfo;
     }
 }

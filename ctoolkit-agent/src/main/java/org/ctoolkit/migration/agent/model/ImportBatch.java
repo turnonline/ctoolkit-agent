@@ -10,7 +10,7 @@ import java.util.List;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class ImportBatch
-        implements ISet
+        implements ISet<ImportJobInfo>
 {
     private String key;
 
@@ -18,9 +18,13 @@ public class ImportBatch
 
     private String mapReduceJobId;
 
+    private String token;
+
     private Date createDate;
 
     private Date updateDate;
+
+    private ImportJobInfo jobInfo;
 
     private List<ImportItem> items = new ArrayList<>();
 
@@ -107,7 +111,7 @@ public class ImportBatch
             return "Item{" +
                     "key='" + key + '\'' +
                     ", name=" + name +
-                    ", data.length=" + ( data != null ? data.length : null) +
+                    ", data.length=" + ( data != null ? data.length : null ) +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
                     '}';
@@ -145,6 +149,16 @@ public class ImportBatch
         this.mapReduceJobId = mapReduceJobId;
     }
 
+    public String getToken()
+    {
+        return token;
+    }
+
+    public void setToken( String token )
+    {
+        this.token = token;
+    }
+
     public Date getCreateDate()
     {
         return createDate;
@@ -165,6 +179,18 @@ public class ImportBatch
         this.updateDate = updateDate;
     }
 
+    @Override
+    public void setJobInfo( ImportJobInfo jobInfo )
+    {
+        this.jobInfo = jobInfo;
+    }
+
+    @Override
+    public ImportJobInfo getJobInfo()
+    {
+        return jobInfo;
+    }
+
     public List<ImportItem> getItems()
     {
         return items;
@@ -182,8 +208,10 @@ public class ImportBatch
                 "key='" + key + '\'' +
                 ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", token='" + token + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
+                ", jobInfo=" + jobInfo +
                 ", items=" + items +
                 '}';
     }
