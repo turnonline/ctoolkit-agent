@@ -10,6 +10,8 @@ import org.ctoolkit.migration.agent.model.BaseMetadataItem;
 import org.ctoolkit.migration.agent.model.ISet;
 import org.ctoolkit.migration.agent.model.ISetItem;
 
+import java.util.Iterator;
+
 /**
  * Mapper for frontend to backend metadata model beans
  *
@@ -25,6 +27,17 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
         metadata.setName( set.getName() );
 
         extraMapAToB( set, metadata );
+
+        // remove items in backend object not existed in set from frontend
+        Iterator<BI> iterator = metadata.getItems().iterator();
+        while ( iterator.hasNext() )
+        {
+            BI next = iterator.next();
+            if ( !contains( set, next ) )
+            {
+                iterator.remove();
+            }
+        }
 
         for ( ISetItem anItem : set.getItems() )
         {
@@ -115,5 +128,18 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
         }
 
         return KeyFactory.stringToKey( anItem.getKey() ).getId();
+    }
+
+    private boolean contains( ISet<?> set, BI beItem )
+    {
+        for ( ISetItem item : set.getItems() )
+        {
+            if ( beItem.getKey().equals( item.getKey() ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

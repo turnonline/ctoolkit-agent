@@ -168,9 +168,9 @@ public interface ChangeSetService
     /**
      * Delete {@link ImportMetadata} for specified key
      *
-     * @param key key of {@link ImportMetadata}
+     * @param importMetadata {@link ImportMetadata}
      */
-    void deleteImportMetadata( String key );
+    void deleteImportMetadata( ImportMetadata importMetadata );
 
     /**
      * Delete {@link ImportMetadataItem} for specified key
@@ -182,9 +182,9 @@ public interface ChangeSetService
     /**
      * Delete {@link ChangeMetadata} for specified key
      *
-     * @param key key of {@link ChangeMetadata}
+     * @param changeMetadata {@link ChangeMetadata}
      */
-    void deleteChangeMetadata( String key );
+    void deleteChangeMetadata( ChangeMetadata changeMetadata );
 
     /**
      * Delete {@link ChangeMetadataItem} for specified key
@@ -196,9 +196,9 @@ public interface ChangeSetService
     /**
      * Delete {@link ExportMetadata} for specified key
      *
-     * @param key key of {@link ExportMetadata}
+     * @param exportMetadata {@link ExportMetadata}
      */
-    void deleteExportMetadata( String key );
+    void deleteExportMetadata( ExportMetadata exportMetadata );
 
     /**
      * Start map reduce job for specified {@link ImportMetadata}

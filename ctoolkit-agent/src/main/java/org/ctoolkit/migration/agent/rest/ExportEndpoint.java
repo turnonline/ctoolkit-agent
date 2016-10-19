@@ -69,12 +69,13 @@ public class ExportEndpoint
     @ApiMethod( name = "exportBatch.delete", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteExport( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getExportMetadata( id ) == null )
+        ExportMetadata exportMetadata = service.getExportMetadata( id );
+        if ( exportMetadata == null )
         {
             throw new NotFoundException( "Export not found for id: " + id );
         }
 
-        service.deleteExportMetadata( id );
+        service.deleteExportMetadata( exportMetadata );
     }
 
     @ApiMethod( name = "exportBatch.get", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.GET )

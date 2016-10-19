@@ -38,7 +38,7 @@ public class ImportMapOnlyMapperJob
     private transient DatastoreService datastoreService;
 
     @Inject
-    transient ChannelService channelService;
+    private transient ChannelService channelService;
 
     @Override
     public void map( Entity item )

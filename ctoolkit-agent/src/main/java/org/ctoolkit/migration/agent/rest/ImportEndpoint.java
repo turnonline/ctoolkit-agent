@@ -73,12 +73,13 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.delete", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteImport( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getImportMetadata( id ) == null )
+        ImportMetadata importMetadata = service.getImportMetadata( id );
+        if ( importMetadata == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
         }
 
-        service.deleteImportMetadata( id );
+        service.deleteImportMetadata( importMetadata );
     }
 
     @ApiMethod( name = "importBatch.get", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.GET )

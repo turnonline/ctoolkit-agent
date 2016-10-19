@@ -13,6 +13,7 @@ import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
+import org.ctoolkit.migration.agent.model.ExportMetadataItem;
 import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
@@ -194,9 +195,14 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void deleteImportMetadata( String key )
+    public void deleteImportMetadata( ImportMetadata importMetadata )
     {
-        dataAccess.delete( ImportMetadata.class, key );
+        for ( ImportMetadataItem item : importMetadata.getItems() )
+        {
+            dataAccess.delete( item.getClass(), item.getKey() );
+        }
+
+        dataAccess.delete( ImportMetadata.class, importMetadata.getKey() );
     }
 
     @Override
@@ -209,9 +215,14 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void deleteChangeMetadata( String key )
+    public void deleteChangeMetadata( ChangeMetadata changeMetadata )
     {
-        dataAccess.delete( ChangeMetadata.class, key );
+        for ( ChangeMetadataItem item : changeMetadata.getItems() )
+        {
+            dataAccess.delete( item.getClass(), item.getKey() );
+        }
+
+        dataAccess.delete( ChangeMetadata.class, changeMetadata.getKey() );
     }
 
     @Override
@@ -224,9 +235,14 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void deleteExportMetadata( String key )
+    public void deleteExportMetadata( ExportMetadata exportMetadata )
     {
-        dataAccess.delete( ExportMetadata.class, key );
+        for ( ExportMetadataItem item : exportMetadata.getItems() )
+        {
+            dataAccess.delete( item.getClass(), item.getKey() );
+        }
+
+        dataAccess.delete( ExportMetadata.class, exportMetadata.getKey() );
     }
 
     @Override

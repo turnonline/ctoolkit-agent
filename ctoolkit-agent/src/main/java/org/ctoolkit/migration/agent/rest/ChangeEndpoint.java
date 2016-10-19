@@ -73,12 +73,13 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.delete", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteChange( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadata( id ) == null )
+        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
-        service.deleteChangeMetadata( id );
+        service.deleteChangeMetadata( changeMetadata );
     }
 
     @ApiMethod( name = "changeBatch.get", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.GET )
