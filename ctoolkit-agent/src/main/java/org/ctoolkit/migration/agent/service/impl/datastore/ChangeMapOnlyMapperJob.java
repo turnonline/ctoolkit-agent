@@ -81,7 +81,7 @@ public class ChangeMapOnlyMapperJob
         }
 
         // update state to COMPLETED_SUCCESSFULLY
-        item.setProperty( "state", JobState.COMPLETED_SUCCESSFULLY.name() );
+        item.setProperty( "state", jobState.name() );
         datastoreService.put( item );
 
         // send channel message to client

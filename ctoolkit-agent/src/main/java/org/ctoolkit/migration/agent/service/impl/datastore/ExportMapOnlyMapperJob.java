@@ -82,7 +82,7 @@ public class ExportMapOnlyMapperJob
 
 
         // update state to COMPLETED_SUCCESSFULLY
-        item.setProperty( "state", JobState.COMPLETED_SUCCESSFULLY.name() );
+        item.setProperty( "state", jobState.name() );
         item.setProperty( "data", new Blob( data != null ? data.getBytes( Charsets.UTF_8 ) : null ) );
         datastoreService.put( item );
 
