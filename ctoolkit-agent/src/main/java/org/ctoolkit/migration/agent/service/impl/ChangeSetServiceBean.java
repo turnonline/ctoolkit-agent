@@ -20,6 +20,8 @@ import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.model.JobState;
+import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.impl.datastore.EntityPool;
@@ -552,6 +554,18 @@ public class ChangeSetServiceBean
     public ChangeSet exportChangeSet( String entity )
     {
         return dataAccess.exportChangeSet( entity );
+    }
+
+    @Override
+    public List<KindMetaData> kinds()
+    {
+        return dataAccess.kinds();
+    }
+
+    @Override
+    public List<PropertyMetaData> properties( String kind )
+    {
+        return dataAccess.properties( kind );
     }
 
     // -- private helpers

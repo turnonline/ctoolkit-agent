@@ -1,6 +1,8 @@
 package org.ctoolkit.migration.agent.service;
 
 import org.ctoolkit.migration.agent.model.Filter;
+import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 
@@ -102,12 +104,12 @@ public interface DataAccess
     /**
      * Get entities by specified filter
      *
-     * @param type class type
+     * @param type   class type
      * @param filter filter for list
-     * @param <T>  entity type
+     * @param <T>    entity type
      * @return entity
      */
-    <T> List<T> find( Class<T> type, Filter filter);
+    <T> List<T> find( Class<T> type, Filter filter );
 
     /**
      * Delete entity
@@ -117,4 +119,19 @@ public interface DataAccess
      * @param <T>  entity type
      */
     <T> void delete( Class<T> type, String key );
+
+    /**
+     * Return list of {@link KindMetaData}
+     *
+     * @return list of {@link KindMetaData}
+     */
+    List<KindMetaData> kinds();
+
+    /**
+     * Return list of {@link PropertyMetaData}
+     *
+     * @param kind entity kind
+     * @return list of {@link PropertyMetaData}
+     */
+    List<PropertyMetaData> properties( String kind );
 }

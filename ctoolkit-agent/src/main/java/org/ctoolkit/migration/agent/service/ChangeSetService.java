@@ -10,6 +10,8 @@ import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
+import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 
 import java.util.List;
@@ -308,4 +310,19 @@ public interface ChangeSetService
      * @return change set containing change set data
      */
     ChangeSet exportChangeSet( final String entity );
+
+    /**
+     * Return list of {@link KindMetaData}
+     *
+     * @return {@link KindMetaData}
+     */
+    List<KindMetaData> kinds();
+
+    /**
+     * Return list of {@link PropertyMetaData}
+     *
+     * @param kind entity kind
+     * @return list of {@link PropertyMetaData}
+     */
+    List<PropertyMetaData> properties( String kind );
 }

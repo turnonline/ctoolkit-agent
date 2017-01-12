@@ -1,6 +1,7 @@
 package org.ctoolkit.migration.agent.service.impl.datastore;
 
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.Entities;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -8,6 +9,8 @@ import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Key;
 import ma.glasnost.orika.MapperFacade;
 import org.ctoolkit.migration.agent.model.Filter;
+import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.ChangeRuleEngine;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.IChangeRule;
@@ -16,6 +19,7 @@ import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntities;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
@@ -233,5 +237,44 @@ public class DataAccessBean
     public <T> void delete( Class<T> entity, String key )
     {
         ofy().delete().key( Key.create( key ) ).now();
+    }
+
+    @Override
+    public List<KindMetaData> kinds()
+    {
+        List<KindMetaData> kinds = new ArrayList<>();
+        Query q = new Query( Entities.KIND_METADATA_KIND );
+
+        for ( Entity e : datastore.prepare( q ).asIterable() )
+        {
+            KindMetaData kind = new KindMetaData();
+            kind.setKind( e.getKey().getName() );
+            kind.setNamespace( e.getKey().getNamespace() );
+            kinds.add( kind );
+        }
+
+        return kinds;
+    }
+
+    @Override
+    public List<PropertyMetaData> properties( String kind )
+    {
+        ArrayList<PropertyMetaData> properties = new ArrayList<>();
+        Query q = new Query( Entities.PROPERTY_METADATA_KIND );
+        q.setAncestor( Entities.createKindKey( kind ) );
+
+
+        //Build list of query results
+        for ( Entity e : datastore.prepare( q ).asIterable() )
+        {
+            PropertyMetaData property = new PropertyMetaData();
+            property.setProperty( e.getKey().getName() );
+            property.setType( ((List)e.getProperty( "property_representation" )).get( 0 ).toString().toLowerCase() );
+            property.setKind( e.getParent().getName() );
+            property.setNamespace( e.getKey().getNamespace() );
+            properties.add( property );
+        }
+
+        return properties;
     }
 }

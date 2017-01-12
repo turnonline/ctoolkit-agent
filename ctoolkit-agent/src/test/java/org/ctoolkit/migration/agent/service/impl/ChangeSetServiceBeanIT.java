@@ -6,6 +6,8 @@ import com.google.appengine.api.datastore.Query;
 import com.google.common.base.Charsets;
 import com.google.guiceberry.junit4.GuiceBerryRule;
 import org.ctoolkit.migration.agent.UseCaseEnvironment;
+import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.util.XmlUtils;
@@ -20,6 +22,7 @@ import org.xml.sax.InputSource;
 import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -255,9 +258,50 @@ public class ChangeSetServiceBeanIT
         InputStream actual = new ByteArrayInputStream( data );
         InputStream expected = ChangeSetServiceBeanIT.class.getResourceAsStream( "/export/country.xml" );
 
-        System.out.println(new String(data, Charsets.UTF_8));
+        System.out.println( new String( data, Charsets.UTF_8 ) );
 
         XMLAssert.assertXMLEqual( new InputSource( expected ), new InputSource( actual ) );
+    }
+
+    // -- kinds
+
+    @Test
+    public void testKinds() throws Exception
+    {
+        createRecord();
+
+        List<KindMetaData> kinds = service.kinds();
+
+        assertEquals( 1, kinds.size() );
+        assertEquals( "Country", kinds.get( 0 ).getKind() );
+        assertEquals( "", kinds.get( 0 ).getNamespace() );
+    }
+
+    // -- kinds
+
+    @Test
+    public void testProperties() throws Exception
+    {
+        createRecord();
+
+        List<PropertyMetaData> properties = service.properties( "Country" );
+
+        assertEquals( 3, properties.size() );
+
+        assertEquals( "code", properties.get( 0 ).getProperty() );
+        assertEquals( "string", properties.get( 0 ).getType() );
+        assertEquals( "Country", properties.get( 0 ).getKind() );
+        assertEquals( "", properties.get( 0 ).getNamespace() );
+
+        assertEquals( "extId", properties.get( 1 ).getProperty() );
+        assertEquals( "int64", properties.get( 1 ).getType() );
+        assertEquals( "Country", properties.get( 1 ).getKind() );
+        assertEquals( "", properties.get( 1 ).getNamespace() );
+
+        assertEquals( "label", properties.get( 2 ).getProperty() );
+        assertEquals( "string", properties.get( 2 ).getType() );
+        assertEquals( "Country", properties.get( 2 ).getKind() );
+        assertEquals( "", properties.get( 2 ).getNamespace() );
     }
 
     // -- private helpers

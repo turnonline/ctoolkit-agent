@@ -9,6 +9,7 @@ import org.ctoolkit.migration.agent.rest.AgentEndpointConfig;
 import org.ctoolkit.migration.agent.rest.ChangeEndpoint;
 import org.ctoolkit.migration.agent.rest.ExportEndpoint;
 import org.ctoolkit.migration.agent.rest.ImportEndpoint;
+import org.ctoolkit.migration.agent.rest.MetadataEndpoint;
 
 import javax.inject.Singleton;
 
@@ -28,6 +29,7 @@ public class AgentServletModule
                 .addServiceClass( ImportEndpoint.class )
                 .addServiceClass( ChangeEndpoint.class )
                 .addServiceClass( ExportEndpoint.class )
+                .addServiceClass( MetadataEndpoint.class )
                 // this is important, otherwise we cannot use certificates from third-party applications
                 .setClientIdWhitelistEnabled( false ).build();
 
