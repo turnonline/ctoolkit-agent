@@ -263,9 +263,8 @@ public class ChangeSetServiceBean
         }
 
         String id = MapJob.start( jobSpecificationFactory.createImportJobSpecification( key ).get(), mapReduceSettings );
-        String token = channelService.createChannel( key );
         importMetadata.setMapReduceJobId( id );
-        importMetadata.setToken( token );
+        importMetadata.setToken( channelService.createChannel( key ) );
         importMetadata.reset();
         importMetadata.save();
     }
@@ -287,6 +286,7 @@ public class ChangeSetServiceBean
 
         String id = MapJob.start( jobSpecificationFactory.createChangeJobSpecification( key ).get(), mapReduceSettings );
         changeMetadata.setMapReduceJobId( id );
+        changeMetadata.setToken( channelService.createChannel( key ) );
         changeMetadata.reset();
         changeMetadata.save();
     }
@@ -308,6 +308,7 @@ public class ChangeSetServiceBean
 
         String id = MapJob.start( jobSpecificationFactory.createExportJobSpecification( key ).get(), mapReduceSettings );
         exportMetadata.setMapReduceJobId( id );
+        exportMetadata.setToken( channelService.createChannel( key ) );
         exportMetadata.reset();
         exportMetadata.save();
     }

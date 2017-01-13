@@ -91,7 +91,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.list", path = "export", httpMethod = ApiMethod.HttpMethod.GET )
-    public List<ExportBatch> listImport( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
+    public List<ExportBatch> listExport( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
                                          @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
                                          @Nullable @Named( "orderBy" ) String orderBy,
                                          @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
