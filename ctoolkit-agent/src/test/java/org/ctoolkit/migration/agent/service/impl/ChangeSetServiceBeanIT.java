@@ -270,6 +270,9 @@ public class ChangeSetServiceBeanIT
     {
         createRecord();
 
+        Entity sysKind = new Entity( "_ExportMetadata", 1 );
+        datastoreService.put( sysKind );
+
         List<KindMetaData> kinds = service.kinds();
 
         assertEquals( 1, kinds.size() );

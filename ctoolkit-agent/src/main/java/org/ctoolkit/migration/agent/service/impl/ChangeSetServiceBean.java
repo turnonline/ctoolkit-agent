@@ -5,6 +5,9 @@ import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
 import com.google.appengine.tools.pipeline.PipelineService;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
@@ -33,8 +36,11 @@ import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindPropOp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of {@link ChangeSetService}
@@ -58,6 +64,8 @@ public class ChangeSetServiceBean
 
     private final ChannelService channelService;
 
+    private Set<String> systemKinds = new HashSet<>();
+
     @Inject
     public ChangeSetServiceBean( EntityPool pool,
                                  DataAccess dataAccess,
@@ -72,6 +80,22 @@ public class ChangeSetServiceBean
         this.mapReduceSettings = mapReduceSettings;
         this.pipelineService = pipelineService;
         this.channelService = channelService;
+
+        systemKinds.add( "MR-IncrementalTask" );
+        systemKinds.add( "MR-SharedJob" );
+        systemKinds.add( "pipeline-barrier" );
+        systemKinds.add( "pipeline-fanoutTask" );
+        systemKinds.add( "pipeline-job" );
+        systemKinds.add( "pipeline-jobInstanceRecord" );
+        systemKinds.add( "pipeline-slot" );
+        systemKinds.add( "__GsFileInfo__" );
+
+        systemKinds.add( "_ImportMetadata" );
+        systemKinds.add( "_ImportMetadataItem" );
+        systemKinds.add( "_ExportMetadata" );
+        systemKinds.add( "_ExportMetadataItem" );
+        systemKinds.add( "_ChangeMetadata" );
+        systemKinds.add( "_ChangeMetadataItem" );
     }
 
     @Override
@@ -560,7 +584,17 @@ public class ChangeSetServiceBean
     @Override
     public List<KindMetaData> kinds()
     {
-        return dataAccess.kinds();
+        List<KindMetaData> kinds = dataAccess.kinds();
+        Iterable<KindMetaData> result = Iterables.filter( kinds, new Predicate<KindMetaData>()
+        {
+            @Override
+            public boolean apply( @Nullable KindMetaData input )
+            {
+                return !systemKinds.contains( input.getKind() );
+            }
+        } );
+
+        return Lists.newArrayList( result );
     }
 
     @Override
