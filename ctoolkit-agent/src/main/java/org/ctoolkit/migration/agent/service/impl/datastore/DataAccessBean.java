@@ -17,6 +17,8 @@ import org.ctoolkit.migration.agent.service.impl.datastore.rule.IChangeRule;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntities;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
+import org.ctoolkit.migration.agent.shared.resources.ChangeSetModel;
+import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindOp;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -74,6 +76,14 @@ public class DataAccessBean
         changeSet.setAuthor( "ctoolkit-agent" );
         changeSet.setEntities( new ChangeSetEntities() );
 
+        // add default model clean action
+        changeSet.setModel( new ChangeSetModel() );
+        ChangeSetModelKindOp kinOp = new ChangeSetModelKindOp();
+        kinOp.setKind(entityName);
+        kinOp.setOp( ChangeSetModelKindOp.OP_CLEAN );
+        changeSet.getModel().getKindOp().add( kinOp );
+
+        // add entities
         Query query = new Query( entityName );
         PreparedQuery preparedQuery = datastore.prepare( query );
         for ( Entity entity : preparedQuery.asIterable() )
@@ -269,7 +279,7 @@ public class DataAccessBean
         {
             PropertyMetaData property = new PropertyMetaData();
             property.setProperty( e.getKey().getName() );
-            property.setType( ((List)e.getProperty( "property_representation" )).get( 0 ).toString().toLowerCase() );
+            property.setType( ( ( List ) e.getProperty( "property_representation" ) ).get( 0 ).toString().toLowerCase() );
             property.setKind( e.getParent().getName() );
             property.setNamespace( e.getKey().getNamespace() );
             properties.add( property );
