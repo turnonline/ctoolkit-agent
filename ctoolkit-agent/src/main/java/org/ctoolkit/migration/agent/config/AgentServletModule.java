@@ -5,6 +5,7 @@ import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
 import com.google.appengine.tools.mapreduce.MapReduceServlet;
 import com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet;
 import com.googlecode.objectify.ObjectifyFilter;
+import org.ctoolkit.migration.agent.AccessControlAllowOrignFilter;
 import org.ctoolkit.migration.agent.rest.AgentEndpointConfig;
 import org.ctoolkit.migration.agent.rest.ChangeEndpoint;
 import org.ctoolkit.migration.agent.rest.ExportEndpoint;
@@ -43,5 +44,8 @@ public class AgentServletModule
 
         bind( PipelineServlet.class ).in( Singleton.class );
         serve( "/_ah/pipeline/*" ).with( PipelineServlet.class );
+
+        bind( AccessControlAllowOrignFilter.class ).in( Singleton.class );
+        filter( "/*" ).through( AccessControlAllowOrignFilter.class );
     }
 }
