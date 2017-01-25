@@ -5,8 +5,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.repackaged.com.google.common.util.Base64;
-import com.google.appengine.repackaged.com.google.common.util.Base64DecoderException;
+import com.google.appengine.repackaged.com.google.api.client.util.Base64;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntityProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,9 +123,9 @@ public class EntityEncoder
         {
             try
             {
-                return new ShortBlob( Base64.decode( value ) );
+                return new ShortBlob( Base64.decodeBase64( value ) );
             }
-            catch ( Base64DecoderException e )
+            catch ( Exception e )
             {
                 logger.error( "Error by encoding short blob: '" + value + "'" );
                 return null;
@@ -136,9 +135,9 @@ public class EntityEncoder
         {
             try
             {
-                return new Blob( Base64.decode( value ) );
+                return new Blob( Base64.decodeBase64( value ) );
             }
-            catch ( Base64DecoderException e )
+            catch ( Exception e )
             {
                 logger.error( "Error by encoding blob: '" + value + "'" );
                 return null;
@@ -374,7 +373,7 @@ public class EntityEncoder
     private ChangeSetEntityProperty createShortBlobProperty( String name, ShortBlob object )
     {
         return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_SHORTBLOB,
-                Base64.encode( object.getBytes() ) );
+                Base64.encodeBase64String( object.getBytes() ) );
     }
 
     /**
@@ -386,6 +385,6 @@ public class EntityEncoder
     private ChangeSetEntityProperty createBlobProperty( String name, Blob object )
     {
         return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_BLOB,
-                Base64.encode( object.getBytes() ) );
+                Base64.encodeBase64String( object.getBytes() ) );
     }
 }

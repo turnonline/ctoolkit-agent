@@ -99,7 +99,7 @@ public class ImportEndpoint
                                          @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
                                          @Nullable @Named( "orderBy" ) String orderBy,
                                          @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
-                                         User authUser ) throws Exception
+                                         User authUser) throws Exception
     {
         Filter filter = new Filter.Builder<>()
                 .start( start )

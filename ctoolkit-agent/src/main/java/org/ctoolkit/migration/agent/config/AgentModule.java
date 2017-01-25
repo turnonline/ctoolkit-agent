@@ -12,6 +12,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.servlet.RequestScoped;
 import com.googlecode.objectify.ObjectifyService;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
@@ -26,9 +27,12 @@ import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.ExportMetadataItem;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
+import org.ctoolkit.migration.agent.rest.IAMAuthenticator;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.service.DataAccess;
+import org.ctoolkit.migration.agent.service.RestContext;
 import org.ctoolkit.migration.agent.service.impl.ChangeSetServiceBean;
+import org.ctoolkit.migration.agent.service.impl.RestContextThreadLocal;
 import org.ctoolkit.migration.agent.service.impl.datastore.ChangeJobMapSpecificationProvider;
 import org.ctoolkit.migration.agent.service.impl.datastore.ChangeMapOnlyMapperJob;
 import org.ctoolkit.migration.agent.service.impl.datastore.DataAccessBean;
@@ -100,6 +104,8 @@ public class AgentModule
         bind( NewTypeNewValueChangeRule.class ).in( Singleton.class );
         bind( NewNameNewTypeNewValueChangeRule.class ).in( Singleton.class );
 
+        bind( RestContext.class ).to( RestContextThreadLocal.class ).in( RequestScoped.class );
+
         ObjectifyService.register( ImportMetadata.class );
         ObjectifyService.register( ImportMetadataItem.class );
         ObjectifyService.register( ChangeMetadata.class );
@@ -110,6 +116,7 @@ public class AgentModule
         requestStaticInjection( ImportMapOnlyMapperJob.class );
         requestStaticInjection( ChangeMapOnlyMapperJob.class );
         requestStaticInjection( ExportMapOnlyMapperJob.class );
+        requestStaticInjection( IAMAuthenticator.class );
     }
 
     @Provides

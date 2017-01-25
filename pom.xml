@@ -79,7 +79,7 @@
     <properties>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
         <!-- Overrides versions from the comvai-datastore-backend pom.xml -->
-        <gae.version>1.9.21</gae.version>
+        <gae.version>1.9.36</gae.version>
         <orika.version>1.4.6</orika.version>
         <jmockit.version>1.18</jmockit.version>
         <!-- jmockit settings for OpenJDK otherwise throws 'IllegalStateException: To run on OpenJDK 64-Bit Server VM use -javaagent..' -->
