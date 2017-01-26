@@ -82,7 +82,7 @@ public class ChangeSetServiceBean
         this.channelService = channelService;
 
         systemKinds.add( "MR-IncrementalTask" );
-        systemKinds.add( "MR-SharedJob" );
+        systemKinds.add( "MR-ShardedJob" );
         systemKinds.add( "pipeline-barrier" );
         systemKinds.add( "pipeline-fanoutTask" );
         systemKinds.add( "pipeline-job" );
