@@ -19,6 +19,7 @@ import java.util.List;
  */
 @Api
 @ApiReference( AgentEndpointConfig.class )
+@Authorized
 public class MetadataEndpoint
 {
     private final ChangeSetService service;

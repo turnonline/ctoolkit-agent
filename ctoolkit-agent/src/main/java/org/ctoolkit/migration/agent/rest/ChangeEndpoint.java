@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Api
 @ApiReference( AgentEndpointConfig.class )
-// TODO: resolve security issue
+@Authorized
 public class ChangeEndpoint
 {
     private final ChangeSetService service;

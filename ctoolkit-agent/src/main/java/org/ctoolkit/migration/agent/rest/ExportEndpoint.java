@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Api
 @ApiReference( AgentEndpointConfig.class )
-// TODO: resolve security issue
+@Authorized
 public class ExportEndpoint
 {
     private final ChangeSetService service;
