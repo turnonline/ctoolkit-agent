@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * Filter adds Access-Control-Allow-* response headers + handles options method wich is called before an actual call
+ *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class AccessControlAllowOrignFilter
@@ -32,7 +34,7 @@ public class AccessControlAllowOrignFilter
         HttpServletRequest httpRequest = ( HttpServletRequest ) request;
 
         httpResponse.setHeader( "Access-Control-Allow-Origin", "*" );
-        httpResponse.setHeader( "Access-Control-Allow-Headers", "Access-Control-Allow-Origin, gtoken");
+        httpResponse.setHeader( "Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Content-Type,gtoken" );
 
         if ( !httpRequest.getMethod().equals( HttpMethods.OPTIONS ) )
         {

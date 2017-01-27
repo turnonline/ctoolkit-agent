@@ -25,6 +25,7 @@ public class AgentServletModule
     {
         super.configureServlets();
 
+        // endpoints filter
         ServletInitializationParameters params = ServletInitializationParameters.builder()
                 .addServiceClass( AgentEndpointConfig.class )
                 .addServiceClass( ImportEndpoint.class )
@@ -33,19 +34,21 @@ public class AgentServletModule
                 .addServiceClass( MetadataEndpoint.class )
                 // this is important, otherwise we cannot use certificates from third-party applications
                 .setClientIdWhitelistEnabled( false ).build();
+        serveGuiceSystemServiceServlet( "/_ah/spi/*", params );
 
-        this.serveGuiceSystemServiceServlet( "/_ah/spi/*", params );
-
+        // objectify filter
         bind( ObjectifyFilter.class ).in( Singleton.class );
         filter( "/*" ).through( ObjectifyFilter.class );
 
+        // access control filter
+        bind( AccessControlAllowOrignFilter.class ).in( Singleton.class );
+        filter( "/*" ).through( AccessControlAllowOrignFilter.class );
+
+        // map reduce servlets
         bind( MapReduceServlet.class ).in( Singleton.class );
         serve( "/mapreduce/*" ).with( MapReduceServlet.class );
 
         bind( PipelineServlet.class ).in( Singleton.class );
         serve( "/_ah/pipeline/*" ).with( PipelineServlet.class );
-
-        bind( AccessControlAllowOrignFilter.class ).in( Singleton.class );
-        filter( "/*" ).through( AccessControlAllowOrignFilter.class );
     }
 }

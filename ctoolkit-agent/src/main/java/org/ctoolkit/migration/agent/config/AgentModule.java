@@ -191,9 +191,7 @@ public class AgentModule
     public MapReduceSettings provideMapReduceSettings()
     {
         return new MapReduceSettings.Builder()
-                .setBucketName( null )
                 .setWorkerQueueName( "ctoolkit-agent" )
-                .setModule( "ctoolkit-agent" )
                 .build();
     }
 }
