@@ -16,8 +16,6 @@ public interface ISet<JI extends JobInfo>
 
     void setMapReduceJobId( String mapReduceJobId );
 
-    void setToken( String token );
-
     void setCreateDate( Date createDate );
 
     void setUpdateDate( Date updateDate );

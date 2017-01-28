@@ -3,6 +3,8 @@ package org.ctoolkit.migration.agent.model;
 /**
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
+//TODO: get rid of
+@Deprecated
 public class JobInfoMessage
 {
     private String key;

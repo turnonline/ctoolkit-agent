@@ -1,6 +1,5 @@
 package org.ctoolkit.migration.agent.service.impl;
 
-import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
@@ -62,8 +61,6 @@ public class ChangeSetServiceBean
 
     private final PipelineService pipelineService;
 
-    private final ChannelService channelService;
-
     private Set<String> systemKinds = new HashSet<>();
 
     @Inject
@@ -71,15 +68,13 @@ public class ChangeSetServiceBean
                                  DataAccess dataAccess,
                                  JobSpecificationFactory jobSpecificationFactory,
                                  MapReduceSettings mapReduceSettings,
-                                 PipelineService pipelineService,
-                                 ChannelService channelService )
+                                 PipelineService pipelineService)
     {
         this.pool = pool;
         this.dataAccess = dataAccess;
         this.jobSpecificationFactory = jobSpecificationFactory;
         this.mapReduceSettings = mapReduceSettings;
         this.pipelineService = pipelineService;
-        this.channelService = channelService;
 
         systemKinds.add( "MR-IncrementalTask" );
         systemKinds.add( "MR-ShardedJob" );
@@ -288,7 +283,6 @@ public class ChangeSetServiceBean
 
         String id = MapJob.start( jobSpecificationFactory.createImportJobSpecification( key ).get(), mapReduceSettings );
         importMetadata.setMapReduceJobId( id );
-        importMetadata.setToken( channelService.createChannel( key ) );
         importMetadata.reset();
         importMetadata.save();
     }
@@ -310,7 +304,6 @@ public class ChangeSetServiceBean
 
         String id = MapJob.start( jobSpecificationFactory.createChangeJobSpecification( key ).get(), mapReduceSettings );
         changeMetadata.setMapReduceJobId( id );
-        changeMetadata.setToken( channelService.createChannel( key ) );
         changeMetadata.reset();
         changeMetadata.save();
     }
@@ -332,7 +325,6 @@ public class ChangeSetServiceBean
 
         String id = MapJob.start( jobSpecificationFactory.createExportJobSpecification( key ).get(), mapReduceSettings );
         exportMetadata.setMapReduceJobId( id );
-        exportMetadata.setToken( channelService.createChannel( key ) );
         exportMetadata.reset();
         exportMetadata.save();
     }
@@ -624,8 +616,8 @@ public class ChangeSetServiceBean
         jobInfo.setId( key );
         jobInfo.setMapReduceJobId( baseMetadata.getMapReduceJobId() );
         jobInfo.setProcessedItems( baseMetadata.getProcessedItems() );
+        jobInfo.setProcessedErrorItems( baseMetadata.getProcessedErrorItems() );
         jobInfo.setTotalItems( baseMetadata.getItemsCount() );
-        jobInfo.setToken( baseMetadata.getToken() );
 
         if ( pipelineJobInfo != null )
         {

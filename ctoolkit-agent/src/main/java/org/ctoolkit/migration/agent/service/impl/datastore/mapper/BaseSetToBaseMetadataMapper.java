@@ -58,7 +58,6 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
         set.setMapReduceJobId( metadata.getMapReduceJobId() );
         set.setCreateDate( metadata.getCreateDate() );
         set.setUpdateDate( metadata.getUpdateDate() );
-        set.setToken( metadata.getToken() );
 
         extraMapBToA( metadata, set );
 
