@@ -175,15 +175,16 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public ChangeJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadata( id ) == null )
+        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
         try
         {
-            service.startChangeJob( id );
-            return service.getChangeJobInfo( id );
+            service.startChangeJob( changeMetadata );
+            return service.getChangeJobInfo( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -194,15 +195,16 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.cancel", path = "change/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
     public ChangeJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadata( id ) == null )
+        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
         try
         {
-            service.cancelChangeJob( id );
-            return service.getChangeJobInfo( id );
+            service.cancelChangeJob( changeMetadata );
+            return service.getChangeJobInfo( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -213,14 +215,15 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.delete", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadata( id ) == null )
+        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
         try
         {
-            service.deleteChangeJob( id );
+            service.deleteChangeJob( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -231,14 +234,15 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadata( id ) == null )
+        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
         try
         {
-            return service.getChangeJobInfo( id );
+            return service.getChangeJobInfo( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {

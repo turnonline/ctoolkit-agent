@@ -33,6 +33,6 @@ public class ImportToImportMetadataMapper
     @Override
     protected void extraMapBToA( ImportMetadata metadata, ImportBatch set )
     {
-        set.setJobInfo( changeSetService.getImportJobInfo( metadata.getKey() ) );
+        set.setJobInfo( changeSetService.getImportJobInfo( metadata ) );
     }
 }

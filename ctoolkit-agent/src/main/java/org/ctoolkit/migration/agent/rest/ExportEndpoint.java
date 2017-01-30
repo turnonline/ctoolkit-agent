@@ -119,15 +119,16 @@ public class ExportEndpoint
     @ApiMethod( name = "exportBatch.job.start", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public ExportJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getExportMetadata( id ) == null )
+        ExportMetadata exportMetadata = service.getExportMetadata( id );
+        if ( exportMetadata == null )
         {
             throw new NotFoundException( "Export not found for id: " + id );
         }
 
         try
         {
-            service.startExportJob( id );
-            return service.getExportJobInfo( id );
+            service.startExportJob( exportMetadata );
+            return service.getExportJobInfo( exportMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -138,15 +139,16 @@ public class ExportEndpoint
     @ApiMethod( name = "exportBatch.job.cancel", path = "export/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
     public ExportJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getExportMetadata( id ) == null )
+        ExportMetadata exportMetadata = service.getExportMetadata( id );
+        if ( exportMetadata == null )
         {
             throw new NotFoundException( "Export not found for id: " + id );
         }
 
         try
         {
-            service.cancelExportJob( id );
-            return service.getExportJobInfo( id );
+            service.cancelExportJob( exportMetadata );
+            return service.getExportJobInfo( exportMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -157,14 +159,15 @@ public class ExportEndpoint
     @ApiMethod( name = "exportBatch.job.delete", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getExportMetadata( id ) == null )
+        ExportMetadata exportMetadata = service.getExportMetadata( id );
+        if ( exportMetadata == null )
         {
             throw new NotFoundException( "Export not found for id: " + id );
         }
 
         try
         {
-            service.deleteExportJob( id );
+            service.deleteExportJob( exportMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -175,14 +178,15 @@ public class ExportEndpoint
     @ApiMethod( name = "exportBatch.job.progress", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ExportJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getExportMetadata( id ) == null )
+        ExportMetadata exportMetadata = service.getExportMetadata( id );
+        if ( exportMetadata == null )
         {
             throw new NotFoundException( "Export not found for id: " + id );
         }
 
         try
         {
-            return service.getExportJobInfo( id );
+            return service.getExportJobInfo( exportMetadata );
         }
         catch ( ObjectNotFoundException e )
         {

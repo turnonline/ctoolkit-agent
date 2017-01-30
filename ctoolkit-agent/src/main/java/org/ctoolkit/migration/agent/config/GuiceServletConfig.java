@@ -18,6 +18,7 @@ public class GuiceServletConfig
         return Guice.createInjector( Stage.PRODUCTION,
                 new AgentModule(),
                 new AgentServletModule(),
-                new IAMModule() );
+                new IAMModule()
+        );
     }
 }

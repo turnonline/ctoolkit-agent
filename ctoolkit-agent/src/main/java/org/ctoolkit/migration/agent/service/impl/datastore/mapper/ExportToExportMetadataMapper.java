@@ -33,7 +33,7 @@ public class ExportToExportMetadataMapper
     @Override
     protected void extraMapBToA( ExportMetadata metadata, ExportBatch set )
     {
-        set.setJobInfo( changeSetService.getExportJobInfo( metadata.getKey() ) );
+        set.setJobInfo( changeSetService.getExportJobInfo( metadata ) );
     }
 
     @Override

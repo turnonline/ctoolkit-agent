@@ -2,5 +2,6 @@
     <queue>
         <name>ctoolkit-agent</name>
         <rate>100/s</rate>
+        <max-concurrent-requests>100</max-concurrent-requests>
     </queue>
 </queue-entries>

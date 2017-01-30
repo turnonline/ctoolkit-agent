@@ -33,6 +33,12 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     @Ignore
     private boolean itemsLoaded;
 
+    private int itemsCount;
+
+    private int processedOk;
+
+    private int processedError;
+
     public String getName()
     {
         return name;
@@ -70,7 +76,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     public int getItemsCount()
     {
-        return itemsRef.size();
+        return itemsCount;
     }
 
     public ITEM getItemByIdOrCreateNewOne( Long id )
@@ -99,36 +105,19 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         {
             item.setState( JobState.RUNNING );
         }
+
+        processedOk = 0;
+        processedError = 0;
     }
 
     public int getProcessedItems()
     {
-        int processed = 0;
-
-        for ( ITEM item : getItems() )
-        {
-            if ( item.getState() == JobState.COMPLETED_SUCCESSFULLY )
-            {
-                processed++;
-            }
-        }
-
-        return processed;
+        return processedOk;
     }
 
     public int getProcessedErrorItems()
     {
-        int processed = 0;
-
-        for ( ITEM item : getItems() )
-        {
-            if ( item.getState() == JobState.STOPPED_BY_ERROR )
-            {
-                processed++;
-            }
-        }
-
-        return processed;
+        return processedError;
     }
 
     public void save()
@@ -140,10 +129,12 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         ofy().save().entity( this ).now();
 
         // put back childs
+        itemsCount = 0;
         for ( ITEM next : temp )
         {
             ofy().save().entity( next ).now();
             items.add( next );
+            itemsCount++;
         }
 
         // now save parent one more time with item associations

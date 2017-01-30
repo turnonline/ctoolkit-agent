@@ -2,6 +2,8 @@ package org.ctoolkit.migration.agent.config;
 
 import com.google.api.server.spi.ServletInitializationParameters;
 import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
+import com.google.appengine.tools.appstats.AppstatsFilter;
+import com.google.appengine.tools.appstats.AppstatsServlet;
 import com.google.appengine.tools.mapreduce.MapReduceServlet;
 import com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet;
 import com.googlecode.objectify.ObjectifyFilter;
@@ -13,6 +15,8 @@ import org.ctoolkit.migration.agent.rest.ImportEndpoint;
 import org.ctoolkit.migration.agent.rest.MetadataEndpoint;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
@@ -50,5 +54,18 @@ public class AgentServletModule
 
         bind( PipelineServlet.class ).in( Singleton.class );
         serve( "/_ah/pipeline/*" ).with( PipelineServlet.class );
+
+        // appstats configuration
+        bind( AppstatsServlet.class ).in( Singleton.class );
+        bind( AppstatsFilter.class ).in( Singleton.class );
+
+        serve( "/appstats/*" ).with( AppstatsServlet.class );
+
+        // Appstats configuration
+        Map<String, String> initParams = new HashMap<String, String>();
+        initParams.put( "logMessage", "Appstats available: /appstats/details?time={ID}" );
+
+        // exclude appstats itself from logging
+        filterRegex( "^((?!/appstats/).)*$" ).through( AppstatsFilter.class, initParams );
     }
 }

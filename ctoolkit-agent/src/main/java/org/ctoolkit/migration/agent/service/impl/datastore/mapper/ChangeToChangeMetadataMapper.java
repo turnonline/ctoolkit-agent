@@ -33,6 +33,6 @@ public class ChangeToChangeMetadataMapper
     @Override
     protected void extraMapBToA( ChangeMetadata metadata, ChangeBatch set )
     {
-        set.setJobInfo( changeSetService.getChangeJobInfo( metadata.getKey() ) );
+        set.setJobInfo( changeSetService.getChangeJobInfo( metadata ) );
     }
 }

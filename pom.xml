@@ -88,6 +88,7 @@
         </jmockit.setting>
         <xmlunit.version>1.6</xmlunit.version>
         <gwt.version>2.7.0</gwt.version>
+        <guice.version>4.1.0</guice.version>
     </properties>
 
 </project>

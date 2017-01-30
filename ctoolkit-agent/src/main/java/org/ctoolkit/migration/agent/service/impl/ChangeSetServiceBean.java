@@ -267,76 +267,68 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void startImportJob( String key )
+    public void startImportJob( ImportMetadata importMetadata )
     {
-        ImportMetadata importMetadata = getImportMetadata( key );
-
         // check if mapReduceJob is running
         if ( importMetadata.getMapReduceJobId() != null )
         {
-            JobInfo previousJobInfo = getImportJobInfo( key );
+            JobInfo previousJobInfo = getImportJobInfo( importMetadata );
             if ( previousJobInfo.getState() == JobState.RUNNING )
             {
                 throw new ProcessAlreadyRunning( "ImportJob process is already running: " + importMetadata.getMapReduceJobId() );
             }
         }
 
-        String id = MapJob.start( jobSpecificationFactory.createImportJobSpecification( key ).get(), mapReduceSettings );
+        String id = MapJob.start( jobSpecificationFactory.createImportJobSpecification( importMetadata.getKey() ).get(), mapReduceSettings );
         importMetadata.setMapReduceJobId( id );
         importMetadata.reset();
         importMetadata.save();
     }
 
     @Override
-    public void startChangeJob( String key )
+    public void startChangeJob( ChangeMetadata changeMetadata )
     {
-        ChangeMetadata changeMetadata = getChangeMetadata( key );
-
         // check if mapReduceJob is running
         if ( changeMetadata.getMapReduceJobId() != null )
         {
-            JobInfo previousJobInfo = getChangeJobInfo( key );
+            JobInfo previousJobInfo = getChangeJobInfo( changeMetadata );
             if ( previousJobInfo.getState() == JobState.RUNNING )
             {
                 throw new ProcessAlreadyRunning( "ChangeJob process is already running: " + changeMetadata.getMapReduceJobId() );
             }
         }
 
-        String id = MapJob.start( jobSpecificationFactory.createChangeJobSpecification( key ).get(), mapReduceSettings );
+        String id = MapJob.start( jobSpecificationFactory.createChangeJobSpecification( changeMetadata.getKey() ).get(), mapReduceSettings );
         changeMetadata.setMapReduceJobId( id );
         changeMetadata.reset();
         changeMetadata.save();
     }
 
     @Override
-    public void startExportJob( String key )
+    public void startExportJob( ExportMetadata exportMetadata )
     {
-        ExportMetadata exportMetadata = getExportMetadata( key );
-
         // check if mapReduceJob is running
         if ( exportMetadata.getMapReduceJobId() != null )
         {
-            JobInfo previousJobInfo = getExportJobInfo( key );
+            JobInfo previousJobInfo = getExportJobInfo( exportMetadata );
             if ( previousJobInfo.getState() == JobState.RUNNING )
             {
                 throw new ProcessAlreadyRunning( "ExportJob process is already running: " + exportMetadata.getMapReduceJobId() );
             }
         }
 
-        String id = MapJob.start( jobSpecificationFactory.createExportJobSpecification( key ).get(), mapReduceSettings );
+        String id = MapJob.start( jobSpecificationFactory.createExportJobSpecification( exportMetadata.getKey() ).get(), mapReduceSettings );
         exportMetadata.setMapReduceJobId( id );
         exportMetadata.reset();
         exportMetadata.save();
     }
 
     @Override
-    public void cancelImportJob( String key )
+    public void cancelImportJob( ImportMetadata importMetadata )
     {
-        ImportMetadata importMetadata = getImportMetadata( key );
-
         if ( importMetadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + importMetadata );
         }
 
         try
@@ -350,13 +342,11 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void cancelChangeJob( String key )
+    public void cancelChangeJob( ChangeMetadata changeMetadata )
     {
-        ChangeMetadata changeMetadata = getChangeMetadata( key );
-
         if ( changeMetadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + changeMetadata );
         }
 
         try
@@ -370,13 +360,11 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void cancelExportJob( String key )
+    public void cancelExportJob( ExportMetadata exportMetadata )
     {
-        ExportMetadata exportMetadata = getExportMetadata( key );
-
         if ( exportMetadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + exportMetadata );
         }
 
         try
@@ -390,13 +378,11 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void deleteImportJob( String key )
+    public void deleteImportJob( ImportMetadata importMetadata )
     {
-        ImportMetadata importMetadata = getImportMetadata( key );
-
         if ( importMetadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + importMetadata );
         }
 
         try
@@ -410,13 +396,11 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void deleteChangeJob( String key )
+    public void deleteChangeJob( ChangeMetadata changeMetadata )
     {
-        ChangeMetadata changeMetadata = getChangeMetadata( key );
-
         if ( changeMetadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + changeMetadata );
         }
 
         try
@@ -430,13 +414,11 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void deleteExportJob( String key )
+    public void deleteExportJob( ExportMetadata exportMetadata )
     {
-        ExportMetadata exportMetadata = getExportMetadata( key );
-
         if ( exportMetadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for key: " + key );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + exportMetadata );
         }
 
         try
@@ -450,27 +432,21 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public ImportJobInfo getImportJobInfo( String key )
+    public ImportJobInfo getImportJobInfo( ImportMetadata importMetadata )
     {
-        ImportMetadata importMetadata = getImportMetadata( key );
-
-        return getJobInfoInternal( importMetadata, new ImportJobInfo(), key );
+        return getJobInfoInternal( importMetadata, new ImportJobInfo() );
     }
 
     @Override
-    public ChangeJobInfo getChangeJobInfo( String key )
+    public ChangeJobInfo getChangeJobInfo( ChangeMetadata changeMetadata )
     {
-        ChangeMetadata changeMetadata = getChangeMetadata( key );
-
-        return getJobInfoInternal( changeMetadata, new ChangeJobInfo(), key );
+        return getJobInfoInternal( changeMetadata, new ChangeJobInfo() );
     }
 
     @Override
-    public ExportJobInfo getExportJobInfo( String key )
+    public ExportJobInfo getExportJobInfo( ExportMetadata exportMetadata )
     {
-        ExportMetadata exportMetadata = getExportMetadata( key );
-
-        return getJobInfoInternal( exportMetadata, new ExportJobInfo(), key );
+        return getJobInfoInternal( exportMetadata, new ExportJobInfo() );
     }
 
     @Override
@@ -597,7 +573,7 @@ public class ChangeSetServiceBean
 
     // -- private helpers
 
-    private <T extends JobInfo> T getJobInfoInternal( BaseMetadata baseMetadata, T jobInfo, String key )
+    private <T extends JobInfo> T getJobInfoInternal( BaseMetadata baseMetadata, T jobInfo )
     {
         com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = null;
 
@@ -613,7 +589,7 @@ public class ChangeSetServiceBean
             }
         }
 
-        jobInfo.setId( key );
+        jobInfo.setId( baseMetadata.getKey() );
         jobInfo.setMapReduceJobId( baseMetadata.getMapReduceJobId() );
         jobInfo.setProcessedItems( baseMetadata.getProcessedItems() );
         jobInfo.setProcessedErrorItems( baseMetadata.getProcessedErrorItems() );

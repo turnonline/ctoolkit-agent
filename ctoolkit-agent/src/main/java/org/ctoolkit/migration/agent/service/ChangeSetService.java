@@ -205,89 +205,89 @@ public interface ChangeSetService
     /**
      * Start map reduce job for specified {@link ImportMetadata}
      *
-     * @param key key of {@link ImportMetadata}
+     * @param importMetadata {@link ImportMetadata}
      */
-    void startImportJob( String key );
+    void startImportJob( ImportMetadata importMetadata );
 
     /**
      * Start map reduce job for specified {@link ChangeMetadata}
      *
-     * @param key key of {@link ChangeMetadata}
+     * @param changeMetadata {@link ChangeMetadata}
      */
-    void startChangeJob( String key );
+    void startChangeJob( ChangeMetadata changeMetadata );
 
     /**
      * Start map reduce job for specified {@link ExportMetadata}
      *
-     * @param key key of {@link ExportMetadata}
+     * @param exportMetadata k{@link ExportMetadata}
      */
-    void startExportJob( String key );
+    void startExportJob( ExportMetadata exportMetadata );
 
     /**
      * Cancel map reduce job for specified {@link ImportMetadata}
      *
-     * @param key key of {@link ImportMetadata}
+     * @param importMetadata {@link ImportMetadata}
      */
-    void cancelImportJob( String key );
+    void cancelImportJob( ImportMetadata importMetadata );
 
     /**
      * Cancel map reduce job for specified {@link ChangeMetadata}
      *
-     * @param key key of {@link ChangeMetadata}
+     * @param changeMetadata {@link ChangeMetadata}
      */
-    void cancelChangeJob( String key );
+    void cancelChangeJob( ChangeMetadata changeMetadata );
 
     /**
      * Cancel map reduce job for specified {@link ExportMetadata}
      *
-     * @param key key of {@link ExportMetadata}
+     * @param exportMetadata {@link ExportMetadata}
      */
-    void cancelExportJob( String key );
+    void cancelExportJob( ExportMetadata exportMetadata );
 
     /**
      * Delete map reduce job for specified {@link ImportMetadata}
      *
-     * @param key key of {@link ImportMetadata}
+     * @param importMetadata  {@link ImportMetadata}
      */
-    void deleteImportJob( String key );
+    void deleteImportJob( ImportMetadata importMetadata );
 
     /**
      * Delete map reduce job for specified {@link ChangeMetadata}
      *
-     * @param key key of {@link ChangeMetadata}
+     * @param changeMetadata key of {@link ChangeMetadata}
      */
-    void deleteChangeJob( String key );
+    void deleteChangeJob( ChangeMetadata changeMetadata );
 
     /**
      * Delete map reduce job for specified {@link ExportMetadata}
      *
-     * @param key key of {@link ExportMetadata}
+     * @param exportMetadata key of {@link ExportMetadata}
      */
-    void deleteExportJob( String key );
+    void deleteExportJob( ExportMetadata exportMetadata );
 
     /**
      * Return map reduce job info
      *
-     * @param key key of {@link ImportMetadata}
+     * @param importMetadata {@link ImportMetadata}
      * @return {@link JobInfo}
      */
-    ImportJobInfo getImportJobInfo( String key );
+    ImportJobInfo getImportJobInfo( ImportMetadata importMetadata );
 
     /**
      * Return map reduce job info
      *
-     * @param key key of {@link ChangeMetadata}
+     * @param changeMetadata {@link ChangeMetadata}
      * @return {@link JobInfo}
      */
-    ChangeJobInfo getChangeJobInfo( String key );
+    ChangeJobInfo getChangeJobInfo( ChangeMetadata changeMetadata );
 
     /**
      * Return map reduce job info
      *
-     * @param key key of {@link ExportMetadata}
+     * @param exportMetadata {@link ExportMetadata}
      * @return {@link JobInfo}
      */
-    ExportJobInfo getExportJobInfo( String key );
+    ExportJobInfo getExportJobInfo( ExportMetadata exportMetadata );
 
     /**
      * Process import data change set

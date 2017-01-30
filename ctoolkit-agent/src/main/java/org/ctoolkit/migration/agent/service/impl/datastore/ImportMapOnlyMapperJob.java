@@ -1,19 +1,14 @@
 package org.ctoolkit.migration.agent.service.impl.datastore;
 
 import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.repackaged.com.google.gson.Gson;
-import com.google.appengine.tools.mapreduce.MapOnlyMapper;
 import com.google.common.base.Charsets;
-import com.google.inject.Injector;
 import org.ctoolkit.migration.agent.model.ISetItem;
 import org.ctoolkit.migration.agent.model.JobState;
-import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.util.XmlUtils;
 
-import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 
 /**
@@ -22,21 +17,12 @@ import java.io.ByteArrayInputStream;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class ImportMapOnlyMapperJob
-        extends MapOnlyMapper<Entity, Entity>
+        extends BatchMapOnlyMapperJob
 {
-    @Inject
-    private static Injector injector;
-
-    @Inject
-    private transient ChangeSetService changeSetService;
-
-    @Inject
-    private transient DatastoreService datastoreService;
-
     @Override
     public void map( Entity item )
     {
-        injector.injectMembers( this );
+        super.map( item );
 
         Blob data = ( Blob ) item.getProperty( "data" );
         ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
@@ -75,5 +61,8 @@ public class ImportMapOnlyMapperJob
         // update state
         item.setProperty( "state", jobState.name() );
         datastoreService.put( item );
+
+        // update process for parent
+        updateParent( item, jobState );
     }
 }
