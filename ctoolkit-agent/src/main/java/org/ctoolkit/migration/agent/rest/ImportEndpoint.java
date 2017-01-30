@@ -17,6 +17,7 @@ import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
+import org.ctoolkit.migration.agent.service.impl.datastore.mapper.BaseSetToBaseMetadataMapper;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -91,7 +92,9 @@ public class ImportEndpoint
             throw new NotFoundException( "Import not found for id: " + id );
         }
 
-        return mapper.map( importMetadata, ImportBatch.class );
+        Map<Object, Object> props = new HashMap<>(  );
+        props.put( BaseSetToBaseMetadataMapper.CONFIG_EXPORT_DATA, true );
+        return mapper.map( importMetadata, ImportBatch.class, new MappingContext( props ) );
     }
 
     @ApiMethod( name = "importBatch.list", path = "import", httpMethod = ApiMethod.HttpMethod.GET )

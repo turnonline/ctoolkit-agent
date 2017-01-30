@@ -17,6 +17,7 @@ import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
+import org.ctoolkit.migration.agent.service.impl.datastore.mapper.BaseSetToBaseMetadataMapper;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -85,13 +86,15 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.get", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeBatch getChange( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadata( id ) == null )
+        ChangeMetadata changeMetadataBe = service.getChangeMetadata( id );
+        if ( changeMetadataBe == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
-        ChangeMetadata changeMetadataBe = service.getChangeMetadata( id );
-        return mapper.map( changeMetadataBe, ChangeBatch.class );
+        Map<Object, Object> props = new HashMap<>(  );
+        props.put( BaseSetToBaseMetadataMapper.CONFIG_EXPORT_DATA, true );
+        return mapper.map( changeMetadataBe, ChangeBatch.class, new MappingContext( props ) );
     }
 
     @ApiMethod( name = "changeBatch.list", path = "change", httpMethod = ApiMethod.HttpMethod.GET )

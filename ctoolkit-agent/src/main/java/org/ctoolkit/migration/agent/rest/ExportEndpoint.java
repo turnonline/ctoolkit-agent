@@ -9,16 +9,20 @@ import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.model.ExportBatch;
 import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
+import org.ctoolkit.migration.agent.service.impl.datastore.mapper.BaseSetToBaseMetadataMapper;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Endpoint for DB export
@@ -81,13 +85,15 @@ public class ExportEndpoint
     @ApiMethod( name = "exportBatch.get", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ExportBatch getExport( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getExportMetadata( id ) == null )
+        ExportMetadata exportMetadataBe = service.getExportMetadata( id );
+        if ( exportMetadataBe == null )
         {
             throw new NotFoundException( "Export not found for id: " + id );
         }
 
-        ExportMetadata exportMetadataBe = service.getExportMetadata( id );
-        return mapper.map( exportMetadataBe, ExportBatch.class );
+        Map<Object, Object> props = new HashMap<>(  );
+        props.put( BaseSetToBaseMetadataMapper.CONFIG_EXPORT_DATA, true );
+        return mapper.map( exportMetadataBe, ExportBatch.class, new MappingContext( props ) );
     }
 
     @ApiMethod( name = "exportBatch.list", path = "export", httpMethod = ApiMethod.HttpMethod.GET )

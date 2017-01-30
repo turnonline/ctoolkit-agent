@@ -20,6 +20,8 @@ import java.util.Iterator;
 public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends BaseMetadata<BI>, FI extends ISetItem, BI extends BaseMetadataItem<B>>
         extends CustomMapper<F, B>
 {
+    public static String CONFIG_EXPORT_DATA = "config.exportData";
+
     @Override
     @SuppressWarnings( "unchecked" )
     public void mapAtoB( F set, B metadata, MappingContext context )
@@ -68,7 +70,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
             anItem.setName( item.getName() );
             anItem.setCreateDate( item.getCreateDate() );
             anItem.setUpdateDate( item.getUpdateDate() );
-            anItem.setData( item.getData() );
+            anItem.setData( context.getProperty( CONFIG_EXPORT_DATA ) != null ? item.getData() : null );
             anItem.setDataType( item.getDataType() );
             anItem.setState( item.getState() );
 
