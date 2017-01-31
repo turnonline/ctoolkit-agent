@@ -68,7 +68,7 @@ public class ChangeSetServiceBean
                                  DataAccess dataAccess,
                                  JobSpecificationFactory jobSpecificationFactory,
                                  MapReduceSettings mapReduceSettings,
-                                 PipelineService pipelineService)
+                                 PipelineService pipelineService )
     {
         this.pool = pool;
         this.dataAccess = dataAccess;
@@ -224,6 +224,16 @@ public class ChangeSetServiceBean
         }
 
         dataAccess.delete( ImportMetadata.class, importMetadata.getKey() );
+
+        // delete job
+        try
+        {
+            deleteImportJob( importMetadata );
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            // silently ignore
+        }
     }
 
     @Override
@@ -244,6 +254,16 @@ public class ChangeSetServiceBean
         }
 
         dataAccess.delete( ChangeMetadata.class, changeMetadata.getKey() );
+
+        // delete job
+        try
+        {
+            deleteChangeJob( changeMetadata );
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            // silently ignore
+        }
     }
 
     @Override
@@ -264,6 +284,16 @@ public class ChangeSetServiceBean
         }
 
         dataAccess.delete( ExportMetadata.class, exportMetadata.getKey() );
+
+        // delete job
+        try
+        {
+            deleteExportJob( exportMetadata );
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            // silently ignore
+        }
     }
 
     @Override
