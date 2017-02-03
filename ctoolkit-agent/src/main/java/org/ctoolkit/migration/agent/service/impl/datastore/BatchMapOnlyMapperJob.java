@@ -3,12 +3,14 @@ package org.ctoolkit.migration.agent.service.impl.datastore;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.tools.mapreduce.MapOnlyMapper;
 import com.google.inject.Injector;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import java.util.ConcurrentModificationException;
 
 /**
  * Base mapper job for batch based jobs
@@ -35,24 +37,49 @@ public abstract class BatchMapOnlyMapperJob
 
     protected void updateParent( Entity item, JobState jobState )
     {
-        try
+        int retries = 5;
+        while ( true )
         {
-            Entity parent = datastoreService.get( item.getParent() );
+            Transaction txn = datastoreService.beginTransaction();
 
-            if ( jobState == JobState.COMPLETED_SUCCESSFULLY )
+            try
             {
-                parent.setUnindexedProperty( "processedOk", ( ( Long ) parent.getProperty( "processedOk" ) ) + 1 );
-            }
-            if ( jobState == JobState.STOPPED_BY_ERROR )
-            {
-                parent.setUnindexedProperty( "processedError", ( ( Long ) parent.getProperty( "processedError" ) ) + 1 );
-            }
+                Entity parent = datastoreService.get( item.getParent() );
 
-            datastoreService.put( parent );
-        }
-        catch ( EntityNotFoundException e )
-        {
-            throw new RuntimeException( "Parent not found for import item: " + item );
+                if ( jobState == JobState.COMPLETED_SUCCESSFULLY )
+                {
+                    parent.setUnindexedProperty( "processedOk", ( ( Long ) parent.getProperty( "processedOk" ) ) + 1 );
+                }
+                if ( jobState == JobState.STOPPED_BY_ERROR )
+                {
+                    parent.setUnindexedProperty( "processedError", ( ( Long ) parent.getProperty( "processedError" ) ) + 1 );
+                }
+
+                datastoreService.put( parent );
+                txn.commit();
+                break;
+            }
+            catch ( EntityNotFoundException e )
+            {
+                throw new RuntimeException( "Parent not found for import item: " + item );
+            }
+            catch ( ConcurrentModificationException e )
+            {
+                if ( retries == 0 )
+                {
+                    throw e;
+                }
+
+                // Allow retry to occur
+                --retries;
+            }
+            finally
+            {
+                if ( txn.isActive() )
+                {
+                    txn.rollback();
+                }
+            }
         }
     }
 }

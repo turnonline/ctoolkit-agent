@@ -83,6 +83,7 @@ public class ChangeSetServiceBean
         systemKinds.add( "pipeline-job" );
         systemKinds.add( "pipeline-jobInstanceRecord" );
         systemKinds.add( "pipeline-slot" );
+        systemKinds.add( "pipeline-exception" );
         systemKinds.add( "__GsFileInfo__" );
 
         systemKinds.add( "_ImportMetadata" );
