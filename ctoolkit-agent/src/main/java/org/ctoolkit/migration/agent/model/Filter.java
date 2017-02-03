@@ -5,7 +5,7 @@ package org.ctoolkit.migration.agent.model;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class Filter
+public class Filter<M extends BaseMetadata>
 {
     private int start = 0;
 
@@ -15,12 +15,15 @@ public class Filter
 
     private boolean ascending;
 
-    public Filter( Builder<?> builder )
+    private Class<M> metadataClass;
+
+    public Filter( Builder<?, M> builder )
     {
         this.start = builder.getStart();
         this.length = builder.getLength();
         this.orderBy = builder.getOrderBy();
         this.ascending = builder.isAscending();
+        this.metadataClass = builder.getMetadataClass();
     }
 
     public int getStart()
@@ -43,7 +46,12 @@ public class Filter
         return ascending;
     }
 
-    public static class Builder<B extends Builder>
+    public Class<M> getMetadataClass()
+    {
+        return metadataClass;
+    }
+
+    public static class Builder<B extends Builder, M extends BaseMetadata>
     {
         private int start;
 
@@ -52,6 +60,8 @@ public class Filter
         private String orderBy;
 
         private boolean ascending;
+
+        private Class<M> metadataClass;
 
         public B start( int start )
         {
@@ -74,6 +84,12 @@ public class Filter
         public B ascending( boolean ascending )
         {
             this.ascending = ascending;
+            return getThis();
+        }
+
+        public B metadataClass( Class<M> metadataClass )
+        {
+            this.metadataClass = metadataClass;
             return getThis();
         }
 
@@ -100,6 +116,11 @@ public class Filter
         public boolean isAscending()
         {
             return ascending;
+        }
+
+        public Class<M> getMetadataClass()
+        {
+            return metadataClass;
         }
 
         public Filter build()

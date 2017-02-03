@@ -24,7 +24,14 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
 
     private String name;
 
+    @Ignore
     private byte[] data;
+
+    private String bucketName;
+
+    private String fileName;
+
+    private long dataLength;
 
     private ISetItem.DataType dataType;
 
@@ -66,6 +73,27 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public void setData( byte[] data )
     {
         this.data = data;
+        dataLength = data.length;
+    }
+
+    public String getBucketName()
+    {
+        return bucketName;
+    }
+
+    public void setBucketName( String bucketName )
+    {
+        this.bucketName = bucketName;
+    }
+
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    public void setFileName( String fileName )
+    {
+        this.fileName = fileName;
     }
 
     public ISetItem.DataType getDataType()
@@ -102,9 +130,11 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public String toString()
     {
         return "MetadataItem{" +
-                "data.length=" + ( data != null ? data.length : null) +
+                "data.length=" + ( data != null ? data.length : null ) +
                 ", dataType=" + dataType +
                 ", name=" + name +
+                ", bucketName=" + bucketName +
+                ", fileName=" + fileName +
                 ", state=" + state +
                 "} " + super.toString();
     }

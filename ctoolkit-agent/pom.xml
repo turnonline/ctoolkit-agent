@@ -33,6 +33,19 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--TODO: use new library-->
+        <!--CTOOLKIT DEPENDENCIES-->
+        <dependency>
+            <groupId>com.comvai.services</groupId>
+            <artifactId>common-services-api</artifactId>
+            <version>0.83</version>
+        </dependency>
+        <dependency>
+            <groupId>com.comvai.services</groupId>
+            <artifactId>common-services-gae</artifactId>
+            <version>0.81</version>
+        </dependency>
+
         <!--  IAM DEPENDENCIES -->
         <dependency>
             <groupId>com.google.identitytoolkit</groupId>

@@ -16,8 +16,9 @@ import org.ctoolkit.migration.agent.model.ImportBatch;
 import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
+import org.ctoolkit.migration.agent.model.MetadataItemKey;
+import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
-import org.ctoolkit.migration.agent.service.impl.datastore.mapper.BaseSetToBaseMetadataMapper;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class ImportEndpoint
     public ImportBatch insertImport( ImportBatch importBatch, User authUser )
     {
         ImportMetadata importMetadata = mapper.map( importBatch, ImportMetadata.class );
-        ImportMetadata importMetadataBe = service.createImportMetadata( importMetadata );
+        ImportMetadata importMetadataBe = service.create( importMetadata );
 
         return mapper.map( importMetadataBe, ImportBatch.class );
     }
@@ -60,13 +61,13 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.update", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
     public ImportBatch updateImport( @Named( "id" ) String id, ImportBatch importBatch, User authUser ) throws Exception
     {
-        if ( service.getImportMetadata( id ) == null )
+        if ( service.get( new MetadataKey<>( id, ImportMetadata.class ) ) == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
         }
 
         ImportMetadata importMetadata = mapper.map( importBatch, ImportMetadata.class );
-        ImportMetadata importMetadataBe = service.updateImportMetadata( importMetadata );
+        ImportMetadata importMetadataBe = service.update( importMetadata );
 
         return mapper.map( importMetadataBe, ImportBatch.class );
     }
@@ -74,44 +75,44 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.delete", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteImport( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = service.getImportMetadata( id );
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
         }
 
-        service.deleteImportMetadata( importMetadata );
+        service.delete( importMetadata );
     }
 
     @ApiMethod( name = "importBatch.get", path = "import/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ImportBatch getImport( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = service.getImportMetadata( id );
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
         }
 
-        Map<Object, Object> props = new HashMap<>(  );
-        props.put( BaseSetToBaseMetadataMapper.CONFIG_EXPORT_DATA, true );
-        return mapper.map( importMetadata, ImportBatch.class, new MappingContext( props ) );
+        return mapper.map( importMetadata, ImportBatch.class );
     }
 
     @ApiMethod( name = "importBatch.list", path = "import", httpMethod = ApiMethod.HttpMethod.GET )
+    @SuppressWarnings( "unchecked" )
     public List<ImportBatch> listImport( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
                                          @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
                                          @Nullable @Named( "orderBy" ) String orderBy,
                                          @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
-                                         User authUser) throws Exception
+                                         User authUser ) throws Exception
     {
-        Filter filter = new Filter.Builder<>()
+        Filter filter = new Filter.Builder()
                 .start( start )
                 .length( length )
                 .orderBy( orderBy )
                 .ascending( ascending )
+                .metadataClass( ImportMetadata.class )
                 .build();
 
-        List<ImportMetadata> importMetadataListBe = service.getImportMetadataList( filter );
+        List<ImportMetadata> importMetadataListBe = service.list( filter );
         List<ImportBatch> importBatchList = new ArrayList<>();
         for ( ImportMetadata importMetadataBe : importMetadataListBe )
         {
@@ -131,46 +132,50 @@ public class ImportEndpoint
         MappingContext ctx = new MappingContext( props );
 
         ImportMetadataItem importMetadataItem = mapper.map( importBatchItem, ImportMetadataItem.class, ctx );
-        ImportMetadataItem importMetadataItemBe = service.createImportMetadataItem( importMetadataItem );
+        ImportMetadataItem importMetadataItemBe = service.create( importMetadataItem );
 
         return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
     }
 
     @ApiMethod( name = "importBatch.item.update", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ImportBatch.ImportItem updateImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ImportBatch.ImportItem importBatchItem, User authUser ) throws Exception
+    public ImportBatch.ImportItem updateImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ImportBatch.ImportItem importBatchItem, User authUser )
+            throws Exception
     {
-        if ( service.getImportMetadataItem( id ) == null )
+        if ( service.get( new MetadataItemKey<>( id, ImportMetadataItem.class ) ) == null )
         {
             throw new NotFoundException( "Import item not found for id: " + id );
         }
 
         ImportMetadataItem importMetadataItem = mapper.map( importBatchItem, ImportMetadataItem.class );
-        ImportMetadataItem importMetadataItemBe = service.updateImportMetadataItem( importMetadataItem );
+        ImportMetadataItem importMetadataItemBe = service.update( importMetadataItem );
 
         return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
     }
 
     @ApiMethod( name = "importBatch.item.delete", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    public void deleteImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser )
+            throws Exception
     {
-        if ( service.getImportMetadataItem( id ) == null )
+        ImportMetadataItem item = service.get( new MetadataItemKey<>( id, ImportMetadataItem.class ) );
+        if ( item == null )
         {
             throw new NotFoundException( "Import item not found for id: " + id );
         }
 
-        service.deleteImportMetadataItem( id );
+        service.delete( item );
     }
 
     @ApiMethod( name = "importBatch.item.get", path = "import/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public ImportBatch.ImportItem getImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportBatch.ImportItem getImportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser )
+            throws Exception
     {
-        if ( service.getImportMetadataItem( id ) == null )
+        ImportMetadataItem item = service.get( new MetadataItemKey<>( id, ImportMetadataItem.class ) );
+        if ( item == null )
         {
             throw new NotFoundException( "Import item not found for id: " + id );
         }
 
-        ImportMetadataItem importMetadataItemBe = service.getImportMetadataItem( id );
-        return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
+        return mapper.map( item, ImportBatch.ImportItem.class );
     }
 
     // -- job CRUD
@@ -178,7 +183,7 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public ImportJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = service.getImportMetadata( id );
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
@@ -186,8 +191,8 @@ public class ImportEndpoint
 
         try
         {
-            service.startImportJob( importMetadata );
-            return service.getImportJobInfo( importMetadata );
+            service.startJob( importMetadata );
+            return service.getJobInfo( importMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -198,7 +203,7 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.job.cancel", path = "import/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
     public ImportJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = service.getImportMetadata( id );
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
@@ -206,8 +211,8 @@ public class ImportEndpoint
 
         try
         {
-            service.cancelImportJob( importMetadata );
-            return service.getImportJobInfo( importMetadata );
+            service.cancelJob( importMetadata );
+            return service.getJobInfo( importMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -218,7 +223,7 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.job.delete", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = service.getImportMetadata( id );
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
@@ -226,7 +231,7 @@ public class ImportEndpoint
 
         try
         {
-            service.deleteImportJob( importMetadata );
+            service.deleteJob( importMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -237,7 +242,7 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.job.progress", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ImportJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = service.getImportMetadata( id );
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
         {
             throw new NotFoundException( "Import not found for id: " + id );
@@ -245,7 +250,7 @@ public class ImportEndpoint
 
         try
         {
-            return service.getImportJobInfo( importMetadata );
+            return service.getJobInfo( importMetadata );
         }
         catch ( ObjectNotFoundException e )
         {

@@ -15,9 +15,11 @@ import org.ctoolkit.migration.agent.model.ChangeBatch;
 import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
+import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.Filter;
+import org.ctoolkit.migration.agent.model.MetadataItemKey;
+import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
-import org.ctoolkit.migration.agent.service.impl.datastore.mapper.BaseSetToBaseMetadataMapper;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class ChangeEndpoint
     public ChangeBatch insertChange( ChangeBatch changeBatch, User authUser )
     {
         ChangeMetadata changeMetadata = mapper.map( changeBatch, ChangeMetadata.class );
-        ChangeMetadata changeMetadataBe = service.createChangeMetadata( changeMetadata );
+        ChangeMetadata changeMetadataBe = service.create( changeMetadata );
 
         return mapper.map( changeMetadataBe, ChangeBatch.class );
     }
@@ -60,13 +62,13 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.update", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
     public ChangeBatch updateChange( @Named( "id" ) String id, ChangeBatch changeBatch, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadata( id ) == null )
+        if ( service.get( new MetadataKey<>( id, ExportMetadata.class ) ) == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
         ChangeMetadata changeMetadata = mapper.map( changeBatch, ChangeMetadata.class );
-        ChangeMetadata changeMetadataBe = service.updateChangeMetadata( changeMetadata );
+        ChangeMetadata changeMetadataBe = service.update( changeMetadata );
 
         return mapper.map( changeMetadataBe, ChangeBatch.class );
     }
@@ -74,30 +76,29 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.delete", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteChange( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
-        service.deleteChangeMetadata( changeMetadata );
+        service.delete( changeMetadata );
     }
 
     @ApiMethod( name = "changeBatch.get", path = "change/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeBatch getChange( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ChangeMetadata changeMetadataBe = service.getChangeMetadata( id );
+        ChangeMetadata changeMetadataBe = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadataBe == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
         }
 
-        Map<Object, Object> props = new HashMap<>(  );
-        props.put( BaseSetToBaseMetadataMapper.CONFIG_EXPORT_DATA, true );
-        return mapper.map( changeMetadataBe, ChangeBatch.class, new MappingContext( props ) );
+        return mapper.map( changeMetadataBe, ChangeBatch.class );
     }
 
     @ApiMethod( name = "changeBatch.list", path = "change", httpMethod = ApiMethod.HttpMethod.GET )
+    @SuppressWarnings( "unchecked" )
     public List<ChangeBatch> listChange( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
                                          @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
                                          @Nullable @Named( "orderBy" ) String orderBy,
@@ -109,9 +110,10 @@ public class ChangeEndpoint
                 .length( length )
                 .orderBy( orderBy )
                 .ascending( ascending )
+                .metadataClass( ChangeMetadata.class )
                 .build();
 
-        List<ChangeMetadata> changeMetadataListBe = service.getChangeMetadataList( filter );
+        List<ChangeMetadata> changeMetadataListBe = service.list( filter );
         List<ChangeBatch> changeBatchList = new ArrayList<>();
         for ( ChangeMetadata changeMetadataBe : changeMetadataListBe )
         {
@@ -131,7 +133,7 @@ public class ChangeEndpoint
         MappingContext ctx = new MappingContext( props );
 
         ChangeMetadataItem changeMetadataItem = mapper.map( changeBatchItem, ChangeMetadataItem.class, ctx );
-        ChangeMetadataItem changeMetadataItemBe = service.createChangeMetadataItem( changeMetadataItem );
+        ChangeMetadataItem changeMetadataItemBe = service.create( changeMetadataItem );
 
         return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
     }
@@ -139,13 +141,13 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.item.update", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
     public ChangeBatch.ChangeItem updateChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ChangeBatch.ChangeItem changeBatchItem, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadataItem( id ) == null )
+        if ( service.get( new MetadataItemKey<>( id, ChangeMetadataItem.class ) ) == null )
         {
             throw new NotFoundException( "Change item not found for id: " + id );
         }
 
         ChangeMetadataItem changeMetadataItem = mapper.map( changeBatchItem, ChangeMetadataItem.class );
-        ChangeMetadataItem changeMetadataItemBe = service.updateChangeMetadataItem( changeMetadataItem );
+        ChangeMetadataItem changeMetadataItemBe = service.update( changeMetadataItem );
 
         return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
     }
@@ -153,24 +155,25 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.item.delete", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadataItem( id ) == null )
+        ChangeMetadataItem item = service.get( new MetadataItemKey<>( id, ChangeMetadataItem.class ) );
+        if ( item == null )
         {
             throw new NotFoundException( "Change item not found for id: " + id );
         }
 
-        service.deleteChangeMetadataItem( id );
+        service.delete( item );
     }
 
     @ApiMethod( name = "changeBatch.item.get", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeBatch.ChangeItem getChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
     {
-        if ( service.getChangeMetadataItem( id ) == null )
+        ChangeMetadataItem item = service.get( new MetadataItemKey<>( id, ChangeMetadataItem.class ) );
+        if ( item == null )
         {
             throw new NotFoundException( "Change item not found for id: " + id );
         }
 
-        ChangeMetadataItem changeMetadataItemBe = service.getChangeMetadataItem( id );
-        return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
+        return mapper.map( item, ChangeBatch.ChangeItem.class );
     }
 
     // -- job CRUD
@@ -178,7 +181,7 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public ChangeJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
@@ -186,8 +189,8 @@ public class ChangeEndpoint
 
         try
         {
-            service.startChangeJob( changeMetadata );
-            return service.getChangeJobInfo( changeMetadata );
+            service.startJob( changeMetadata );
+            return service.getJobInfo( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -198,7 +201,7 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.cancel", path = "change/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
     public ChangeJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
@@ -206,8 +209,8 @@ public class ChangeEndpoint
 
         try
         {
-            service.cancelChangeJob( changeMetadata );
-            return service.getChangeJobInfo( changeMetadata );
+            service.cancelJob( changeMetadata );
+            return service.getJobInfo( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -218,7 +221,7 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.delete", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
     public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
@@ -226,7 +229,7 @@ public class ChangeEndpoint
 
         try
         {
-            service.deleteChangeJob( changeMetadata );
+            service.deleteJob( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -237,7 +240,7 @@ public class ChangeEndpoint
     @ApiMethod( name = "changeBatch.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
-        ChangeMetadata changeMetadata = service.getChangeMetadata( id );
+        ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
         {
             throw new NotFoundException( "Change not found for id: " + id );
@@ -245,7 +248,7 @@ public class ChangeEndpoint
 
         try
         {
-            return service.getChangeJobInfo( changeMetadata );
+            return service.getJobInfo( changeMetadata );
         }
         catch ( ObjectNotFoundException e )
         {

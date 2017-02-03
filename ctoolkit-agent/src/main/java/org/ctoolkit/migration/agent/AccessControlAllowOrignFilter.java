@@ -34,6 +34,7 @@ public class AccessControlAllowOrignFilter
         HttpServletRequest httpRequest = ( HttpServletRequest ) request;
 
         httpResponse.setHeader( "Access-Control-Allow-Origin", "*" );
+        httpResponse.setHeader( "Access-Control-Allow-Methods", "GET,PUT,POST,DELETE" );
         httpResponse.setHeader( "Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Content-Type,gtoken" );
 
         if ( !httpRequest.getMethod().equals( HttpMethods.OPTIONS ) )

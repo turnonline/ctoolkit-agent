@@ -1,6 +1,7 @@
 package org.ctoolkit.migration.agent.service.impl.datastore.mapper;
 
 import org.ctoolkit.migration.agent.model.ChangeBatch;
+import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
@@ -33,6 +34,6 @@ public class ChangeToChangeMetadataMapper
     @Override
     protected void extraMapBToA( ChangeMetadata metadata, ChangeBatch set )
     {
-        set.setJobInfo( changeSetService.getChangeJobInfo( metadata ) );
+        set.setJobInfo( ( ChangeJobInfo ) changeSetService.getJobInfo( metadata ) );
     }
 }

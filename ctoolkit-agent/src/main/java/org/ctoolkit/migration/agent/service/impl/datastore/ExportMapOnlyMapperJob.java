@@ -26,6 +26,8 @@ public class ExportMapOnlyMapperJob
         ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
         String data = null;
 
+        // TODO: load data
+
         JobState jobState;
 
         try

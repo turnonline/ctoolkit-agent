@@ -10,24 +10,25 @@ import com.google.common.collect.Lists;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
+import org.ctoolkit.migration.agent.model.BaseMetadataItem;
 import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
-import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
-import org.ctoolkit.migration.agent.model.ExportMetadataItem;
 import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
-import org.ctoolkit.migration.agent.model.ImportMetadataItem;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.MetadataItemKey;
+import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.migration.agent.service.impl.datastore.JobSpecificationFactory;
+import org.ctoolkit.migration.agent.service.impl.datastore.MapSpecificationProvider;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindOp;
@@ -37,9 +38,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Provider;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static com.google.appengine.tools.pipeline.JobInfo.State.RUNNING;
 
 /**
  * Implementation of {@link ChangeSetService}
@@ -62,6 +68,8 @@ public class ChangeSetServiceBean
     private final PipelineService pipelineService;
 
     private Set<String> systemKinds = new HashSet<>();
+
+    private Map<Class, Provider> jobInfoProviders = new HashMap<>();
 
     @Inject
     public ChangeSetServiceBean( EntityPool pool,
@@ -92,144 +100,74 @@ public class ChangeSetServiceBean
         systemKinds.add( "_ExportMetadataItem" );
         systemKinds.add( "_ChangeMetadata" );
         systemKinds.add( "_ChangeMetadataItem" );
-    }
 
-    @Override
-    public ImportMetadata createImportMetadata( ImportMetadata importMetadata )
-    {
-        importMetadata.save();
-        return importMetadata;
-    }
-
-    @Override
-    public ImportMetadataItem createImportMetadataItem( ImportMetadataItem importMetadataItem )
-    {
-        ImportMetadata importMetadata = importMetadataItem.getMetadata();
-        importMetadata.getItems().add( importMetadataItem );
-        importMetadata.save();
-
-        return importMetadataItem;
-    }
-
-    @Override
-    public ChangeMetadata createChangeMetadata( ChangeMetadata changeMetadata )
-    {
-        changeMetadata.save();
-        return changeMetadata;
-    }
-
-    @Override
-    public ChangeMetadataItem createChangeMetadataItem( ChangeMetadataItem changeMetadataItem )
-    {
-        ChangeMetadata changeMetadata = changeMetadataItem.getMetadata();
-        changeMetadata.getItems().add( changeMetadataItem );
-        changeMetadata.save();
-
-        return changeMetadataItem;
-    }
-
-    @Override
-    public ExportMetadata createExportMetadata( ExportMetadata exportMetadata )
-    {
-        exportMetadata.save();
-        return exportMetadata;
-    }
-
-    @Override
-    public ImportMetadata updateImportMetadata( ImportMetadata importMetadata )
-    {
-        importMetadata.save();
-        return importMetadata;
-    }
-
-    @Override
-    public ImportMetadataItem updateImportMetadataItem( ImportMetadataItem importMetadataItem )
-    {
-        return dataAccess.update( importMetadataItem );
-    }
-
-    @Override
-    public ChangeMetadata updateChangeMetadata( ChangeMetadata changeMetadata )
-    {
-        changeMetadata.save();
-        return changeMetadata;
-    }
-
-    @Override
-    public ChangeMetadataItem updateChangeMetadataItem( ChangeMetadataItem changeMetadataItem )
-    {
-        return dataAccess.update( changeMetadataItem );
-    }
-
-    @Override
-    public ExportMetadata updateExportMetadata( ExportMetadata exportMetadata )
-    {
-        exportMetadata.save();
-        return exportMetadata;
-    }
-
-    @Override
-    public ImportMetadata getImportMetadata( String key )
-    {
-        return dataAccess.find( ImportMetadata.class, key );
-    }
-
-    @Override
-    public ImportMetadataItem getImportMetadataItem( String key )
-    {
-        return dataAccess.find( ImportMetadataItem.class, key );
-    }
-
-    @Override
-    public ChangeMetadata getChangeMetadata( String key )
-    {
-        return dataAccess.find( ChangeMetadata.class, key );
-    }
-
-    @Override
-    public ChangeMetadataItem getChangeMetadataItem( String key )
-    {
-        return dataAccess.find( ChangeMetadataItem.class, key );
-    }
-
-    @Override
-    public ExportMetadata getExportMetadata( String key )
-    {
-        return dataAccess.find( ExportMetadata.class, key );
-    }
-
-    @Override
-    public List<ImportMetadata> getImportMetadataList( Filter filter )
-    {
-        return dataAccess.find( ImportMetadata.class, filter );
-    }
-
-    @Override
-    public List<ChangeMetadata> getChangeMetadataList( Filter filter )
-    {
-        return dataAccess.find( ChangeMetadata.class, filter );
-    }
-
-    @Override
-    public List<ExportMetadata> getExportMetadataList( Filter filter )
-    {
-        return dataAccess.find( ExportMetadata.class, filter );
-    }
-
-    @Override
-    public void deleteImportMetadata( ImportMetadata importMetadata )
-    {
-        for ( ImportMetadataItem item : importMetadata.getItems() )
+        // init job info providers
+        jobInfoProviders.put( ImportMetadata.class, new Provider<JobInfo>()
         {
+            @Override
+            public JobInfo get()
+            {
+                return new ImportJobInfo();
+            }
+        } );
+        jobInfoProviders.put( ExportMetadata.class, new Provider<JobInfo>()
+        {
+            @Override
+            public JobInfo get()
+            {
+                return new ExportJobInfo();
+            }
+        } );
+        jobInfoProviders.put( ChangeMetadata.class, new Provider<JobInfo>()
+        {
+            @Override
+            public JobInfo get()
+            {
+                return new ChangeJobInfo();
+            }
+        } );
+    }
+
+    // ------------------------------------------
+    // -- metadata
+    // ------------------------------------------
+
+    @Override
+    public <M extends BaseMetadata> M create( M metadata )
+    {
+        metadata.save();
+        // TODO: store blob
+        return metadata;
+    }
+
+    @Override
+    public <M extends BaseMetadata> M update( M metadata )
+    {
+        // TODO: store blob
+        return dataAccess.update( metadata );
+    }
+
+    @Override
+    public <M extends BaseMetadata> M get( MetadataKey<M> key )
+    {
+        return dataAccess.find( key.getMetadataClass(), key.getKey() );
+    }
+
+    @Override
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( M metadata )
+    {
+        for ( BaseMetadataItem item : metadata.getItems() )
+        {
+            // TODO: delete blob
             dataAccess.delete( item.getClass(), item.getKey() );
         }
 
-        dataAccess.delete( ImportMetadata.class, importMetadata.getKey() );
+        dataAccess.delete( metadata.getClass(), metadata.getKey() );
 
         // delete job
         try
         {
-            deleteImportJob( importMetadata );
+            deleteJob( metadata );
         }
         catch ( ObjectNotFoundException e )
         {
@@ -238,247 +176,172 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public void deleteImportMetadataItem( String key )
+    public <M extends BaseMetadata> List<M> list( Filter<M> filter )
     {
-        ImportMetadataItem importMetadataItem = dataAccess.find( ImportMetadataItem.class, key );
-        ImportMetadata importMetadata = importMetadataItem.getMetadata();
-        importMetadata.getItems().remove( importMetadataItem );
+        return dataAccess.find( filter.getMetadataClass(), filter );
+    }
+
+    // ------------------------------------------
+    // -- metadata item
+    // ------------------------------------------
+
+    @Override
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( MI metadataItem )
+    {
+        M importMetadata = metadataItem.getMetadata();
+        importMetadata.getItems().add( metadataItem );
         importMetadata.save();
+        // TODO: store blob
+        return metadataItem;
     }
 
     @Override
-    public void deleteChangeMetadata( ChangeMetadata changeMetadata )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI update( MI metadataItem )
     {
-        for ( ChangeMetadataItem item : changeMetadata.getItems() )
-        {
-            dataAccess.delete( item.getClass(), item.getKey() );
-        }
-
-        dataAccess.delete( ChangeMetadata.class, changeMetadata.getKey() );
-
-        // delete job
-        try
-        {
-            deleteChangeJob( changeMetadata );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            // silently ignore
-        }
+        // TODO: store blob
+        return dataAccess.update( metadataItem );
     }
 
     @Override
-    public void deleteChangeMetadataItem( String key )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<MI> key )
     {
-        ChangeMetadataItem changeMetadataItem = dataAccess.find( ChangeMetadataItem.class, key );
-        ChangeMetadata changeMetadata = changeMetadataItem.getMetadata();
-        changeMetadata.getItems().remove( changeMetadataItem );
-        changeMetadata.save();
+        // TODO: load blob
+        return dataAccess.find( key.getMetadataItemClass(), key.getKey() );
     }
 
     @Override
-    public void deleteExportMetadata( ExportMetadata exportMetadata )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( MI metadataItem )
     {
-        for ( ExportMetadataItem item : exportMetadata.getItems() )
-        {
-            dataAccess.delete( item.getClass(), item.getKey() );
-        }
-
-        dataAccess.delete( ExportMetadata.class, exportMetadata.getKey() );
-
-        // delete job
-        try
-        {
-            deleteExportJob( exportMetadata );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            // silently ignore
-        }
-    }
-
-    @Override
-    public void startImportJob( ImportMetadata importMetadata )
-    {
-        // check if mapReduceJob is running
-        if ( importMetadata.getMapReduceJobId() != null )
-        {
-            JobInfo previousJobInfo = getImportJobInfo( importMetadata );
-            if ( previousJobInfo.getState() == JobState.RUNNING )
-            {
-                throw new ProcessAlreadyRunning( "ImportJob process is already running: " + importMetadata.getMapReduceJobId() );
-            }
-        }
-
-        String id = MapJob.start( jobSpecificationFactory.createImportJobSpecification( importMetadata.getKey() ).get(), mapReduceSettings );
-        importMetadata.setMapReduceJobId( id );
-        importMetadata.reset();
+        M importMetadata = metadataItem.getMetadata();
+        importMetadata.getItems().remove( importMetadata );
         importMetadata.save();
+
+        // TODO: remove blob
     }
 
+    // ------------------------------------------
+    // -- job
+    // ------------------------------------------
+
     @Override
-    public void startChangeJob( ChangeMetadata changeMetadata )
+    public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
         // check if mapReduceJob is running
-        if ( changeMetadata.getMapReduceJobId() != null )
+        if ( metadata.getMapReduceJobId() != null )
         {
-            JobInfo previousJobInfo = getChangeJobInfo( changeMetadata );
-            if ( previousJobInfo.getState() == JobState.RUNNING )
+            try
             {
-                throw new ProcessAlreadyRunning( "ChangeJob process is already running: " + changeMetadata.getMapReduceJobId() );
+                com.google.appengine.tools.pipeline.JobInfo jobInfo = pipelineService.getJobInfo( metadata.getMapReduceJobId() );
+                if ( jobInfo.getJobState() == RUNNING )
+                {
+                    throw new ProcessAlreadyRunning( "ImportJob process is already running: " + metadata.getMapReduceJobId() );
+                }
+            }
+            catch ( NoSuchObjectException e )
+            {
+                // silently ignore
             }
         }
 
-        String id = MapJob.start( jobSpecificationFactory.createChangeJobSpecification( changeMetadata.getKey() ).get(), mapReduceSettings );
-        changeMetadata.setMapReduceJobId( id );
-        changeMetadata.reset();
-        changeMetadata.save();
+        MapSpecificationProvider mapSpecificationProvider;
+
+        if ( metadata.getClass() == ImportMetadata.class )
+        {
+            mapSpecificationProvider = jobSpecificationFactory.createImportJobSpecification( metadata.getKey() );
+        }
+        else if ( metadata.getClass() == ExportMetadata.class )
+        {
+            mapSpecificationProvider = jobSpecificationFactory.createExportJobSpecification( metadata.getKey() );
+        }
+        else if ( metadata.getClass() == ChangeMetadata.class )
+        {
+            mapSpecificationProvider = jobSpecificationFactory.createChangeJobSpecification( metadata.getKey() );
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Unknown metadata type: " + metadata.getClass() );
+        }
+
+
+        String id = MapJob.start( mapSpecificationProvider.get(), mapReduceSettings );
+        metadata.setMapReduceJobId( id );
+        metadata.reset();
+        metadata.save();
     }
 
     @Override
-    public void startExportJob( ExportMetadata exportMetadata )
+    public <M extends BaseMetadata> void deleteJob( M metadata )
     {
-        // check if mapReduceJob is running
-        if ( exportMetadata.getMapReduceJobId() != null )
+        if ( metadata.getMapReduceJobId() == null )
         {
-            JobInfo previousJobInfo = getExportJobInfo( exportMetadata );
-            if ( previousJobInfo.getState() == JobState.RUNNING )
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
+        }
+
+        try
+        {
+            pipelineService.deletePipelineRecords( metadata.getMapReduceJobId(), true, false );
+        }
+        catch ( NoSuchObjectException e )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not found for key: " + metadata.getMapReduceJobId(), e );
+        }
+    }
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <JI extends JobInfo, M extends BaseMetadata> JI getJobInfo( M metadata )
+    {
+        com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = null;
+
+        if ( metadata.getMapReduceJobId() != null )
+        {
+            try
             {
-                throw new ProcessAlreadyRunning( "ExportJob process is already running: " + exportMetadata.getMapReduceJobId() );
+                pipelineJobInfo = pipelineService.getJobInfo( metadata.getMapReduceJobId() );
+            }
+            catch ( NoSuchObjectException e )
+            {
+                log.error( "Map reduce job not found for key: " + metadata.getMapReduceJobId(), e );
             }
         }
 
-        String id = MapJob.start( jobSpecificationFactory.createExportJobSpecification( exportMetadata.getKey() ).get(), mapReduceSettings );
-        exportMetadata.setMapReduceJobId( id );
-        exportMetadata.reset();
-        exportMetadata.save();
+        JI jobInfo = ( JI ) jobInfoProviders.get( metadata.getClass() ).get();
+        jobInfo.setId( metadata.getKey() );
+        jobInfo.setMapReduceJobId( metadata.getMapReduceJobId() );
+        jobInfo.setProcessedItems( metadata.getProcessedItems() );
+        jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() );
+        jobInfo.setTotalItems( metadata.getItemsCount() );
+
+        if ( pipelineJobInfo != null )
+        {
+            jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
+            jobInfo.setStackTrace( pipelineJobInfo.getError() );
+        }
+
+        return jobInfo;
     }
 
     @Override
-    public void cancelImportJob( ImportMetadata importMetadata )
+    public <M extends BaseMetadata> void cancelJob( M metadata )
     {
-        if ( importMetadata.getMapReduceJobId() == null )
+        if ( metadata.getMapReduceJobId() == null )
         {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + importMetadata );
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
         }
 
         try
         {
-            pipelineService.cancelPipeline( importMetadata.getMapReduceJobId() );
+            pipelineService.cancelPipeline( metadata.getMapReduceJobId() );
         }
         catch ( NoSuchObjectException e )
         {
-            throw new ObjectNotFoundException( "Map reduce job not found for id: " + importMetadata.getMapReduceJobId(), e );
+            throw new ObjectNotFoundException( "Map reduce job not found for id: " + metadata.getMapReduceJobId(), e );
         }
     }
 
-    @Override
-    public void cancelChangeJob( ChangeMetadata changeMetadata )
-    {
-        if ( changeMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + changeMetadata );
-        }
-
-        try
-        {
-            pipelineService.cancelPipeline( changeMetadata.getMapReduceJobId() );
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for id: " + changeMetadata.getMapReduceJobId(), e );
-        }
-    }
-
-    @Override
-    public void cancelExportJob( ExportMetadata exportMetadata )
-    {
-        if ( exportMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + exportMetadata );
-        }
-
-        try
-        {
-            pipelineService.cancelPipeline( exportMetadata.getMapReduceJobId() );
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for id: " + exportMetadata.getMapReduceJobId(), e );
-        }
-    }
-
-    @Override
-    public void deleteImportJob( ImportMetadata importMetadata )
-    {
-        if ( importMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + importMetadata );
-        }
-
-        try
-        {
-            pipelineService.deletePipelineRecords( importMetadata.getMapReduceJobId(), true, false );
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for key: " + importMetadata.getMapReduceJobId(), e );
-        }
-    }
-
-    @Override
-    public void deleteChangeJob( ChangeMetadata changeMetadata )
-    {
-        if ( changeMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + changeMetadata );
-        }
-
-        try
-        {
-            pipelineService.deletePipelineRecords( changeMetadata.getMapReduceJobId(), true, false );
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for key: " + changeMetadata.getMapReduceJobId(), e );
-        }
-    }
-
-    @Override
-    public void deleteExportJob( ExportMetadata exportMetadata )
-    {
-        if ( exportMetadata.getMapReduceJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + exportMetadata );
-        }
-
-        try
-        {
-            pipelineService.deletePipelineRecords( exportMetadata.getMapReduceJobId(), true, false );
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for key: " + exportMetadata.getMapReduceJobId(), e );
-        }
-    }
-
-    @Override
-    public ImportJobInfo getImportJobInfo( ImportMetadata importMetadata )
-    {
-        return getJobInfoInternal( importMetadata, new ImportJobInfo() );
-    }
-
-    @Override
-    public ChangeJobInfo getChangeJobInfo( ChangeMetadata changeMetadata )
-    {
-        return getJobInfoInternal( changeMetadata, new ChangeJobInfo() );
-    }
-
-    @Override
-    public ExportJobInfo getExportJobInfo( ExportMetadata exportMetadata )
-    {
-        return getJobInfoInternal( exportMetadata, new ExportJobInfo() );
-    }
+    // ------------------------------------------
+    // -- changesets
+    // ------------------------------------------
 
     @Override
     public void importChangeSet( ChangeSet changeSet )
@@ -574,6 +437,10 @@ public class ChangeSetServiceBean
         }
     }
 
+    // ------------------------------------------
+    // -- meta info
+    // ------------------------------------------
+
     @Override
     public ChangeSet exportChangeSet( String entity )
     {
@@ -602,36 +469,4 @@ public class ChangeSetServiceBean
         return dataAccess.properties( kind );
     }
 
-    // -- private helpers
-
-    private <T extends JobInfo> T getJobInfoInternal( BaseMetadata baseMetadata, T jobInfo )
-    {
-        com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = null;
-
-        if ( baseMetadata.getMapReduceJobId() != null )
-        {
-            try
-            {
-                pipelineJobInfo = pipelineService.getJobInfo( baseMetadata.getMapReduceJobId() );
-            }
-            catch ( NoSuchObjectException e )
-            {
-                log.error( "Map reduce job not found for key: " + baseMetadata.getMapReduceJobId(), e );
-            }
-        }
-
-        jobInfo.setId( baseMetadata.getKey() );
-        jobInfo.setMapReduceJobId( baseMetadata.getMapReduceJobId() );
-        jobInfo.setProcessedItems( baseMetadata.getProcessedItems() );
-        jobInfo.setProcessedErrorItems( baseMetadata.getProcessedErrorItems() );
-        jobInfo.setTotalItems( baseMetadata.getItemsCount() );
-
-        if ( pipelineJobInfo != null )
-        {
-            jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
-            jobInfo.setStackTrace( pipelineJobInfo.getError() );
-        }
-
-        return jobInfo;
-    }
 }
