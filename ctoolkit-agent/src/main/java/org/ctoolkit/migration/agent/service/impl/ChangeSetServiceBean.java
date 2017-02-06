@@ -29,6 +29,8 @@ import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.migration.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.MapSpecificationProvider;
+import org.ctoolkit.migration.agent.service.impl.event.AuditEvent;
+import org.ctoolkit.migration.agent.service.impl.event.Auditable;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindOp;
@@ -100,6 +102,7 @@ public class ChangeSetServiceBean
         systemKinds.add( "_ExportMetadataItem" );
         systemKinds.add( "_ChangeMetadata" );
         systemKinds.add( "_ChangeMetadataItem" );
+        systemKinds.add( "_MetadataAudit" );
 
         // init job info providers
         jobInfoProviders.put( ImportMetadata.class, new Provider<JobInfo>()
@@ -133,6 +136,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
+    @Auditable(action = AuditEvent.Action.CREATE)
     public <M extends BaseMetadata> M create( M metadata )
     {
         metadata.save();
@@ -141,6 +145,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    @Auditable(action = AuditEvent.Action.UPDATE)
     public <M extends BaseMetadata> M update( M metadata )
     {
         // TODO: store blob
@@ -154,6 +159,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    @Auditable(action = AuditEvent.Action.DELETE)
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( M metadata )
     {
         for ( BaseMetadataItem item : metadata.getItems() )
@@ -186,6 +192,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
+    @Auditable(action = AuditEvent.Action.CREATE)
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( MI metadataItem )
     {
         M importMetadata = metadataItem.getMetadata();
@@ -196,6 +203,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    @Auditable(action = AuditEvent.Action.UPDATE)
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI update( MI metadataItem )
     {
         // TODO: store blob
@@ -210,6 +218,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    @Auditable(action = AuditEvent.Action.DELETE)
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( MI metadataItem )
     {
         M importMetadata = metadataItem.getMetadata();
@@ -224,6 +233,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
+    @Auditable(action = AuditEvent.Action.START_JOB)
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
         // check if mapReduceJob is running
@@ -270,6 +280,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    @Auditable(action = AuditEvent.Action.DELETE_JOB)
     public <M extends BaseMetadata> void deleteJob( M metadata )
     {
         if ( metadata.getMapReduceJobId() == null )
@@ -322,6 +333,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    @Auditable(action = AuditEvent.Action.CANCEL_JOB)
     public <M extends BaseMetadata> void cancelJob( M metadata )
     {
         if ( metadata.getMapReduceJobId() == null )

@@ -159,6 +159,11 @@ public interface ChangeSetService
     ChangeSet exportChangeSet( final String entity );
 
     // ------------------------------------------
+    // -- audits
+    // ------------------------------------------
+    // TODO: implement Audit list(AuditFilter filter)
+
+    // ------------------------------------------
     // -- meta infos
     // ------------------------------------------
 

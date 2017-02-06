@@ -33,19 +33,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!--TODO: use new library-->
-        <!--CTOOLKIT DEPENDENCIES-->
-        <dependency>
-            <groupId>com.comvai.services</groupId>
-            <artifactId>common-services-api</artifactId>
-            <version>0.83</version>
-        </dependency>
-        <dependency>
-            <groupId>com.comvai.services</groupId>
-            <artifactId>common-services-gae</artifactId>
-            <version>0.81</version>
-        </dependency>
-
         <!--  IAM DEPENDENCIES -->
         <dependency>
             <groupId>com.google.identitytoolkit</groupId>
@@ -112,6 +99,11 @@
             <groupId>com.google.appengine.tools</groupId>
             <artifactId>appengine-mapreduce</artifactId>
             <version>0.8.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.appengine.tools</groupId>
+            <artifactId>appengine-gcs-client</artifactId>
+            <version>0.6</version>
         </dependency>
         <dependency>
             <groupId>ma.glasnost.orika</groupId>

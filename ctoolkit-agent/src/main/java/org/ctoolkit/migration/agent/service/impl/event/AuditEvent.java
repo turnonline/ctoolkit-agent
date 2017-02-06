@@ -1,6 +1,15 @@
 package org.ctoolkit.migration.agent.service.impl.event;
 
+import org.ctoolkit.migration.agent.model.BaseEntity;
+import org.ctoolkit.migration.agent.model.ChangeMetadata;
+import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
+import org.ctoolkit.migration.agent.model.ExportMetadata;
+import org.ctoolkit.migration.agent.model.ExportMetadataItem;
+import org.ctoolkit.migration.agent.model.ImportMetadata;
+import org.ctoolkit.migration.agent.model.ImportMetadataItem;
+
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Audit event is posted when changeset operation occurs
@@ -10,45 +19,56 @@ import java.util.HashMap;
 public class AuditEvent
         extends HashMap<String, String>
 {
-    public enum Phase
+    private static Map<Class, Operation> operationMap = new HashMap<>();
+
+    static
     {
-        BEFORE,
-        AFTER
+        operationMap.put( ImportMetadata.class, Operation.IMPORT );
+        operationMap.put( ImportMetadataItem.class, Operation.IMPORT_ITEM );
+        operationMap.put( ExportMetadata.class, Operation.EXPORT );
+        operationMap.put( ExportMetadataItem.class, Operation.EXPORT_ITEM );
+        operationMap.put( ChangeMetadata.class, Operation.CHANGE );
+        operationMap.put( ChangeMetadataItem.class, Operation.CHANGE_ITEM );
     }
 
     public enum Action
     {
-        ADD_ENTITY,
-        CLEAR_ENTITY,
-        DROP_ENTITY,
+        CREATE,
+        UPDATE,
+        DELETE,
 
-        ADD_ENTITY_PROPERTY,
-        CHANGE_ENTITY_PROPERTY,
-        REMOVE_ENTITY_PROPERTY
+        START_JOB,
+        CANCEL_JOB,
+        DELETE_JOB,
+
+        MIGRATION
     }
 
     public enum Operation
     {
         IMPORT,
+        IMPORT_ITEM,
         EXPORT,
-        CHANGE
+        EXPORT_ITEM,
+        CHANGE,
+        CHANGE_ITEM
     }
 
     private Operation operation;
 
     private Action action;
 
-    private Phase phase;
+    private BaseEntity owner;
 
-    public AuditEvent( )
+    public AuditEvent()
     {
     }
 
-    public AuditEvent( Operation operation, Action action, Phase phase )
+    public AuditEvent( Action action, BaseEntity owner )
     {
-        this.operation = operation;
+        this.operation = operationMap.get( owner.getClass() );
         this.action = action;
-        this.phase = phase;
+        this.owner = owner;
     }
 
     public Operation getOperation()
@@ -61,9 +81,10 @@ public class AuditEvent
         return action;
     }
 
-    public Phase getPhase()
+    @SuppressWarnings( "unchecked" )
+    public BaseEntity getOwner()
     {
-        return phase;
+        return owner;
     }
 
     @Override
@@ -72,7 +93,7 @@ public class AuditEvent
         return "AuditEvent{" +
                 "operation=" + operation +
                 ", action=" + action +
-                ", phase=" + phase +
+                ", owner=" + owner +
                 "} " + super.toString();
     }
 }

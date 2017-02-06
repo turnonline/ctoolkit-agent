@@ -12,6 +12,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.RequestScoped;
 import com.googlecode.objectify.ObjectifyService;
 import ma.glasnost.orika.MapperFacade;
@@ -33,6 +34,8 @@ import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.RestContext;
 import org.ctoolkit.migration.agent.service.impl.ChangeSetServiceBean;
 import org.ctoolkit.migration.agent.service.impl.RestContextThreadLocal;
+import org.ctoolkit.migration.agent.service.impl.datastore.AuditInterceptor;
+import org.ctoolkit.migration.agent.service.impl.datastore.AuditSubscription;
 import org.ctoolkit.migration.agent.service.impl.datastore.ChangeJobMapSpecificationProvider;
 import org.ctoolkit.migration.agent.service.impl.datastore.ChangeMapOnlyMapperJob;
 import org.ctoolkit.migration.agent.service.impl.datastore.DataAccessBean;
@@ -65,6 +68,7 @@ import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewTypeChangeRul
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewTypeNewValueChangeRule;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewValueChangeRule;
 import org.ctoolkit.migration.agent.service.impl.event.AuditEvent;
+import org.ctoolkit.migration.agent.service.impl.event.Auditable;
 
 import javax.inject.Singleton;
 
@@ -90,10 +94,18 @@ public class AgentModule
         bind( ChangeSetEntityToEntityMapper.class ).in( Singleton.class );
         bind( EntityEncoder.class ).in( Singleton.class );
         bind( ImportMapOnlyMapperJob.class ).in( Singleton.class );
-
         bind( PipelineService.class ).to( PipelineServiceImpl.class ).in( Singleton.class );
+
         bind( EventBus.class ).in( Singleton.class );
         bind( AuditEvent.class ).in( Singleton.class );
+        bind( AuditSubscription.class ).asEagerSingleton();
+        AuditInterceptor auditInterceptor = new AuditInterceptor();
+        requestInjection( auditInterceptor );
+        bindInterceptor(
+                Matchers.any(),
+                Matchers.annotatedWith( Auditable.class ),
+                auditInterceptor
+        );
 
         bind( ChangeRuleEngine.class ).in( Singleton.class );
         bind( NewNameChangeRule.class ).in( Singleton.class );

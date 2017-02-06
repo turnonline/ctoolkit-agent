@@ -61,6 +61,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     public List<ITEM> getItems()
     {
+        // TODO: batch get
         if ( !itemsLoaded )
         {
             for ( Ref<ITEM> ref : itemsRef )
@@ -132,6 +133,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         itemsCount = 0;
         for ( ITEM next : temp )
         {
+            // TODO: batch save
             ofy().save().entity( next ).now();
             items.add( next );
             itemsCount++;
