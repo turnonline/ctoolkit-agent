@@ -1,5 +1,7 @@
 package org.ctoolkit.migration.agent.service.impl.event;
 
+import org.ctoolkit.migration.agent.model.MetadataAudit.Action;
+
 import javax.inject.Qualifier;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,5 +18,5 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.RUNTIME)
 public @interface Auditable
 {
-    AuditEvent.Action action();
+    Action action();
 }

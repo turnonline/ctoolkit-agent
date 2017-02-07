@@ -9,6 +9,7 @@ import com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet;
 import com.googlecode.objectify.ObjectifyFilter;
 import org.ctoolkit.migration.agent.AccessControlAllowOrignFilter;
 import org.ctoolkit.migration.agent.rest.AgentEndpointConfig;
+import org.ctoolkit.migration.agent.rest.AuditEndpoint;
 import org.ctoolkit.migration.agent.rest.ChangeEndpoint;
 import org.ctoolkit.migration.agent.rest.ExportEndpoint;
 import org.ctoolkit.migration.agent.rest.ImportEndpoint;
@@ -36,6 +37,7 @@ public class AgentServletModule
                 .addServiceClass( ChangeEndpoint.class )
                 .addServiceClass( ExportEndpoint.class )
                 .addServiceClass( MetadataEndpoint.class )
+                .addServiceClass( AuditEndpoint.class )
                 // this is important, otherwise we cannot use certificates from third-party applications
                 .setClientIdWhitelistEnabled( false ).build();
         serveGuiceSystemServiceServlet( "/_ah/spi/*", params );

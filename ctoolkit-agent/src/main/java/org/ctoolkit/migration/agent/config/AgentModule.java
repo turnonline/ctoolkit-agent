@@ -28,6 +28,7 @@ import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.ExportMetadataItem;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
+import org.ctoolkit.migration.agent.model.MetadataAudit;
 import org.ctoolkit.migration.agent.rest.IAMAuthenticator;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.service.DataAccess;
@@ -124,6 +125,7 @@ public class AgentModule
         ObjectifyService.register( ChangeMetadataItem.class );
         ObjectifyService.register( ExportMetadata.class );
         ObjectifyService.register( ExportMetadataItem.class );
+        ObjectifyService.register( MetadataAudit.class );
 
         requestStaticInjection( ImportMapOnlyMapperJob.class );
         requestStaticInjection( ChangeMapOnlyMapperJob.class );

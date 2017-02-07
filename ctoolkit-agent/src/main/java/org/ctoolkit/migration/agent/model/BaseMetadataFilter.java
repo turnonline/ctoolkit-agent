@@ -5,7 +5,7 @@ package org.ctoolkit.migration.agent.model;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class Filter<M extends BaseMetadata>
+public class BaseMetadataFilter<M extends BaseMetadata>
 {
     private int start = 0;
 
@@ -17,7 +17,7 @@ public class Filter<M extends BaseMetadata>
 
     private Class<M> metadataClass;
 
-    public Filter( Builder<?, M> builder )
+    public BaseMetadataFilter( Builder<?, M> builder )
     {
         this.start = builder.getStart();
         this.length = builder.getLength();
@@ -123,9 +123,9 @@ public class Filter<M extends BaseMetadata>
             return metadataClass;
         }
 
-        public Filter build()
+        public BaseMetadataFilter build()
         {
-            return new Filter( this );
+            return new BaseMetadataFilter( this );
         }
     }
 }

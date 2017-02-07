@@ -11,11 +11,11 @@ import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
+import org.ctoolkit.migration.agent.model.BaseMetadataFilter;
 import org.ctoolkit.migration.agent.model.ExportBatch;
 import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.ExportMetadataItem;
-import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.MetadataItemKey;
 import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
@@ -104,7 +104,7 @@ public class ExportEndpoint
                                          @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
                                          User authUser ) throws Exception
     {
-        Filter filter = new Filter.Builder<>()
+        BaseMetadataFilter filter = new BaseMetadataFilter.Builder<>()
                 .start( start )
                 .length( length )
                 .orderBy( orderBy )

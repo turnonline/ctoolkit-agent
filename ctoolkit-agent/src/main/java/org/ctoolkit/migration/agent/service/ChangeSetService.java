@@ -1,11 +1,13 @@
 package org.ctoolkit.migration.agent.service;
 
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
+import org.ctoolkit.migration.agent.model.AuditFilter;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
+import org.ctoolkit.migration.agent.model.BaseMetadataFilter;
 import org.ctoolkit.migration.agent.model.BaseMetadataItem;
-import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.MetadataAudit;
 import org.ctoolkit.migration.agent.model.MetadataItemKey;
 import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.model.PropertyMetaData;
@@ -58,10 +60,10 @@ public interface ChangeSetService
     /**
      * Get list of {@link BaseMetadata}
      *
-     * @param filter of {@link Filter}
+     * @param filter of {@link BaseMetadataFilter}
      * @return list {@link BaseMetadata}
      */
-    <M extends BaseMetadata> List<M> list( Filter<M> filter );
+    <M extends BaseMetadata> List<M> list( BaseMetadataFilter<M> filter );
 
     // ------------------------------------------
     // -- metadata item
@@ -120,6 +122,7 @@ public interface ChangeSetService
 
     /**
      * Return {@link JobInfo} for specified metadata
+     *
      * @param metadata {@link BaseMetadata}
      * @return {@link JobInfo}
      */
@@ -130,7 +133,7 @@ public interface ChangeSetService
      *
      * @param metadata {@link BaseMetadata}
      */
-    < M extends BaseMetadata> void cancelJob( M metadata );
+    <M extends BaseMetadata> void cancelJob( M metadata );
 
     // ------------------------------------------
     // -- changesets
@@ -161,7 +164,14 @@ public interface ChangeSetService
     // ------------------------------------------
     // -- audits
     // ------------------------------------------
-    // TODO: implement Audit list(AuditFilter filter)
+
+    /**
+     * Filter {@link MetadataAudit} by specified filter
+     *
+     * @param filter {@link AuditFilter}
+     * @return list of {@link MetadataAudit}
+     */
+    List<MetadataAudit> list( AuditFilter filter );
 
     // ------------------------------------------
     // -- meta infos

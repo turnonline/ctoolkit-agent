@@ -8,8 +8,11 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Key;
 import ma.glasnost.orika.MapperFacade;
-import org.ctoolkit.migration.agent.model.Filter;
+import org.ctoolkit.migration.agent.model.AuditFilter;
+import org.ctoolkit.migration.agent.model.BaseMetadata;
+import org.ctoolkit.migration.agent.model.BaseMetadataFilter;
 import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.MetadataAudit;
 import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.ChangeRuleEngine;
@@ -79,7 +82,7 @@ public class DataAccessBean
         // add default model clean action
         changeSet.setModel( new ChangeSetModel() );
         ChangeSetModelKindOp kinOp = new ChangeSetModelKindOp();
-        kinOp.setKind(entityName);
+        kinOp.setKind( entityName );
         kinOp.setOp( ChangeSetModelKindOp.OP_CLEAN );
         changeSet.getModel().getKindOp().add( kinOp );
 
@@ -229,15 +232,35 @@ public class DataAccessBean
     }
 
     @Override
-    public <T> List<T> find( Class<T> type, Filter filter )
+    public <T extends BaseMetadata> List<T> find( BaseMetadataFilter<T> filter )
     {
-        com.googlecode.objectify.cmd.Query<T> query = ofy().load().type( type )
+        com.googlecode.objectify.cmd.Query<T> query = ofy().load().type( filter.getMetadataClass() )
                 .limit( filter.getLength() )
                 .offset( filter.getStart() );
 
         if ( filter.getOrderBy() != null )
         {
             query = filter.isAscending() ? query.order( filter.getOrderBy() ) : query.order( "-" + filter.getOrderBy() );
+        }
+
+        return query.list();
+    }
+
+    @Override
+    public List<MetadataAudit> find( AuditFilter filter )
+    {
+        com.googlecode.objectify.cmd.Query<MetadataAudit> query = ofy().load().type( MetadataAudit.class )
+                .limit( filter.getLength() )
+                .offset( filter.getStart() );
+
+        if ( filter.getOrderBy() != null )
+        {
+            query = filter.isAscending() ? query.order( filter.getOrderBy() ) : query.order( "-" + filter.getOrderBy() );
+        }
+
+        if ( filter.getOwnerId() != null )
+        {
+            query = query.filter( "ownerId =", filter.getOwnerId() );
         }
 
         return query.list();

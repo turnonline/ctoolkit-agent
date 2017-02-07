@@ -9,18 +9,21 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
+import org.ctoolkit.migration.agent.model.AuditFilter;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
+import org.ctoolkit.migration.agent.model.BaseMetadataFilter;
 import org.ctoolkit.migration.agent.model.BaseMetadataItem;
 import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
-import org.ctoolkit.migration.agent.model.Filter;
 import org.ctoolkit.migration.agent.model.ImportJobInfo;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.MetadataAudit;
+import org.ctoolkit.migration.agent.model.MetadataAudit.Action;
 import org.ctoolkit.migration.agent.model.MetadataItemKey;
 import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.model.PropertyMetaData;
@@ -29,7 +32,6 @@ import org.ctoolkit.migration.agent.service.DataAccess;
 import org.ctoolkit.migration.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.migration.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.MapSpecificationProvider;
-import org.ctoolkit.migration.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.migration.agent.service.impl.event.Auditable;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
@@ -136,7 +138,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    @Auditable(action = AuditEvent.Action.CREATE)
+    @Auditable( action = Action.CREATE )
     public <M extends BaseMetadata> M create( M metadata )
     {
         metadata.save();
@@ -145,7 +147,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    @Auditable(action = AuditEvent.Action.UPDATE)
+    @Auditable( action = Action.UPDATE )
     public <M extends BaseMetadata> M update( M metadata )
     {
         // TODO: store blob
@@ -159,7 +161,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    @Auditable(action = AuditEvent.Action.DELETE)
+    @Auditable( action = Action.DELETE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( M metadata )
     {
         for ( BaseMetadataItem item : metadata.getItems() )
@@ -182,9 +184,9 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    public <M extends BaseMetadata> List<M> list( Filter<M> filter )
+    public <M extends BaseMetadata> List<M> list( BaseMetadataFilter<M> filter )
     {
-        return dataAccess.find( filter.getMetadataClass(), filter );
+        return dataAccess.find( filter );
     }
 
     // ------------------------------------------
@@ -192,7 +194,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    @Auditable(action = AuditEvent.Action.CREATE)
+    @Auditable( action = Action.CREATE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( MI metadataItem )
     {
         M importMetadata = metadataItem.getMetadata();
@@ -203,7 +205,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    @Auditable(action = AuditEvent.Action.UPDATE)
+    @Auditable( action = Action.UPDATE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI update( MI metadataItem )
     {
         // TODO: store blob
@@ -218,7 +220,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    @Auditable(action = AuditEvent.Action.DELETE)
+    @Auditable( action = Action.DELETE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( MI metadataItem )
     {
         M importMetadata = metadataItem.getMetadata();
@@ -233,7 +235,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    @Auditable(action = AuditEvent.Action.START_JOB)
+    @Auditable( action = Action.START_JOB )
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
         // check if mapReduceJob is running
@@ -280,7 +282,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    @Auditable(action = AuditEvent.Action.DELETE_JOB)
+    @Auditable( action = Action.DELETE_JOB )
     public <M extends BaseMetadata> void deleteJob( M metadata )
     {
         if ( metadata.getMapReduceJobId() == null )
@@ -333,7 +335,7 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    @Auditable(action = AuditEvent.Action.CANCEL_JOB)
+    @Auditable( action = Action.CANCEL_JOB )
     public <M extends BaseMetadata> void cancelJob( M metadata )
     {
         if ( metadata.getMapReduceJobId() == null )
@@ -458,6 +460,20 @@ public class ChangeSetServiceBean
     {
         return dataAccess.exportChangeSet( entity );
     }
+
+    // ------------------------------------------
+    // -- audits
+    // ------------------------------------------
+
+    @Override
+    public List<MetadataAudit> list( AuditFilter filter )
+    {
+        return dataAccess.find( filter );
+    }
+
+    // ------------------------------------------
+    // -- meta infos
+    // ------------------------------------------
 
     @Override
     public List<KindMetaData> kinds()

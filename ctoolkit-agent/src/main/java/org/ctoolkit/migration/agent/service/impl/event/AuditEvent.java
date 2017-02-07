@@ -7,6 +7,8 @@ import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.ExportMetadataItem;
 import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.ImportMetadataItem;
+import org.ctoolkit.migration.agent.model.MetadataAudit.Action;
+import org.ctoolkit.migration.agent.model.MetadataAudit.Operation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,29 +31,6 @@ public class AuditEvent
         operationMap.put( ExportMetadataItem.class, Operation.EXPORT_ITEM );
         operationMap.put( ChangeMetadata.class, Operation.CHANGE );
         operationMap.put( ChangeMetadataItem.class, Operation.CHANGE_ITEM );
-    }
-
-    public enum Action
-    {
-        CREATE,
-        UPDATE,
-        DELETE,
-
-        START_JOB,
-        CANCEL_JOB,
-        DELETE_JOB,
-
-        MIGRATION
-    }
-
-    public enum Operation
-    {
-        IMPORT,
-        IMPORT_ITEM,
-        EXPORT,
-        EXPORT_ITEM,
-        CHANGE,
-        CHANGE_ITEM
     }
 
     private Operation operation;

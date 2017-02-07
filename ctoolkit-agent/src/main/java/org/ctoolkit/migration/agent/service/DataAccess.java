@@ -1,7 +1,10 @@
 package org.ctoolkit.migration.agent.service;
 
-import org.ctoolkit.migration.agent.model.Filter;
+import org.ctoolkit.migration.agent.model.AuditFilter;
+import org.ctoolkit.migration.agent.model.BaseMetadata;
+import org.ctoolkit.migration.agent.model.BaseMetadataFilter;
 import org.ctoolkit.migration.agent.model.KindMetaData;
+import org.ctoolkit.migration.agent.model.MetadataAudit;
 import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
@@ -104,12 +107,19 @@ public interface DataAccess
     /**
      * Get entities by specified filter
      *
-     * @param type   class type
      * @param filter filter for list
      * @param <T>    entity type
      * @return entity
      */
-    <T> List<T> find( Class<T> type, Filter filter );
+    <T extends BaseMetadata> List<T> find( BaseMetadataFilter <T>filter );
+
+    /**
+     * Get entities by specified filter
+     *
+     * @param filter filter for list
+     * @return entity
+     */
+    List<MetadataAudit> find( AuditFilter filter );
 
     /**
      * Delete entity
