@@ -16,6 +16,8 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
+ * Endpoint for audit
+ *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 @Api

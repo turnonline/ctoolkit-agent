@@ -30,6 +30,7 @@ public class AuditSubscription
     @Subscribe
     public void handle( AuditEvent event )
     {
+        RestContext ctx = injector.getInstance( RestContext.class );
         Entity audit = new Entity("_MetadataAudit");
 
         for ( Map.Entry<String, String> entry : event.entrySet() )
@@ -41,7 +42,9 @@ public class AuditSubscription
         audit.setProperty( "action", event.getAction().name() );
         audit.setProperty( "operation", event.getOperation().name() );
         audit.setProperty( "createDate", new Date() );
-        audit.setProperty( "createdBy", injector.getInstance( RestContext.class ).getUserEmail() );
+        audit.setProperty( "createdBy", ctx.getUserEmail() );
+        audit.setProperty( "userPhotoUrl", ctx.getPhotoUrl() );
+        audit.setProperty( "userDisplayName", ctx.getDisplayName() );
 
         ofy().save().entity( audit );
     }

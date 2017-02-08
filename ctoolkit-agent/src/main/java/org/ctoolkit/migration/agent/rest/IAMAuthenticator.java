@@ -18,7 +18,10 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 
+import static com.google.identitytoolkit.JsonTokenHelper.ID_TOKEN_DISPLAY_NAME;
 import static com.google.identitytoolkit.JsonTokenHelper.ID_TOKEN_EMAIL;
+import static com.google.identitytoolkit.JsonTokenHelper.ID_TOKEN_PHOTO_URL;
+import static com.google.identitytoolkit.JsonTokenHelper.ID_TOKEN_USER_ID;
 
 /**
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
@@ -58,14 +61,21 @@ public class IAMAuthenticator
             {
                 JsonToken token = verifier.verifyAndDeserialize( gtoken );
                 JsonObject payloadAsJsonObject = token.getPayloadAsJsonObject();
+
+                JsonElement userIdJson = payloadAsJsonObject.get( ID_TOKEN_USER_ID );
                 JsonElement emailJson = payloadAsJsonObject.get( ID_TOKEN_EMAIL );
+                JsonElement displayNameJson = payloadAsJsonObject.get( ID_TOKEN_DISPLAY_NAME );
+                JsonElement photoUrlJson = payloadAsJsonObject.get( ID_TOKEN_PHOTO_URL );
 
                 if ( emailJson != null )
                 {
                     String email = emailJson.getAsString();
 
-                    // store email to ThreadLocal context - will be used in auditing
+                    // store user info to ThreadLocal context - will be used in auditing
+                    ctx.setUserId( userIdJson != null ? userIdJson.getAsString() : null );
                     ctx.setUserEmail( email );
+                    ctx.setDisplayName( displayNameJson != null ? displayNameJson.getAsString() : null );
+                    ctx.setPhotoUrl( photoUrlJson != null ? photoUrlJson.getAsString() : null );
 
                     // if agent is running on app engine - check permissions
                     if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )
