@@ -1,8 +1,6 @@
 package org.ctoolkit.migration.agent.config;
 
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
-import com.google.appengine.api.channel.ChannelService;
-import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -23,6 +21,7 @@ import ma.glasnost.orika.metadata.TypeFactory;
 import org.ctoolkit.migration.agent.annotation.ChangeJob;
 import org.ctoolkit.migration.agent.annotation.ExportJob;
 import org.ctoolkit.migration.agent.annotation.ImportJob;
+import org.ctoolkit.migration.agent.annotation.MigrateJob;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
 import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
@@ -49,6 +48,8 @@ import org.ctoolkit.migration.agent.service.impl.datastore.ImportJobMapSpecifica
 import org.ctoolkit.migration.agent.service.impl.datastore.ImportMapOnlyMapperJob;
 import org.ctoolkit.migration.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.MapSpecificationProvider;
+import org.ctoolkit.migration.agent.service.impl.datastore.MigrateJobMapSpecificationProvider;
+import org.ctoolkit.migration.agent.service.impl.datastore.MigrateMapOnlyMapperJob;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeItemToChangeMetadataItemMapper;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeMetadataFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.mapper.ChangeMetadataItemFactory;
@@ -89,11 +90,19 @@ public class AgentModule
     @Override
     protected void configure()
     {
+        // install map reduce job specification providers factory
         install( new FactoryModuleBuilder()
                 .implement( MapSpecificationProvider.class, ImportJob.class, ImportJobMapSpecificationProvider.class )
                 .implement( MapSpecificationProvider.class, ChangeJob.class, ChangeJobMapSpecificationProvider.class )
                 .implement( MapSpecificationProvider.class, ExportJob.class, ExportJobMapSpecificationProvider.class )
+                .implement( MapSpecificationProvider.class, MigrateJob.class, MigrateJobMapSpecificationProvider.class )
                 .build( JobSpecificationFactory.class ) );
+
+        // install ctoolkit agent provider factory
+        install( new FactoryModuleBuilder()
+                .implement( CtoolkitAgentProvider.class, CtoolkitAgentProviderBean.class )
+                .build( CtoolkitAgentFactory.class )
+        );
 
         install( new CtoolkitServicesAppEngineStorageModule() );
 
@@ -138,6 +147,8 @@ public class AgentModule
         requestStaticInjection( ImportMapOnlyMapperJob.class );
         requestStaticInjection( ChangeMapOnlyMapperJob.class );
         requestStaticInjection( ExportMapOnlyMapperJob.class );
+        requestStaticInjection( MigrateMapOnlyMapperJob.class );
+        requestStaticInjection( MigrateJobMapSpecificationProvider.class );
         requestStaticInjection( IAMAuthenticator.class );
     }
 
@@ -146,13 +157,6 @@ public class AgentModule
     public DatastoreService provideDatastoreService()
     {
         return DatastoreServiceFactory.getDatastoreService();
-    }
-
-    @Provides
-    @Singleton
-    public ChannelService provideChannelService()
-    {
-        return ChannelServiceFactory.getChannelService();
     }
 
     @Provides

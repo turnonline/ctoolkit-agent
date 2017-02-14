@@ -181,7 +181,7 @@ public class ImportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportJobInfo startJob( @Named( "id" ) String id, ImportBatch importBatch, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )

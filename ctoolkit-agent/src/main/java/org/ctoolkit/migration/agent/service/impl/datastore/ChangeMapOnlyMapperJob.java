@@ -27,8 +27,6 @@ public class ChangeMapOnlyMapperJob
         ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
         ChangeSet changeSet;
 
-        // TODO: load data
-
         switch ( dataType )
         {
             case JSON:

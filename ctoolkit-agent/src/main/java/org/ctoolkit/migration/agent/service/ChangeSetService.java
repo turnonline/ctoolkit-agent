@@ -5,6 +5,8 @@ import org.ctoolkit.migration.agent.model.AuditFilter;
 import org.ctoolkit.migration.agent.model.BaseMetadata;
 import org.ctoolkit.migration.agent.model.BaseMetadataFilter;
 import org.ctoolkit.migration.agent.model.BaseMetadataItem;
+import org.ctoolkit.migration.agent.model.ExportMetadata;
+import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.JobInfo;
 import org.ctoolkit.migration.agent.model.KindMetaData;
 import org.ctoolkit.migration.agent.model.MetadataAudit;
@@ -13,6 +15,7 @@ import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -64,6 +67,14 @@ public interface ChangeSetService
      * @return list {@link BaseMetadata}
      */
     <M extends BaseMetadata> List<M> list( BaseMetadataFilter<M> filter );
+
+    /**
+     * Migrate data from one agent to another
+     *
+     * @param exportMetadata {@link ExportMetadata} as source for {@link ImportMetadata}
+     * @return {@link ImportMetadata}
+     */
+    ImportMetadata migrate( ExportMetadata exportMetadata ) throws IOException;
 
     // ------------------------------------------
     // -- metadata item

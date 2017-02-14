@@ -22,4 +22,12 @@ public interface RestContext
     String getPhotoUrl();
 
     void setPhotoUrl(String photoUrl);
+
+    String getGtoken();
+
+    void setGtoken( String gtoken );
+
+    String getOnBehalfOfAgentUrl();
+
+    void setOnBehalfOfAgentUrl( String onBehalfOfAgentUrl );
 }

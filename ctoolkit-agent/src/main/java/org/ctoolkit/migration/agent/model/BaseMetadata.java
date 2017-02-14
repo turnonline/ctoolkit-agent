@@ -7,8 +7,10 @@ import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
@@ -38,6 +40,8 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     private int processedOk;
 
     private int processedError;
+
+    private List<String> jobContext = new ArrayList<>();
 
     public String getName()
     {
@@ -116,6 +120,28 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         return processedError;
     }
 
+    public Map<String, String> getJobContext()
+    {
+        Map<String, String> ctx = new HashMap<>();
+        for ( String item : jobContext )
+        {
+            String[] split = item.split( "\\::" );
+            ctx.put( split[0], split[1] );
+        }
+
+        return ctx;
+    }
+
+    public void clearJobContext()
+    {
+        jobContext = new ArrayList<>();
+    }
+
+    public void putToJobContext( String key, String value )
+    {
+        jobContext.add( key + "::" + value );
+    }
+
     public void save()
     {
         List<ITEM> temp = Lists.newArrayList( items );
@@ -187,9 +213,14 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     @Override
     public String toString()
     {
-        return "Metadata{" +
-                ", mapReduceJobId='" + mapReduceJobId + '\'' +
+        return "BaseMetadata{" +
+                "mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", name='" + name + '\'' +
+                ", itemsLoaded=" + itemsLoaded +
+                ", itemsCount=" + itemsCount +
+                ", processedOk=" + processedOk +
+                ", processedError=" + processedError +
+                ", jobContext=" + jobContext +
                 "} " + super.toString();
     }
 }

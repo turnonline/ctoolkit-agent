@@ -16,6 +16,8 @@ import org.ctoolkit.migration.agent.model.ExportBatch;
 import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.ExportMetadataItem;
+import org.ctoolkit.migration.agent.model.ImportBatch;
+import org.ctoolkit.migration.agent.model.ImportMetadata;
 import org.ctoolkit.migration.agent.model.MetadataItemKey;
 import org.ctoolkit.migration.agent.model.MetadataKey;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
@@ -256,5 +258,21 @@ public class ExportEndpoint
         {
             throw new NotFoundException( e );
         }
+    }
+
+    // -- migration
+
+    @ApiMethod( name = "exportBatch.migrate.insert", path = "export/{id}/migrate", httpMethod = ApiMethod.HttpMethod.POST )
+    public ImportBatch insertMigration( @Named( "id" ) String id, User authUser ) throws Exception
+    {
+        ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
+        if ( exportMetadata == null )
+        {
+            throw new NotFoundException( "Export not found for id: " + id );
+        }
+
+        ImportMetadata importMetadataBe = service.migrate( exportMetadata );
+
+        return mapper.map( importMetadataBe, ImportBatch.class );
     }
 }

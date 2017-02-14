@@ -1,5 +1,6 @@
 package org.ctoolkit.migration.agent.service.impl;
 
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
@@ -7,6 +8,10 @@ import com.google.appengine.tools.pipeline.PipelineService;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.googlecode.objectify.VoidWork;
+import org.ctoolkit.api.migration.CtoolkitAgent;
+import org.ctoolkit.api.migration.model.ImportBatch;
+import org.ctoolkit.migration.agent.config.CtoolkitAgentFactory;
 import org.ctoolkit.migration.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.migration.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.migration.agent.model.AuditFilter;
@@ -15,6 +20,7 @@ import org.ctoolkit.migration.agent.model.BaseMetadataFilter;
 import org.ctoolkit.migration.agent.model.BaseMetadataItem;
 import org.ctoolkit.migration.agent.model.ChangeJobInfo;
 import org.ctoolkit.migration.agent.model.ChangeMetadata;
+import org.ctoolkit.migration.agent.model.CtoolkitAgentConfiguration;
 import org.ctoolkit.migration.agent.model.ExportJobInfo;
 import org.ctoolkit.migration.agent.model.ExportMetadata;
 import org.ctoolkit.migration.agent.model.ImportJobInfo;
@@ -26,9 +32,11 @@ import org.ctoolkit.migration.agent.model.MetadataAudit;
 import org.ctoolkit.migration.agent.model.MetadataAudit.Action;
 import org.ctoolkit.migration.agent.model.MetadataItemKey;
 import org.ctoolkit.migration.agent.model.MetadataKey;
+import org.ctoolkit.migration.agent.model.MigrationJobConfiguration;
 import org.ctoolkit.migration.agent.model.PropertyMetaData;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
 import org.ctoolkit.migration.agent.service.DataAccess;
+import org.ctoolkit.migration.agent.service.RestContext;
 import org.ctoolkit.migration.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.migration.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.migration.agent.service.impl.datastore.MapSpecificationProvider;
@@ -45,6 +53,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +61,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.appengine.tools.pipeline.JobInfo.State.RUNNING;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.ctoolkit.migration.agent.config.AgentModule.BUCKET_NAME;
 
 /**
@@ -70,23 +80,29 @@ public class ChangeSetServiceBean
 
     private final StorageService storageService;
 
+    private final Provider<RestContext> restContext;
+
     private final JobSpecificationFactory jobSpecificationFactory;
+
+    private final CtoolkitAgentFactory ctoolkitAgentFactory;
 
     private final MapReduceSettings mapReduceSettings;
 
     private final PipelineService pipelineService;
 
-    private Set<String> systemKinds = new HashSet<>();
+    private final Set<String> systemKinds = new HashSet<>();
 
-    private Map<Class, Provider> jobInfoProviders = new HashMap<>();
+    private final Map<Class, Provider> jobInfoProviders = new HashMap<>();
 
-    private String bucketName;
+    private final String bucketName;
 
     @Inject
     public ChangeSetServiceBean( EntityPool pool,
                                  DataAccess dataAccess,
                                  StorageService storageService,
+                                 Provider<RestContext> restContext,
                                  JobSpecificationFactory jobSpecificationFactory,
+                                 CtoolkitAgentFactory ctoolkitAgentFactory,
                                  MapReduceSettings mapReduceSettings,
                                  PipelineService pipelineService,
                                  @Named( BUCKET_NAME ) String bucketName )
@@ -94,7 +110,9 @@ public class ChangeSetServiceBean
         this.pool = pool;
         this.dataAccess = dataAccess;
         this.storageService = storageService;
+        this.restContext = restContext;
         this.jobSpecificationFactory = jobSpecificationFactory;
+        this.ctoolkitAgentFactory = ctoolkitAgentFactory;
         this.mapReduceSettings = mapReduceSettings;
         this.pipelineService = pipelineService;
         this.bucketName = bucketName;
@@ -248,17 +266,60 @@ public class ChangeSetServiceBean
         return dataAccess.find( filter );
     }
 
+    @Override
+    public ImportMetadata migrate( ExportMetadata exportMetadata ) throws IOException
+    {
+        // check job is not already running, remove previous job
+        checkJobAndRemoveIfExists( exportMetadata.getMapReduceMigrationJobId() );
+
+        // create naked import
+        ImportMetadata importMetadata = new ImportMetadata();
+        importMetadata.setName( "Export from '" + exportMetadata.getName() + "'" );
+
+        // call remote agent and create import
+        ImportBatch importBatch = new ImportBatch();
+        importBatch.setName( importMetadata.getName() );
+
+        CtoolkitAgentConfiguration ctoolkitAgentConfiguration = new CtoolkitAgentConfiguration( restContext.get().getOnBehalfOfAgentUrl(), restContext.get().getGtoken() );
+        CtoolkitAgent ctoolkitAgent = ctoolkitAgentFactory.provideCtoolkitAgent( ctoolkitAgentConfiguration ).get();
+        importBatch = ctoolkitAgent.importBatch().insert( importBatch ).execute();
+        importMetadata.setId( KeyFactory.stringToKey( importBatch.getKey() ).getId() );
+
+        // start migrate job
+        MigrationJobConfiguration jobConfiguration = new MigrationJobConfiguration( exportMetadata.getKey(), importBatch.getKey() );
+
+        MapSpecificationProvider mapSpecificationProvider = jobSpecificationFactory
+                .createMigrateJobSpecification( jobConfiguration, ctoolkitAgentConfiguration );
+        String id = MapJob.start( mapSpecificationProvider.get(), mapReduceSettings );
+
+        exportMetadata.setMapReduceMigrationJobId( id );
+        exportMetadata.clearJobContext();
+        exportMetadata.putToJobContext( "gtoken", ctoolkitAgentConfiguration.getGtoken() );
+        exportMetadata.putToJobContext( "rootUrl", ctoolkitAgentConfiguration.getRootUrl() );
+        exportMetadata.putToJobContext( "importKey", importBatch.getKey() );
+        exportMetadata.save();
+
+        return importMetadata;
+    }
+
     // ------------------------------------------
     // -- metadata item
     // ------------------------------------------
 
     @Override
     @Auditable( action = Action.CREATE )
-    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( MI metadataItem )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( final MI metadataItem )
     {
-        M importMetadata = metadataItem.getMetadata();
-        importMetadata.getItems().add( metadataItem );
-        importMetadata.save();
+        ofy().transactNew( 5, new VoidWork()
+        {
+            @Override
+            public void vrun()
+            {
+                M importMetadata = metadataItem.getMetadata();
+                importMetadata.getItems().add( metadataItem );
+                importMetadata.save();
+            }
+        } );
 
         if ( metadataItem.getData() != null )
         {
@@ -269,6 +330,9 @@ public class ChangeSetServiceBean
                     bucketName
             );
         }
+
+        // store again to persist file name
+        dataAccess.update( metadataItem );
 
         return metadataItem;
     }
@@ -306,16 +370,24 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.DELETE )
-    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( MI metadataItem )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( final MI metadataItem )
     {
         if ( metadataItem.getFileName() != null )
         {
             storageService.delete( metadataItem.getFileName(), bucketName );
         }
 
-        M importMetadata = metadataItem.getMetadata();
-        importMetadata.getItems().remove( metadataItem );
-        importMetadata.save();
+        ofy().transactNew( 5, new VoidWork()
+        {
+
+            @Override
+            public void vrun()
+            {
+                M importMetadata = metadataItem.getMetadata();
+                importMetadata.getItems().remove( metadataItem );
+                importMetadata.save();
+            }
+        } );
     }
 
     // ------------------------------------------
@@ -327,21 +399,7 @@ public class ChangeSetServiceBean
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
         // check if mapReduceJob is running
-        if ( metadata.getMapReduceJobId() != null )
-        {
-            try
-            {
-                com.google.appengine.tools.pipeline.JobInfo jobInfo = pipelineService.getJobInfo( metadata.getMapReduceJobId() );
-                if ( jobInfo.getJobState() == RUNNING )
-                {
-                    throw new ProcessAlreadyRunning( "ImportJob process is already running: " + metadata.getMapReduceJobId() );
-                }
-            }
-            catch ( NoSuchObjectException e )
-            {
-                // silently ignore
-            }
-        }
+        checkJobAndRemoveIfExists( metadata.getMapReduceJobId() );
 
         MapSpecificationProvider mapSpecificationProvider;
 
@@ -583,6 +641,31 @@ public class ChangeSetServiceBean
     public List<PropertyMetaData> properties( String kind )
     {
         return dataAccess.properties( kind );
+    }
+
+    // -- private helpers
+    private void checkJobAndRemoveIfExists( String jobId )
+    {
+        if ( jobId != null )
+        {
+            try
+            {
+                com.google.appengine.tools.pipeline.JobInfo jobInfo = pipelineService.getJobInfo( jobId );
+                if ( jobInfo.getJobState() == RUNNING )
+                {
+                    throw new ProcessAlreadyRunning( "ImportJob process is already running: " + jobId );
+                }
+                else
+                {
+                    // remove previous job
+                    pipelineService.deletePipelineRecords( jobId, true, false );
+                }
+            }
+            catch ( NoSuchObjectException e )
+            {
+                // silently ignore
+            }
+        }
     }
 
 }

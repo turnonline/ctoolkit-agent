@@ -29,7 +29,9 @@ import static com.google.identitytoolkit.JsonTokenHelper.ID_TOKEN_USER_ID;
 public class IAMAuthenticator
         implements Authenticator
 {
-    private static String GTOKEN = "gtoken";
+    private static final String X_CTOOLKIT_AGENT_ON_BEHALF_ON_AGENT_URL = "-X-CtoolkitAgent-onBehalfOfAgentUrl";
+
+    private static final String GTOKEN = "gtoken";
 
     private Logger log = LoggerFactory.getLogger( IAMAuthenticator.class );
 
@@ -76,6 +78,8 @@ public class IAMAuthenticator
                     ctx.setUserEmail( email );
                     ctx.setDisplayName( displayNameJson != null ? displayNameJson.getAsString() : null );
                     ctx.setPhotoUrl( photoUrlJson != null ? photoUrlJson.getAsString() : null );
+                    ctx.setGtoken( gtoken );
+                    ctx.setOnBehalfOfAgentUrl( request.getHeader( X_CTOOLKIT_AGENT_ON_BEHALF_ON_AGENT_URL ) );
 
                     // if agent is running on app engine - check permissions
                     if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )

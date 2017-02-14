@@ -18,6 +18,10 @@ public class RestContextThreadLocal implements RestContext
 
     private String photoUrl;
 
+    private String gtoken;
+
+    private String onBehalfOfAgentUrl;
+
     @Override
     public String getUserId()
     {
@@ -64,5 +68,38 @@ public class RestContextThreadLocal implements RestContext
     public void setPhotoUrl( String photoUrl )
     {
         this.photoUrl = photoUrl;
+    }
+
+    public String getGtoken()
+    {
+        return gtoken;
+    }
+
+    public void setGtoken( String gtoken )
+    {
+        this.gtoken = gtoken;
+    }
+
+    public String getOnBehalfOfAgentUrl()
+    {
+        return onBehalfOfAgentUrl;
+    }
+
+    public void setOnBehalfOfAgentUrl( String onBehalfOfAgentUrl )
+    {
+        this.onBehalfOfAgentUrl = onBehalfOfAgentUrl;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "RestContextThreadLocal{" +
+                "userId='" + userId + '\'' +
+                ", userEmail='" + userEmail + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", gtoken='" + gtoken + '\'' +
+                ", onBehalfOfAgentUrl='" + onBehalfOfAgentUrl + '\'' +
+                '}';
     }
 }
