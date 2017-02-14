@@ -61,14 +61,9 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     public List<ITEM> getItems()
     {
-        // TODO: batch get
         if ( !itemsLoaded )
         {
-            for ( Ref<ITEM> ref : itemsRef )
-            {
-                items.add( ref.get() );
-            }
-
+            items.addAll( new ArrayList<>( ofy().load().refs( itemsRef ).values() ) );
             itemsLoaded = true;
         }
 
@@ -130,14 +125,9 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         ofy().save().entity( this ).now();
 
         // put back childs
-        itemsCount = 0;
-        for ( ITEM next : temp )
-        {
-            // TODO: batch save
-            ofy().save().entity( next ).now();
-            items.add( next );
-            itemsCount++;
-        }
+        itemsCount = temp.size();
+        ofy().save().entities( temp ).now();
+        items.addAll( temp );
 
         // now save parent one more time with item associations
         ofy().save().entity( this ).now();
@@ -173,6 +163,25 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
         items.clear();
         itemsLoaded = false;
+    }
+
+    public List<ITEM> getOrphans()
+    {
+        List<ITEM> orphans = new ArrayList<>();
+        Iterator<Ref<ITEM>> iterator = itemsRef.iterator();
+
+        while ( itemsLoaded && iterator.hasNext() )
+        {
+            Ref<ITEM> originItem = iterator.next();
+
+            ITEM orphan = originItem.get();
+            if ( !items.contains( orphan ) )
+            {
+                orphans.add( orphan );
+            }
+        }
+
+        return orphans;
     }
 
     @Override

@@ -37,11 +37,13 @@ import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindOp;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSetModelKindPropOp;
+import org.ctoolkit.services.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.appengine.tools.pipeline.JobInfo.State.RUNNING;
+import static org.ctoolkit.migration.agent.config.AgentModule.BUCKET_NAME;
 
 /**
  * Implementation of {@link ChangeSetService}
@@ -65,6 +68,8 @@ public class ChangeSetServiceBean
 
     private final DataAccess dataAccess;
 
+    private final StorageService storageService;
+
     private final JobSpecificationFactory jobSpecificationFactory;
 
     private final MapReduceSettings mapReduceSettings;
@@ -75,18 +80,24 @@ public class ChangeSetServiceBean
 
     private Map<Class, Provider> jobInfoProviders = new HashMap<>();
 
+    private String bucketName;
+
     @Inject
     public ChangeSetServiceBean( EntityPool pool,
                                  DataAccess dataAccess,
+                                 StorageService storageService,
                                  JobSpecificationFactory jobSpecificationFactory,
                                  MapReduceSettings mapReduceSettings,
-                                 PipelineService pipelineService )
+                                 PipelineService pipelineService,
+                                 @Named( BUCKET_NAME ) String bucketName )
     {
         this.pool = pool;
         this.dataAccess = dataAccess;
+        this.storageService = storageService;
         this.jobSpecificationFactory = jobSpecificationFactory;
         this.mapReduceSettings = mapReduceSettings;
         this.pipelineService = pipelineService;
+        this.bucketName = bucketName;
 
         systemKinds.add( "MR-IncrementalTask" );
         systemKinds.add( "MR-ShardedJob" );
@@ -139,19 +150,64 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.CREATE )
-    public <M extends BaseMetadata> M create( M metadata )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> M create( M metadata )
     {
+        // create metadata
         metadata.save();
-        // TODO: store blob
+
+        // create blob
+        for ( MI item : metadata.getItems() )
+        {
+            if ( item.getData() != null )
+            {
+                storageService.store(
+                        item.getData(),
+                        item.getDataType().mimeType(),
+                        item.newFileName(),
+                        bucketName
+                );
+            }
+        }
+
+        // update fileName
+        metadata.save();
+
         return metadata;
     }
 
     @Override
     @Auditable( action = Action.UPDATE )
-    public <M extends BaseMetadata> M update( M metadata )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> M update( M metadata )
     {
-        // TODO: store blob
-        return dataAccess.update( metadata );
+        // update metadata
+        metadata.save();
+
+        // update blob
+        for ( MI item : metadata.getItems() )
+        {
+            // remove orphans
+            for ( MI orphan : metadata.getOrphans() )
+            {
+                if ( orphan.getFileName() != null )
+                {
+                    storageService.delete( orphan.getFileName(), bucketName );
+                }
+            }
+
+            if ( item.getData() != null )
+            {
+                storageService.store(
+                        item.getData(),
+                        item.getDataType().mimeType(),
+                        item.getFileName() != null ? item.getFileName() : item.newFileName(),
+                        bucketName );
+            }
+        }
+
+        // update fileName
+        metadata.save();
+
+        return metadata;
     }
 
     @Override
@@ -166,8 +222,11 @@ public class ChangeSetServiceBean
     {
         for ( BaseMetadataItem item : metadata.getItems() )
         {
-            // TODO: delete blob
+            // remove item
             dataAccess.delete( item.getClass(), item.getKey() );
+
+            // remove data
+            storageService.delete( item.getFileName() );
         }
 
         dataAccess.delete( metadata.getClass(), metadata.getKey() );
@@ -200,7 +259,17 @@ public class ChangeSetServiceBean
         M importMetadata = metadataItem.getMetadata();
         importMetadata.getItems().add( metadataItem );
         importMetadata.save();
-        // TODO: store blob
+
+        if ( metadataItem.getData() != null )
+        {
+            storageService.store(
+                    metadataItem.getData(),
+                    metadataItem.getDataType().mimeType(),
+                    metadataItem.newFileName(),
+                    bucketName
+            );
+        }
+
         return metadataItem;
     }
 
@@ -208,26 +277,45 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.UPDATE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI update( MI metadataItem )
     {
-        // TODO: store blob
-        return dataAccess.update( metadataItem );
+        metadataItem = dataAccess.update( metadataItem );
+
+        if ( metadataItem.getData() != null )
+        {
+            storageService.store(
+                    metadataItem.getData(),
+                    metadataItem.getDataType().mimeType(),
+                    metadataItem.getFileName() != null ? metadataItem.getFileName() : metadataItem.newFileName(),
+                    bucketName
+            );
+        }
+
+        return metadataItem;
     }
 
     @Override
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<MI> key )
     {
-        // TODO: load blob
-        return dataAccess.find( key.getMetadataItemClass(), key.getKey() );
+        MI item = dataAccess.find( key.getMetadataItemClass(), key.getKey() );
+        if ( item.getFileName() != null )
+        {
+            item.setData( storageService.serve( item.getFileName(), bucketName ) );
+        }
+
+        return item;
     }
 
     @Override
     @Auditable( action = Action.DELETE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( MI metadataItem )
     {
-        M importMetadata = metadataItem.getMetadata();
-        importMetadata.getItems().remove( importMetadata );
-        importMetadata.save();
+        if ( metadataItem.getFileName() != null )
+        {
+            storageService.delete( metadataItem.getFileName(), bucketName );
+        }
 
-        // TODO: remove blob
+        M importMetadata = metadataItem.getMetadata();
+        importMetadata.getItems().remove( metadataItem );
+        importMetadata.save();
     }
 
     // ------------------------------------------

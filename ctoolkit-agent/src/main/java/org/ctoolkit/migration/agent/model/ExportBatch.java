@@ -37,7 +37,11 @@ public class ExportBatch
 
         private byte[] data;
 
+        private String fileName;
+
         private DataType dataType;
+
+        private long dataLength;
 
         private JobState state;
 
@@ -91,6 +95,17 @@ public class ExportBatch
             this.data = data;
         }
 
+        public String getFileName()
+        {
+            return fileName;
+        }
+
+        @Override
+        public void setFileName( String fileName )
+        {
+            this.fileName = fileName;
+        }
+
         @Override
         public DataType getDataType()
         {
@@ -101,6 +116,18 @@ public class ExportBatch
         public void setDataType( DataType dataType )
         {
             this.dataType = dataType;
+        }
+
+        @Override
+        public long getDataLength()
+        {
+            return dataLength;
+        }
+
+        @Override
+        public void setDataLength( long dataLength )
+        {
+            this.dataLength = dataLength;
         }
 
         public String getEntityToExport()
@@ -140,8 +167,10 @@ public class ExportBatch
                     "key='" + key + '\'' +
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null ) +
+                    ", fileName=" + fileName +
                     ", entityToExport='" + entityToExport + '\'' +
                     ", dataType=" + dataType +
+                    ", dataLength=" + dataLength +
                     ", state=" + state +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +

@@ -1,9 +1,10 @@
 package org.ctoolkit.migration.agent.service.impl.datastore;
 
-import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.google.common.base.Charsets;
+import org.ctoolkit.migration.agent.model.BaseMetadataItem;
 import org.ctoolkit.migration.agent.model.ISetItem;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
@@ -61,8 +62,19 @@ public class ExportMapOnlyMapperJob
 
         // update state to COMPLETED_SUCCESSFULLY
         item.setProperty( "state", jobState.name() );
-        item.setProperty( "data", new Blob( data != null ? data.getBytes( Charsets.UTF_8 ) : null ) );
+        item.setProperty( "dataLength", data != null ? ( long ) data.length() : 0L );
         datastoreService.put( item );
+
+        // store blob
+        if ( data != null )
+        {
+            storageService.store(
+                    data.getBytes( Charsets.UTF_8 ),
+                    dataType.mimeType(),
+                    BaseMetadataItem.newFileName( KeyFactory.keyToString( item.getKey() ) ),
+                    bucketName
+            );
+        }
 
         // update process for parent
         updateParent( item, jobState );

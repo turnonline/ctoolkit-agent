@@ -7,9 +7,22 @@ import java.util.Date;
  */
 public interface ISetItem
 {
-    enum DataType {
-        XML,
-        JSON
+    enum DataType
+    {
+        XML( "application/xml" ),
+        JSON( "application/json" );
+
+        private String mimeType;
+
+        DataType( String mimeType )
+        {
+            this.mimeType = mimeType;
+        }
+
+        public String mimeType()
+        {
+            return mimeType;
+        }
     }
 
     byte[] getData();
@@ -18,21 +31,27 @@ public interface ISetItem
 
     DataType getDataType();
 
-    void setDataType(DataType dataType);
+    void setDataType( DataType dataType );
 
-    void setKey(String key);
+    long getDataLength();
+
+    void setDataLength(long dataLength);
+
+    void setKey( String key );
 
     String getKey();
 
-    void setName(String name);
+    void setName( String name );
 
     String getName();
 
-    void setState(JobState state);
+    void setFileName(String fileName);
+
+    void setState( JobState state );
 
     JobState getState();
 
-    void setCreateDate(Date createDate);
+    void setCreateDate( Date createDate );
 
-    void setUpdateDate(Date updateDate);
+    void setUpdateDate( Date updateDate );
 }

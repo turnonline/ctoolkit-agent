@@ -32,7 +32,7 @@ public interface ChangeSetService
      * @param metadata {@link BaseMetadata}
      * @return persisted {@link BaseMetadata}
      */
-    <M extends BaseMetadata> M create( M metadata );
+    <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> M create( M metadata );
 
     /**
      * Update existing {@link BaseMetadata}
@@ -40,7 +40,7 @@ public interface ChangeSetService
      * @param metadata {@link BaseMetadata}
      * @return persisted {@link BaseMetadata}
      */
-    <M extends BaseMetadata> M update( M metadata );
+    <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> M update( M metadata );
 
     /**
      * Get {@link BaseMetadata} for specified key

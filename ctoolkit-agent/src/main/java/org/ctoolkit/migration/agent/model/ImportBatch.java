@@ -37,7 +37,11 @@ public class ImportBatch
 
         private byte[] data;
 
+        private String fileName;
+
         private DataType dataType;
+
+        private long dataLength;
 
         private JobState state;
 
@@ -87,6 +91,16 @@ public class ImportBatch
             this.data = data;
         }
 
+        public String getFileName()
+        {
+            return fileName;
+        }
+
+        public void setFileName( String fileName )
+        {
+            this.fileName = fileName;
+        }
+
         @Override
         public DataType getDataType()
         {
@@ -97,6 +111,18 @@ public class ImportBatch
         public void setDataType( DataType dataType )
         {
             this.dataType = dataType;
+        }
+
+        @Override
+        public long getDataLength()
+        {
+            return dataLength;
+        }
+
+        @Override
+        public void setDataLength( long dataLength )
+        {
+            this.dataLength = dataLength;
         }
 
         public Date getCreateDate()
@@ -127,6 +153,8 @@ public class ImportBatch
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null ) +
                     ", dataType=" + dataType +
+                    ", dataLength=" + dataLength +
+                    ", fileName=" + fileName +
                     ", state=" + state +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +

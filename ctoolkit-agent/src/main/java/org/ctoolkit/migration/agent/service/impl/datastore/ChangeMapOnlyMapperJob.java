@@ -1,6 +1,5 @@
 package org.ctoolkit.migration.agent.service.impl.datastore;
 
-import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.google.common.base.Charsets;
@@ -24,7 +23,7 @@ public class ChangeMapOnlyMapperJob
     {
         super.map( item );
 
-        Blob data = ( Blob ) item.getProperty( "data" );
+        byte[] data = storageService.serve( ( String ) item.getProperty( "fileName" ), bucketName );
         ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
         ChangeSet changeSet;
 
@@ -34,12 +33,12 @@ public class ChangeMapOnlyMapperJob
         {
             case JSON:
             {
-                changeSet = new Gson().fromJson( new String( data.getBytes(), Charsets.UTF_8 ), ChangeSet.class );
+                changeSet = new Gson().fromJson( new String( data, Charsets.UTF_8 ), ChangeSet.class );
                 break;
             }
             case XML:
             {
-                changeSet = XmlUtils.unmarshall( new ByteArrayInputStream( data.getBytes() ), ChangeSet.class );
+                changeSet = XmlUtils.unmarshall( new ByteArrayInputStream( data ), ChangeSet.class );
                 break;
             }
             default:

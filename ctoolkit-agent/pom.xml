@@ -138,6 +138,18 @@
             <scope>test</scope>
             <version>${xmlunit.version}</version>
         </dependency>
+
+        <!--CToolkit services-->
+        <dependency>
+            <groupId>org.ctoolkit.services</groupId>
+            <artifactId>ctoolkit-services-api</artifactId>
+            <version>0.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ctoolkit.services</groupId>
+            <artifactId>ctoolkit-services-storage</artifactId>
+            <version>0.5-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <profiles>

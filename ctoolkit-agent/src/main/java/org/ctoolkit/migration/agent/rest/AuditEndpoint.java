@@ -37,7 +37,7 @@ public class AuditEndpoint
     public List<MetadataAudit> listAudit( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
                                           @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
                                           @DefaultValue( "createDate" ) @Nullable @Named( "orderBy" ) String orderBy,
-                                          @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
+                                          @DefaultValue( "false" ) @Nullable @Named( "ascending" ) Boolean ascending,
                                           @Nullable @Named( "operation" ) Operation operation,
                                           @Nullable @Named( "ownerId" ) String ownerId,
                                           User authUser ) throws Exception

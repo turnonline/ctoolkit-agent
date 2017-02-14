@@ -72,6 +72,8 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
             anItem.setCreateDate( item.getCreateDate() );
             anItem.setUpdateDate( item.getUpdateDate() );
             anItem.setDataType( item.getDataType() );
+            anItem.setDataLength( item.getDataLength() );
+            anItem.setFileName( item.getFileName() );
             anItem.setState( item.getState() );
 
             extraMapBItemToAItem( item, anItem );

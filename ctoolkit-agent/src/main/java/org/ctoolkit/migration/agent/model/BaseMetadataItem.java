@@ -27,8 +27,6 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     @Ignore
     private byte[] data;
 
-    private String bucketName;
-
     private String fileName;
 
     private long dataLength;
@@ -70,20 +68,15 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         return data;
     }
 
+    public long getDataLength()
+    {
+        return dataLength;
+    }
+
     public void setData( byte[] data )
     {
         this.data = data;
         dataLength = data.length;
-    }
-
-    public String getBucketName()
-    {
-        return bucketName;
-    }
-
-    public void setBucketName( String bucketName )
-    {
-        this.bucketName = bucketName;
     }
 
     public String getFileName()
@@ -94,6 +87,16 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public void setFileName( String fileName )
     {
         this.fileName = fileName;
+    }
+
+    public String newFileName()
+    {
+        return newFileName( getKey() );
+    }
+
+    public static String newFileName( String key )
+    {
+        return "MetadataItem-" + key;
     }
 
     public ISetItem.DataType getDataType()
@@ -124,6 +127,13 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
             checkNotNull( metadata, "Metadata is mandatory to create a new persisted MetadataItem!" );
             metadataRef = Ref.create( metadata );
         }
+
+        if ( data != null )
+        {
+            dataLength = data.length;
+        }
+
+        this.fileName = newFileName();
     }
 
     @Override
@@ -133,7 +143,6 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
                 "data.length=" + ( data != null ? data.length : null ) +
                 ", dataType=" + dataType +
                 ", name=" + name +
-                ", bucketName=" + bucketName +
                 ", fileName=" + fileName +
                 ", state=" + state +
                 "} " + super.toString();

@@ -16,8 +16,6 @@ import org.ctoolkit.migration.agent.rest.ImportEndpoint;
 import org.ctoolkit.migration.agent.rest.MetadataEndpoint;
 
 import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
@@ -64,10 +62,10 @@ public class AgentServletModule
         serve( "/appstats/*" ).with( AppstatsServlet.class );
 
         // Appstats configuration
-        Map<String, String> initParams = new HashMap<String, String>();
-        initParams.put( "logMessage", "Appstats available: /appstats/details?time={ID}" );
-
-        // exclude appstats itself from logging
-        filterRegex( "^((?!/appstats/).)*$" ).through( AppstatsFilter.class, initParams );
+//        Map<String, String> initParams = new HashMap<String, String>();
+//        initParams.put( "logMessage", "Appstats available: /appstats/details?time={ID}" );
+//
+//        // exclude appstats itself from logging
+//        filterRegex( "^((?!/appstats/).)*$" ).through( AppstatsFilter.class, initParams );
     }
 }

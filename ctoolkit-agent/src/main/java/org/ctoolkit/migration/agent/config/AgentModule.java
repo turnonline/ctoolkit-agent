@@ -1,5 +1,6 @@
 package org.ctoolkit.migration.agent.config;
 
+import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.channel.ChannelService;
 import com.google.appengine.api.channel.ChannelServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -70,7 +71,9 @@ import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewTypeNewValueC
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewValueChangeRule;
 import org.ctoolkit.migration.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.migration.agent.service.impl.event.Auditable;
+import org.ctoolkit.services.storage.appengine.CtoolkitServicesAppEngineStorageModule;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 
@@ -80,6 +83,9 @@ import javax.inject.Singleton;
 public class AgentModule
         extends AbstractModule
 {
+
+    public static final String BUCKET_NAME = "bucketName";
+
     @Override
     protected void configure()
     {
@@ -88,6 +94,8 @@ public class AgentModule
                 .implement( MapSpecificationProvider.class, ChangeJob.class, ChangeJobMapSpecificationProvider.class )
                 .implement( MapSpecificationProvider.class, ExportJob.class, ExportJobMapSpecificationProvider.class )
                 .build( JobSpecificationFactory.class ) );
+
+        install( new CtoolkitServicesAppEngineStorageModule() );
 
         bind( EntityPool.class ).in( Singleton.class );
         bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
@@ -207,5 +215,13 @@ public class AgentModule
         return new MapReduceSettings.Builder()
                 .setWorkerQueueName( "ctoolkit-agent" )
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    @Named( BUCKET_NAME )
+    public String provideBucketName()
+    {
+        return AppIdentityServiceFactory.getAppIdentityService().getDefaultGcsBucketName();
     }
 }

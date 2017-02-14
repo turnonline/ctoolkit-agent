@@ -8,9 +8,13 @@ import com.google.appengine.tools.mapreduce.MapOnlyMapper;
 import com.google.inject.Injector;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.service.ChangeSetService;
+import org.ctoolkit.services.storage.StorageService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ConcurrentModificationException;
+
+import static org.ctoolkit.migration.agent.config.AgentModule.BUCKET_NAME;
 
 /**
  * Base mapper job for batch based jobs
@@ -28,6 +32,13 @@ public abstract class BatchMapOnlyMapperJob
 
     @Inject
     protected transient DatastoreService datastoreService;
+
+    @Inject
+    protected transient StorageService storageService;
+
+    @Inject
+    @Named( BUCKET_NAME )
+    protected transient String bucketName;
 
     @Override
     public void map( Entity value )
