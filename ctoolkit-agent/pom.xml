@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.ctoolkit.api</groupId>
             <artifactId>migration</artifactId>
-            <version>v1-1.22.0-SNAPSHOT</version>
+            <version>v1-1.22.0-20170217.222645-1</version>
         </dependency>
 
         <!--  IAM DEPENDENCIES -->
