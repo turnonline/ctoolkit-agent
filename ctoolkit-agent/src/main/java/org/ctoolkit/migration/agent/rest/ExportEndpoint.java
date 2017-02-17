@@ -133,8 +133,11 @@ public class ExportEndpoint
         props.put( "metadataId", metadataId );
         MappingContext ctx = new MappingContext( props );
 
+        ExportMetadata exportMetadata = new ExportMetadata();
+        exportMetadata.setKey(metadataId);
+
         ExportMetadataItem exportMetadataItem = mapper.map( exportBatchItem, ExportMetadataItem.class, ctx );
-        ExportMetadataItem exportMetadataItemBe = service.create( exportMetadataItem );
+        ExportMetadataItem exportMetadataItemBe = service.create( exportMetadata, exportMetadataItem );
 
         return mapper.map( exportMetadataItemBe, ExportBatch.ExportItem.class );
     }

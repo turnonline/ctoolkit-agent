@@ -75,6 +75,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
             anItem.setDataLength( item.getDataLength() );
             anItem.setFileName( item.getFileName() );
             anItem.setState( item.getState() );
+            anItem.setError( item.getError() );
 
             extraMapBItemToAItem( item, anItem );
 

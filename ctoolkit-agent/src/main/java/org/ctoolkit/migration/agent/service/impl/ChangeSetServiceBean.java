@@ -1,5 +1,10 @@
 package org.ctoolkit.migration.agent.service.impl;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
@@ -54,6 +59,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -119,6 +125,7 @@ public class ChangeSetServiceBean
 
         systemKinds.add( "MR-IncrementalTask" );
         systemKinds.add( "MR-ShardedJob" );
+        systemKinds.add( "MR-ShardRetryState" );
         systemKinds.add( "pipeline-barrier" );
         systemKinds.add( "pipeline-fanoutTask" );
         systemKinds.add( "pipeline-job" );
@@ -126,6 +133,7 @@ public class ChangeSetServiceBean
         systemKinds.add( "pipeline-slot" );
         systemKinds.add( "pipeline-exception" );
         systemKinds.add( "__GsFileInfo__" );
+        systemKinds.add( "_ah_FakeCloudStorage__app_default_bucket" );
 
         systemKinds.add( "_ImportMetadata" );
         systemKinds.add( "_ImportMetadataItem" );
@@ -308,16 +316,43 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.CREATE )
-    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( final MI metadataItem )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( final M metadata, final MI metadataItem )
     {
+        // store again to persist file name
+        dataAccess.create( metadataItem );
+
+        final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+
+        // update parent - in transaction because multiple threads can access parent
         ofy().transactNew( 5, new VoidWork()
         {
             @Override
             public void vrun()
             {
-                M importMetadata = metadataItem.getMetadata();
-                importMetadata.getItems().add( metadataItem );
-                importMetadata.save();
+                Key parentKey = KeyFactory.stringToKey( metadata.getKey() );
+
+                try
+                {
+                    Entity metadataEntity = datastoreService.get( parentKey );
+                    List<Key> items = ( List<Key> ) metadataEntity.getProperty( "itemsRef" );
+                    if ( items == null )
+                    {
+                        items = new ArrayList<>();
+                    }
+                    Key itemKey = KeyFactory.stringToKey( metadataItem.getKey() );
+                    if ( !items.contains( itemKey ) )
+                    {
+                        items.add( itemKey );
+                    }
+
+                    metadataEntity.setUnindexedProperty( "itemsCount", items.size() );
+                    metadataEntity.setUnindexedProperty( "itemsRef", items );
+                    datastoreService.put( ofy().getTransaction(), metadataEntity );
+                }
+                catch ( EntityNotFoundException e )
+                {
+                    throw new RuntimeException( "Parent for item not found: " + parentKey, e );
+                }
             }
         } );
 
@@ -512,6 +547,8 @@ public class ChangeSetServiceBean
     @Override
     public void changeChangeSet( ChangeSet changeSet )
     {
+        pool.flush();
+
         // apply model changes
         if ( changeSet.hasModelObject() )
         {
@@ -538,6 +575,8 @@ public class ChangeSetServiceBean
                         }
                     }
                 }
+
+                pool.flush();
             }
 
             // process KindPropOps
@@ -582,6 +621,8 @@ public class ChangeSetServiceBean
                         }
                     }
                 }
+
+                // TODO: flush
             }
         }
 

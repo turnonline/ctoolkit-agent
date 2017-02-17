@@ -37,9 +37,9 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     private int itemsCount;
 
-    private int processedOk;
+    private List<Long> processedOk = new ArrayList<>();
 
-    private int processedError;
+    private List<Long> processedError = new ArrayList<>();
 
     private List<String> jobContext = new ArrayList<>();
 
@@ -74,6 +74,11 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         return items;
     }
 
+    public void addItem( ITEM item )
+    {
+        items.add( item );
+    }
+
     public int getItemsCount()
     {
         return itemsCount;
@@ -106,18 +111,18 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
             item.setState( JobState.RUNNING );
         }
 
-        processedOk = 0;
-        processedError = 0;
+        processedOk = new ArrayList<>();
+        processedError = new ArrayList<>();
     }
 
     public int getProcessedItems()
     {
-        return processedOk;
+        return processedOk.size();
     }
 
     public int getProcessedErrorItems()
     {
-        return processedError;
+        return processedError.size();
     }
 
     public Map<String, String> getJobContext()
@@ -187,6 +192,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
             }
         }
 
+        itemsCount = itemsRef.size();
         items.clear();
         itemsLoaded = false;
     }

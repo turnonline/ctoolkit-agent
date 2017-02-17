@@ -83,10 +83,11 @@ public interface ChangeSetService
     /**
      * Create new {@link BaseMetadataItem}
      *
+     * @param metadata {@link BaseMetadata}
      * @param metadataItem {@link BaseMetadataItem}
      * @return persisted {@link BaseMetadataItem}
      */
-    <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( MI metadataItem );
+    <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( M metadata, MI metadataItem );
 
     /**
      * Update existing {@link BaseMetadataItem}

@@ -132,8 +132,11 @@ public class ChangeEndpoint
         props.put( "metadataId", metadataId );
         MappingContext ctx = new MappingContext( props );
 
+        ChangeMetadata changeMetadata = new ChangeMetadata();
+        changeMetadata.setKey( metadataId );
+
         ChangeMetadataItem changeMetadataItem = mapper.map( changeBatchItem, ChangeMetadataItem.class, ctx );
-        ChangeMetadataItem changeMetadataItemBe = service.create( changeMetadataItem );
+        ChangeMetadataItem changeMetadataItemBe = service.create( changeMetadata, changeMetadataItem );
 
         return mapper.map( changeMetadataItemBe, ChangeBatch.ChangeItem.class );
     }

@@ -49,6 +49,8 @@ public class ImportBatch
 
         private Date updateDate;
 
+        private String error;
+
         public String getKey()
         {
             return key;
@@ -146,6 +148,18 @@ public class ImportBatch
         }
 
         @Override
+        public String getError()
+        {
+            return error;
+        }
+
+        @Override
+        public void setError( String error )
+        {
+            this.error = error;
+        }
+
+        @Override
         public String toString()
         {
             return "Item{" +
@@ -158,6 +172,7 @@ public class ImportBatch
                     ", state=" + state +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
+                    ", error=" + error +
                     '}';
         }
     }

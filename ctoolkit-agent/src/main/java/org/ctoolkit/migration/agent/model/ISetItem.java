@@ -54,4 +54,8 @@ public interface ISetItem
     void setCreateDate( Date createDate );
 
     void setUpdateDate( Date updateDate );
+
+    void setError(String error);
+
+    String getError();
 }

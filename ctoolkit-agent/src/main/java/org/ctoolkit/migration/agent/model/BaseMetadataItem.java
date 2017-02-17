@@ -35,6 +35,8 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
 
     private JobState state;
 
+    private String error;
+
     public BaseMetadataItem()
     {
     }
@@ -51,6 +53,10 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
             metadata = metadataRef.get();
         }
         return metadata;
+    }
+
+    public Ref<PARENT> getMetadataRef() {
+        return metadataRef;
     }
 
     public String getName()
@@ -117,6 +123,16 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public void setState( JobState state )
     {
         this.state = state;
+    }
+
+    public String getError()
+    {
+        return error;
+    }
+
+    public void setError( String error )
+    {
+        this.error = error;
     }
 
     @OnSave

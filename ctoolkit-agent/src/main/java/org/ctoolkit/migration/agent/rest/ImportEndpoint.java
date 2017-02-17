@@ -131,8 +131,11 @@ public class ImportEndpoint
         props.put( "metadataId", metadataId );
         MappingContext ctx = new MappingContext( props );
 
+        ImportMetadata importMetadata = new ImportMetadata();
+        importMetadata.setKey( metadataId );
+
         ImportMetadataItem importMetadataItem = mapper.map( importBatchItem, ImportMetadataItem.class, ctx );
-        ImportMetadataItem importMetadataItemBe = service.create( importMetadataItem );
+        ImportMetadataItem importMetadataItemBe = service.create( importMetadata, importMetadataItem );
 
         return mapper.map( importMetadataItemBe, ImportBatch.ImportItem.class );
     }

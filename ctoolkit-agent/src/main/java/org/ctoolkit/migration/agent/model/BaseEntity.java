@@ -104,6 +104,11 @@ public class BaseEntity
         return Key.create( this ).getString();
     }
 
+    public void setKey( String key )
+    {
+        this.id = Key.create( key ).getId();
+    }
+
     /**
      * Method is called before every update. If entity is updated first time
      * change <code>createDate</code>, else change <code>updateDate</code>

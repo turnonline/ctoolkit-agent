@@ -1,11 +1,13 @@
 package org.ctoolkit.migration.agent.service.impl.datastore;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.google.common.base.Charsets;
 import org.ctoolkit.migration.agent.model.ISetItem;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
+import org.ctoolkit.migration.agent.util.StackTraceResolver;
 import org.ctoolkit.migration.agent.util.XmlUtils;
 
 import java.io.ByteArrayInputStream;
@@ -46,6 +48,7 @@ public class ImportMapOnlyMapperJob
         }
 
         JobState jobState;
+        Text error = null;
 
         try
         {
@@ -54,10 +57,12 @@ public class ImportMapOnlyMapperJob
         }
         catch ( Exception e )
         {
+            error = new Text(StackTraceResolver.resolve( e ));
             jobState = JobState.STOPPED_BY_ERROR;
         }
 
         // update state
+        item.setUnindexedProperty( "error", error );
         item.setProperty( "state", jobState.name() );
         datastoreService.put( item );
 

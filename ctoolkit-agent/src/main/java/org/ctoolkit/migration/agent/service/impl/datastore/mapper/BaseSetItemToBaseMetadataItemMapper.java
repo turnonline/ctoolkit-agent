@@ -34,5 +34,6 @@ public abstract class BaseSetItemToBaseMetadataItemMapper<FI extends ISetItem, B
         setItem.setState( metadataItem.getState() );
         setItem.setDataType( metadataItem.getDataType() );
         setItem.setDataLength( metadataItem.getDataLength() );
+        setItem.setError( metadataItem.getError() );
     }
 }

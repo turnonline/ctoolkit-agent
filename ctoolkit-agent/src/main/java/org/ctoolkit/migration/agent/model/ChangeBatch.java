@@ -49,6 +49,8 @@ public class ChangeBatch
 
         private Date updateDate;
 
+        private String error;
+
         public String getKey()
         {
             return key;
@@ -149,6 +151,18 @@ public class ChangeBatch
         }
 
         @Override
+        public String getError()
+        {
+            return error;
+        }
+
+        @Override
+        public void setError( String error )
+        {
+            this.error = error;
+        }
+
+        @Override
         public String toString()
         {
             return "Item{" +
@@ -161,6 +175,7 @@ public class ChangeBatch
                     ", state=" + state +
                     ", createDate=" + createDate +
                     ", updateDate=" + updateDate +
+                    ", error=" + error +
                     '}';
         }
     }
