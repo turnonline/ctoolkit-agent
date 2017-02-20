@@ -35,7 +35,7 @@ public class AccessControlAllowOrignFilter
 
         httpResponse.setHeader( "Access-Control-Allow-Origin", "*" );
         httpResponse.setHeader( "Access-Control-Allow-Methods", "GET,PUT,POST,DELETE" );
-        httpResponse.setHeader( "Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Content-Type,gtoken" );
+        httpResponse.setHeader( "Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Content-Type,gtoken,-X-CtoolkitAgent-onBehalfOfAgentUrl" );
 
         if ( !httpRequest.getMethod().equals( HttpMethods.OPTIONS ) )
         {
