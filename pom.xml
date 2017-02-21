@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>com.comvai.maven</groupId>
-        <artifactId>comvai-gae-app</artifactId>
-        <version>1.10</version>
+        <groupId>org.ctoolkit.maven</groupId>
+        <artifactId>ctoolkit-parent</artifactId>
+        <version>5</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -37,9 +37,9 @@
             <email>aurel.medvegy@ctoolkit.org</email>
         </developer>
         <developer>
-            <name>Ondrej Jaura</name>
-            <id>jaura</id>
-            <email>ondrej.jaura@gmail.com</email>
+            <name>Jozef Pohorelec</name>
+            <id>pohorelec</id>
+            <email>jozef.pohorelec@ctoolkit.org</email>
         </developer>
     </developers>
 
@@ -55,6 +55,26 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Bill Of Material -->
+            <dependency>
+                <groupId>org.ctoolkit.maven</groupId>
+                <artifactId>ctoolkit-project-bom</artifactId>
+                <version>${ctoolkit-project-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.ctoolkit.maven</groupId>
+                <artifactId>ctoolkit-library-bom</artifactId>
+                <version>${ctoolkit-library-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <profiles>
         <profile>
@@ -77,10 +97,12 @@
     </profiles>
 
     <properties>
+        <gae.version>1.9.49</gae.version>
+        <ctoolkit-library-bom.version>3</ctoolkit-library-bom.version>
+        <ctoolkit-project-bom.version>1.9.49.1</ctoolkit-project-bom.version>
+        <gitkitclient.version>1.2.7</gitkitclient.version>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
-        <!-- Overrides versions from the comvai-datastore-backend pom.xml -->
-        <gae.version>1.9.36</gae.version>
-        <orika.version>1.4.6</orika.version>
+        <!-- Overrides version from bom -->
         <jmockit.version>1.18</jmockit.version>
         <!-- jmockit settings for OpenJDK otherwise throws 'IllegalStateException: To run on OpenJDK 64-Bit Server VM use -javaagent..' -->
         <jmockit.setting>
@@ -89,6 +111,7 @@
         <xmlunit.version>1.6</xmlunit.version>
         <gwt.version>2.7.0</gwt.version>
         <guice.version>4.1.0</guice.version>
+        <junit.version>4.10</junit.version>
     </properties>
 
 </project>

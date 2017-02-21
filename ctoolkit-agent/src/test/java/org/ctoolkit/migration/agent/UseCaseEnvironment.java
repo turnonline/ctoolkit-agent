@@ -1,6 +1,5 @@
 package org.ctoolkit.migration.agent;
 
-import com.comvai.test.gae.ServiceConfigModule;
 import com.google.appengine.tools.development.testing.LocalBlobstoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestConfig;
@@ -8,6 +7,7 @@ import com.google.appengine.tools.development.testing.LocalModulesServiceTestCon
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
 import org.ctoolkit.migration.agent.config.AgentModule;
+import org.ctoolkit.test.appengine.ServiceConfigModule;
 
 import java.util.concurrent.TimeUnit;
 
