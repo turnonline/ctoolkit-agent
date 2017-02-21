@@ -8,7 +8,7 @@ import javax.inject.Inject;
  * <p>Change rule for use case:</p>
  * <code>newName != null && newType == null && newVal != null</code>
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class NewNameNewValueChangeRule
         implements IChangeRule

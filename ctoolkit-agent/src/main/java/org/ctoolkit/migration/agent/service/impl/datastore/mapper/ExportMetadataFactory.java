@@ -9,7 +9,7 @@ import org.ctoolkit.migration.agent.service.DataAccess;
 import javax.inject.Inject;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ExportMetadataFactory
         implements ObjectFactory<ExportMetadata>

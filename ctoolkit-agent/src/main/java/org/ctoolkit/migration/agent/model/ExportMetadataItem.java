@@ -5,7 +5,7 @@ import com.googlecode.objectify.annotation.Entity;
 /**
  * Export metadata item entity
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 @Entity( name = "_ExportMetadataItem" )
 public class ExportMetadataItem

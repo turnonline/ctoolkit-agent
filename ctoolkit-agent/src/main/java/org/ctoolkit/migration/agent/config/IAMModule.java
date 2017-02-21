@@ -25,7 +25,7 @@ import java.util.Collections;
 /**
  * Configuration for IAM module
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class IAMModule
         extends AbstractModule

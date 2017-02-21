@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation for mark map reduce MapSpecification as change job specification
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 @Target( {ElementType.TYPE, ElementType.PARAMETER, ElementType.METHOD} )
 @Retention( RetentionPolicy.RUNTIME )

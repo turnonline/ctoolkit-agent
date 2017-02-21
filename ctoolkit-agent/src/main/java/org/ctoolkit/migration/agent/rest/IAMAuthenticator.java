@@ -24,7 +24,7 @@ import static com.google.identitytoolkit.JsonTokenHelper.ID_TOKEN_PHOTO_URL;
 import static com.google.identitytoolkit.JsonTokenHelper.ID_TOKEN_USER_ID;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class IAMAuthenticator
         implements Authenticator

@@ -33,7 +33,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 /**
  * Ctoolkit agent provider
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 // TODO: this should be handled by resource factory but for now it is not capable to do it (setting rootUrl inside mapreduce job)
 // TODO: use different secret.json - one provided is created by c-toolkit project - probably should be provided via database

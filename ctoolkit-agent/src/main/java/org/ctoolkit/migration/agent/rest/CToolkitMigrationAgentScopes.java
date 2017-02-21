@@ -3,7 +3,7 @@ package org.ctoolkit.migration.agent.rest;
 /**
  * Available OAuth 2.0 scopes for use with the CToolkit migration API.
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class CToolkitMigrationAgentScopes
 {

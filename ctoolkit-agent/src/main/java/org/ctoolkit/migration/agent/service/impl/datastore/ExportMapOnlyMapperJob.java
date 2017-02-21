@@ -15,7 +15,7 @@ import org.ctoolkit.migration.agent.util.XmlUtils;
 /**
  * Datastore implementation of export job
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ExportMapOnlyMapperJob
         extends BatchMapOnlyMapperJob

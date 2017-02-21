@@ -3,7 +3,7 @@ package org.ctoolkit.migration.agent.model;
 /**
  * Base filter for list base service methods
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class BaseMetadataFilter<M extends BaseMetadata>
 {

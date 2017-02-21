@@ -21,7 +21,7 @@ import static org.ctoolkit.migration.agent.config.AgentModule.BUCKET_NAME;
 /**
  * Base mapper job for batch based jobs
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public abstract class BatchMapOnlyMapperJob
         extends MapOnlyMapper<Entity, Entity>

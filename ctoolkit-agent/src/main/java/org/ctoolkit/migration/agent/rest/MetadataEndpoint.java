@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Endpoint for metadata info - entity kinds, entity properties
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 @Api
 @ApiReference( AgentEndpointConfig.class )

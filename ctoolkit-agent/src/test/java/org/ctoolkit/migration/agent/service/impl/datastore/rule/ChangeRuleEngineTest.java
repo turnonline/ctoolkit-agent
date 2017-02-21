@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Unit test for {@link ChangeRuleEngine}
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ChangeRuleEngineTest
 {

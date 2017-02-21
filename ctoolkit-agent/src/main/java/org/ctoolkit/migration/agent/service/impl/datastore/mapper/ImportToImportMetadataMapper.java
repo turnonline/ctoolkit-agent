@@ -11,7 +11,7 @@ import javax.inject.Inject;
 /**
  * Mapper for {@link ImportBatch} to {@link ImportMetadata} model beans
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ImportToImportMetadataMapper
         extends BaseSetToBaseMetadataMapper<ImportBatch, ImportMetadata, ImportBatch.ImportItem, ImportMetadataItem>

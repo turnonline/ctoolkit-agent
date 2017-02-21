@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation used to enable audit on method
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 @Qualifier
 @Target( {ElementType.TYPE, ElementType.METHOD} )

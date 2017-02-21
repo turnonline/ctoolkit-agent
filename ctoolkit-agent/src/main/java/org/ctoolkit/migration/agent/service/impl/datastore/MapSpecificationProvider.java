@@ -5,7 +5,7 @@ import com.google.appengine.tools.mapreduce.MapSpecification;
 /**
  * Map specification provider
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public interface MapSpecificationProvider
 {

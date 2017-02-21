@@ -3,7 +3,7 @@ package org.ctoolkit.migration.agent.model;
 import com.googlecode.objectify.annotation.Entity;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 @Entity( name = "_MetadataAudit" )
 public class MetadataAudit

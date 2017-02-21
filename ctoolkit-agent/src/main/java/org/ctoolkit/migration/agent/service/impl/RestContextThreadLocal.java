@@ -6,7 +6,7 @@ import org.ctoolkit.migration.agent.service.RestContext;
  * Request scoped rest context implementation. Store info about rest
  * metadata in thread local variable.
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class RestContextThreadLocal
         implements RestContext

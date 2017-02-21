@@ -22,7 +22,7 @@ import java.util.Collection;
 import static org.ctoolkit.migration.agent.service.impl.datastore.BatchMapOnlyMapperJob.injector;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class MigrateJobMapSpecificationProvider
         implements MapSpecificationProvider, Serializable

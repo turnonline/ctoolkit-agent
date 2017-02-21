@@ -6,7 +6,7 @@ import org.ctoolkit.migration.agent.model.ChangeMetadataItem;
 /**
  * Mapper for {@link ChangeBatch.ChangeItem} to {@link ChangeMetadataItem} model beans
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ChangeItemToChangeMetadataItemMapper
         extends BaseSetItemToBaseMetadataItemMapper<ChangeBatch.ChangeItem, ChangeMetadataItem>

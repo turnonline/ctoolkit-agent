@@ -15,7 +15,7 @@ import java.security.SignatureException;
 /**
  * Custom implementation of gtoken verification
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  * @see {@link JsonTokenHelper}
  */
 public class GtokenVerifier

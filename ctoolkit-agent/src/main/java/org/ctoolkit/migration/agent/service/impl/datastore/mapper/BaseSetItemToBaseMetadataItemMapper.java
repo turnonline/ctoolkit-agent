@@ -8,7 +8,7 @@ import org.ctoolkit.migration.agent.model.ISetItem;
 /**
  * Mapper for frontend to backend metadata item model beans
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public abstract class BaseSetItemToBaseMetadataItemMapper<FI extends ISetItem, BI extends BaseMetadataItem>
         extends CustomMapper<FI, BI>

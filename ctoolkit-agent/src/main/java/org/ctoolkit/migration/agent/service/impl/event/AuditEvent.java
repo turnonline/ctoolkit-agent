@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Audit event is posted when changeset operation occurs
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class AuditEvent
         extends HashMap<String, String>

@@ -73,7 +73,7 @@ import static org.ctoolkit.migration.agent.config.AgentModule.BUCKET_NAME;
 /**
  * Implementation of {@link ChangeSetService}
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ChangeSetServiceBean
         implements ChangeSetService

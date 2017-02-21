@@ -11,7 +11,7 @@ import org.ctoolkit.migration.agent.shared.resources.ChangeSetEntity;
 import javax.inject.Inject;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class EntityFactory
         implements ObjectFactory<Entity>

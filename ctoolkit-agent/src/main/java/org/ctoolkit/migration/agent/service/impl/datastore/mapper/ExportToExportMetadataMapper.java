@@ -11,7 +11,7 @@ import javax.inject.Inject;
 /**
  * Mapper for {@link ExportBatch} to {@link ExportMetadata} model beans
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ExportToExportMetadataMapper
         extends BaseSetToBaseMetadataMapper<ExportBatch, ExportMetadata, ExportBatch.ExportItem, ExportMetadataItem>

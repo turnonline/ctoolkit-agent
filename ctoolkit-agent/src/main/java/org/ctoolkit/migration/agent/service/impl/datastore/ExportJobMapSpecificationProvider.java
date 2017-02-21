@@ -11,7 +11,7 @@ import com.google.inject.assistedinject.Assisted;
 import javax.inject.Inject;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ExportJobMapSpecificationProvider
         implements MapSpecificationProvider

@@ -14,7 +14,7 @@ import java.util.Map;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class AuditSubscription
 {

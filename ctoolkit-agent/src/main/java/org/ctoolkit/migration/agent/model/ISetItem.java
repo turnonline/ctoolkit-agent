@@ -3,7 +3,7 @@ package org.ctoolkit.migration.agent.model;
 import java.util.Date;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public interface ISetItem
 {

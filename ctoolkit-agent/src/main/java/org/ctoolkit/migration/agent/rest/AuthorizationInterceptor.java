@@ -13,7 +13,7 @@ import java.lang.reflect.Type;
  * Authorization interceptor checks if method contains parameter {@link User} and is not <code>null</code>.
  * If user is not found in method signature or is <code>null</code>, interceptor will throw {@link UnauthorizedException}
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class AuthorizationInterceptor
         implements MethodInterceptor

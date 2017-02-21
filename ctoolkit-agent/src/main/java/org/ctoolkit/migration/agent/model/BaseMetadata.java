@@ -17,7 +17,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 /**
  * Base metadata entity.
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         extends BaseEntity

@@ -3,7 +3,7 @@ package org.ctoolkit.migration.agent.service.impl.datastore.rule;
 /**
  * API for change rule definition
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public interface IChangeRule
 {

@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * ChangeSet service API
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public interface ChangeSetService
 {

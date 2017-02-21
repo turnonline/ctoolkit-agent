@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Filter adds Access-Control-Allow-* response headers + handles options method wich is called before an actual call
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class AccessControlAllowOrignFilter
         implements Filter

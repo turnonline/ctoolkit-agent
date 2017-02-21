@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * The datastore interface as an abstraction over potential many underlying datastores.
  *
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public interface DataAccess
 {
