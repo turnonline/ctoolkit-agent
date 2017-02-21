@@ -142,7 +142,8 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.item.update", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ChangeBatch.ChangeItem updateChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ChangeBatch.ChangeItem changeBatchItem, User authUser ) throws Exception
+    public ChangeBatch.ChangeItem updateChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ChangeBatch.ChangeItem changeBatchItem, User authUser )
+            throws Exception
     {
         if ( service.get( new MetadataItemKey<>( id, ChangeMetadataItem.class ) ) == null )
         {
@@ -156,7 +157,8 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.item.delete", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    public void deleteChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser )
+            throws Exception
     {
         ChangeMetadataItem item = service.get( new MetadataItemKey<>( id, ChangeMetadataItem.class ) );
         if ( item == null )
@@ -168,7 +170,8 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.item.get", path = "change/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public ChangeBatch.ChangeItem getChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser ) throws Exception
+    public ChangeBatch.ChangeItem getChangeItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser )
+            throws Exception
     {
         ChangeMetadataItem item = service.get( new MetadataItemKey<>( id, ChangeMetadataItem.class ) );
         if ( item == null )

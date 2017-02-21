@@ -8,7 +8,8 @@ import org.ctoolkit.migration.agent.service.RestContext;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class RestContextThreadLocal implements RestContext
+public class RestContextThreadLocal
+        implements RestContext
 {
     private String userId;
 

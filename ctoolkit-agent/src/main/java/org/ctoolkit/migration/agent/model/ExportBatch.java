@@ -28,6 +28,105 @@ public class ExportBatch
 
     private List<ExportItem> items = new ArrayList<>();
 
+    public String getKey()
+    {
+        return key;
+    }
+
+    public void setKey( String key )
+    {
+        this.key = key;
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public String getMapReduceJobId()
+    {
+        return mapReduceJobId;
+    }
+
+    public void setMapReduceJobId( String mapReduceJobId )
+    {
+        this.mapReduceJobId = mapReduceJobId;
+    }
+
+    public String getToken()
+    {
+        return token;
+    }
+
+    public void setToken( String token )
+    {
+        this.token = token;
+    }
+
+    public Date getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( Date createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( Date updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
+    @Override
+    public ExportJobInfo getJobInfo()
+    {
+        return jobInfo;
+    }
+
+    @Override
+    public void setJobInfo( ExportJobInfo jobInfo )
+    {
+        this.jobInfo = jobInfo;
+    }
+
+    public List<ExportItem> getItems()
+    {
+        return items;
+    }
+
+    public void setItems( List<ExportItem> items )
+    {
+        this.items = items;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Export{" +
+                "key='" + key + '\'' +
+                ", name=" + name +
+                ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", token='" + token + '\'' +
+                ", createDate=" + createDate +
+                ", updateDate=" + updateDate +
+                ", jobInfo=" + jobInfo +
+                ", items=" + items +
+                '}';
+    }
+
     public static class ExportItem
             implements ISetItem
     {
@@ -70,9 +169,9 @@ public class ExportBatch
         }
 
         @Override
-        public void setState( JobState state )
+        public void setName( String name )
         {
-            this.state = state;
+            this.name = name;
         }
 
         @Override
@@ -82,9 +181,9 @@ public class ExportBatch
         }
 
         @Override
-        public void setName( String name )
+        public void setState( JobState state )
         {
-            this.name = name;
+            this.state = state;
         }
 
         public byte[] getData()
@@ -191,104 +290,5 @@ public class ExportBatch
                     ", error=" + error +
                     '}';
         }
-    }
-
-    public String getKey()
-    {
-        return key;
-    }
-
-    public void setKey( String key )
-    {
-        this.key = key;
-    }
-
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    public String getMapReduceJobId()
-    {
-        return mapReduceJobId;
-    }
-
-    public void setMapReduceJobId( String mapReduceJobId )
-    {
-        this.mapReduceJobId = mapReduceJobId;
-    }
-
-    public String getToken()
-    {
-        return token;
-    }
-
-    public void setToken( String token )
-    {
-        this.token = token;
-    }
-
-    public Date getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( Date createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    public Date getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( Date updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Override
-    public void setJobInfo( ExportJobInfo jobInfo )
-    {
-        this.jobInfo = jobInfo;
-    }
-
-    @Override
-    public ExportJobInfo getJobInfo()
-    {
-        return jobInfo;
-    }
-
-    public List<ExportItem> getItems()
-    {
-        return items;
-    }
-
-    public void setItems( List<ExportItem> items )
-    {
-        this.items = items;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Export{" +
-                "key='" + key + '\'' +
-                ", name=" + name +
-                ", mapReduceJobId='" + mapReduceJobId + '\'' +
-                ", token='" + token + '\'' +
-                ", createDate=" + createDate +
-                ", updateDate=" + updateDate +
-                ", jobInfo=" + jobInfo +
-                ", items=" + items +
-                '}';
     }
 }

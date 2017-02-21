@@ -21,15 +21,16 @@ import java.io.Serializable;
  * <td>remove</td>
  * <td>{@code <kindprop op="remove" kind="User" property="age"/>}</td>
  * </tr>
- *  <tr>
+ * <tr>
  * <td>change</td>
  * <td>{@code <kindprop op="change" kind="User" property="age" newName="business-age" newType="text" newValue="{optional-default-value}"/>}</td>
-  * </table>
+ * </table>
  *
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChangeSetModelKindPropOp implements Serializable
+public class ChangeSetModelKindPropOp
+        implements Serializable
 {
     /**
      * Possible operations defined on Kind properties

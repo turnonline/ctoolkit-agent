@@ -13,7 +13,8 @@ import java.util.List;
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChangeSetEntities implements Serializable
+public class ChangeSetEntities
+        implements Serializable
 {
     @XmlElement( name = "entity" )
     private List<ChangeSetEntity> entity;

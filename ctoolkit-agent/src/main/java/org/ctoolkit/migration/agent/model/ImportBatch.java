@@ -28,6 +28,104 @@ public class ImportBatch
 
     private List<ImportItem> items = new ArrayList<>();
 
+    public String getKey()
+    {
+        return key;
+    }
+
+    public void setKey( String key )
+    {
+        this.key = key;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public String getMapReduceJobId()
+    {
+        return mapReduceJobId;
+    }
+
+    public void setMapReduceJobId( String mapReduceJobId )
+    {
+        this.mapReduceJobId = mapReduceJobId;
+    }
+
+    public String getToken()
+    {
+        return token;
+    }
+
+    public void setToken( String token )
+    {
+        this.token = token;
+    }
+
+    public Date getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( Date createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( Date updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
+    @Override
+    public ImportJobInfo getJobInfo()
+    {
+        return jobInfo;
+    }
+
+    @Override
+    public void setJobInfo( ImportJobInfo jobInfo )
+    {
+        this.jobInfo = jobInfo;
+    }
+
+    public List<ImportItem> getItems()
+    {
+        return items;
+    }
+
+    public void setItems( List<ImportItem> items )
+    {
+        this.items = items;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Import{" +
+                "key='" + key + '\'' +
+                ", name=" + name +
+                ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", token='" + token + '\'' +
+                ", createDate=" + createDate +
+                ", updateDate=" + updateDate +
+                ", jobInfo=" + jobInfo +
+                ", items=" + items +
+                '}';
+    }
+
     public static class ImportItem
             implements ISetItem
     {
@@ -66,10 +164,9 @@ public class ImportBatch
             return name;
         }
 
-        @Override
-        public void setState( JobState state )
+        public void setName( String name )
         {
-            this.state = state;
+            this.name = name;
         }
 
         @Override
@@ -78,9 +175,10 @@ public class ImportBatch
             return state;
         }
 
-        public void setName( String name )
+        @Override
+        public void setState( JobState state )
         {
-            this.name = name;
+            this.state = state;
         }
 
         public byte[] getData()
@@ -175,103 +273,5 @@ public class ImportBatch
                     ", error=" + error +
                     '}';
         }
-    }
-
-    public String getKey()
-    {
-        return key;
-    }
-
-    public void setKey( String key )
-    {
-        this.key = key;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    public String getMapReduceJobId()
-    {
-        return mapReduceJobId;
-    }
-
-    public void setMapReduceJobId( String mapReduceJobId )
-    {
-        this.mapReduceJobId = mapReduceJobId;
-    }
-
-    public String getToken()
-    {
-        return token;
-    }
-
-    public void setToken( String token )
-    {
-        this.token = token;
-    }
-
-    public Date getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( Date createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    public Date getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( Date updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Override
-    public void setJobInfo( ImportJobInfo jobInfo )
-    {
-        this.jobInfo = jobInfo;
-    }
-
-    @Override
-    public ImportJobInfo getJobInfo()
-    {
-        return jobInfo;
-    }
-
-    public List<ImportItem> getItems()
-    {
-        return items;
-    }
-
-    public void setItems( List<ImportItem> items )
-    {
-        this.items = items;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Import{" +
-                "key='" + key + '\'' +
-                ", name=" + name +
-                ", mapReduceJobId='" + mapReduceJobId + '\'' +
-                ", token='" + token + '\'' +
-                ", createDate=" + createDate +
-                ", updateDate=" + updateDate +
-                ", jobInfo=" + jobInfo +
-                ", items=" + items +
-                '}';
     }
 }

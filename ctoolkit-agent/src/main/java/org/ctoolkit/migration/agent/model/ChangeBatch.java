@@ -28,6 +28,105 @@ public class ChangeBatch
 
     private List<ChangeItem> items = new ArrayList<>();
 
+    public String getKey()
+    {
+        return key;
+    }
+
+    public void setKey( String key )
+    {
+        this.key = key;
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+
+    @Override
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public String getMapReduceJobId()
+    {
+        return mapReduceJobId;
+    }
+
+    public void setMapReduceJobId( String mapReduceJobId )
+    {
+        this.mapReduceJobId = mapReduceJobId;
+    }
+
+    public String getToken()
+    {
+        return token;
+    }
+
+    public void setToken( String token )
+    {
+        this.token = token;
+    }
+
+    public Date getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( Date createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( Date updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
+    @Override
+    public ChangeJobInfo getJobInfo()
+    {
+        return jobInfo;
+    }
+
+    @Override
+    public void setJobInfo( ChangeJobInfo jobInfo )
+    {
+        this.jobInfo = ( ChangeJobInfo ) jobInfo;
+    }
+
+    public List<ChangeItem> getItems()
+    {
+        return items;
+    }
+
+    public void setItems( List<ChangeItem> items )
+    {
+        this.items = items;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Change{" +
+                "key='" + key + '\'' +
+                ", name=" + name +
+                ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", token='" + token + '\'' +
+                ", createDate=" + createDate +
+                ", updateDate=" + updateDate +
+                ", jobInfo=" + jobInfo +
+                ", items=" + items +
+                '}';
+    }
+
     public static class ChangeItem
             implements ISetItem
     {
@@ -68,9 +167,9 @@ public class ChangeBatch
         }
 
         @Override
-        public void setState( JobState state )
+        public void setName( String name )
         {
-            this.state = state;
+            this.name = name;
         }
 
         @Override
@@ -80,9 +179,9 @@ public class ChangeBatch
         }
 
         @Override
-        public void setName( String name )
+        public void setState( JobState state )
         {
-            this.name = name;
+            this.state = state;
         }
 
         public byte[] getData()
@@ -178,104 +277,5 @@ public class ChangeBatch
                     ", error=" + error +
                     '}';
         }
-    }
-
-    public String getKey()
-    {
-        return key;
-    }
-
-    public void setKey( String key )
-    {
-        this.key = key;
-    }
-
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    public String getMapReduceJobId()
-    {
-        return mapReduceJobId;
-    }
-
-    public void setMapReduceJobId( String mapReduceJobId )
-    {
-        this.mapReduceJobId = mapReduceJobId;
-    }
-
-    public String getToken()
-    {
-        return token;
-    }
-
-    public void setToken( String token )
-    {
-        this.token = token;
-    }
-
-    public Date getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( Date createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    public Date getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( Date updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Override
-    public void setJobInfo( ChangeJobInfo jobInfo )
-    {
-        this.jobInfo = ( ChangeJobInfo ) jobInfo;
-    }
-
-    @Override
-    public ChangeJobInfo getJobInfo()
-    {
-        return jobInfo;
-    }
-
-    public List<ChangeItem> getItems()
-    {
-        return items;
-    }
-
-    public void setItems( List<ChangeItem> items )
-    {
-        this.items = items;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Change{" +
-                "key='" + key + '\'' +
-                ", name=" + name +
-                ", mapReduceJobId='" + mapReduceJobId + '\'' +
-                ", token='" + token + '\'' +
-                ", createDate=" + createDate +
-                ", updateDate=" + updateDate +
-                ", jobInfo=" + jobInfo +
-                ", items=" + items +
-                '}';
     }
 }

@@ -31,7 +31,7 @@ public class AuditSubscription
     public void handle( AuditEvent event )
     {
         RestContext ctx = injector.getInstance( RestContext.class );
-        Entity audit = new Entity("_MetadataAudit");
+        Entity audit = new Entity( "_MetadataAudit" );
 
         for ( Map.Entry<String, String> entry : event.entrySet() )
         {

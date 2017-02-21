@@ -10,7 +10,8 @@ import javax.inject.Inject;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class NewTypeChangeRule implements IChangeRule
+public class NewTypeChangeRule
+        implements IChangeRule
 {
     private EntityEncoder entityEncoder;
 

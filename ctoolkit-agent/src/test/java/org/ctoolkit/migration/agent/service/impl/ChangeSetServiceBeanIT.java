@@ -44,15 +44,25 @@ public class ChangeSetServiceBeanIT
     private DatastoreService datastoreService;
 
     private ChangeSet DROP_ENTITY;
+
     private ChangeSet CLEAN_ENTITY;
+
     private ChangeSet ADD_ENTITY;
+
     private ChangeSet REMOVE_ENTITY_PROPERTY;
+
     private ChangeSet CHANGE_ENTITY_PROPERTY__NEW_NAME;
+
     private ChangeSet CHANGE_ENTITY_PROPERTY__NEW_NAME_NEW_TYPE;
+
     private ChangeSet CHANGE_ENTITY_PROPERTY__NEW_NAME_NEW_TYPE_NEW_VALUE;
+
     private ChangeSet CHANGE_ENTITY_PROPERTY__NEW_NAME_NEW_VALUE;
+
     private ChangeSet CHANGE_ENTITY_PROPERTY__NEW_TYPE;
+
     private ChangeSet CHANGE_ENTITY_PROPERTY__NEW_TYPE_NEW_VALUE;
+
     private ChangeSet CHANGE_ENTITY_PROPERTY__NEW_VALUE;
 
     @Before

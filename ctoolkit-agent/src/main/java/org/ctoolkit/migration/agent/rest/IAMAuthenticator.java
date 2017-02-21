@@ -33,10 +33,10 @@ public class IAMAuthenticator
 
     private static final String GTOKEN = "gtoken";
 
-    private Logger log = LoggerFactory.getLogger( IAMAuthenticator.class );
-
     @Inject
     private static Injector injector;
+
+    private Logger log = LoggerFactory.getLogger( IAMAuthenticator.class );
 
     @Inject
     private GtokenVerifier verifier;

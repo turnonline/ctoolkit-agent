@@ -19,29 +19,6 @@ public class MetadataAudit
 
     private String userDisplayName;
 
-    public enum Action
-    {
-        CREATE,
-        UPDATE,
-        DELETE,
-
-        START_JOB,
-        CANCEL_JOB,
-        DELETE_JOB,
-
-        MIGRATION
-    }
-
-    public enum Operation
-    {
-        IMPORT,
-        IMPORT_ITEM,
-        EXPORT,
-        EXPORT_ITEM,
-        CHANGE,
-        CHANGE_ITEM
-    }
-
     public Action getAction()
     {
         return action;
@@ -102,5 +79,28 @@ public class MetadataAudit
                 ", userPhotoUrl='" + userPhotoUrl + '\'' +
                 ", userDisplayName='" + userDisplayName + '\'' +
                 "} " + super.toString();
+    }
+
+    public enum Action
+    {
+        CREATE,
+        UPDATE,
+        DELETE,
+
+        START_JOB,
+        CANCEL_JOB,
+        DELETE_JOB,
+
+        MIGRATION
+    }
+
+    public enum Operation
+    {
+        IMPORT,
+        IMPORT_ITEM,
+        EXPORT,
+        EXPORT_ITEM,
+        CHANGE,
+        CHANGE_ITEM
     }
 }

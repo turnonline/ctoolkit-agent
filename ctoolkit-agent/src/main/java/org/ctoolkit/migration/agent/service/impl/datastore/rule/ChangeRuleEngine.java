@@ -14,13 +14,13 @@ public class ChangeRuleEngine
     private List<IChangeRule> rules = new ArrayList<>();
 
     @Inject
-    public ChangeRuleEngine(NewNameChangeRule newNameChangeRule,
-                            NewTypeChangeRule newTypeChangeRule,
-                            NewValueChangeRule newValueChangeRule,
-                            NewNameNewTypeChangeRule newNameNewTypeChangeRule,
-                            NewNameNewValueChangeRule newNameNewValueChangeRule,
-                            NewTypeNewValueChangeRule newTypeNewValueChangeRule,
-                            NewNameNewTypeNewValueChangeRule newNameNewTypeNewValueChangeRule)
+    public ChangeRuleEngine( NewNameChangeRule newNameChangeRule,
+                             NewTypeChangeRule newTypeChangeRule,
+                             NewValueChangeRule newValueChangeRule,
+                             NewNameNewTypeChangeRule newNameNewTypeChangeRule,
+                             NewNameNewValueChangeRule newNameNewValueChangeRule,
+                             NewTypeNewValueChangeRule newTypeNewValueChangeRule,
+                             NewNameNewTypeNewValueChangeRule newNameNewTypeNewValueChangeRule )
     {
         rules.add( newNameChangeRule );
         rules.add( newTypeChangeRule );

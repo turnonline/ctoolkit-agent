@@ -10,9 +10,9 @@ public interface ISet<JI extends JobInfo>
 {
     void setKey( String key );
 
-    void setName( String name );
-
     String getName();
+
+    void setName( String name );
 
     void setMapReduceJobId( String mapReduceJobId );
 
@@ -20,9 +20,9 @@ public interface ISet<JI extends JobInfo>
 
     void setUpdateDate( Date updateDate );
 
-    void setJobInfo( JI jobInfo );
-
     JI getJobInfo();
+
+    void setJobInfo( JI jobInfo );
 
     List<? extends ISetItem> getItems();
 }

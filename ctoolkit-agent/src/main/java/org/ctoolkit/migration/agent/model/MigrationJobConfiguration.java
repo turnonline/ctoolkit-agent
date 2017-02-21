@@ -5,7 +5,8 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class MigrationJobConfiguration implements Serializable
+public class MigrationJobConfiguration
+        implements Serializable
 {
     private static final long serialVersionUID = 5138862517526846988L;
 

@@ -21,9 +21,9 @@ import java.util.Map;
 public class ChangeSetEntityToEntityMapper
         extends CustomMapper<ChangeSetEntity, Entity>
 {
-    private Logger logger = LoggerFactory.getLogger( ChangeSetEntityToEntityMapper.class );
-
     private final EntityEncoder encoder;
+
+    private Logger logger = LoggerFactory.getLogger( ChangeSetEntityToEntityMapper.class );
 
     @Inject
     public ChangeSetEntityToEntityMapper( EntityEncoder encoder )

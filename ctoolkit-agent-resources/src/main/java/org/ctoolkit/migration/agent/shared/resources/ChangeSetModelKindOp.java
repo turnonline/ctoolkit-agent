@@ -17,7 +17,8 @@ import java.io.Serializable;
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChangeSetModelKindOp implements Serializable
+public class ChangeSetModelKindOp
+        implements Serializable
 {
     /**
      * Operations defined on entity kinds
@@ -26,10 +27,10 @@ public class ChangeSetModelKindOp implements Serializable
 
     public final static String OP_CLEAN = "clean";
 
-    @XmlAttribute(name = "op")
+    @XmlAttribute( name = "op" )
     private String op;
 
-    @XmlAttribute(name = "kind")
+    @XmlAttribute( name = "kind" )
     private String kind;
 
     public String getOp()

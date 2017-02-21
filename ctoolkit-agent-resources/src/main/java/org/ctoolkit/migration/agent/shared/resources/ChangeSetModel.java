@@ -13,7 +13,8 @@ import java.util.List;
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChangeSetModel implements Serializable
+public class ChangeSetModel
+        implements Serializable
 {
     /**
      * Optional Kind operations descriptors

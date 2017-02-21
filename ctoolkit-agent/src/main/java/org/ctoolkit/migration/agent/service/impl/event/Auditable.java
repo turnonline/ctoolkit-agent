@@ -14,8 +14,8 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 @Qualifier
-@Target({ElementType.TYPE, ElementType.METHOD})
-@Retention( RetentionPolicy.RUNTIME)
+@Target( {ElementType.TYPE, ElementType.METHOD} )
+@Retention( RetentionPolicy.RUNTIME )
 public @interface Auditable
 {
     Action action();

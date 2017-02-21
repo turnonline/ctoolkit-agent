@@ -111,7 +111,7 @@ public interface DataAccess
      * @param <T>    entity type
      * @return entity
      */
-    <T extends BaseMetadata> List<T> find( BaseMetadataFilter <T>filter );
+    <T extends BaseMetadata> List<T> find( BaseMetadataFilter<T> filter );
 
     /**
      * Get entities by specified filter

@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 @Qualifier
-@Target({ElementType.TYPE})
-@Retention( RetentionPolicy.RUNTIME)
+@Target( {ElementType.TYPE} )
+@Retention( RetentionPolicy.RUNTIME )
 public @interface Authorized
 {
 }

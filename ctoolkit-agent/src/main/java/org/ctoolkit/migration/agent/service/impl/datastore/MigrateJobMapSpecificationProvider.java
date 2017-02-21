@@ -27,10 +27,10 @@ import static org.ctoolkit.migration.agent.service.impl.datastore.BatchMapOnlyMa
 public class MigrateJobMapSpecificationProvider
         implements MapSpecificationProvider, Serializable
 {
-    private static final long serialVersionUID = 8477680668820034478L;
-
     // TODO: configurable
     public static final int SHARD_COUNT = 10;
+
+    private static final long serialVersionUID = 8477680668820034478L;
 
     private final MigrationJobConfiguration jobConfiguration;
 

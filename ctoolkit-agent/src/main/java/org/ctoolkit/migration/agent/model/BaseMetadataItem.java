@@ -46,6 +46,11 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         this.metadata = metadata;
     }
 
+    public static String newFileName( String key )
+    {
+        return "MetadataItem-" + key;
+    }
+
     public PARENT getMetadata()
     {
         if ( metadata == null )
@@ -55,7 +60,8 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         return metadata;
     }
 
-    public Ref<PARENT> getMetadataRef() {
+    public Ref<PARENT> getMetadataRef()
+    {
         return metadataRef;
     }
 
@@ -74,15 +80,15 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         return data;
     }
 
-    public long getDataLength()
-    {
-        return dataLength;
-    }
-
     public void setData( byte[] data )
     {
         this.data = data;
         dataLength = data.length;
+    }
+
+    public long getDataLength()
+    {
+        return dataLength;
     }
 
     public String getFileName()
@@ -98,11 +104,6 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public String newFileName()
     {
         return newFileName( getKey() );
-    }
-
-    public static String newFileName( String key )
-    {
-        return "MetadataItem-" + key;
     }
 
     public ISetItem.DataType getDataType()

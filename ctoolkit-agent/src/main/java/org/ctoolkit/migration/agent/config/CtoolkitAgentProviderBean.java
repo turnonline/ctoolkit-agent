@@ -72,7 +72,8 @@ public class CtoolkitAgentProviderBean
         }
     }
 
-    private HttpRequestInitializer provideCredential( JsonFactory jsonFactory, HttpTransport transport ) throws IOException
+    private HttpRequestInitializer provideCredential( JsonFactory jsonFactory, HttpTransport transport )
+            throws IOException
     {
         // app engine
         if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )
@@ -87,10 +88,34 @@ public class CtoolkitAgentProviderBean
         }
     }
 
+    private PrivateKey privateKeyFromPkcs8( String privateKeyPem ) throws IOException
+    {
+        Reader reader = new StringReader( privateKeyPem );
+        PemReader.Section section = PemReader.readFirstSectionAndClose( reader, "PRIVATE KEY" );
+        if ( section == null )
+        {
+            throw new IOException( "Invalid PKCS8 data." );
+        }
+
+        byte[] bytes = section.getBase64DecodedBytes();
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec( bytes );
+
+        try
+        {
+            KeyFactory keyFactory = SecurityUtils.getRsaKeyFactory();
+            return keyFactory.generatePrivate( keySpec );
+        }
+        catch ( NoSuchAlgorithmException | InvalidKeySpecException e )
+        {
+            throw new IOException( "Unexpected exception reading PKCS data", e );
+        }
+    }
+
     private class ConfiguredByJsonGoogleCredential
             extends GoogleCredential.Builder
     {
-        public ConfiguredByJsonGoogleCredential( InputStream jsonStream, JsonFactory jsonFactory, HttpTransport transport ) throws IOException
+        public ConfiguredByJsonGoogleCredential( InputStream jsonStream, JsonFactory jsonFactory, HttpTransport transport )
+                throws IOException
         {
             JsonObjectParser parser = new JsonObjectParser( jsonFactory );
             GenericJson fileContents = parser.parseAndClose( jsonStream, Charsets.UTF_8, GenericJson.class );
@@ -121,29 +146,6 @@ public class CtoolkitAgentProviderBean
                     request.getHeaders().put( "gtoken", gtoken );
                 }
             };
-        }
-    }
-
-    private PrivateKey privateKeyFromPkcs8( String privateKeyPem ) throws IOException
-    {
-        Reader reader = new StringReader( privateKeyPem );
-        PemReader.Section section = PemReader.readFirstSectionAndClose( reader, "PRIVATE KEY" );
-        if ( section == null )
-        {
-            throw new IOException( "Invalid PKCS8 data." );
-        }
-
-        byte[] bytes = section.getBase64DecodedBytes();
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec( bytes );
-
-        try
-        {
-            KeyFactory keyFactory = SecurityUtils.getRsaKeyFactory();
-            return keyFactory.generatePrivate( keySpec );
-        }
-        catch ( NoSuchAlgorithmException | InvalidKeySpecException e )
-        {
-            throw new IOException( "Unexpected exception reading PKCS data", e );
         }
     }
 }

@@ -16,11 +16,17 @@ public class ChangeRuleEngineTest
     private EntityEncoder encoder = new EntityEncoder();
 
     private NewNameChangeRule newNameChangeRule = new NewNameChangeRule();
+
     private NewTypeChangeRule newTypeChangeRule = new NewTypeChangeRule( encoder );
+
     private NewValueChangeRule newValueChangeRule = new NewValueChangeRule( encoder );
+
     private NewNameNewTypeChangeRule newNameNewTypeChangeRule = new NewNameNewTypeChangeRule( encoder );
+
     private NewNameNewValueChangeRule newNameNewValueChangeRule = new NewNameNewValueChangeRule( encoder );
+
     private NewTypeNewValueChangeRule newTypeNewValueChangeRule = new NewTypeNewValueChangeRule( encoder );
+
     private NewNameNewTypeNewValueChangeRule newNameNewTypeNewValueChangeRule = new NewNameNewTypeNewValueChangeRule( encoder );
 
     private ChangeRuleEngine ruleEngine = new ChangeRuleEngine(

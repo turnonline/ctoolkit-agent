@@ -14,7 +14,8 @@ import java.io.Serializable;
  */
 @XmlRootElement( name = "changeset" )
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChangeSet implements Serializable
+public class ChangeSet
+        implements Serializable
 {
     @XmlAttribute( name = "author" )
     private String author;

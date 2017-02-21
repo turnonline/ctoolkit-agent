@@ -9,19 +9,19 @@ public interface RestContext
 {
     String getUserId();
 
-    void setUserId(String userId);
+    void setUserId( String userId );
 
     String getUserEmail();
 
-    void setUserEmail(String userEmail);
+    void setUserEmail( String userEmail );
 
     String getDisplayName();
 
-    void setDisplayName(String displayName);
+    void setDisplayName( String displayName );
 
     String getPhotoUrl();
 
-    void setPhotoUrl(String photoUrl);
+    void setPhotoUrl( String photoUrl );
 
     String getGtoken();
 
