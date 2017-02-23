@@ -8,6 +8,7 @@ import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.PipelineService;
 import com.google.appengine.tools.pipeline.impl.PipelineServiceImpl;
 import com.google.common.eventbus.EventBus;
+import com.google.gson.JsonObject;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
@@ -18,6 +19,7 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.TypeFactory;
+import net.oauth.jsontoken.Checker;
 import org.ctoolkit.migration.agent.annotation.ChangeJob;
 import org.ctoolkit.migration.agent.annotation.ExportJob;
 import org.ctoolkit.migration.agent.annotation.ImportJob;
@@ -72,10 +74,15 @@ import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewTypeNewValueC
 import org.ctoolkit.migration.agent.service.impl.datastore.rule.NewValueChangeRule;
 import org.ctoolkit.migration.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.migration.agent.service.impl.event.Auditable;
+import org.ctoolkit.restapi.client.appengine.FacadeAppEngineModule;
+import org.ctoolkit.restapi.client.identity.verifier.IdentityVerifierModule;
+import org.ctoolkit.services.common.CtoolkitCommonServicesModule;
+import org.ctoolkit.services.guice.appengine.CtoolkitServicesAppEngineModule;
 import org.ctoolkit.services.storage.appengine.CtoolkitServicesAppEngineStorageModule;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.security.SignatureException;
 
 
 /**
@@ -104,8 +111,13 @@ public class AgentModule
                 .build( CtoolkitAgentFactory.class )
         );
 
+        install( new FacadeAppEngineModule() );
+        install( new IdentityVerifierModule() );
+        install( new CtoolkitServicesAppEngineModule() );
         install( new CtoolkitServicesAppEngineStorageModule() );
+        install( new CtoolkitCommonServicesModule() );
 
+        bind( Checker.class ).to( AudienceChecker.class );
         bind( EntityPool.class ).in( Singleton.class );
         bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
@@ -227,5 +239,21 @@ public class AgentModule
     public String provideBucketName()
     {
         return AppIdentityServiceFactory.getAppIdentityService().getDefaultGcsBucketName();
+    }
+
+    private static class AudienceChecker
+            implements Checker
+    {
+        private AudienceChecker()
+        {
+        }
+
+        @Override
+        public void check( JsonObject payload ) throws SignatureException
+        {
+            // TODO: should we check audience(project id)?
+            // TODO: -audience can vary if user wants to export from one project to another
+            // TODO: -what should be source of expected audiences - database?
+        }
     }
 }

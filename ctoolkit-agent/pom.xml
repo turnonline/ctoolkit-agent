@@ -120,6 +120,12 @@
         <dependency>
             <groupId>com.google.appengine.tools</groupId>
             <artifactId>appengine-mapreduce</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.easymock</groupId>
+                    <artifactId>easymock</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.appengine.tools</groupId>
@@ -153,6 +159,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ctoolkit.test</groupId>
@@ -162,6 +169,7 @@
             <groupId>cpsuite</groupId>
             <artifactId>cpsuite</artifactId>
             <version>1.2.6</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>xmlunit</groupId>
@@ -174,12 +182,30 @@
         <dependency>
             <groupId>org.ctoolkit.services</groupId>
             <artifactId>ctoolkit-services-api</artifactId>
-            <version>0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ctoolkit.services</groupId>
+            <artifactId>ctoolkit-services-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ctoolkit.services</groupId>
             <artifactId>ctoolkit-services-storage</artifactId>
-            <version>0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ctoolkit.services</groupId>
+            <artifactId>ctoolkit-services-identity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ctoolkit.restapi</groupId>
+            <artifactId>ctoolkit-rest-facade-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ctoolkit.restapi</groupId>
+            <artifactId>ctoolkit-rest-facade-appengine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ctoolkit.restapi</groupId>
+            <artifactId>ctoolkit-client-identity-toolkit</artifactId>
         </dependency>
     </dependencies>
 
@@ -215,6 +241,7 @@
                     <plugin>
                         <groupId>com.google.appengine</groupId>
                         <artifactId>appengine-maven-plugin</artifactId>
+                        <version>${gae.version}</version>
                         <configuration>
                             <!--Do not store the administrator sign-in credentials.-->
                             <noCookies>true</noCookies>
@@ -223,6 +250,7 @@
                     <plugin>
                         <groupId>com.google.appengine</groupId>
                         <artifactId>appengine-maven-plugin</artifactId>
+                        <version>${gae.version}</version>
                         <configuration>
                             <!--Do not store the administrator sign-in credentials.-->
                             <noCookies>true</noCookies>
@@ -240,7 +268,7 @@
                             <execution>
                                 <goals>
                                     <goal>endpoints_get_client_lib</goal>
-                                    <!--<goal>endpoints_get_discovery_doc</goal>-->
+                                    <goal>endpoints_get_discovery_doc</goal>
                                 </goals>
                             </execution>
                         </executions>

@@ -2,8 +2,8 @@ package org.ctoolkit.migration.agent.service.impl.datastore;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.google.common.base.Charsets;
+import com.google.gson.Gson;
 import org.ctoolkit.migration.agent.model.ISetItem;
 import org.ctoolkit.migration.agent.model.JobState;
 import org.ctoolkit.migration.agent.shared.resources.ChangeSet;
