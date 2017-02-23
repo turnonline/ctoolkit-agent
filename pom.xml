@@ -9,7 +9,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.ctoolkit.migration</groupId>
+    <groupId>org.ctoolkit.agent</groupId>
     <artifactId>ctoolkit-agent-parent</artifactId>
     <packaging>pom</packaging>
     <version>0.2-SNAPSHOT</version>

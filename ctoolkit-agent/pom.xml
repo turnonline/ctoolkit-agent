@@ -3,7 +3,7 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.ctoolkit.migration</groupId>
+        <groupId>org.ctoolkit.agent</groupId>
         <artifactId>ctoolkit-agent-parent</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
@@ -28,7 +28,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.ctoolkit.migration</groupId>
+            <groupId>org.ctoolkit.agent</groupId>
             <artifactId>ctoolkit-agent-resources</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -36,8 +36,8 @@
         <!--  AGENT CLIENT DEPENDENCIES -->
         <dependency>
             <groupId>org.ctoolkit.api</groupId>
-            <artifactId>migration</artifactId>
-            <version>v1-1.22.0-20170217.222645-1</version>
+            <artifactId>agent</artifactId>
+            <version>v1-1.22.0-20170223.131035-2</version>
         </dependency>
 
         <!--  IAM DEPENDENCIES -->

@@ -7,7 +7,7 @@
     <display-name>ctoolkit-agent</display-name>
 
     <listener>
-        <listener-class>org.ctoolkit.migration.agent.config.GuiceServletConfig</listener-class>
+        <listener-class>org.ctoolkit.agent.config.GuiceServletConfig</listener-class>
     </listener>
 
     <filter>
