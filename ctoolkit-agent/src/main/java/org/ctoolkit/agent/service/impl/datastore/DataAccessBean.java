@@ -24,6 +24,7 @@ import org.ctoolkit.agent.shared.resources.ChangeSetModel;
 import org.ctoolkit.agent.shared.resources.ChangeSetModelKindOp;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class DataAccessBean
 
     private final DatastoreService datastore;
 
-    private final EntityPool pool;
+    private final Provider<EntityPool> pool;
 
     private final MapperFacade mapper;
 
@@ -54,7 +55,7 @@ public class DataAccessBean
 
     @Inject
     protected DataAccessBean( DatastoreService datastore,
-                              EntityPool pool,
+                              Provider<EntityPool> pool,
                               MapperFacade mapper,
                               ChangeRuleEngine changeRuleEngine )
     {
@@ -68,7 +69,7 @@ public class DataAccessBean
     public void addEntity( ChangeSetEntity csEntity )
     {
         Entity entity = mapper.map( csEntity, Entity.class );
-        pool.put( entity );
+        pool.get().put( entity );
     }
 
     @Override
@@ -116,7 +117,12 @@ public class DataAccessBean
             {
                 for ( Entity entity : entList )
                 {
-                    pool.delete( entity.getKey() );
+                    pool.get().delete( entity.getKey() );
+                }
+
+                if ( entList.size() < DEFAULT_COUNT_LIMIT )
+                {
+                    pool.get().flush();
                 }
             }
             else
@@ -125,7 +131,7 @@ public class DataAccessBean
             }
         }
 
-        pool.flush();
+        pool.get().flush();
     }
 
     @Override
@@ -165,7 +171,7 @@ public class DataAccessBean
                     // create new migrated property
                     entity.setProperty( name, value );
 
-                    pool.put( entity );
+                    pool.get().put( entity );
                 }
 
                 offset += DEFAULT_COUNT_LIMIT;
@@ -176,7 +182,7 @@ public class DataAccessBean
             }
         }
 
-        pool.flush();
+        pool.get().flush();
     }
 
     @Override
@@ -197,7 +203,7 @@ public class DataAccessBean
                 for ( Entity entity : entList )
                 {
                     entity.removeProperty( property );
-                    pool.put( entity );
+                    pool.get().put( entity );
                 }
 
                 offset += DEFAULT_COUNT_LIMIT;
@@ -208,7 +214,7 @@ public class DataAccessBean
             }
         }
 
-        pool.flush();
+        pool.get().flush();
     }
 
     @Override
@@ -309,5 +315,11 @@ public class DataAccessBean
         }
 
         return properties;
+    }
+
+    @Override
+    public void flushPool()
+    {
+        pool.get().flush();
     }
 }

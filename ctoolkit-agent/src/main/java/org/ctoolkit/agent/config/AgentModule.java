@@ -44,6 +44,7 @@ import org.ctoolkit.agent.service.impl.datastore.ChangeMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.DataAccessBean;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
+import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
 import org.ctoolkit.agent.service.impl.datastore.ExportJobMapSpecificationProvider;
 import org.ctoolkit.agent.service.impl.datastore.ExportMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.ImportJobMapSpecificationProvider;
@@ -118,7 +119,7 @@ public class AgentModule
         install( new CtoolkitCommonServicesModule() );
 
         bind( Checker.class ).to( AudienceChecker.class );
-        bind( EntityPool.class ).in( Singleton.class );
+        bind( EntityPool.class ).to( EntityPoolThreadLocal.class ).in( RequestScoped.class );
         bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
         bind( ChangeSetEntityToEntityMapper.class ).in( Singleton.class );

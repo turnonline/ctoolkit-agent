@@ -40,7 +40,6 @@ import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.RestContext;
-import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.agent.service.impl.datastore.MapSpecificationProvider;
 import org.ctoolkit.agent.service.impl.event.Auditable;
@@ -80,8 +79,6 @@ public class ChangeSetServiceBean
 {
     private static final Logger log = LoggerFactory.getLogger( ChangeSetServiceBean.class );
 
-    private final EntityPool pool;
-
     private final DataAccess dataAccess;
 
     private final StorageService storageService;
@@ -103,8 +100,7 @@ public class ChangeSetServiceBean
     private final String bucketName;
 
     @Inject
-    public ChangeSetServiceBean( EntityPool pool,
-                                 DataAccess dataAccess,
+    public ChangeSetServiceBean( DataAccess dataAccess,
                                  StorageService storageService,
                                  Provider<RestContext> restContext,
                                  JobSpecificationFactory jobSpecificationFactory,
@@ -113,7 +109,6 @@ public class ChangeSetServiceBean
                                  PipelineService pipelineService,
                                  @Named( BUCKET_NAME ) String bucketName )
     {
-        this.pool = pool;
         this.dataAccess = dataAccess;
         this.storageService = storageService;
         this.restContext = restContext;
@@ -547,7 +542,7 @@ public class ChangeSetServiceBean
     @Override
     public void changeChangeSet( ChangeSet changeSet )
     {
-        pool.flush();
+        dataAccess.flushPool();
 
         // apply model changes
         if ( changeSet.hasModelObject() )
@@ -575,8 +570,6 @@ public class ChangeSetServiceBean
                         }
                     }
                 }
-
-                pool.flush();
             }
 
             // process KindPropOps
@@ -621,8 +614,6 @@ public class ChangeSetServiceBean
                         }
                     }
                 }
-
-                // TODO: flush
             }
         }
 
@@ -633,9 +624,9 @@ public class ChangeSetServiceBean
             {
                 dataAccess.addEntity( cse );
             }
-
-            pool.flush();
         }
+
+        dataAccess.flushPool();
     }
 
     // ------------------------------------------

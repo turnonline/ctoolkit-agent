@@ -144,4 +144,9 @@ public interface DataAccess
      * @return list of {@link PropertyMetaData}
      */
     List<PropertyMetaData> properties( String kind );
+
+    /**
+     * Flush pool
+     */
+    void flushPool();
 }
