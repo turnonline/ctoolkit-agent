@@ -18,8 +18,10 @@ import com.google.inject.assistedinject.Assisted;
 import org.ctoolkit.agent.model.CtoolkitAgentConfiguration;
 import org.ctoolkit.api.agent.CtoolkitAgent;
 import org.ctoolkit.api.agent.CtoolkitAgentScopes;
+import org.ctoolkit.services.common.PropertyService;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -36,7 +38,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 // TODO: this should be handled by resource factory but for now it is not capable to do it (setting rootUrl inside mapreduce job)
-// TODO: use different secret.json - one provided is created by c-toolkit project - probably should be provided via database
 public class CtoolkitAgentProviderBean
         implements CtoolkitAgentProvider
 {
@@ -44,11 +45,15 @@ public class CtoolkitAgentProviderBean
 
     private String gtoken;
 
+    private PropertyService propertyService;
+
     @Inject
-    public CtoolkitAgentProviderBean( @Assisted CtoolkitAgentConfiguration configuration )
+    public CtoolkitAgentProviderBean( @Assisted CtoolkitAgentConfiguration configuration, PropertyService propertyService )
     {
         this.rootUrl = configuration.getRootUrl();
         this.gtoken = configuration.getGtoken();
+
+        this.propertyService = propertyService;
     }
 
     @Override
@@ -83,7 +88,13 @@ public class CtoolkitAgentProviderBean
         // localhost
         else
         {
-            InputStream jsonStream = CtoolkitAgentProviderBean.class.getResourceAsStream( "/secret.json" );
+            String credentialsString = propertyService.getString( AgentModule.CONFIG_JSON_CREDENTIALS );
+            if ( credentialsString == null )
+            {
+                throw new NullPointerException( "Json credentials is not stored in local database. Use '/upload-json-credentials' to upload required credentials." );
+            }
+
+            InputStream jsonStream = new ByteArrayInputStream( credentialsString.getBytes( Charsets.UTF_8 ) );
             return new ConfiguredByJsonGoogleCredential( jsonStream, jsonFactory, transport ).build();
         }
     }

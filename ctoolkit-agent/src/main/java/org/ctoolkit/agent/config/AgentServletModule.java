@@ -14,6 +14,7 @@ import org.ctoolkit.agent.rest.ChangeEndpoint;
 import org.ctoolkit.agent.rest.ExportEndpoint;
 import org.ctoolkit.agent.rest.ImportEndpoint;
 import org.ctoolkit.agent.rest.MetadataEndpoint;
+import org.ctoolkit.migration.agent.UploadJsonCredentialsServlet;
 
 import javax.inject.Singleton;
 
@@ -54,6 +55,10 @@ public class AgentServletModule
 
         bind( PipelineServlet.class ).in( Singleton.class );
         serve( "/_ah/pipeline/*" ).with( PipelineServlet.class );
+
+        // upload json credentials servlet
+        bind( UploadJsonCredentialsServlet.class ).in( Singleton.class );
+        serve( "/upload-json-credentials" ).with( UploadJsonCredentialsServlet.class );
 
         // appstats configuration
         bind( AppstatsServlet.class ).in( Singleton.class );

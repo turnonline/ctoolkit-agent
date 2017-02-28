@@ -186,6 +186,8 @@
         <dependency>
             <groupId>org.ctoolkit.services</groupId>
             <artifactId>ctoolkit-services-common</artifactId>
+            <!--TODO: move to bom-->
+            <version>0.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ctoolkit.services</groupId>

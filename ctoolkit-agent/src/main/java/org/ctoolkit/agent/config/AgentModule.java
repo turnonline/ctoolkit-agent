@@ -92,6 +92,7 @@ import java.security.SignatureException;
 public class AgentModule
         extends AbstractModule
 {
+    public static final String CONFIG_JSON_CREDENTIALS = "migration.agent.jsonCredentials";
 
     public static final String BUCKET_NAME = "bucketName";
 
