@@ -2,14 +2,18 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <groupId>org.ctoolkit.agent</groupId>
         <artifactId>ctoolkit-agent-parent</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+
     <packaging>war</packaging>
     <artifactId>ctoolkit-agent</artifactId>
+    <name>CtoolkiT Agent REST API Service</name>
+    <description>Cloud Toolkit Migration Agent REST API - Google AppEngine (Micro) Service</description>
 
     <build>
         <plugins>
@@ -186,8 +190,6 @@
         <dependency>
             <groupId>org.ctoolkit.services</groupId>
             <artifactId>ctoolkit-services-common</artifactId>
-            <!--TODO: move to bom-->
-            <version>0.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ctoolkit.services</groupId>

@@ -2,6 +2,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
         <artifactId>ctoolkit-agent-parent</artifactId>
         <groupId>org.ctoolkit.agent</groupId>
@@ -9,7 +10,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <packaging>jar</packaging>
     <artifactId>ctoolkit-agent-resources</artifactId>
+    <name>CtoolkiT Agent Resources</name>
+    <description>Cloud Toolkit Migration Agent Resources</description>
 
     <build>
         <plugins>

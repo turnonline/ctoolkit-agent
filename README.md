@@ -1,4 +1,4 @@
 CtoolkiT Agent
 ==============
 
-Cloud Datastore Migration Toolkit Agent
+Cloud Toolkit Migration Agent REST API - Google AppEngine (Micro) Service
