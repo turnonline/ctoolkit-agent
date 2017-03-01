@@ -8,13 +8,13 @@ import com.google.appengine.tools.mapreduce.MapReduceServlet;
 import com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet;
 import com.googlecode.objectify.ObjectifyFilter;
 import org.ctoolkit.agent.AccessControlAllowOrignFilter;
+import org.ctoolkit.agent.UploadJsonCredentialsServlet;
 import org.ctoolkit.agent.rest.AgentEndpointConfig;
 import org.ctoolkit.agent.rest.AuditEndpoint;
 import org.ctoolkit.agent.rest.ChangeEndpoint;
 import org.ctoolkit.agent.rest.ExportEndpoint;
 import org.ctoolkit.agent.rest.ImportEndpoint;
 import org.ctoolkit.agent.rest.MetadataEndpoint;
-import org.ctoolkit.migration.agent.UploadJsonCredentialsServlet;
 
 import javax.inject.Singleton;
 

@@ -1,4 +1,4 @@
-package org.ctoolkit.migration.agent;
+package org.ctoolkit.agent;
 
 import com.google.common.io.CharStreams;
 import org.ctoolkit.services.common.PropertyService;
