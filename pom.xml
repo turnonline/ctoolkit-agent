@@ -24,8 +24,8 @@
     </scm>
 
     <modules>
-        <module>ctoolkit-agent-resources</module>
-        <module>ctoolkit-agent</module>
+        <module>resources</module>
+        <module>agent</module>
     </modules>
 
     <issueManagement>
