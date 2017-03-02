@@ -102,7 +102,6 @@
         <gae.version>1.9.48</gae.version>
         <ctoolkit-library-bom.version>3</ctoolkit-library-bom.version>
         <ctoolkit-project-bom.version>1.9.49.3-20170301.054834-1</ctoolkit-project-bom.version>
-        <gitkitclient.version>1.2.7</gitkitclient.version>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
         <!-- Overrides version from bom -->
         <jmockit.version>1.18</jmockit.version>

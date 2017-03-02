@@ -46,11 +46,6 @@
 
         <!--  IAM DEPENDENCIES -->
         <dependency>
-            <groupId>com.google.identitytoolkit</groupId>
-            <artifactId>gitkitclient</artifactId>
-            <version>${gitkitclient.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-cloudresourcemanager</artifactId>
             <version>v1-rev22-1.22.0</version>
