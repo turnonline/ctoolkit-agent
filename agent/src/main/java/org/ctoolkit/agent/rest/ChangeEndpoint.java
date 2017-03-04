@@ -185,7 +185,7 @@ public class ChangeEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "changeBatch.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ChangeJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ChangeJobInfo startJob( @Named( "id" ) String id, ChangeJobInfo job, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
@@ -204,8 +204,8 @@ public class ChangeEndpoint
         }
     }
 
-    @ApiMethod( name = "changeBatch.job.cancel", path = "change/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ChangeJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
+    @ApiMethod( name = "changeBatch.job.cancel", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
+    public ChangeJobInfo cancelJob( @Named( "id" ) String id, ChangeJobInfo job, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )

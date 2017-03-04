@@ -186,7 +186,7 @@ public class ExportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "exportBatch.job.start", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportJobInfo startJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ExportJobInfo startJob( @Named( "id" ) String id, ExportJobInfo job, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -205,8 +205,8 @@ public class ExportEndpoint
         }
     }
 
-    @ApiMethod( name = "exportBatch.job.cancel", path = "export/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
+    @ApiMethod( name = "exportBatch.job.cancel", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
+    public ExportJobInfo cancelJob( @Named( "id" ) String id, ExportJobInfo job, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )

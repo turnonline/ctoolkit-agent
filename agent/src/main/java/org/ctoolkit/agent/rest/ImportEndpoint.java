@@ -184,7 +184,7 @@ public class ImportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportJobInfo startJob( @Named( "id" ) String id, ImportBatch importBatch, User authUser ) throws Exception
+    public ImportJobInfo startJob( @Named( "id" ) String id, ImportJobInfo job, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
@@ -203,8 +203,8 @@ public class ImportEndpoint
         }
     }
 
-    @ApiMethod( name = "importBatch.job.cancel", path = "import/{id}/job/cancel", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ImportJobInfo cancelJob( @Named( "id" ) String id, User authUser ) throws Exception
+    @ApiMethod( name = "importBatch.job.cancel", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
+    public ImportJobInfo cancelJob( @Named( "id" ) String id, ImportJobInfo job, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
