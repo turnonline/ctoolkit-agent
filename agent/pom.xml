@@ -39,9 +39,8 @@
 
         <!--  AGENT CLIENT DEPENDENCIES -->
         <dependency>
-            <groupId>org.ctoolkit.api</groupId>
-            <artifactId>agent</artifactId>
-            <version>v1-1.22.0-20170223.131035-2</version>
+            <groupId>org.ctoolkit.restapi</groupId>
+            <artifactId>ctoolkit-client-agent</artifactId>
         </dependency>
 
         <!--  IAM DEPENDENCIES -->

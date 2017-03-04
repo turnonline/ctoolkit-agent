@@ -8,18 +8,15 @@ import com.google.appengine.tools.mapreduce.OutputWriter;
 import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
 import com.google.appengine.tools.mapreduce.outputs.NoOutput;
 import com.google.inject.assistedinject.Assisted;
-import org.ctoolkit.agent.config.CtoolkitAgentFactory;
-import org.ctoolkit.agent.model.CtoolkitAgentConfiguration;
 import org.ctoolkit.agent.model.MigrationJobConfiguration;
-import org.ctoolkit.api.agent.CtoolkitAgent;
-import org.ctoolkit.api.agent.model.ImportBatch;
+import org.ctoolkit.restapi.client.Identifier;
+import org.ctoolkit.restapi.client.RequestCredential;
+import org.ctoolkit.restapi.client.ResourceFacade;
+import org.ctoolkit.restapi.client.agent.model.ImportJobInfo;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
-
-import static org.ctoolkit.agent.service.impl.datastore.BatchMapOnlyMapperJob.injector;
 
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
@@ -34,18 +31,26 @@ public class MigrateJobMapSpecificationProvider
 
     private final MigrationJobConfiguration jobConfiguration;
 
-    private final CtoolkitAgentConfiguration configuration;
+    private final String agentUrl;
+
+    private final String token;
 
     private final MigrateMapOnlyMapperJob mapper;
 
+    private final ResourceFacade facade;
+
     @Inject
     public MigrateJobMapSpecificationProvider( @Assisted MigrationJobConfiguration jobConfiguration,
-                                               @Assisted CtoolkitAgentConfiguration configuration,
-                                               MigrateMapOnlyMapperJob mapper )
+                                               @Assisted( "agentUrl" ) String agentUrl,
+                                               @Assisted( "token" ) String token,
+                                               MigrateMapOnlyMapperJob mapper,
+                                               ResourceFacade facade )
     {
         this.jobConfiguration = jobConfiguration;
-        this.configuration = configuration;
+        this.agentUrl = agentUrl;
+        this.token = token;
         this.mapper = mapper;
+        this.facade = facade;
     }
 
     @Override
@@ -61,14 +66,16 @@ public class MigrateJobMapSpecificationProvider
             public Entity finish( Collection<? extends OutputWriter<Entity>> outputWriters )
             {
                 // start job to import data
-                CtoolkitAgent ctoolkitAgent = injector.getInstance( CtoolkitAgentFactory.class )
-                        .provideCtoolkitAgent( configuration ).get();
+                RequestCredential credential = new RequestCredential();
+                credential.setApiKey( token );
+                credential.setEndpointUrl( agentUrl );
 
                 try
                 {
-                    ctoolkitAgent.importBatch().job().start( jobConfiguration.getImportId(), new ImportBatch() ).execute();
+                    Identifier parent = new Identifier( jobConfiguration.getImportId() );
+                    facade.insert( new ImportJobInfo(), parent ).config( credential ).execute();
                 }
-                catch ( IOException e )
+                catch ( Exception e )
                 {
                     throw new RuntimeException( "Unable to start import job", e );
                 }

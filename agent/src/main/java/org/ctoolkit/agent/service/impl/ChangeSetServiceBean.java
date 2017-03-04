@@ -14,7 +14,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.VoidWork;
-import org.ctoolkit.agent.config.CtoolkitAgentFactory;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.agent.model.AuditFilter;
@@ -23,7 +22,6 @@ import org.ctoolkit.agent.model.BaseMetadataFilter;
 import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ChangeJobInfo;
 import org.ctoolkit.agent.model.ChangeMetadata;
-import org.ctoolkit.agent.model.CtoolkitAgentConfiguration;
 import org.ctoolkit.agent.model.ExportJobInfo;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ImportJobInfo;
@@ -47,8 +45,9 @@ import org.ctoolkit.agent.shared.resources.ChangeSet;
 import org.ctoolkit.agent.shared.resources.ChangeSetEntity;
 import org.ctoolkit.agent.shared.resources.ChangeSetModelKindOp;
 import org.ctoolkit.agent.shared.resources.ChangeSetModelKindPropOp;
-import org.ctoolkit.api.agent.CtoolkitAgent;
-import org.ctoolkit.api.agent.model.ImportBatch;
+import org.ctoolkit.restapi.client.RequestCredential;
+import org.ctoolkit.restapi.client.ResourceFacade;
+import org.ctoolkit.restapi.client.agent.model.ImportBatch;
 import org.ctoolkit.services.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +86,7 @@ public class ChangeSetServiceBean
 
     private final JobSpecificationFactory jobSpecificationFactory;
 
-    private final CtoolkitAgentFactory ctoolkitAgentFactory;
+    private final ResourceFacade facade;
 
     private final MapReduceSettings mapReduceSettings;
 
@@ -104,7 +103,7 @@ public class ChangeSetServiceBean
                                  StorageService storageService,
                                  Provider<RestContext> restContext,
                                  JobSpecificationFactory jobSpecificationFactory,
-                                 CtoolkitAgentFactory ctoolkitAgentFactory,
+                                 ResourceFacade facade,
                                  MapReduceSettings mapReduceSettings,
                                  PipelineService pipelineService,
                                  @Named( BUCKET_NAME ) String bucketName )
@@ -113,7 +112,7 @@ public class ChangeSetServiceBean
         this.storageService = storageService;
         this.restContext = restContext;
         this.jobSpecificationFactory = jobSpecificationFactory;
-        this.ctoolkitAgentFactory = ctoolkitAgentFactory;
+        this.facade = facade;
         this.mapReduceSettings = mapReduceSettings;
         this.pipelineService = pipelineService;
         this.bucketName = bucketName;
@@ -283,22 +282,27 @@ public class ChangeSetServiceBean
         ImportBatch importBatch = new ImportBatch();
         importBatch.setName( importMetadata.getName() );
 
-        CtoolkitAgentConfiguration ctoolkitAgentConfiguration = new CtoolkitAgentConfiguration( restContext.get().getOnBehalfOfAgentUrl(), restContext.get().getGtoken() );
-        CtoolkitAgent ctoolkitAgent = ctoolkitAgentFactory.provideCtoolkitAgent( ctoolkitAgentConfiguration ).get();
-        importBatch = ctoolkitAgent.importBatch().insert( importBatch ).execute();
+        String agentUrl = restContext.get().getOnBehalfOfAgentUrl();
+        String token = restContext.get().getGtoken();
+
+        RequestCredential credential = new RequestCredential();
+        credential.setApiKey( token );
+        credential.setEndpointUrl( agentUrl );
+        facade.insert( importBatch ).config( credential ).execute();
+
         importMetadata.setId( KeyFactory.stringToKey( importBatch.getKey() ).getId() );
 
         // start migrate job
         MigrationJobConfiguration jobConfiguration = new MigrationJobConfiguration( exportMetadata.getKey(), importBatch.getKey() );
 
         MapSpecificationProvider mapSpecificationProvider = jobSpecificationFactory
-                .createMigrateJobSpecification( jobConfiguration, ctoolkitAgentConfiguration );
+                .createMigrateJobSpecification( jobConfiguration, agentUrl, token );
         String id = MapJob.start( mapSpecificationProvider.get(), mapReduceSettings );
 
         exportMetadata.setMapReduceMigrationJobId( id );
         exportMetadata.clearJobContext();
-        exportMetadata.putToJobContext( "gtoken", ctoolkitAgentConfiguration.getGtoken() );
-        exportMetadata.putToJobContext( "rootUrl", ctoolkitAgentConfiguration.getRootUrl() );
+        exportMetadata.putToJobContext( "gtoken", token );
+        exportMetadata.putToJobContext( "rootUrl", agentUrl );
         exportMetadata.putToJobContext( "importKey", importBatch.getKey() );
         exportMetadata.save();
 

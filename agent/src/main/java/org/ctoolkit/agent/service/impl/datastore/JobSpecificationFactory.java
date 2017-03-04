@@ -1,10 +1,10 @@
 package org.ctoolkit.agent.service.impl.datastore;
 
+import com.google.inject.assistedinject.Assisted;
 import org.ctoolkit.agent.annotation.ChangeJob;
 import org.ctoolkit.agent.annotation.ExportJob;
 import org.ctoolkit.agent.annotation.ImportJob;
 import org.ctoolkit.agent.annotation.MigrateJob;
-import org.ctoolkit.agent.model.CtoolkitAgentConfiguration;
 import org.ctoolkit.agent.model.MigrationJobConfiguration;
 
 /**
@@ -24,5 +24,7 @@ public interface JobSpecificationFactory
     MapSpecificationProvider createExportJobSpecification( String parentKey );
 
     @MigrateJob
-    MapSpecificationProvider createMigrateJobSpecification( MigrationJobConfiguration jobConfiguration, CtoolkitAgentConfiguration configuration );
+    MapSpecificationProvider createMigrateJobSpecification( MigrationJobConfiguration jobConfiguration,
+                                                            @Assisted( "agentUrl" ) String agentUrl,
+                                                            @Assisted( "token" ) String token );
 }

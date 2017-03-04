@@ -7,12 +7,15 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.PipelineService;
 import com.google.appengine.tools.pipeline.impl.PipelineServiceImpl;
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonObject;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
+import com.google.inject.name.Names;
 import com.google.inject.servlet.RequestScoped;
 import com.googlecode.objectify.ObjectifyService;
 import ma.glasnost.orika.MapperFacade;
@@ -75,14 +78,22 @@ import org.ctoolkit.agent.service.impl.datastore.rule.NewTypeNewValueChangeRule;
 import org.ctoolkit.agent.service.impl.datastore.rule.NewValueChangeRule;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.agent.service.impl.event.Auditable;
+import org.ctoolkit.restapi.client.ApiCredential;
+import org.ctoolkit.restapi.client.agent.CtoolkitApiAgentModule;
 import org.ctoolkit.restapi.client.appengine.FacadeAppEngineModule;
 import org.ctoolkit.restapi.client.identity.verifier.IdentityVerifierModule;
+import org.ctoolkit.restapi.client.provider.AuthKeyProvider;
 import org.ctoolkit.services.common.CtoolkitCommonServicesModule;
+import org.ctoolkit.services.common.PropertyService;
 import org.ctoolkit.services.guice.appengine.CtoolkitServicesAppEngineModule;
 import org.ctoolkit.services.storage.appengine.CtoolkitServicesAppEngineStorageModule;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.security.SignatureException;
 
 
@@ -92,7 +103,7 @@ import java.security.SignatureException;
 public class AgentModule
         extends AbstractModule
 {
-    public static final String CONFIG_JSON_CREDENTIALS = "migration.agent.jsonCredentials";
+    public static final String CONFIG_JSON_CREDENTIALS = "ctoolkit.agent.jsonCredentials";
 
     public static final String BUCKET_NAME = "bucketName";
 
@@ -107,18 +118,19 @@ public class AgentModule
                 .implement( MapSpecificationProvider.class, MigrateJob.class, MigrateJobMapSpecificationProvider.class )
                 .build( JobSpecificationFactory.class ) );
 
-        // install ctoolkit agent provider factory
-        install( new FactoryModuleBuilder()
-                .implement( CtoolkitAgentProvider.class, CtoolkitAgentProviderBean.class )
-                .build( CtoolkitAgentFactory.class )
-        );
-
         install( new FacadeAppEngineModule() );
         install( new IdentityVerifierModule() );
         install( new CtoolkitServicesAppEngineModule() );
         install( new CtoolkitServicesAppEngineStorageModule() );
         install( new CtoolkitCommonServicesModule() );
+        install( new CtoolkitApiAgentModule() );
 
+        ApiCredential credential = new ApiCredential( CtoolkitApiAgentModule.API_PREFIX );
+        // initialized as non null value, will be overridden by request credential
+        credential.setEndpointUrl( "http://localhost:8999/_ah/api" );
+        Names.bindProperties( binder(), credential );
+
+        bind( AuthKeyProvider.class ).to( JsonAuthKeyProvider.class ).in( Singleton.class );
         bind( Checker.class ).to( AudienceChecker.class );
         bind( EntityPool.class ).to( EntityPoolThreadLocal.class ).in( RequestScoped.class );
         bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
@@ -256,6 +268,49 @@ public class AgentModule
             // TODO: should we check audience(project id)?
             // TODO: -audience can vary if user wants to export from one project to another
             // TODO: -what should be source of expected audiences - database?
+        }
+    }
+
+    static class JsonAuthKeyProvider
+            implements AuthKeyProvider
+    {
+        private final PropertyService propertyService;
+
+        private String json;
+
+        @Inject
+        JsonAuthKeyProvider( PropertyService propertyService )
+        {
+            this.propertyService = propertyService;
+        }
+
+        @Override
+        public InputStream get( @Nullable String prefix )
+        {
+            if ( json != null && CtoolkitApiAgentModule.API_PREFIX.equals( prefix ) )
+            {
+                return new ByteArrayInputStream( json.getBytes( Charsets.UTF_8 ) );
+            }
+            throw new IllegalArgumentException( "JSON credential provider is not configured for '" + prefix + "'" );
+        }
+
+        @Override
+        public boolean isConfigured( @Nullable String prefix )
+        {
+            if ( !Strings.isNullOrEmpty( json ) )
+            {
+                // already configured
+                return true;
+            }
+            if ( CtoolkitApiAgentModule.API_PREFIX.equals( prefix ) )
+            {
+                json = propertyService.getString( AgentModule.CONFIG_JSON_CREDENTIALS );
+                if ( json == null )
+                {
+                    throw new NullPointerException( "Missing JSON credential for '" + prefix + "'" );
+                }
+            }
+            return json != null;
         }
     }
 }

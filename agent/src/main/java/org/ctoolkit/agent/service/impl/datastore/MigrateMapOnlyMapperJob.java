@@ -3,16 +3,15 @@ package org.ctoolkit.agent.service.impl.datastore;
 import com.google.api.client.util.Base64;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
-import org.ctoolkit.agent.config.CtoolkitAgentFactory;
-import org.ctoolkit.agent.model.CtoolkitAgentConfiguration;
 import org.ctoolkit.agent.model.ExportMetadata;
-import org.ctoolkit.agent.model.ISetItem;
 import org.ctoolkit.agent.model.MetadataKey;
-import org.ctoolkit.api.agent.CtoolkitAgent;
-import org.ctoolkit.api.agent.model.ImportItem;
+import org.ctoolkit.restapi.client.Identifier;
+import org.ctoolkit.restapi.client.RequestCredential;
+import org.ctoolkit.restapi.client.ResourceFacade;
+import org.ctoolkit.restapi.client.agent.model.DataType;
+import org.ctoolkit.restapi.client.agent.model.ImportBatch.ImportItem;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 /**
  * Datastore implementation of migration job
@@ -23,7 +22,7 @@ public class MigrateMapOnlyMapperJob
         extends BatchMapOnlyMapperJob
 {
     @Inject
-    private transient CtoolkitAgentFactory ctoolkitAgentFactory;
+    private transient ResourceFacade facade;
 
     @Override
     public void map( Entity item )
@@ -33,7 +32,7 @@ public class MigrateMapOnlyMapperJob
         // get item property values
         String name = ( String ) item.getProperty( "name" );
         byte[] data = storageService.serve( ( String ) item.getProperty( "fileName" ), bucketName );
-        ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
+        DataType dataType = DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
 
         // load parent to retrieve context properties
         ExportMetadata exportMetadata = changeSetService.get( new MetadataKey<>(
@@ -43,20 +42,23 @@ public class MigrateMapOnlyMapperJob
         String rootUrl = exportMetadata.getJobContext().get( "rootUrl" );
         String importKey = exportMetadata.getJobContext().get( "importKey" );
 
+        RequestCredential credential = new RequestCredential();
+        credential.setApiKey( gtoken );
+        credential.setEndpointUrl( rootUrl );
+
         // create new import item
         ImportItem importItem = new ImportItem();
         importItem.setName( name );
-        importItem.setDataType( dataType.name() );
+        importItem.setDataType( dataType );
         importItem.setData( Base64.encodeBase64String( data ) );
 
         // call remote agent
-        CtoolkitAgentConfiguration configuration = new CtoolkitAgentConfiguration( rootUrl, gtoken );
-        CtoolkitAgent ctoolkitAgent = ctoolkitAgentFactory.provideCtoolkitAgent( configuration ).get();
         try
         {
-            ctoolkitAgent.importBatch().item().insert( importKey, importItem ).execute();
+            // parent import key as identifier
+            facade.insert( importItem, new Identifier( importKey ) ).config( credential ).execute();
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
             throw new RuntimeException( "Unable to create import item", e );
         }
