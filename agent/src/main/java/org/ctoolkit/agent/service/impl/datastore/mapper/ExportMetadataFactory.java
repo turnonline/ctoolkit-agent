@@ -2,8 +2,8 @@ package org.ctoolkit.agent.service.impl.datastore.mapper;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.ObjectFactory;
-import org.ctoolkit.agent.model.ExportBatch;
 import org.ctoolkit.agent.model.ExportMetadata;
+import org.ctoolkit.agent.resource.ExportBatch;
 import org.ctoolkit.agent.service.DataAccess;
 
 import javax.inject.Inject;

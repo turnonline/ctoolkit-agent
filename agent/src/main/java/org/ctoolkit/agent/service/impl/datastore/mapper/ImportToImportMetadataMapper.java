@@ -1,9 +1,9 @@
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
-import org.ctoolkit.agent.model.ImportBatch;
-import org.ctoolkit.agent.model.ImportJobInfo;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
+import org.ctoolkit.agent.resource.ImportBatch;
+import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -34,6 +34,6 @@ public class ImportToImportMetadataMapper
     @Override
     protected void extraMapBToA( ImportMetadata metadata, ImportBatch set )
     {
-        set.setJobInfo( ( ImportJobInfo ) changeSetService.getJobInfo( metadata ) );
+        set.setJobInfo( ( ImportJob ) changeSetService.getJobInfo( metadata ) );
     }
 }

@@ -20,11 +20,8 @@ import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
 import org.ctoolkit.agent.model.BaseMetadataItem;
-import org.ctoolkit.agent.model.ChangeJobInfo;
 import org.ctoolkit.agent.model.ChangeMetadata;
-import org.ctoolkit.agent.model.ExportJobInfo;
 import org.ctoolkit.agent.model.ExportMetadata;
-import org.ctoolkit.agent.model.ImportJobInfo;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.JobInfo;
 import org.ctoolkit.agent.model.JobState;
@@ -35,6 +32,9 @@ import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.agent.model.MigrationJobConfiguration;
 import org.ctoolkit.agent.model.PropertyMetaData;
+import org.ctoolkit.agent.resource.ChangeJob;
+import org.ctoolkit.agent.resource.ExportJob;
+import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.RestContext;
@@ -143,7 +143,7 @@ public class ChangeSetServiceBean
             @Override
             public JobInfo get()
             {
-                return new ImportJobInfo();
+                return new ImportJob();
             }
         } );
         jobInfoProviders.put( ExportMetadata.class, new Provider<JobInfo>()
@@ -151,7 +151,7 @@ public class ChangeSetServiceBean
             @Override
             public JobInfo get()
             {
-                return new ExportJobInfo();
+                return new ExportJob();
             }
         } );
         jobInfoProviders.put( ChangeMetadata.class, new Provider<JobInfo>()
@@ -159,7 +159,7 @@ public class ChangeSetServiceBean
             @Override
             public JobInfo get()
             {
-                return new ChangeJobInfo();
+                return new ChangeJob();
             }
         } );
     }

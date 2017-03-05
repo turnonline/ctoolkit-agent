@@ -1,9 +1,9 @@
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
-import org.ctoolkit.agent.model.ExportBatch;
-import org.ctoolkit.agent.model.ExportJobInfo;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ExportMetadataItem;
+import org.ctoolkit.agent.resource.ExportBatch;
+import org.ctoolkit.agent.resource.ExportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public class ExportToExportMetadataMapper
     @Override
     protected void extraMapBToA( ExportMetadata metadata, ExportBatch set )
     {
-        set.setJobInfo( ( ExportJobInfo ) changeSetService.getJobInfo( metadata ) );
+        set.setJobInfo( ( ExportJob ) changeSetService.getJobInfo( metadata ) );
     }
 
     @Override

@@ -12,13 +12,13 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
-import org.ctoolkit.agent.model.ChangeBatch;
-import org.ctoolkit.agent.model.ChangeJobInfo;
 import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.model.ChangeMetadataItem;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
+import org.ctoolkit.agent.resource.ChangeBatch;
+import org.ctoolkit.agent.resource.ChangeJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -185,7 +185,7 @@ public class ChangeEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "changeBatch.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ChangeJobInfo startJob( @Named( "id" ) String id, ChangeJobInfo job, User authUser ) throws Exception
+    public ChangeJob startJob( @Named( "id" ) String id, ChangeJob job, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
@@ -205,7 +205,7 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.job.cancel", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ChangeJobInfo cancelJob( @Named( "id" ) String id, ChangeJobInfo job, User authUser ) throws Exception
+    public ChangeJob cancelJob( @Named( "id" ) String id, ChangeJob job, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
@@ -244,7 +244,7 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public ChangeJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ChangeJob getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )

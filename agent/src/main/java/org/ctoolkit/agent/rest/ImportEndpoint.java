@@ -12,12 +12,12 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
-import org.ctoolkit.agent.model.ImportBatch;
-import org.ctoolkit.agent.model.ImportJobInfo;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
+import org.ctoolkit.agent.resource.ImportBatch;
+import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -184,7 +184,7 @@ public class ImportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportJobInfo startJob( @Named( "id" ) String id, ImportJobInfo job, User authUser ) throws Exception
+    public ImportJob startJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
@@ -204,7 +204,7 @@ public class ImportEndpoint
     }
 
     @ApiMethod( name = "importBatch.job.cancel", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ImportJobInfo cancelJob( @Named( "id" ) String id, ImportJobInfo job, User authUser ) throws Exception
+    public ImportJob cancelJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
@@ -243,7 +243,7 @@ public class ImportEndpoint
     }
 
     @ApiMethod( name = "importBatch.job.progress", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public ImportJobInfo getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportJob getJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )

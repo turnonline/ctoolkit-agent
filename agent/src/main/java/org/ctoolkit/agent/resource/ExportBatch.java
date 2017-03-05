@@ -1,4 +1,8 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.resource;
+
+import org.ctoolkit.agent.model.ISet;
+import org.ctoolkit.agent.model.ISetItem;
+import org.ctoolkit.agent.model.JobState;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +14,7 @@ import java.util.List;
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ExportBatch
-        implements ISet<ExportJobInfo>
+        implements ISet<ExportJob>
 {
     private String key;
 
@@ -24,7 +28,7 @@ public class ExportBatch
 
     private Date updateDate;
 
-    private ExportJobInfo jobInfo;
+    private ExportJob jobInfo;
 
     private List<ExportItem> items = new ArrayList<>();
 
@@ -91,13 +95,13 @@ public class ExportBatch
     }
 
     @Override
-    public ExportJobInfo getJobInfo()
+    public ExportJob getJobInfo()
     {
         return jobInfo;
     }
 
     @Override
-    public void setJobInfo( ExportJobInfo jobInfo )
+    public void setJobInfo( ExportJob jobInfo )
     {
         this.jobInfo = jobInfo;
     }

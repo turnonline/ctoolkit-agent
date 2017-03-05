@@ -1,4 +1,8 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.resource;
+
+import org.ctoolkit.agent.model.ISet;
+import org.ctoolkit.agent.model.ISetItem;
+import org.ctoolkit.agent.model.JobState;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +14,7 @@ import java.util.List;
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ChangeBatch
-        implements ISet<ChangeJobInfo>
+        implements ISet<ChangeJob>
 {
     private String key;
 
@@ -24,7 +28,7 @@ public class ChangeBatch
 
     private Date updateDate;
 
-    private ChangeJobInfo jobInfo;
+    private ChangeJob jobInfo;
 
     private List<ChangeItem> items = new ArrayList<>();
 
@@ -91,15 +95,15 @@ public class ChangeBatch
     }
 
     @Override
-    public ChangeJobInfo getJobInfo()
+    public ChangeJob getJobInfo()
     {
         return jobInfo;
     }
 
     @Override
-    public void setJobInfo( ChangeJobInfo jobInfo )
+    public void setJobInfo( ChangeJob jobInfo )
     {
-        this.jobInfo = ( ChangeJobInfo ) jobInfo;
+        this.jobInfo = ( ChangeJob ) jobInfo;
     }
 
     public List<ChangeItem> getItems()

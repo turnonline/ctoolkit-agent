@@ -1,16 +1,18 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.resource;
+
+import org.ctoolkit.agent.model.JobInfo;
 
 /**
  * Export job info
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public class ExportJobInfo
+public class ExportJob
         extends JobInfo
 {
     @Override
     public String toString()
     {
-        return "ExportJobInfo{} " + super.toString();
+        return "ExportJob{} " + super.toString();
     }
 }

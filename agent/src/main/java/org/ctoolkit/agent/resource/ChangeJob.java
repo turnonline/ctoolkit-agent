@@ -1,16 +1,18 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.resource;
+
+import org.ctoolkit.agent.model.JobInfo;
 
 /**
- * Import job info
+ * Change job info
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public class ImportJobInfo
+public class ChangeJob
         extends JobInfo
 {
     @Override
     public String toString()
     {
-        return "ImportJobInfo{} " + super.toString();
+        return "ChangeJob{} " + super.toString();
     }
 }

@@ -1,7 +1,7 @@
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
-import org.ctoolkit.agent.model.ChangeBatch;
 import org.ctoolkit.agent.model.ChangeMetadataItem;
+import org.ctoolkit.agent.resource.ChangeBatch;
 
 /**
  * Mapper for {@link ChangeBatch.ChangeItem} to {@link ChangeMetadataItem} model beans
