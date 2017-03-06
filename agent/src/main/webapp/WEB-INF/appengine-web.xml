@@ -18,9 +18,10 @@
   -->
 
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-    <application>c-toolkit</application>
+    <!--<application>ctoolkit-agent-morty</application>-->
+    <application>ctoolkit-agent-rick</application>
     <version>snapshot</version>
-    <module>ctoolkit-agent</module>
+    <module>default</module>
 
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
@@ -33,5 +34,10 @@
     <admin-console>
         <page name="Appstats" url="/appstats"/>
     </admin-console>
+
+    <!--<instance-class>B8</instance-class>-->
+    <!--<manual-scaling>-->
+        <!--<instances>10</instances>-->
+    <!--</manual-scaling>-->
 
 </appengine-web-app>
