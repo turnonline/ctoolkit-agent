@@ -30,32 +30,11 @@
 
     <packaging>jar</packaging>
     <artifactId>ctoolkit-agent-resources</artifactId>
-    <name>CtoolkiT Agent Resources</name>
-    <description>Cloud Toolkit Migration Agent Resources</description>
+    <name>CtoolkiT Agent GWT Resources</name>
+    <description>Cloud Toolkit Migration Agent Resources built for GWT</description>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>schemagen</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <sources>
-                                <source>src/main/java/org/ctoolkit/agent/shared/resources</source>
-                            </sources>
-                            <createJavaDocAnnotations>false</createJavaDocAnnotations>
-                            <outputDirectory>${project.build.directory}/schemas</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
