@@ -7,6 +7,7 @@ import com.google.appengine.tools.mapreduce.MapSpecification;
 import com.google.appengine.tools.mapreduce.OutputWriter;
 import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
 import com.google.appengine.tools.mapreduce.outputs.NoOutput;
+import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import org.ctoolkit.agent.model.MigrationJobConfiguration;
 import org.ctoolkit.restapi.client.Identifier;
@@ -29,6 +30,9 @@ public class MigrateJobMapSpecificationProvider
 
     private static final long serialVersionUID = 8477680668820034478L;
 
+    @Inject
+    private static Injector injector;
+
     private final MigrationJobConfiguration jobConfiguration;
 
     private final String agentUrl;
@@ -37,20 +41,22 @@ public class MigrateJobMapSpecificationProvider
 
     private final MigrateMapOnlyMapperJob mapper;
 
-    private final ResourceFacade facade;
+    /**
+     * field injection to bypass serialization issue
+     */
+    @Inject
+    private transient ResourceFacade facade;
 
     @Inject
     public MigrateJobMapSpecificationProvider( @Assisted MigrationJobConfiguration jobConfiguration,
                                                @Assisted( "agentUrl" ) String agentUrl,
                                                @Assisted( "token" ) String token,
-                                               MigrateMapOnlyMapperJob mapper,
-                                               ResourceFacade facade )
+                                               MigrateMapOnlyMapperJob mapper )
     {
         this.jobConfiguration = jobConfiguration;
         this.agentUrl = agentUrl;
         this.token = token;
         this.mapper = mapper;
-        this.facade = facade;
     }
 
     @Override
@@ -65,6 +71,8 @@ public class MigrateJobMapSpecificationProvider
             @Override
             public Entity finish( Collection<? extends OutputWriter<Entity>> outputWriters )
             {
+                injector.injectMembers( MigrateJobMapSpecificationProvider.this );
+
                 // start job to import data
                 RequestCredential credential = new RequestCredential();
                 credential.setApiKey( token );

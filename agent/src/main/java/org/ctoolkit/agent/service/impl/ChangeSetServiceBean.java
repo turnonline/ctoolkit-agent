@@ -288,7 +288,7 @@ public class ChangeSetServiceBean
         RequestCredential credential = new RequestCredential();
         credential.setApiKey( token );
         credential.setEndpointUrl( agentUrl );
-        facade.insert( importBatch ).config( credential ).execute();
+        importBatch = facade.insert( importBatch ).config( credential ).execute();
 
         importMetadata.setId( KeyFactory.stringToKey( importBatch.getKey() ).getId() );
 
