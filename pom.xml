@@ -117,9 +117,13 @@
     </profiles>
 
     <properties>
-        <gae.version>1.9.48</gae.version>
+        <gae.version>1.9.50</gae.version>
         <ctoolkit-library-bom.version>3</ctoolkit-library-bom.version>
-        <ctoolkit-project-bom.version>1.9.49.3-20170305.094053-3</ctoolkit-project-bom.version>
+        <ctoolkit-project-bom.version>1.9.49.3-20170307.181856-4</ctoolkit-project-bom.version>
+        <endpoints.framework.version>2.0.4</endpoints.framework.version>
+        <endpoints.management.version>1.0.2</endpoints.management.version>
+        <appengine.maven.plugin.version>1.2.0</appengine.maven.plugin.version>
+        <endpoints.project.id>c-toolkit</endpoints.project.id>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
         <!-- Overrides version from bom -->
         <jmockit.version>1.18</jmockit.version>

@@ -18,8 +18,10 @@
 
 package org.ctoolkit.agent.config;
 
+import com.google.api.control.ServiceManagementConfigFilter;
+import com.google.api.control.extensions.appengine.GoogleAppEngineControlFilter;
 import com.google.api.server.spi.ServletInitializationParameters;
-import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
+import com.google.api.server.spi.guice.EndpointsModule;
 import com.google.appengine.tools.appstats.AppstatsFilter;
 import com.google.appengine.tools.appstats.AppstatsServlet;
 import com.google.appengine.tools.mapreduce.MapReduceServlet;
@@ -27,7 +29,6 @@ import com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet;
 import com.googlecode.objectify.ObjectifyFilter;
 import org.ctoolkit.agent.AccessControlAllowOrignFilter;
 import org.ctoolkit.agent.UploadJsonCredentialsServlet;
-import org.ctoolkit.agent.rest.AgentEndpointConfig;
 import org.ctoolkit.agent.rest.AuditEndpoint;
 import org.ctoolkit.agent.rest.ChangeEndpoint;
 import org.ctoolkit.agent.rest.ExportEndpoint;
@@ -35,29 +36,44 @@ import org.ctoolkit.agent.rest.ImportEndpoint;
 import org.ctoolkit.agent.rest.MetadataEndpoint;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 public class AgentServletModule
-        extends GuiceSystemServiceServletModule
+        extends EndpointsModule
 {
+    private static final String ENDPOINTS_SERVLET_PATH = "/_ah/api/*";
+
+    private static final String PROJECT_ID = "c-toolkit";
+
     @Override
     protected void configureServlets()
     {
-        super.configureServlets();
-
         // endpoints filter
         ServletInitializationParameters params = ServletInitializationParameters.builder()
-                .addServiceClass( AgentEndpointConfig.class )
                 .addServiceClass( ImportEndpoint.class )
                 .addServiceClass( ChangeEndpoint.class )
                 .addServiceClass( ExportEndpoint.class )
                 .addServiceClass( MetadataEndpoint.class )
                 .addServiceClass( AuditEndpoint.class )
+                .setRestricted( false )
                 // this is important, otherwise we cannot use certificates from third-party applications
                 .setClientIdWhitelistEnabled( false ).build();
-        serveGuiceSystemServiceServlet( "/_ah/spi/*", params );
+
+        configureEndpoints( ENDPOINTS_SERVLET_PATH, params );
+
+        bind( ServiceManagementConfigFilter.class ).in( Singleton.class );
+        filter( ENDPOINTS_SERVLET_PATH ).through( ServiceManagementConfigFilter.class );
+
+        Map<String, String> apiController = new HashMap<>();
+        apiController.put( "endpoints.projectId", PROJECT_ID );
+        apiController.put( "endpoints.serviceName", "agent.endpoints." + PROJECT_ID + ".cloud.goog" );
+
+        bind( GoogleAppEngineControlFilter.class ).in( Singleton.class );
+        filter( ENDPOINTS_SERVLET_PATH ).through( GoogleAppEngineControlFilter.class, apiController );
 
         // objectify filter
         bind( ObjectifyFilter.class ).in( Singleton.class );

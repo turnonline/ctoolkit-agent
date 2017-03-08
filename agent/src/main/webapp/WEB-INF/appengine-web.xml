@@ -19,8 +19,8 @@
 
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
     <!--<application>ctoolkit-agent-morty</application>-->
-    <application>ctoolkit-agent-rick</application>
-    <version>snapshot</version>
+    <application>c-toolkit</application>
+    <version>1</version>
     <module>default</module>
 
     <system-properties>
@@ -39,5 +39,9 @@
     <!--<manual-scaling>-->
         <!--<instances>10</instances>-->
     <!--</manual-scaling>-->
+
+    <env-variables>
+        <env-var name="ENDPOINTS_SERVICE_NAME" value="echo-api.endpoints.c-toolkit.cloud.goog"/>
+    </env-variables>
 
 </appengine-web-app>

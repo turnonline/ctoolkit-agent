@@ -36,14 +36,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>${maven-war-plugin.version}</version>
-                <configuration>
-                    <!-- Enabling this option results in of additional JAR file with classifier classes
-                     along with standard WAR file and may be used as standard dependency. -->
-                    <attachClasses>true</attachClasses>
-                </configuration>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>appengine-maven-plugin</artifactId>
+                <version>${appengine.maven.plugin.version}</version>
             </plugin>
         </plugins>
     </build>
@@ -87,6 +82,21 @@
         <dependency>
             <groupId>com.google.appengine</groupId>
             <artifactId>appengine-api-labs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.endpoints</groupId>
+            <artifactId>endpoints-framework</artifactId>
+            <version>${endpoints.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.endpoints</groupId>
+            <artifactId>endpoints-framework-guice</artifactId>
+            <version>${endpoints.framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.endpoints</groupId>
+            <artifactId>endpoints-management-control-appengine-all</artifactId>
+            <version>${endpoints.management.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
@@ -227,10 +237,50 @@
 
     <profiles>
         <profile>
-            <id>google</id>
+            <id>GetSwaggerDoc</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>GetSwaggerDoc</name>
+                </property>
             </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <configuration>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>com.google.api.server.spi.tools.EndpointsTool</mainClass>
+                            <arguments>
+                                <argument>get-swagger-doc</argument>
+                                <argument>--hostname=agent.endpoints.c-toolkit.cloud.goog</argument>
+                                <argument>--war=target/ctoolkit-agent-0.2-SNAPSHOT</argument>
+                                <argument>org.ctoolkit.agent.rest.AuditEndpoint</argument>
+                                <argument>org.ctoolkit.agent.rest.ChangeEndpoint</argument>
+                                <argument>org.ctoolkit.agent.rest.ExportEndpoint</argument>
+                                <argument>org.ctoolkit.agent.rest.ImportEndpoint</argument>
+                                <argument>org.ctoolkit.agent.rest.MetadataEndpoint</argument>
+                            </arguments>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.google.endpoints</groupId>
+                                <artifactId>endpoints-framework-tools</artifactId>
+                                <version>${endpoints.framework.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>com.google.appengine</groupId>
+                                <artifactId>appengine-api-1.0-sdk</artifactId>
+                                <version>${gae.version}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>client</id>
             <build>
                 <plugins>
                     <plugin>
@@ -261,24 +311,7 @@
                         <configuration>
                             <!--Do not store the administrator sign-in credentials.-->
                             <noCookies>true</noCookies>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.google.appengine</groupId>
-                        <artifactId>appengine-maven-plugin</artifactId>
-                        <version>${gae.version}</version>
-                        <configuration>
-                            <!--Do not store the administrator sign-in credentials.-->
-                            <noCookies>true</noCookies>
                             <enableJarClasses>false</enableJarClasses>
-                            <!-- Comment in the below snippet to bind to all IPs instead of just localhost -->
-                            <!-- address>0.0.0.0</address>
-                            <port>8080</port -->
-                            <!-- Comment in the below snippet to enable local debugging with a remove debugger
-                                 like those included with Eclipse or IntelliJ -->
-                            <!-- jvmFlags>
-                              <jvmFlag>-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n</jvmFlag>
-                            </jvmFlags -->
                         </configuration>
                         <executions>
                             <execution>
