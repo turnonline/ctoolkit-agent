@@ -24,6 +24,7 @@ import com.google.appengine.tools.development.testing.LocalMemcacheServiceTestCo
 import com.google.appengine.tools.development.testing.LocalModulesServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalTaskQueueTestConfig;
+import com.google.inject.servlet.ServletModule;
 import org.ctoolkit.agent.config.AgentModule;
 import org.ctoolkit.test.appengine.ServiceConfigModule;
 
@@ -58,6 +59,7 @@ public class UseCaseEnvironment
         System.setProperty( "com.google.appengine.runtime.environment", "Development" );
 
         install( new AgentModule() );
+        install( new ServletModule() );
     }
 
     protected void await( long seconds ) throws InterruptedException

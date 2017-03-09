@@ -20,6 +20,7 @@ package org.ctoolkit.agent.model;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.OnSave;
 
 import java.util.Date;
@@ -39,6 +40,14 @@ public class BaseEntity
     private String createdBy;
 
     private String updatedBy;
+
+    @Ignore
+    /*
+     * Temporal key is used to store full key instead of simple ID.
+     * In some cases (i.e. migration) we need to preserve whole untempered key
+     * and return it in endpoint response
+     */
+    private String untemperedKey;
 
     public Long getId()
     {
@@ -125,6 +134,16 @@ public class BaseEntity
     public void setKey( String key )
     {
         this.id = Key.create( key ).getId();
+    }
+
+    public String getUntemperedKey()
+    {
+        return untemperedKey;
+    }
+
+    public void setUntemperedKey( String untemperedKey )
+    {
+        this.untemperedKey = untemperedKey;
     }
 
     /**

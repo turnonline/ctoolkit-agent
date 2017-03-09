@@ -38,8 +38,6 @@ import org.ctoolkit.agent.service.impl.datastore.rule.IChangeRule;
 import org.ctoolkit.agent.shared.resources.ChangeSet;
 import org.ctoolkit.agent.shared.resources.ChangeSetEntities;
 import org.ctoolkit.agent.shared.resources.ChangeSetEntity;
-import org.ctoolkit.agent.shared.resources.ChangeSetModel;
-import org.ctoolkit.agent.shared.resources.ChangeSetModelKindOp;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -97,13 +95,6 @@ public class DataAccessBean
         changeSet.setComment( "Export for entity " + entityName );
         changeSet.setAuthor( "ctoolkit-agent" );
         changeSet.setEntities( new ChangeSetEntities() );
-
-        // add default model clean action
-        changeSet.setModel( new ChangeSetModel() );
-        ChangeSetModelKindOp kinOp = new ChangeSetModelKindOp();
-        kinOp.setKind( entityName );
-        kinOp.setOp( ChangeSetModelKindOp.OP_CLEAN );
-        changeSet.getModel().getKindOp().add( kinOp );
 
         // add entities
         Query query = new Query( entityName );
