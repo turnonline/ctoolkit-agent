@@ -118,7 +118,7 @@
 
     <properties>
         <gae.version>1.9.50</gae.version>
-        <ctoolkit-library-bom.version>3</ctoolkit-library-bom.version>
+        <ctoolkit-library-bom.version>4</ctoolkit-library-bom.version>
         <ctoolkit-project-bom.version>1.9.49.3-20170307.181856-4</ctoolkit-project-bom.version>
         <endpoints.framework.version>2.0.4</endpoints.framework.version>
         <endpoints.management.version>1.0.2</endpoints.management.version>

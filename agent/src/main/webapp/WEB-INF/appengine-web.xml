@@ -41,7 +41,7 @@
     <!--</manual-scaling>-->
 
     <env-variables>
-        <env-var name="ENDPOINTS_SERVICE_NAME" value="echo-api.endpoints.c-toolkit.cloud.goog"/>
+        <env-var name="ENDPOINTS_SERVICE_NAME" value="agent.endpoints.c-toolkit.cloud.goog"/>
     </env-variables>
 
 </appengine-web-app>
