@@ -19,7 +19,6 @@
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.KeyFactory;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
@@ -81,7 +80,13 @@ public class ChangeSetEntityToEntityMapper
     {
         // create main entity
         changeSetEntity.setKind( entity.getKind() );
-        changeSetEntity.setKey( KeyFactory.keyToString( entity.getKey() ) );
+        changeSetEntity.setName( entity.getKey().getName() );
+        if ( entity.getKey().getName() == null )
+        {
+            changeSetEntity.setId( entity.getKey().getId() );
+        }
+
+        changeSetEntity.setParentKey( encoder.formatKey( entity.getKey().getParent() ) );
 
         // changeSetEntity up entity properties
         for ( Map.Entry<String, Object> pairs : entity.getProperties().entrySet() )

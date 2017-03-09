@@ -91,9 +91,16 @@ public class EntityEncoder
         {
             return createBlobProperty( name, ( Blob ) value );
         }
+        else if ( value instanceof Key )
+        {
+            return createKeyProperty( name, ( Key ) value );
+        }
+        else if ( value instanceof List )
+        {
+            return createListProperty( name, ( List ) value );
+        }
 
-        logger.error( "Unknown entity type '" + value.getClass().getName() + "'" );
-        return null;
+        throw new IllegalArgumentException( "Unknown entity type '" + value.getClass().getName() + "'" );
     }
 
     /**
@@ -267,6 +274,33 @@ public class EntityEncoder
         return parentKey;
     }
 
+    public String formatKey( Key key )
+    {
+        List<Key> parentKeys = new ArrayList<>();
+        while ( key != null )
+        {
+            parentKeys.add( key );
+            key = key.getParent();
+        }
+
+        Collections.reverse( parentKeys );
+        StringBuilder formattedKey = new StringBuilder();
+
+        for ( Key parentKey : parentKeys )
+        {
+            if ( formattedKey.length() > 0 )
+            {
+                formattedKey.append( "::" );
+            }
+
+            formattedKey.append( parentKey.getKind() );
+            formattedKey.append( ":" );
+            formattedKey.append( parentKey.getName() != null ? parentKey.getName() : parentKey.getId() );
+        }
+
+        return formattedKey.length() > 0 ? formattedKey.toString() : null;
+    }
+
     private Key parseKeyNames( String stringKey )
     {
         String[] split = stringKey.trim().split( "::" );
@@ -404,5 +438,53 @@ public class EntityEncoder
     {
         return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_BLOB,
                 Base64.encodeBase64String( object.getBytes() ) );
+    }
+
+    /**
+     * Renders a Key type property to String.
+     *
+     * @param name   the name of the property
+     * @param object the object to render
+     */
+    private ChangeSetEntityProperty createKeyProperty( String name, Key object )
+    {
+        return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_KEY, formatKey( object ) );
+    }
+
+    /**
+     * Renders a List type property to String.
+     *
+     * @param name   the name of the property
+     * @param object the object to render
+     */
+    private ChangeSetEntityProperty createListProperty( String name, List object )
+    {
+        String propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_NULL;
+        StringBuilder value = new StringBuilder();
+
+        for ( Object o : object )
+        {
+            if ( value.length() > 0 )
+            {
+                value.append( "," );
+            }
+
+            if ( o instanceof String )
+            {
+                value.append( o );
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_STRING;
+            }
+            else if ( o instanceof Key )
+            {
+                value.append( formatKey( ( Key ) o ) );
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_KEY;
+            }
+            else
+            {
+                throw new IllegalArgumentException( "Unknown list type: " + o.getClass().getName() );
+            }
+        }
+
+        return new ChangeSetEntityProperty( name, propertyType, value.toString() );
     }
 }

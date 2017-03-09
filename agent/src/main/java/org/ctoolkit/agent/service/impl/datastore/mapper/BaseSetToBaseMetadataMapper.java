@@ -127,6 +127,11 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
 
     private String createMetadataKey( B metadata )
     {
+        if ( metadata.getUntemperedKey() != null )
+        {
+            return metadata.getUntemperedKey();
+        }
+
         String metadataEntityName = metadata.getClass().getAnnotation( Entity.class ).name();
         return KeyFactory.keyToString( KeyFactory.createKey( metadataEntityName, metadata.getId() ) );
     }

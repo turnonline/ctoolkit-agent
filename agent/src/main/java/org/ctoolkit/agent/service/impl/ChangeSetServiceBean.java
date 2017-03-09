@@ -144,8 +144,18 @@ public class ChangeSetServiceBean
         systemKinds.add( "pipeline-jobInstanceRecord" );
         systemKinds.add( "pipeline-slot" );
         systemKinds.add( "pipeline-exception" );
+
         systemKinds.add( "__GsFileInfo__" );
         systemKinds.add( "_ah_FakeCloudStorage__app_default_bucket" );
+
+        systemKinds.add( "__Stat_Kind_IsRootEntity__" );
+        systemKinds.add( "__Stat_Kind_NotRootEntity__" );
+        systemKinds.add( "__Stat_Kind__" );
+        systemKinds.add( "__Stat_PropertyName_Kind__" );
+        systemKinds.add( "__Stat_PropertyType_Kind__" );
+        systemKinds.add( "__Stat_PropertyType_PropertyName_Kind__" );
+        systemKinds.add( "__Stat_PropertyType__" );
+        systemKinds.add( "__Stat_Total__" );
 
         systemKinds.add( "_ImportMetadata" );
         systemKinds.add( "_ImportMetadataItem" );
@@ -308,7 +318,7 @@ public class ChangeSetServiceBean
         credential.setEndpointUrl( agentUrl );
         importBatch = facade.insert( importBatch ).config( credential ).execute();
 
-        importMetadata.setId( KeyFactory.stringToKey( importBatch.getKey() ).getId() );
+        importMetadata.setUntemperedKey( importBatch.getKey() );
 
         // start migrate job
         MigrationJobConfiguration jobConfiguration = new MigrationJobConfiguration( exportMetadata.getKey(), importBatch.getKey() );

@@ -19,10 +19,10 @@
 
 <changeset author="ctoolkit-agent" comment="Export for entity Country">
     <entities>
-        <entity key="agR0ZXN0cg0LEgdDb3VudHJ5GAEM" kind="Country">
-            <property name="code" type="string" value="EN"/>
-            <property name="label" type="string" value="English"/>
+        <entity kind="Country" id="1">
             <property name="extId" type="long" value="10"/>
+            <property name="label" type="string" value="English"/>
+            <property name="code" type="string" value="EN"/>
         </entity>
     </entities>
 </changeset>
