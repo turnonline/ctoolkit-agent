@@ -202,7 +202,7 @@ public class ImportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportJob startJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
+    public ImportJob startImportJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
@@ -222,7 +222,7 @@ public class ImportEndpoint
     }
 
     @ApiMethod( name = "importBatch.job.cancel", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ImportJob cancelJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
+    public ImportJob cancelImportJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
@@ -242,7 +242,7 @@ public class ImportEndpoint
     }
 
     @ApiMethod( name = "importBatch.job.delete", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public void deleteImportJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )
@@ -261,7 +261,7 @@ public class ImportEndpoint
     }
 
     @ApiMethod( name = "importBatch.job.progress", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public ImportJob getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportJob getImportJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
         if ( importMetadata == null )

@@ -204,7 +204,7 @@ public class ExportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "exportBatch.job.start", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportJob startJob( @Named( "id" ) String id, ExportJob job, User authUser ) throws Exception
+    public ExportJob startExportJob( @Named( "id" ) String id, ExportJob job, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -224,7 +224,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.job.cancel", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportJob cancelJob( @Named( "id" ) String id, ExportJob job, User authUser ) throws Exception
+    public ExportJob cancelExportJob( @Named( "id" ) String id, ExportJob job, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -244,7 +244,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.job.delete", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public void deleteExportJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -263,7 +263,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.job.progress", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public ExportJob getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ExportJob getExportJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )

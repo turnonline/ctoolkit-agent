@@ -203,7 +203,7 @@ public class ChangeEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "changeBatch.job.start", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ChangeJob startJob( @Named( "id" ) String id, ChangeJob job, User authUser ) throws Exception
+    public ChangeJob startChangeJob( @Named( "id" ) String id, ChangeJob job, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
@@ -223,7 +223,7 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.job.cancel", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ChangeJob cancelJob( @Named( "id" ) String id, ChangeJob job, User authUser ) throws Exception
+    public ChangeJob cancelChangeJob( @Named( "id" ) String id, ChangeJob job, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
@@ -243,7 +243,7 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.job.delete", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public void deleteChangeJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )
@@ -262,7 +262,7 @@ public class ChangeEndpoint
     }
 
     @ApiMethod( name = "changeBatch.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public ChangeJob getJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ChangeJob getChangeJob( @Named( "id" ) String id, User authUser ) throws Exception
     {
         ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
         if ( changeMetadata == null )

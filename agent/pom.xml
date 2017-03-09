@@ -249,7 +249,8 @@
 
     <profiles>
         <profile>
-            <id>GetSwaggerDoc</id>
+            <!--build OpenAPI document openapi.json 'mvn exec:java -P swagger' -->
+            <id>swagger</id>
             <activation>
                 <property>
                     <name>GetSwaggerDoc</name>
@@ -267,7 +268,7 @@
                             <arguments>
                                 <argument>get-swagger-doc</argument>
                                 <argument>--hostname=agent.endpoints.c-toolkit.cloud.goog</argument>
-                                <argument>--war=target/ctoolkit-agent-0.2-SNAPSHOT</argument>
+                                <argument>--war=target/${project.build.finalName}</argument>
                                 <argument>org.ctoolkit.agent.rest.AuditEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.ChangeEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.ExportEndpoint</argument>
