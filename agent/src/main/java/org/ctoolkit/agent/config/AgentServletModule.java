@@ -22,6 +22,7 @@ import com.google.api.control.ServiceManagementConfigFilter;
 import com.google.api.control.extensions.appengine.GoogleAppEngineControlFilter;
 import com.google.api.server.spi.ServletInitializationParameters;
 import com.google.api.server.spi.guice.EndpointsModule;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tools.appstats.AppstatsFilter;
 import com.google.appengine.tools.appstats.AppstatsServlet;
 import com.google.appengine.tools.mapreduce.MapReduceServlet;
@@ -47,8 +48,6 @@ public class AgentServletModule
 {
     private static final String ENDPOINTS_SERVLET_PATH = "/_ah/api/*";
 
-    private static final String PROJECT_ID = "c-toolkit";
-
     @Override
     protected void configureServlets()
     {
@@ -68,9 +67,10 @@ public class AgentServletModule
         bind( ServiceManagementConfigFilter.class ).in( Singleton.class );
         filter( ENDPOINTS_SERVLET_PATH ).through( ServiceManagementConfigFilter.class );
 
+        String projectId = SystemProperty.applicationId.get();
         Map<String, String> apiController = new HashMap<>();
-        apiController.put( "endpoints.projectId", PROJECT_ID );
-        apiController.put( "endpoints.serviceName", "agent.endpoints." + PROJECT_ID + ".cloud.goog" );
+        apiController.put( "endpoints.projectId", projectId );
+        apiController.put( "endpoints.serviceName", "agent.endpoints." + projectId + ".cloud.goog" );
 
         bind( GoogleAppEngineControlFilter.class ).in( Singleton.class );
         filter( ENDPOINTS_SERVLET_PATH ).through( GoogleAppEngineControlFilter.class, apiController );

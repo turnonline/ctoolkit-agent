@@ -40,6 +40,20 @@
                 <artifactId>appengine-maven-plugin</artifactId>
                 <version>${appengine.maven.plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                            <filtering>true</filtering>
+                            <targetPath>WEB-INF</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -249,8 +263,8 @@
 
     <profiles>
         <profile>
-            <!--build OpenAPI document openapi.json 'mvn exec:java -P swagger' -->
-            <id>swagger</id>
+            <!--build OpenAPI document openapi.json 'mvn exec:java -P api' -->
+            <id>api</id>
             <activation>
                 <property>
                     <name>GetSwaggerDoc</name>
@@ -267,7 +281,7 @@
                             <mainClass>com.google.api.server.spi.tools.EndpointsTool</mainClass>
                             <arguments>
                                 <argument>get-swagger-doc</argument>
-                                <argument>--hostname=agent.endpoints.c-toolkit.cloud.goog</argument>
+                                <argument>--hostname=${endpoints.service.name}</argument>
                                 <argument>--war=target/${project.build.finalName}</argument>
                                 <argument>org.ctoolkit.agent.rest.AuditEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.ChangeEndpoint</argument>
