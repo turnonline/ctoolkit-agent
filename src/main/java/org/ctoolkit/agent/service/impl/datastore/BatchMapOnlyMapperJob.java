@@ -68,7 +68,7 @@ public abstract class BatchMapOnlyMapperJob
 
     protected void updateParent( final Entity item, final JobState jobState )
     {
-        ofy().transactNew( 5, new VoidWork()
+        ofy().transactNew( 20, new VoidWork()
         {
             @Override
             public void vrun()

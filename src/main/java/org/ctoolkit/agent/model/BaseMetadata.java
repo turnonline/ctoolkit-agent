@@ -133,11 +133,13 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         processedError = new ArrayList<>();
     }
 
+    // TODO: refactor to shared counters: https://cloud.google.com/appengine/articles/sharding_counters
     public int getProcessedItems()
     {
         return processedOk.size();
     }
 
+    // TODO: refactor to shared counters: https://cloud.google.com/appengine/articles/sharding_counters
     public int getProcessedErrorItems()
     {
         return processedError.size();

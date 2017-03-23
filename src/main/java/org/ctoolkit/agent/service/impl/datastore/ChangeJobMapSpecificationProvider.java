@@ -19,10 +19,8 @@
 package org.ctoolkit.agent.service.impl.datastore;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.mapreduce.MapSpecification;
-import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
+import com.google.appengine.tools.mapreduce.inputs.MetadataItemShardInput;
 import com.google.appengine.tools.mapreduce.outputs.NoOutput;
 import com.google.inject.assistedinject.Assisted;
 
@@ -52,8 +50,7 @@ public class ChangeJobMapSpecificationProvider
     @SuppressWarnings( "unchecked" )
     public MapSpecification<Entity, Entity, Entity> get()
     {
-        Query query = new Query( "_ChangeMetadataItem" ).setAncestor( KeyFactory.stringToKey( parentKey ) );
-        DatastoreInput input = new DatastoreInput( query, SHARD_COUNT );
+        MetadataItemShardInput input = new MetadataItemShardInput( "_ChangeMetadataItem", parentKey, SHARD_COUNT );
 
         return new MapSpecification.Builder<>( input, mapper, new NoOutput<Entity, Entity>() )
                 .setJobName( "ChangeJob" )

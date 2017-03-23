@@ -145,6 +145,7 @@ public class ChangeSetServiceBean
         systemKinds.add( "pipeline-slot" );
         systemKinds.add( "pipeline-exception" );
 
+        systemKinds.add( "__BlobInfo__" );
         systemKinds.add( "__GsFileInfo__" );
         systemKinds.add( "_ah_FakeCloudStorage__app_default_bucket" );
 
@@ -156,6 +157,8 @@ public class ChangeSetServiceBean
         systemKinds.add( "__Stat_PropertyType_PropertyName_Kind__" );
         systemKinds.add( "__Stat_PropertyType__" );
         systemKinds.add( "__Stat_Total__" );
+        systemKinds.add( "__Stat_Kind_CompositeIndex__" );
+        systemKinds.add( "_ah_SESSION" );
 
         systemKinds.add( "_ImportMetadata" );
         systemKinds.add( "_ImportMetadataItem" );
