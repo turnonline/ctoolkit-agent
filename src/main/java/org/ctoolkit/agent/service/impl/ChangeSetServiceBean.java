@@ -160,6 +160,8 @@ public class ChangeSetServiceBean
         systemKinds.add( "__Stat_Kind_CompositeIndex__" );
         systemKinds.add( "_ah_SESSION" );
 
+        systemKinds.add( "CounterShard_" );
+
         systemKinds.add( "_ImportMetadata" );
         systemKinds.add( "_ImportMetadataItem" );
         systemKinds.add( "_ExportMetadata" );
@@ -354,7 +356,7 @@ public class ChangeSetServiceBean
         final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 
         // update parent - in transaction because multiple threads can access parent
-        ofy().transactNew( 5, new VoidWork()
+        ofy().transactNew( 100, new VoidWork()
         {
             @Override
             public void vrun()
@@ -697,7 +699,15 @@ public class ChangeSetServiceBean
             @Override
             public boolean apply( @Nullable KindMetaData input )
             {
-                return !systemKinds.contains( input.getKind() );
+                for ( String systemKind : systemKinds )
+                {
+                    if ( input.getKind().startsWith( systemKind ) )
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         } );
 

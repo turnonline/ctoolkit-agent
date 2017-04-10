@@ -23,6 +23,7 @@ import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnSave;
+import org.ctoolkit.agent.service.impl.datastore.ShardedCounter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,10 +55,6 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     private boolean itemsLoaded;
 
     private int itemsCount;
-
-    private List<Long> processedOk = new ArrayList<>();
-
-    private List<Long> processedError = new ArrayList<>();
 
     private List<String> jobContext = new ArrayList<>();
 
@@ -129,20 +126,25 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
             item.setState( JobState.RUNNING );
         }
 
-        processedOk = new ArrayList<>();
-        processedError = new ArrayList<>();
+        ShardedCounter.clearCounters( getClass().getSimpleName(), getId() );
     }
 
-    // TODO: refactor to shared counters: https://cloud.google.com/appengine/articles/sharding_counters
     public int getProcessedItems()
     {
-        return processedOk.size();
+        if ( getId() == null )
+        {
+            return 0;
+        }
+        return ( int ) ShardedCounter.okCounter( getClass().getSimpleName(), getId() ).getCount();
     }
 
-    // TODO: refactor to shared counters: https://cloud.google.com/appengine/articles/sharding_counters
     public int getProcessedErrorItems()
     {
-        return processedError.size();
+        if ( getId() == null )
+        {
+            return 0;
+        }
+        return ( int ) ShardedCounter.errorCounter( getClass().getSimpleName(), getId() ).getCount();
     }
 
     public Map<String, String> getJobContext()
@@ -244,8 +246,6 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
                 ", name='" + name + '\'' +
                 ", itemsLoaded=" + itemsLoaded +
                 ", itemsCount=" + itemsCount +
-                ", processedOk=" + processedOk +
-                ", processedError=" + processedError +
                 ", jobContext=" + jobContext +
                 "} " + super.toString();
     }
