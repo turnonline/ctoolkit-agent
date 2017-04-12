@@ -32,6 +32,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.VoidWork;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapreduce.Job;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.agent.model.AuditFilter;
@@ -63,6 +65,8 @@ import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.agent.service.impl.datastore.MapSpecificationProvider;
 import org.ctoolkit.agent.service.impl.event.Auditable;
+import org.ctoolkit.agent.service.impl.hadoop.ImportMapper;
+import org.ctoolkit.agent.service.impl.hadoop.MetadataItemInputFormat;
 import org.ctoolkit.restapi.client.RequestCredential;
 import org.ctoolkit.restapi.client.ResourceFacade;
 import org.ctoolkit.restapi.client.agent.model.ImportBatch;
@@ -465,6 +469,7 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.START_JOB )
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
+        /*
         // check if mapReduceJob is running
         checkJobAndRemoveIfExists( metadata.getMapReduceJobId() );
 
@@ -487,11 +492,28 @@ public class ChangeSetServiceBean
             throw new IllegalArgumentException( "Unknown metadata type: " + metadata.getClass() );
         }
 
-
         String id = MapJob.start( mapSpecificationProvider.get(), mapReduceSettings );
-        metadata.setMapReduceJobId( id );
-        metadata.reset();
-        metadata.save();
+        */
+
+        try
+        {
+            Configuration configuration = new Configuration();
+            configuration.set( MetadataItemInputFormat.PARAM__PARENT_KEY, metadata.getKey() );
+
+            Job job = Job.getInstance( configuration, "ImportJob" );
+            job.setMapperClass( ImportMapper.class );
+            job.setInputFormatClass( MetadataItemInputFormat.class );
+
+            job.submit();
+
+            metadata.setMapReduceJobId( Integer.valueOf( job.getJobID().getId() ).toString() );
+            metadata.reset();
+            metadata.save();
+        }
+        catch ( Exception e )
+        {
+            log.error( "Unable to start hadoop job", e );
+        }
     }
 
     @Override
