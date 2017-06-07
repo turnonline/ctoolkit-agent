@@ -18,14 +18,14 @@
 
 package org.ctoolkit.agent.model;
 
-import com.googlecode.objectify.annotation.Entity;
+import org.ctoolkit.agent.annotation.EntityMarker;
 
 /**
  * Import metadata item entity
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Entity( name = "_ImportMetadataItem" )
+@EntityMarker( name = "_ImportMetadataItem" )
 public class ImportMetadataItem
         extends BaseMetadataItem<ImportMetadata>
 {

@@ -60,6 +60,7 @@ import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.RestContext;
+import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
 import org.ctoolkit.agent.service.impl.datastore.JobSpecificationFactory;
 import org.ctoolkit.agent.service.impl.datastore.MapSpecificationProvider;
 import org.ctoolkit.agent.service.impl.event.Auditable;
@@ -98,15 +99,15 @@ public class ChangeSetServiceBean
 
     private final DataAccess dataAccess;
 
-    private final StorageService storageService;
+    private StorageService storageService;
 
     private final Provider<RestContext> restContext;
 
-    private final JobSpecificationFactory jobSpecificationFactory;
+    private JobSpecificationFactory jobSpecificationFactory;
 
     private final ResourceFacade facade;
 
-    private final MapReduceSettings mapReduceSettings;
+    private final MapReduceSettings mapReduceSettings = null;
 
     private final PipelineService pipelineService;
 
@@ -118,20 +119,14 @@ public class ChangeSetServiceBean
 
     @Inject
     public ChangeSetServiceBean( DataAccess dataAccess,
-                                 StorageService storageService,
                                  Provider<RestContext> restContext,
-                                 JobSpecificationFactory jobSpecificationFactory,
                                  ResourceFacade facade,
-                                 MapReduceSettings mapReduceSettings,
                                  PipelineService pipelineService,
                                  @Named( BUCKET_NAME ) String bucketName )
     {
         this.dataAccess = dataAccess;
-        this.storageService = storageService;
         this.restContext = restContext;
-        this.jobSpecificationFactory = jobSpecificationFactory;
         this.facade = facade;
-        this.mapReduceSettings = mapReduceSettings;
         this.pipelineService = pipelineService;
         this.bucketName = bucketName;
 
@@ -208,6 +203,9 @@ public class ChangeSetServiceBean
         // create metadata
         metadata.save();
 
+        // TODO: move to model
+
+        /*
         // create blob
         for ( MI item : metadata.getItems() )
         {
@@ -224,6 +222,7 @@ public class ChangeSetServiceBean
 
         // update fileName
         metadata.save();
+        */
 
         return metadata;
     }
@@ -465,8 +464,9 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.START_JOB )
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
+        /*
         // check if mapReduceJob is running
-        checkJobAndRemoveIfExists( metadata.getMapReduceJobId() );
+        checkJobAndRemoveIfExists( metadata.getJobId() );
 
         MapSpecificationProvider mapSpecificationProvider;
 
@@ -487,29 +487,32 @@ public class ChangeSetServiceBean
             throw new IllegalArgumentException( "Unknown metadata type: " + metadata.getClass() );
         }
 
-
         String id = MapJob.start( mapSpecificationProvider.get(), mapReduceSettings );
-        metadata.setMapReduceJobId( id );
-        metadata.reset();
-        metadata.save();
+        metadata.setJobId( id );*/
+
+//        metadata.reset();
+//        metadata.save();
+
+        ImportBatchTask task = new ImportBatchTask( metadata.getId() );
+        task.run();
     }
 
     @Override
     @Auditable( action = Action.DELETE_JOB )
     public <M extends BaseMetadata> void deleteJob( M metadata )
     {
-        if ( metadata.getMapReduceJobId() == null )
+        if ( metadata.getJobId() == null )
         {
             throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
         }
 
         try
         {
-            pipelineService.deletePipelineRecords( metadata.getMapReduceJobId(), true, false );
+            pipelineService.deletePipelineRecords( metadata.getJobId(), true, false );
         }
         catch ( NoSuchObjectException e )
         {
-            throw new ObjectNotFoundException( "Map reduce job not found for key: " + metadata.getMapReduceJobId(), e );
+            throw new ObjectNotFoundException( "Map reduce job not found for key: " + metadata.getJobId(), e );
         }
     }
 
@@ -517,25 +520,26 @@ public class ChangeSetServiceBean
     @SuppressWarnings( "unchecked" )
     public <JI extends JobInfo, M extends BaseMetadata> JI getJobInfo( M metadata )
     {
+        // TODO: use job id from dataflow
         com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = null;
 
-        if ( metadata.getMapReduceJobId() != null )
+        if ( metadata.getJobId() != null )
         {
             try
             {
-                pipelineJobInfo = pipelineService.getJobInfo( metadata.getMapReduceJobId() );
+                pipelineJobInfo = pipelineService.getJobInfo( metadata.getJobId() );
             }
             catch ( NoSuchObjectException e )
             {
-                log.error( "Map reduce job not found for key: " + metadata.getMapReduceJobId(), e );
+                log.error( "Map reduce job not found for key: " + metadata.getJobId(), e );
             }
         }
 
         JI jobInfo = ( JI ) jobInfoProviders.get( metadata.getClass() ).get();
-        jobInfo.setId( metadata.getKey() );
-        jobInfo.setMapReduceJobId( metadata.getMapReduceJobId() );
-        jobInfo.setProcessedItems( metadata.getProcessedItems() );
-        jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() );
+        // jobInfo.setId( metadata.getKey() ); // TODO use new cloud API
+        jobInfo.setMapReduceJobId( metadata.getJobId() );
+        // jobInfo.setProcessedItems( metadata.getProcessedItems() ); // TODO use new cloud API
+        // jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() ); // TODO use new cloud API
         jobInfo.setTotalItems( metadata.getItemsCount() );
 
         if ( pipelineJobInfo != null )
@@ -551,18 +555,18 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.CANCEL_JOB )
     public <M extends BaseMetadata> void cancelJob( M metadata )
     {
-        if ( metadata.getMapReduceJobId() == null )
+        if ( metadata.getJobId() == null )
         {
             throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
         }
 
         try
         {
-            pipelineService.cancelPipeline( metadata.getMapReduceJobId() );
+            pipelineService.cancelPipeline( metadata.getJobId() );
         }
         catch ( NoSuchObjectException e )
         {
-            throw new ObjectNotFoundException( "Map reduce job not found for id: " + metadata.getMapReduceJobId(), e );
+            throw new ObjectNotFoundException( "Map reduce job not found for id: " + metadata.getJobId(), e );
         }
     }
 

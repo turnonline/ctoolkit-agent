@@ -44,10 +44,10 @@ public class IAMAuthenticator
 {
     private static final String X_CTOOLKIT_AGENT_ON_BEHALF_ON_AGENT_URL = "-X-CtoolkitAgent-onBehalfOfAgentUrl";
 
+    private Logger log = LoggerFactory.getLogger( IAMAuthenticator.class );
+
     @Inject
     private static Injector injector;
-
-    private Logger log = LoggerFactory.getLogger( IAMAuthenticator.class );
 
     @Inject
     private IdentityHandler identityHandler;

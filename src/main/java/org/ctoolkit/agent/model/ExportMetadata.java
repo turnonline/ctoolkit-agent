@@ -18,14 +18,14 @@
 
 package org.ctoolkit.agent.model;
 
-import com.googlecode.objectify.annotation.Entity;
+import org.ctoolkit.agent.annotation.EntityMarker;
 
 /**
  * Export metadata entity.
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Entity( name = "_ExportMetadata" )
+@EntityMarker( name = "_ExportMetadata" )
 public class ExportMetadata
         extends BaseMetadata<ExportMetadataItem>
 {

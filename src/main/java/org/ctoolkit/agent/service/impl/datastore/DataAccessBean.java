@@ -24,8 +24,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.StructuredQuery;
 import com.googlecode.objectify.Key;
 import ma.glasnost.orika.MapperFacade;
+import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
@@ -61,7 +65,10 @@ public class DataAccessBean
     // TODO: configurable
     private static final int DEFAULT_COUNT_LIMIT = 100;
 
-    private final DatastoreService datastore;
+    @Deprecated
+    private final DatastoreService datastoreService;
+
+    private final Datastore datastore;
 
     private final Provider<EntityPool> pool;
 
@@ -70,11 +77,13 @@ public class DataAccessBean
     private final ChangeRuleEngine changeRuleEngine;
 
     @Inject
-    protected DataAccessBean( DatastoreService datastore,
+    protected DataAccessBean( DatastoreService datastoreService,
+                              Datastore datastore,
                               Provider<EntityPool> pool,
                               MapperFacade mapper,
                               ChangeRuleEngine changeRuleEngine )
     {
+        this.datastoreService = datastoreService;
         this.datastore = datastore;
         this.pool = pool;
         this.mapper = mapper;
@@ -98,7 +107,7 @@ public class DataAccessBean
 
         // add entities
         Query query = new Query( entityName );
-        PreparedQuery preparedQuery = datastore.prepare( query );
+        PreparedQuery preparedQuery = datastoreService.prepare( query );
         for ( Entity entity : preparedQuery.asIterable() )
         {
             ChangeSetEntity changeSetEntity = mapper.map( entity, ChangeSetEntity.class );
@@ -120,7 +129,7 @@ public class DataAccessBean
         while ( true )
         {
             Query query = new Query( kind ).setKeysOnly();
-            PreparedQuery preparedQuery = datastore.prepare( query );
+            PreparedQuery preparedQuery = datastoreService.prepare( query );
             List<Entity> entList = preparedQuery.asList( withLimit( DEFAULT_COUNT_LIMIT ) );
             if ( !entList.isEmpty() )
             {
@@ -157,7 +166,7 @@ public class DataAccessBean
         while ( true )
         {
             Query query = new Query( kind );
-            PreparedQuery prepQuery = datastore.prepare( query );
+            PreparedQuery prepQuery = datastoreService.prepare( query );
             FetchOptions fetchOptions = withLimit( DEFAULT_COUNT_LIMIT );
             fetchOptions.offset( offset );
 
@@ -202,7 +211,7 @@ public class DataAccessBean
         while ( true )
         {
             Query query = new Query( kind );
-            PreparedQuery pq = datastore.prepare( query );
+            PreparedQuery pq = datastoreService.prepare( query );
             FetchOptions fetchOptions = withLimit( DEFAULT_COUNT_LIMIT );
             fetchOptions.offset( offset );
 
@@ -249,16 +258,23 @@ public class DataAccessBean
     @Override
     public <T extends BaseMetadata> List<T> find( BaseMetadataFilter<T> filter )
     {
-        com.googlecode.objectify.cmd.Query<T> query = ofy().load().type( filter.getMetadataClass() )
-                .limit( filter.getLength() )
-                .offset( filter.getStart() );
+        com.google.cloud.datastore.Query<com.google.cloud.datastore.Entity> query = com.google.cloud.datastore.Query.newEntityQueryBuilder()
+                .setKind( filter.getMetadataClass().getAnnotation( EntityMarker.class ).name() )
+                .setLimit( filter.getLength() )
+                .setOffset( filter.getStart() )
+                .addOrderBy( filter.isAscending() ? StructuredQuery.OrderBy.asc( filter.getOrderBy() ) : StructuredQuery.OrderBy.desc( filter.getOrderBy() ) )
+                .build();
 
-        if ( filter.getOrderBy() != null )
+        List<T> list = new ArrayList<>();
+        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( query );
+        while ( results.hasNext() )
         {
-            query = filter.isAscending() ? query.order( filter.getOrderBy() ) : query.order( "-" + filter.getOrderBy() );
+            com.google.cloud.datastore.Entity entity = results.next();
+            T metadata = (T) BaseMetadata.convert( entity, filter.getMetadataClass() );
+            list.add( metadata );
         }
 
-        return query.list();
+        return list;
     }
 
     @Override
@@ -293,7 +309,7 @@ public class DataAccessBean
         List<KindMetaData> kinds = new ArrayList<>();
         Query q = new Query( Entities.KIND_METADATA_KIND );
 
-        for ( Entity e : datastore.prepare( q ).asIterable() )
+        for ( Entity e : datastoreService.prepare( q ).asIterable() )
         {
             KindMetaData kind = new KindMetaData();
             kind.setKind( e.getKey().getName() );
@@ -313,7 +329,7 @@ public class DataAccessBean
 
 
         //Build list of query results
-        for ( Entity e : datastore.prepare( q ).asIterable() )
+        for ( Entity e : datastoreService.prepare( q ).asIterable() )
         {
             PropertyMetaData property = new PropertyMetaData();
             property.setProperty( e.getKey().getName() );

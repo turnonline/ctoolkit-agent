@@ -47,6 +47,7 @@ public class BaseEntity
      * In some cases (i.e. migration) we need to preserve whole untempered key
      * and return it in endpoint response
      */
+    @Deprecated
     private String untemperedKey;
 
     public Long getId()
@@ -116,11 +117,17 @@ public class BaseEntity
         return id != null ? id.hashCode() : 0;
     }
 
+    public com.google.cloud.datastore.Key key()
+    {
+        throw new IllegalArgumentException( "Method key() must be implemented by super class!!!" );
+    }
+
     /**
      * Returns the unique string identification unique across all entities.
      *
      * @return the unique string identification
      */
+    @Deprecated
     public String getKey()
     {
         if ( id == null )
@@ -131,16 +138,19 @@ public class BaseEntity
         return Key.create( this ).getString();
     }
 
+    @Deprecated
     public void setKey( String key )
     {
         this.id = Key.create( key ).getId();
     }
 
+    @Deprecated
     public String getUntemperedKey()
     {
         return untemperedKey;
     }
 
+    @Deprecated
     public void setUntemperedKey( String untemperedKey )
     {
         this.untemperedKey = untemperedKey;

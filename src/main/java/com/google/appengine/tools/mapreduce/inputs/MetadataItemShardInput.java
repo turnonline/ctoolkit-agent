@@ -19,6 +19,7 @@ import java.util.List;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
+@Deprecated
 public class MetadataItemShardInput
         extends BaseDatastoreInput<Entity, DatastoreInputReader>
 {

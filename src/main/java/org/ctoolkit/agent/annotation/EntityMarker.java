@@ -16,28 +16,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.annotation;
 
-import org.ctoolkit.agent.annotation.EntityMarker;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Change metadata entity.
+ * Annotation for mark entity types
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@EntityMarker( name = "_ChangeMetadata" )
-public class ChangeMetadata
-        extends BaseMetadata<ChangeMetadataItem>
+@Target( {ElementType.TYPE} )
+@Retention( RetentionPolicy.RUNTIME )
+@BindingAnnotation
+public @interface EntityMarker
 {
-    @Override
-    protected ChangeMetadataItem newItem()
-    {
-        return new ChangeMetadataItem( this );
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ChangeMetadata{} " + super.toString();
-    }
+    String name();
 }

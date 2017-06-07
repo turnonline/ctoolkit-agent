@@ -19,10 +19,8 @@
 package org.ctoolkit.agent.config;
 
 import com.google.api.control.ServiceManagementConfigFilter;
-import com.google.api.control.extensions.appengine.GoogleAppEngineControlFilter;
 import com.google.api.server.spi.ServletInitializationParameters;
 import com.google.api.server.spi.guice.EndpointsModule;
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tools.appstats.AppstatsFilter;
 import com.google.appengine.tools.appstats.AppstatsServlet;
 import com.google.appengine.tools.mapreduce.MapReduceServlet;
@@ -37,8 +35,6 @@ import org.ctoolkit.agent.rest.ImportEndpoint;
 import org.ctoolkit.agent.rest.MetadataEndpoint;
 
 import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
@@ -67,6 +63,7 @@ public class AgentServletModule
         bind( ServiceManagementConfigFilter.class ).in( Singleton.class );
         filter( ENDPOINTS_SERVLET_PATH ).through( ServiceManagementConfigFilter.class );
 
+        /* TODO: not working for flexible environment
         String projectId = SystemProperty.applicationId.get();
         Map<String, String> apiController = new HashMap<>();
         apiController.put( "endpoints.projectId", projectId );
@@ -74,6 +71,7 @@ public class AgentServletModule
 
         bind( GoogleAppEngineControlFilter.class ).in( Singleton.class );
         filter( ENDPOINTS_SERVLET_PATH ).through( GoogleAppEngineControlFilter.class, apiController );
+        */
 
         // objectify filter
         bind( ObjectifyFilter.class ).in( Singleton.class );

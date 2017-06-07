@@ -54,9 +54,13 @@ import java.util.Map;
 @Authorized
 public class ImportEndpoint
 {
-    private final ChangeSetService service;
+    private ChangeSetService service;
 
-    private final MapperFacade mapper;
+    private MapperFacade mapper;
+
+    public ImportEndpoint()
+    {
+    }
 
     @Inject
     public ImportEndpoint( ChangeSetService service, MapperFacade mapper )
@@ -204,11 +208,12 @@ public class ImportEndpoint
     @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
     public ImportJob startImportJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
-        if ( importMetadata == null )
-        {
-            throw new NotFoundException( "Import not found for id: " + id );
-        }
+        ImportMetadata importMetadata = new ImportMetadata();
+//        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
+//        if ( importMetadata == null )
+//        {
+//            throw new NotFoundException( "Import not found for id: " + id );
+//        }
 
         try
         {

@@ -55,9 +55,13 @@ import java.util.Map;
 @Authorized
 public class ChangeEndpoint
 {
-    private final ChangeSetService service;
+    private ChangeSetService service;
 
-    private final MapperFacade mapper;
+    private MapperFacade mapper;
+
+    public ChangeEndpoint()
+    {
+    }
 
     @Inject
     public ChangeEndpoint( ChangeSetService service, MapperFacade mapper )

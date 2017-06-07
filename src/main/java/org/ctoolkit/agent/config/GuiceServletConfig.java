@@ -34,7 +34,8 @@ public class GuiceServletConfig
 {
     private Injector getTestInjector()
     {
-        return Guice.createInjector( new AgentModule(),
+        return Guice.createInjector( Stage.PRODUCTION, // TODO: remove
+                new AgentModule(),
                 new AgentServletModule(),
                 new IAMModule()
         );

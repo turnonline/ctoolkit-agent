@@ -18,12 +18,16 @@
 
 package org.ctoolkit.agent.model;
 
-import com.googlecode.objectify.Ref;
-import com.googlecode.objectify.annotation.Ignore;
-import com.googlecode.objectify.annotation.OnSave;
-import com.googlecode.objectify.annotation.Parent;
+import com.google.api.client.util.Base64;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.FullEntity;
+import com.google.cloud.datastore.IncompleteKey;
+import com.google.cloud.datastore.Key;
+import com.google.inject.Injector;
+import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.inject.Inject;
 
 /**
  * Base metadata item
@@ -34,15 +38,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         extends BaseEntity
 {
-    @Parent
-    private Ref<PARENT> metadataRef;
+    @Inject
+    private static Injector injector;
 
-    @Ignore
     private PARENT metadata;
 
     private String name;
 
-    @Ignore
     private byte[] data;
 
     private String fileName;
@@ -64,23 +66,41 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         this.metadata = metadata;
     }
 
-    public static String newFileName( String key )
+    @SuppressWarnings( "unchecked" )
+    public static <PARENT extends BaseMetadata> BaseMetadataItem<PARENT> convert( Entity entity, Class<?> clazz )
     {
-        return "MetadataItem-" + key;
+        BaseMetadataItem<PARENT> metadataItem;
+
+        try
+        {
+            metadataItem = ( BaseMetadataItem<PARENT> ) clazz.newInstance();
+            metadataItem.convert( entity );
+        }
+        catch ( InstantiationException | IllegalAccessException e )
+        {
+            throw new RuntimeException( "Unable to create new instance of metadataItem" );
+        }
+
+        return metadataItem;
+    }
+
+    protected void convert( Entity entity )
+    {
+        setId( entity.getKey().getId() );
+        setName( entity.getString( "name" ) );
+        setFileName( entity.getString( "fileName" ) );
+        setDataType( entity.contains( "dataType" ) ? ISetItem.DataType.valueOf( entity.getString( "dataType" ) ) : null );
+        setState( entity.contains( "state" ) ? JobState.valueOf( entity.getString( "state" ) ) : null );
+        setError( entity.contains( "error" ) ? entity.getString( "error" ) : null);
     }
 
     public PARENT getMetadata()
     {
         if ( metadata == null )
         {
-            metadata = metadataRef.get();
+            // TODO: implement
         }
         return metadata;
-    }
-
-    public Ref<PARENT> getMetadataRef()
-    {
-        return metadataRef;
     }
 
     public String getName()
@@ -119,9 +139,14 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         this.fileName = fileName;
     }
 
+    public static String newFileName( String key )
+    {
+        return "MetadataItem-" + key;
+    }
+
     public String newFileName()
     {
-        return newFileName( getKey() );
+        return newFileName( Base64.encodeBase64String( key().toUrlSafe().getBytes() ) );
     }
 
     public ISetItem.DataType getDataType()
@@ -154,21 +179,50 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         this.error = error;
     }
 
-    @OnSave
-    private void updateObjectifyRefs()
+    public void save()
     {
-        if ( metadataRef == null )
+        FullEntity.Builder<IncompleteKey> builder = Entity.newBuilder();
+        builder.setKey( key() );
+        builder.set( "name", getName() );
+
+        if ( getDataType() != null )
         {
-            checkNotNull( metadata, "Metadata is mandatory to create a new persisted MetadataItem!" );
-            metadataRef = Ref.create( metadata );
+            builder.set( "dataType", getDataType().name() );
         }
 
-        if ( data != null )
+        if ( getState() != null )
         {
-            dataLength = data.length;
+            builder.set( "state", getState().name() );
         }
 
-        this.fileName = newFileName();
+        if (getError() != null)
+        {
+            builder.set( "error", getError() );
+        }
+
+        if ( getData() != null )
+        {
+            builder.set( "dataLength", data.length );
+        }
+
+        if ( getId() == null )
+        {
+            builder.set( "fileName", newFileName() );
+        }
+
+        datastore().put( builder.build() );
+
+        // TODO: store data to storage
+    }
+
+    protected Datastore datastore()
+    {
+        return injector.getInstance( Datastore.class );
+    }
+
+    public Key key()
+    {
+        return injector.getInstance( KeyProvider.class ).key( this, getMetadata() );
     }
 
     @Override

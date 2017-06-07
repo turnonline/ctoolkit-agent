@@ -56,9 +56,13 @@ import java.util.Map;
 @Authorized
 public class ExportEndpoint
 {
-    private final ChangeSetService service;
+    private ChangeSetService service;
 
-    private final MapperFacade mapper;
+    private MapperFacade mapper;
+
+    public ExportEndpoint()
+    {
+    }
 
     @Inject
     public ExportEndpoint( ChangeSetService service, MapperFacade mapper )

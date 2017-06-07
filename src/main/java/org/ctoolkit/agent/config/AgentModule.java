@@ -18,40 +18,36 @@
 
 package org.ctoolkit.agent.config;
 
-import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.PipelineService;
 import com.google.appengine.tools.pipeline.impl.PipelineServiceImpl;
+import com.google.cloud.ServiceOptions;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonObject;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.RequestScoped;
-import com.googlecode.objectify.ObjectifyService;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.TypeFactory;
 import net.oauth.jsontoken.Checker;
-import org.ctoolkit.agent.annotation.ChangeJob;
-import org.ctoolkit.agent.annotation.ExportJob;
-import org.ctoolkit.agent.annotation.ImportJob;
-import org.ctoolkit.agent.annotation.MigrateJob;
+import org.ctoolkit.agent.annotation.ProjectId;
+import org.ctoolkit.agent.model.BaseMetadata;
+import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.model.ChangeMetadataItem;
 import org.ctoolkit.agent.model.ExportMetadata;
-import org.ctoolkit.agent.model.ExportMetadataItem;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
-import org.ctoolkit.agent.model.MetadataAudit;
 import org.ctoolkit.agent.rest.IAMAuthenticator;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
@@ -60,20 +56,12 @@ import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
 import org.ctoolkit.agent.service.impl.RestContextThreadLocal;
 import org.ctoolkit.agent.service.impl.datastore.AuditInterceptor;
 import org.ctoolkit.agent.service.impl.datastore.AuditSubscription;
-import org.ctoolkit.agent.service.impl.datastore.ChangeJobMapSpecificationProvider;
-import org.ctoolkit.agent.service.impl.datastore.ChangeMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.DataAccessBean;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
-import org.ctoolkit.agent.service.impl.datastore.ExportJobMapSpecificationProvider;
-import org.ctoolkit.agent.service.impl.datastore.ExportMapOnlyMapperJob;
-import org.ctoolkit.agent.service.impl.datastore.ImportJobMapSpecificationProvider;
 import org.ctoolkit.agent.service.impl.datastore.ImportMapOnlyMapperJob;
-import org.ctoolkit.agent.service.impl.datastore.JobSpecificationFactory;
-import org.ctoolkit.agent.service.impl.datastore.MapSpecificationProvider;
-import org.ctoolkit.agent.service.impl.datastore.MigrateJobMapSpecificationProvider;
-import org.ctoolkit.agent.service.impl.datastore.MigrateMapOnlyMapperJob;
+import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeItemToChangeMetadataItemMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeMetadataFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeMetadataItemFactory;
@@ -101,10 +89,7 @@ import org.ctoolkit.restapi.client.agent.CtoolkitApiAgentModule;
 import org.ctoolkit.restapi.client.appengine.FacadeAppEngineModule;
 import org.ctoolkit.restapi.client.identity.verifier.IdentityVerifierModule;
 import org.ctoolkit.restapi.client.provider.AuthKeyProvider;
-import org.ctoolkit.services.common.CtoolkitCommonServicesModule;
 import org.ctoolkit.services.common.PropertyService;
-import org.ctoolkit.services.guice.appengine.CtoolkitServicesAppEngineModule;
-import org.ctoolkit.services.storage.appengine.CtoolkitServicesAppEngineStorageModule;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -129,18 +114,18 @@ public class AgentModule
     protected void configure()
     {
         // install map reduce job specification providers factory
-        install( new FactoryModuleBuilder()
-                .implement( MapSpecificationProvider.class, ImportJob.class, ImportJobMapSpecificationProvider.class )
-                .implement( MapSpecificationProvider.class, ChangeJob.class, ChangeJobMapSpecificationProvider.class )
-                .implement( MapSpecificationProvider.class, ExportJob.class, ExportJobMapSpecificationProvider.class )
-                .implement( MapSpecificationProvider.class, MigrateJob.class, MigrateJobMapSpecificationProvider.class )
-                .build( JobSpecificationFactory.class ) );
+//        install( new FactoryModuleBuilder()
+//                .implement( MapSpecificationProvider.class, ImportJob.class, ImportJobMapSpecificationProvider.class )
+//                .implement( MapSpecificationProvider.class, ChangeJob.class, ChangeJobMapSpecificationProvider.class )
+//                .implement( MapSpecificationProvider.class, ExportJob.class, ExportJobMapSpecificationProvider.class )
+//                .implement( MapSpecificationProvider.class, MigrateJob.class, MigrateJobMapSpecificationProvider.class )
+//                .build( JobSpecificationFactory.class ) );
 
         install( new FacadeAppEngineModule() );
         install( new IdentityVerifierModule() );
-        install( new CtoolkitServicesAppEngineModule() );
-        install( new CtoolkitServicesAppEngineStorageModule() );
-        install( new CtoolkitCommonServicesModule() );
+//        install( new CtoolkitServicesAppEngineModule() );
+//        install( new CtoolkitServicesAppEngineStorageModule() );
+//        install( new CtoolkitCommonServicesModule() );
         install( new CtoolkitApiAgentModule() );
 
         ApiCredential credential = new ApiCredential( CtoolkitApiAgentModule.API_PREFIX );
@@ -180,24 +165,17 @@ public class AgentModule
 
         bind( RestContext.class ).to( RestContextThreadLocal.class ).in( RequestScoped.class );
 
-        ObjectifyService.register( ImportMetadata.class );
-        ObjectifyService.register( ImportMetadataItem.class );
-        ObjectifyService.register( ChangeMetadata.class );
-        ObjectifyService.register( ChangeMetadataItem.class );
-        ObjectifyService.register( ExportMetadata.class );
-        ObjectifyService.register( ExportMetadataItem.class );
-        ObjectifyService.register( MetadataAudit.class );
-
-        requestStaticInjection( ImportMapOnlyMapperJob.class );
-        requestStaticInjection( ChangeMapOnlyMapperJob.class );
-        requestStaticInjection( ExportMapOnlyMapperJob.class );
-        requestStaticInjection( MigrateMapOnlyMapperJob.class );
-        requestStaticInjection( MigrateJobMapSpecificationProvider.class );
+        requestStaticInjection( KeyProvider.class );
+        requestStaticInjection( BaseMetadata.class );
+        requestStaticInjection( BaseMetadataItem.class );
         requestStaticInjection( IAMAuthenticator.class );
+
+//        requestStaticInjection( ImportBatchTask.class );
     }
 
     @Provides
     @Singleton
+    // TODO: drop
     public DatastoreService provideDatastoreService()
     {
         return DatastoreServiceFactory.getDatastoreService();
@@ -212,6 +190,13 @@ public class AgentModule
                 .mapNulls( false )
                 .useBuiltinConverters( true )
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    public Datastore provideDatastore()
+    {
+        return DatastoreOptions.getDefaultInstance().getService();
     }
 
     @Provides
@@ -258,19 +243,20 @@ public class AgentModule
 
     @Provides
     @Singleton
-    public MapReduceSettings provideMapReduceSettings()
+    @Named( BUCKET_NAME )
+    public String provideBucketName()
     {
-        return new MapReduceSettings.Builder()
-                .setWorkerQueueName( "ctoolkit-agent" )
-                .build();
+        // TODO: resolve default bucket name
+        return "c-toolkit";
     }
 
     @Provides
     @Singleton
-    @Named( BUCKET_NAME )
-    public String provideBucketName()
+    @ProjectId
+    public String provideProjectId()
     {
-        return AppIdentityServiceFactory.getAppIdentityService().getDefaultGcsBucketName();
+        // TODO: resolve project id
+        return ServiceOptions.getDefaultProjectId();
     }
 
     private static class AudienceChecker
@@ -292,14 +278,13 @@ public class AgentModule
     static class JsonAuthKeyProvider
             implements AuthKeyProvider
     {
-        private final PropertyService propertyService;
+        private PropertyService propertyService;
 
         private String json;
 
         @Inject
-        JsonAuthKeyProvider( PropertyService propertyService )
+        JsonAuthKeyProvider(  )
         {
-            this.propertyService = propertyService;
         }
 
         @Override

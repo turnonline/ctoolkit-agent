@@ -42,12 +42,11 @@ public class UploadJsonCredentialsServlet extends HttpServlet
 {
     private static final long serialVersionUID = 2516420453149547193L;
 
-    private final PropertyService propertyService;
+    private PropertyService propertyService;
 
     @Inject
-    public UploadJsonCredentialsServlet( PropertyService propertyService )
+    public UploadJsonCredentialsServlet(  )
     {
-        this.propertyService = propertyService;
     }
 
     @Override

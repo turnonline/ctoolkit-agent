@@ -60,7 +60,9 @@ public class AuthorizationInterceptor
 
         if ( invocation.getArguments()[index] == null )
         {
-            throw new UnauthorizedException( "User is not authorized." );
+            // TODO: find out why IAMAuthenticator is not called for flexible env
+
+//            throw new UnauthorizedException( "User is not authorized." );
         }
 
         return invocation.proceed();

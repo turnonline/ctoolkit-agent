@@ -40,7 +40,11 @@ import java.util.List;
 @Authorized
 public class MetadataEndpoint
 {
-    private final ChangeSetService service;
+    private ChangeSetService service;
+
+    public MetadataEndpoint()
+    {
+    }
 
     @Inject
     public MetadataEndpoint( ChangeSetService service )

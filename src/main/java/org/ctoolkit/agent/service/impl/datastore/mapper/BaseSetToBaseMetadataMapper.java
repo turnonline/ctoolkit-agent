@@ -18,9 +18,6 @@
 
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.googlecode.objectify.annotation.Entity;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.model.BaseMetadata;
@@ -76,7 +73,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
     {
         set.setKey( createMetadataKey( metadata ) );
         set.setName( metadata.getName() );
-        set.setMapReduceJobId( metadata.getMapReduceJobId() );
+        set.setMapReduceJobId( metadata.getJobId() );
         set.setCreateDate( metadata.getCreateDate() );
         set.setUpdateDate( metadata.getUpdateDate() );
 
@@ -132,19 +129,12 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
             return metadata.getUntemperedKey();
         }
 
-        String metadataEntityName = metadata.getClass().getAnnotation( Entity.class ).name();
-        return KeyFactory.keyToString( KeyFactory.createKey( metadataEntityName, metadata.getId() ) );
+        return metadata.key().getId().toString();
     }
 
     private String createMetadataItemKey( B metadata, BI item )
     {
-        String metadataEntityName = metadata.getClass().getAnnotation( Entity.class ).name();
-        String itemEntityName = item.getClass().getAnnotation( Entity.class ).name();
-
-        Key parentKey = KeyFactory.createKey( metadataEntityName, metadata.getId() );
-        Key key = KeyFactory.createKey( parentKey, itemEntityName, item.getId() );
-
-        return KeyFactory.keyToString( key );
+        return metadata.key().getId().toString();
     }
 
     private Long getMetadataItemId( ISetItem anItem )
@@ -154,14 +144,14 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
             return null;
         }
 
-        return KeyFactory.stringToKey( anItem.getKey() ).getId();
+        return Long.valueOf( anItem.getKey() );
     }
 
     private boolean contains( ISet<?> set, BI beItem )
     {
         for ( ISetItem item : set.getItems() )
         {
-            if ( beItem.getKey().equals( item.getKey() ) )
+            if ( beItem.getId().equals( item.getKey() != null ? Long.valueOf( item.getKey() ) : null ) )
             {
                 return true;
             }

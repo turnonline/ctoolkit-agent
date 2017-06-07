@@ -43,7 +43,11 @@ import java.util.List;
 @Authorized
 public class AuditEndpoint
 {
-    private final ChangeSetService service;
+    private ChangeSetService service;
+
+    public AuditEndpoint()
+    {
+    }
 
     @Inject
     public AuditEndpoint( ChangeSetService service )

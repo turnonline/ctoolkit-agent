@@ -49,7 +49,7 @@ public abstract class BatchMapOnlyMapperJob
     @Inject
     protected transient DatastoreService datastoreService;
 
-    @Inject
+//    @Inject
     protected transient StorageService storageService;
 
     @Inject
