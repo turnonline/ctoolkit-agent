@@ -56,7 +56,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
 
         for ( ISetItem anItem : set.getItems() )
         {
-            BI item = metadata.getItemByIdOrCreateNewOne( getMetadataItemId( anItem ) );
+            BI item = metadata.getItemByIdOrCreateNewOne( anItem.getId() );
             if ( anItem.getData() != null )
             {
                 item.setData( anItem.getData() );
@@ -71,7 +71,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
     @Override
     public void mapBtoA( B metadata, F set, MappingContext context )
     {
-        set.setKey( createMetadataKey( metadata ) );
+        set.setId( metadata.getId() );
         set.setName( metadata.getName() );
         set.setMapReduceJobId( metadata.getJobId() );
         set.setCreateDate( metadata.getCreateDate() );
@@ -82,7 +82,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
         for ( BI item : metadata.getItems() )
         {
             FI anItem = newItem();
-            anItem.setKey( createMetadataItemKey( metadata, item ) );
+            anItem.setId( item.getId() );
             anItem.setName( item.getName() );
             anItem.setCreateDate( item.getCreateDate() );
             anItem.setUpdateDate( item.getUpdateDate() );
@@ -100,58 +100,29 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
 
     protected void extraMapAToB( F set, B metadata )
     {
-
     }
 
     protected void extraMapBToA( B metadata, F set )
     {
-
     }
 
     protected void extraMapAItemToBItem( FI anItem, BI item )
     {
-
     }
 
     protected void extraMapBItemToAItem( BI item, FI anItem )
     {
-
     }
 
     protected abstract FI newItem();
 
     protected abstract void addItem( F anImport, FI anItem );
 
-    private String createMetadataKey( B metadata )
-    {
-        if ( metadata.getUntemperedKey() != null )
-        {
-            return metadata.getUntemperedKey();
-        }
-
-        return metadata.key().getId().toString();
-    }
-
-    private String createMetadataItemKey( B metadata, BI item )
-    {
-        return metadata.key().getId().toString();
-    }
-
-    private Long getMetadataItemId( ISetItem anItem )
-    {
-        if ( anItem.getKey() == null )
-        {
-            return null;
-        }
-
-        return Long.valueOf( anItem.getKey() );
-    }
-
     private boolean contains( ISet<?> set, BI beItem )
     {
         for ( ISetItem item : set.getItems() )
         {
-            if ( beItem.getId().equals( item.getKey() != null ? Long.valueOf( item.getKey() ) : null ) )
+            if ( beItem.getId().equals( item.getId() ) )
             {
                 return true;
             }

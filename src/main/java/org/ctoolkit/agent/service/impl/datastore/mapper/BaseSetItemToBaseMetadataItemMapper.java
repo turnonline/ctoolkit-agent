@@ -43,7 +43,7 @@ public abstract class BaseSetItemToBaseMetadataItemMapper<FI extends ISetItem, B
     @Override
     public void mapBtoA( BI metadataItem, FI setItem, MappingContext context )
     {
-        setItem.setKey( metadataItem.getKey() );
+        setItem.setId( metadataItem.getId() );
         setItem.setName( metadataItem.getName() );
         setItem.setCreateDate( metadataItem.getCreateDate() );
         setItem.setUpdateDate( metadataItem.getUpdateDate() );

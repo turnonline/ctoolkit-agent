@@ -24,7 +24,11 @@ import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.FullEntity;
 import com.google.cloud.datastore.IncompleteKey;
 import com.google.cloud.datastore.Key;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import com.google.inject.Injector;
+import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 
 import javax.inject.Inject;
@@ -37,9 +41,16 @@ import javax.inject.Inject;
  */
 public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         extends BaseEntity
+        implements Convertible
 {
     @Inject
     private static Injector injector;
+
+    @Inject
+    @BucketName
+    private static String bucketName;
+
+    private Key key;
 
     private PARENT metadata;
 
@@ -64,42 +75,11 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public BaseMetadataItem( PARENT metadata )
     {
         this.metadata = metadata;
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public static <PARENT extends BaseMetadata> BaseMetadataItem<PARENT> convert( Entity entity, Class<?> clazz )
-    {
-        BaseMetadataItem<PARENT> metadataItem;
-
-        try
-        {
-            metadataItem = ( BaseMetadataItem<PARENT> ) clazz.newInstance();
-            metadataItem.convert( entity );
-        }
-        catch ( InstantiationException | IllegalAccessException e )
-        {
-            throw new RuntimeException( "Unable to create new instance of metadataItem" );
-        }
-
-        return metadataItem;
-    }
-
-    protected void convert( Entity entity )
-    {
-        setId( entity.getKey().getId() );
-        setName( entity.getString( "name" ) );
-        setFileName( entity.getString( "fileName" ) );
-        setDataType( entity.contains( "dataType" ) ? ISetItem.DataType.valueOf( entity.getString( "dataType" ) ) : null );
-        setState( entity.contains( "state" ) ? JobState.valueOf( entity.getString( "state" ) ) : null );
-        setError( entity.contains( "error" ) ? entity.getString( "error" ) : null);
+        this.key = injector.getInstance( KeyProvider.class ).key( this, getMetadata() );
     }
 
     public PARENT getMetadata()
     {
-        if ( metadata == null )
-        {
-            // TODO: implement
-        }
         return metadata;
     }
 
@@ -179,6 +159,20 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         this.error = error;
     }
 
+    @Override
+    public void convert( Entity entity )
+    {
+        setId( entity.getKey().getId() );
+        setName( entity.getString( "name" ) );
+        setFileName( entity.getString( "fileName" ) );
+        setDataType( entity.contains( "dataType" ) ? ISetItem.DataType.valueOf( entity.getString( "dataType" ) ) : null );
+        setState( entity.contains( "state" ) ? JobState.valueOf( entity.getString( "state" ) ) : null );
+        setError( entity.contains( "error" ) ? entity.getString( "error" ) : null );
+
+        key = entity.getKey();
+        dataLength = entity.contains( "dataLength" ) ? entity.getLong( "dataLength" ) : 0;
+    }
+
     public void save()
     {
         FullEntity.Builder<IncompleteKey> builder = Entity.newBuilder();
@@ -195,7 +189,7 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
             builder.set( "state", getState().name() );
         }
 
-        if (getError() != null)
+        if ( getError() != null )
         {
             builder.set( "error", getError() );
         }
@@ -205,14 +199,27 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
             builder.set( "dataLength", data.length );
         }
 
-        if ( getId() == null )
-        {
-            builder.set( "fileName", newFileName() );
-        }
+        String fileName = newFileName();
+        builder.set( "fileName", fileName );
 
+        // put item to datastore
         datastore().put( builder.build() );
 
-        // TODO: store data to storage
+        // put data to storage
+        BlobInfo blobInfo = BlobInfo
+                .newBuilder( bucketName, fileName )
+                .setContentType( getDataType().mimeType() )
+                .build();
+        storage().create( blobInfo, getData() );
+    }
+
+    public void delete()
+    {
+        // delete item from datastore
+        datastore().delete( key() );
+
+        // delete data from storage
+        storage().delete( BlobId.of( bucketName, fileName ) );
     }
 
     protected Datastore datastore()
@@ -220,9 +227,14 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         return injector.getInstance( Datastore.class );
     }
 
+    protected Storage storage()
+    {
+        return injector.getInstance( Storage.class );
+    }
+
     public Key key()
     {
-        return injector.getInstance( KeyProvider.class ).key( this, getMetadata() );
+        return key;
     }
 
     @Override

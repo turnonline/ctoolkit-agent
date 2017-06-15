@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface ISet<JI extends JobInfo>
 {
-    void setKey( String key );
+    void setId( Long id );
 
     String getName();
 

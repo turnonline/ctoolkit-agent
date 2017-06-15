@@ -37,9 +37,9 @@ public interface ISetItem
 
     void setDataLength( long dataLength );
 
-    String getKey();
+    Long getId();
 
-    void setKey( String key );
+    void setId( Long id );
 
     String getName();
 

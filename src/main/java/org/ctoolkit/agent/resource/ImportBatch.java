@@ -34,7 +34,7 @@ import java.util.List;
 public class ImportBatch
         implements ISet<ImportJob>
 {
-    private String key;
+    private Long id;
 
     private String name;
 
@@ -50,14 +50,14 @@ public class ImportBatch
 
     private List<ImportItem> items = new ArrayList<>();
 
-    public String getKey()
+    public Long getId()
     {
-        return key;
+        return id;
     }
 
-    public void setKey( String key )
+    public void setId( Long id )
     {
-        this.key = key;
+        this.id = id;
     }
 
     public String getName()
@@ -137,7 +137,7 @@ public class ImportBatch
     public String toString()
     {
         return "Import{" +
-                "key='" + key + '\'' +
+                "id='" + id + '\'' +
                 ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", token='" + token + '\'' +
@@ -151,7 +151,7 @@ public class ImportBatch
     public static class ImportItem
             implements ISetItem
     {
-        private String key;
+        private Long id;
 
         private String name;
 
@@ -171,14 +171,14 @@ public class ImportBatch
 
         private String error;
 
-        public String getKey()
+        public Long getId()
         {
-            return key;
+            return id;
         }
 
-        public void setKey( String key )
+        public void setId( Long id )
         {
-            this.key = key;
+            this.id = id;
         }
 
         public String getName()
@@ -283,7 +283,7 @@ public class ImportBatch
         public String toString()
         {
             return "Item{" +
-                    "key='" + key + '\'' +
+                    "id='" + id + '\'' +
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null ) +
                     ", dataType=" + dataType +

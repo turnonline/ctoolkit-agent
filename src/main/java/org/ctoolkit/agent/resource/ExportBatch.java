@@ -34,7 +34,7 @@ import java.util.List;
 public class ExportBatch
         implements ISet<ExportJob>
 {
-    private String key;
+    private Long id;
 
     private String name;
 
@@ -50,14 +50,14 @@ public class ExportBatch
 
     private List<ExportItem> items = new ArrayList<>();
 
-    public String getKey()
+    public Long getId()
     {
-        return key;
+        return id;
     }
 
-    public void setKey( String key )
+    public void setId( Long id )
     {
-        this.key = key;
+        this.id = id;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ExportBatch
     public String toString()
     {
         return "Export{" +
-                "key='" + key + '\'' +
+                "id='" + id + '\'' +
                 ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", token='" + token + '\'' +
@@ -152,7 +152,7 @@ public class ExportBatch
     public static class ExportItem
             implements ISetItem
     {
-        private String key;
+        private Long id;
 
         private String name;
 
@@ -174,14 +174,14 @@ public class ExportBatch
 
         private String error;
 
-        public String getKey()
+        public Long getId()
         {
-            return key;
+            return id;
         }
 
-        public void setKey( String key )
+        public void setId( Long id )
         {
-            this.key = key;
+            this.id = id;
         }
 
         @Override
@@ -299,7 +299,7 @@ public class ExportBatch
         public String toString()
         {
             return "Item{" +
-                    "key='" + key + '\'' +
+                    "id='" + id + '\'' +
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null ) +
                     ", fileName=" + fileName +

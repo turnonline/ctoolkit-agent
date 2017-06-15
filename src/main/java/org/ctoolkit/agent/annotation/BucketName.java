@@ -16,35 +16,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.annotation;
 
+import com.google.inject.BindingAnnotation;
 
-import org.ctoolkit.agent.annotation.EntityMarker;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Import metadata entity.
+ * Annotation for mark bucket name fields
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@EntityMarker( name = "_ImportMetadata" )
-public class ImportMetadata
-        extends BaseMetadata<ImportMetadataItem>
+@Target( {ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER} )
+@Retention( RetentionPolicy.RUNTIME )
+@BindingAnnotation
+public @interface BucketName
 {
-    @Override
-    protected ImportMetadataItem newItem()
-    {
-        return new ImportMetadataItem( this );
-    }
-
-    @Override
-    protected Class<ImportMetadataItem> itemClass()
-    {
-        return ImportMetadataItem.class;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ImportMetadata{} " + super.toString();
-    }
 }

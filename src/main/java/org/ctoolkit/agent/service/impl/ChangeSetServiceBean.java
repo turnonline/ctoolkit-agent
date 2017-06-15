@@ -28,10 +28,15 @@ import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
 import com.google.appengine.tools.pipeline.PipelineService;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Storage;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.googlecode.objectify.VoidWork;
+import org.ctoolkit.agent.annotation.BucketName;
+import org.ctoolkit.agent.annotation.EntityMarker;
+import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.agent.model.AuditFilter;
@@ -67,13 +72,11 @@ import org.ctoolkit.agent.service.impl.event.Auditable;
 import org.ctoolkit.restapi.client.RequestCredential;
 import org.ctoolkit.restapi.client.ResourceFacade;
 import org.ctoolkit.restapi.client.agent.model.ImportBatch;
-import org.ctoolkit.services.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -85,7 +88,6 @@ import java.util.Set;
 
 import static com.google.appengine.tools.pipeline.JobInfo.State.RUNNING;
 import static com.googlecode.objectify.ObjectifyService.ofy;
-import static org.ctoolkit.agent.config.AgentModule.BUCKET_NAME;
 
 /**
  * Implementation of {@link ChangeSetService}
@@ -99,9 +101,9 @@ public class ChangeSetServiceBean
 
     private final DataAccess dataAccess;
 
-    private StorageService storageService;
-
     private final Provider<RestContext> restContext;
+
+    private final Storage storage;
 
     private JobSpecificationFactory jobSpecificationFactory;
 
@@ -117,18 +119,23 @@ public class ChangeSetServiceBean
 
     private final String bucketName;
 
+    private final String projectId;
+
     @Inject
     public ChangeSetServiceBean( DataAccess dataAccess,
                                  Provider<RestContext> restContext,
-                                 ResourceFacade facade,
+                                 Storage storage, ResourceFacade facade,
                                  PipelineService pipelineService,
-                                 @Named( BUCKET_NAME ) String bucketName )
+                                 @BucketName String bucketName,
+                                 @ProjectId String projectId )
     {
         this.dataAccess = dataAccess;
         this.restContext = restContext;
+        this.storage = storage;
         this.facade = facade;
         this.pipelineService = pipelineService;
         this.bucketName = bucketName;
+        this.projectId = projectId;
 
         systemKinds.add( "MR-IncrementalTask" );
         systemKinds.add( "MR-ShardedJob" );
@@ -202,28 +209,6 @@ public class ChangeSetServiceBean
     {
         // create metadata
         metadata.save();
-
-        // TODO: move to model
-
-        /*
-        // create blob
-        for ( MI item : metadata.getItems() )
-        {
-            if ( item.getData() != null )
-            {
-                storageService.store(
-                        item.getData(),
-                        item.getDataType().mimeType(),
-                        item.newFileName(),
-                        bucketName
-                );
-            }
-        }
-
-        // update fileName
-        metadata.save();
-        */
-
         return metadata;
     }
 
@@ -233,65 +218,24 @@ public class ChangeSetServiceBean
     {
         // update metadata
         metadata.save();
-
-        // update blob
-        for ( MI item : metadata.getItems() )
-        {
-            // remove orphans
-            for ( MI orphan : metadata.getOrphans() )
-            {
-                if ( orphan.getFileName() != null )
-                {
-                    storageService.delete( orphan.getFileName(), bucketName );
-                }
-            }
-
-            if ( item.getData() != null )
-            {
-                storageService.store(
-                        item.getData(),
-                        item.getDataType().mimeType(),
-                        item.getFileName() != null ? item.getFileName() : item.newFileName(),
-                        bucketName );
-            }
-        }
-
-        // update fileName
-        metadata.save();
-
         return metadata;
     }
 
     @Override
-    public <M extends BaseMetadata> M get( MetadataKey<M> key )
+    public <M extends BaseMetadata> M get( MetadataKey<M> metadataKey )
     {
-        return dataAccess.find( key.getMetadataClass(), key.getKey() );
+        String kind = metadataKey.getMetadataClass().getAnnotation( EntityMarker.class ).name();
+        Long id = metadataKey.getId();
+
+        com.google.cloud.datastore.Key key = com.google.cloud.datastore.Key.newBuilder( projectId, kind, id ).build();
+        return dataAccess.find( metadataKey.getMetadataClass(), key );
     }
 
     @Override
     @Auditable( action = Action.DELETE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( M metadata )
     {
-        for ( BaseMetadataItem item : metadata.getItems() )
-        {
-            // remove item
-            dataAccess.delete( item.getClass(), item.getKey() );
-
-            // remove data
-            storageService.delete( item.getFileName() );
-        }
-
-        dataAccess.delete( metadata.getClass(), metadata.getKey() );
-
-        // delete job
-        try
-        {
-            deleteJob( metadata );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            // silently ignore
-        }
+        metadata.delete();
     }
 
     @Override
@@ -301,6 +245,8 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    @Deprecated
+    // TODO: obsolete
     public ImportMetadata migrate( ExportMetadata exportMetadata ) throws IOException
     {
         // check job is not already running, remove previous job
@@ -347,6 +293,7 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.CREATE )
+    // TODO: refactor to cloud datastore
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( final M metadata, final MI metadataItem )
     {
         // store again to persist file name
@@ -389,12 +336,12 @@ public class ChangeSetServiceBean
 
         if ( metadataItem.getData() != null )
         {
-            storageService.store(
-                    metadataItem.getData(),
-                    metadataItem.getDataType().mimeType(),
-                    metadataItem.newFileName(),
-                    bucketName
-            );
+//            storageService.store(
+//                    metadataItem.getData(),
+//                    metadataItem.getDataType().mimeType(),
+//                    metadataItem.newFileName(),
+//                    bucketName
+//            );
         }
 
         // store again to persist file name
@@ -407,28 +354,26 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.UPDATE )
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI update( MI metadataItem )
     {
-        metadataItem = dataAccess.update( metadataItem );
-
-        if ( metadataItem.getData() != null )
-        {
-            storageService.store(
-                    metadataItem.getData(),
-                    metadataItem.getDataType().mimeType(),
-                    metadataItem.getFileName() != null ? metadataItem.getFileName() : metadataItem.newFileName(),
-                    bucketName
-            );
-        }
-
+        metadataItem.save();
         return metadataItem;
     }
 
     @Override
-    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<MI> key )
+    public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<M, MI> metadataItemKey )
     {
-        MI item = dataAccess.find( key.getMetadataItemClass(), key.getKey() );
+        Long id = metadataItemKey.getId();
+        Long parentId = metadataItemKey.getMetadataId();
+        String kind = metadataItemKey.getMetadataItemClass().getAnnotation( EntityMarker.class ).name();
+        String parentKind = metadataItemKey.getMetadataClass().getAnnotation( EntityMarker.class ).name();
+
+        com.google.cloud.datastore.Key parentKey = com.google.cloud.datastore.Key.newBuilder( projectId, parentKind, parentId ).build();
+        com.google.cloud.datastore.Key key = com.google.cloud.datastore.Key.newBuilder( parentKey, kind, id ).build();
+        MI item = dataAccess.find( metadataItemKey.getMetadataItemClass(), key );
+
         if ( item.getFileName() != null )
         {
-            item.setData( storageService.serve( item.getFileName(), bucketName ) );
+            byte[] data = storage.readAllBytes( BlobId.of( bucketName, item.getFileName() ) );
+            item.setData( data );
         }
 
         return item;
@@ -436,11 +381,12 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.DELETE )
+    // TODO: refactor to cloud datastore
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( final MI metadataItem )
     {
         if ( metadataItem.getFileName() != null )
         {
-            storageService.delete( metadataItem.getFileName(), bucketName );
+//            storageService.delete( metadataItem.getFileName(), bucketName );
         }
 
         ofy().transactNew( 5, new VoidWork()

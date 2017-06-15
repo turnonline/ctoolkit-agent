@@ -34,7 +34,7 @@ import java.util.List;
 public class ChangeBatch
         implements ISet<ChangeJob>
 {
-    private String key;
+    private Long id;
 
     private String name;
 
@@ -50,14 +50,14 @@ public class ChangeBatch
 
     private List<ChangeItem> items = new ArrayList<>();
 
-    public String getKey()
+    public Long getId()
     {
-        return key;
+        return id;
     }
 
-    public void setKey( String key )
+    public void setId( Long id )
     {
-        this.key = key;
+        this.id = id;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ChangeBatch
     public String toString()
     {
         return "Change{" +
-                "key='" + key + '\'' +
+                "id='" + id + '\'' +
                 ", name=" + name +
                 ", mapReduceJobId='" + mapReduceJobId + '\'' +
                 ", token='" + token + '\'' +
@@ -152,7 +152,7 @@ public class ChangeBatch
     public static class ChangeItem
             implements ISetItem
     {
-        private String key;
+        private Long id;
 
         private String name;
 
@@ -172,14 +172,14 @@ public class ChangeBatch
 
         private String error;
 
-        public String getKey()
+        public Long getId()
         {
-            return key;
+            return id;
         }
 
-        public void setKey( String key )
+        public void setId( Long id )
         {
-            this.key = key;
+            this.id = id;
         }
 
         @Override
@@ -287,7 +287,7 @@ public class ChangeBatch
         public String toString()
         {
             return "Item{" +
-                    "key='" + key + '\'' +
+                    "id='" + id + '\'' +
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null ) +
                     ", fileName=" + fileName +

@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Target( {ElementType.FIELD, ElementType.METHOD} )
+@Target( {ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER} )
 @Retention( RetentionPolicy.RUNTIME )
 @BindingAnnotation
 public @interface ProjectId

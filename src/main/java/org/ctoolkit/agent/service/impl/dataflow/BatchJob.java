@@ -3,15 +3,13 @@ package org.ctoolkit.agent.service.impl.dataflow;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.model.JobState;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.impl.datastore.ShardedCounter;
 import org.ctoolkit.services.storage.StorageService;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-
-import static org.ctoolkit.agent.config.AgentModule.BUCKET_NAME;
 
 /**
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
@@ -28,7 +26,7 @@ public abstract class BatchJob
     protected StorageService storageService;
 
     @Inject
-    @Named( BUCKET_NAME )
+    @BucketName
     protected String bucketName;
 
     public abstract void doJob( Entity value );

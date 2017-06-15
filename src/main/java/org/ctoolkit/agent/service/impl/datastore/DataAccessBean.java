@@ -35,6 +35,7 @@ import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
 import org.ctoolkit.agent.model.KindMetaData;
 import org.ctoolkit.agent.model.MetadataAudit;
+import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.resource.ChangeSetEntities;
@@ -250,12 +251,13 @@ public class DataAccessBean
 
     @Override
     @SuppressWarnings( "unchecked" )
-    public <T> T find( Class<T> entity, String key )
+    public <T> T find( Class<T> type, com.google.cloud.datastore.Key key )
     {
-        return ( T ) ofy().load().key( Key.create( key ) ).now();
+        return ModelConverter.convert( type, datastore.get( key ) );
     }
 
     @Override
+    @SuppressWarnings( "unchecked" )
     public <T extends BaseMetadata> List<T> find( BaseMetadataFilter<T> filter )
     {
         com.google.cloud.datastore.Query<com.google.cloud.datastore.Entity> query = com.google.cloud.datastore.Query.newEntityQueryBuilder()
@@ -270,7 +272,7 @@ public class DataAccessBean
         while ( results.hasNext() )
         {
             com.google.cloud.datastore.Entity entity = results.next();
-            T metadata = (T) BaseMetadata.convert( entity, filter.getMetadataClass() );
+            T metadata = ModelConverter.convert( filter.getMetadataClass(), entity );
             list.add( metadata );
         }
 

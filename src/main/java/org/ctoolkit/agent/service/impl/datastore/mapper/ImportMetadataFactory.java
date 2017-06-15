@@ -18,8 +18,11 @@
 
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
+import com.google.cloud.datastore.Key;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.ObjectFactory;
+import org.ctoolkit.agent.annotation.EntityMarker;
+import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.resource.ImportBatch;
 import org.ctoolkit.agent.service.DataAccess;
@@ -34,19 +37,25 @@ public class ImportMetadataFactory
 {
     private final DataAccess dataAccess;
 
+    private final String projectId;
+
     @Inject
-    public ImportMetadataFactory( DataAccess dataAccess )
+    public ImportMetadataFactory( DataAccess dataAccess, @ProjectId String projectId )
     {
         this.dataAccess = dataAccess;
+        this.projectId = projectId;
     }
 
     @Override
     public ImportMetadata create( Object o, MappingContext mappingContext )
     {
         ImportBatch asImport = ( ImportBatch ) o;
-        if ( asImport.getKey() != null )
+        if ( asImport.getId() != null )
         {
-            return dataAccess.find( ImportMetadata.class, asImport.getKey() );
+            String kind = ImportMetadata.class.getAnnotation( EntityMarker.class ).name();
+            Long id = asImport.getId();
+
+            return dataAccess.find( ImportMetadata.class, Key.newBuilder( projectId, kind, id ).build() );
         }
 
         return new ImportMetadata();

@@ -121,7 +121,7 @@ public interface ChangeSetService
      * @param key contains key of {@link BaseMetadata}
      * @return persisted {@link BaseMetadata}
      */
-    <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<MI> key );
+    <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<M, MI> key );
 
     /**
      * Delete {@link BaseMetadataItem}

@@ -26,6 +26,8 @@ import com.google.appengine.tools.pipeline.impl.PipelineServiceImpl;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -40,14 +42,13 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.TypeFactory;
 import net.oauth.jsontoken.Checker;
+import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ChangeMetadata;
-import org.ctoolkit.agent.model.ChangeMetadataItem;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ImportMetadata;
-import org.ctoolkit.agent.model.ImportMetadataItem;
 import org.ctoolkit.agent.rest.IAMAuthenticator;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
@@ -64,7 +65,6 @@ import org.ctoolkit.agent.service.impl.datastore.ImportMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeItemToChangeMetadataItemMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeMetadataFactory;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeMetadataItemFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeToChangeMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.EntityFactory;
@@ -72,7 +72,6 @@ import org.ctoolkit.agent.service.impl.datastore.mapper.ExportMetadataFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ExportToExportMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportItemToImportMetadataItemMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportMetadataFactory;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ImportMetadataItemFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportToImportMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
 import org.ctoolkit.agent.service.impl.datastore.rule.NewNameChangeRule;
@@ -93,7 +92,6 @@ import org.ctoolkit.services.common.PropertyService;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -107,8 +105,6 @@ public class AgentModule
         extends AbstractModule
 {
     public static final String CONFIG_JSON_CREDENTIALS = "ctoolkit.agent.jsonCredentials";
-
-    public static final String BUCKET_NAME = "bucketName";
 
     @Override
     protected void configure()
@@ -201,6 +197,13 @@ public class AgentModule
 
     @Provides
     @Singleton
+    public Storage provideStorage()
+    {
+        return StorageOptions.getDefaultInstance().getService();
+    }
+
+    @Provides
+    @Singleton
     public MapperFacade provideMapperFacade( MapperFactory factory,
                                              // mappers
                                              ChangeSetEntityToEntityMapper changeSetEntityToEntityMapper,
@@ -215,10 +218,7 @@ public class AgentModule
                                              EntityFactory entityFactory,
                                              ImportMetadataFactory importMetadataFactory,
                                              ExportMetadataFactory exportMetadataFactory,
-                                             ChangeMetadataFactory changeMetadataFactory,
-
-                                             ImportMetadataItemFactory importMetadataItemFactory,
-                                             ChangeMetadataItemFactory changeMetadataItemFactory )
+                                             ChangeMetadataFactory changeMetadataFactory )
     {
         // register custom mappers
         factory.registerMapper( changeSetEntityToEntityMapper );
@@ -235,19 +235,17 @@ public class AgentModule
         factory.registerObjectFactory( exportMetadataFactory, TypeFactory.valueOf( ExportMetadata.class ) );
         factory.registerObjectFactory( changeMetadataFactory, TypeFactory.valueOf( ChangeMetadata.class ) );
 
-        factory.registerObjectFactory( importMetadataItemFactory, TypeFactory.valueOf( ImportMetadataItem.class ) );
-        factory.registerObjectFactory( changeMetadataItemFactory, TypeFactory.valueOf( ChangeMetadataItem.class ) );
-
         return factory.getMapperFacade();
     }
 
     @Provides
     @Singleton
-    @Named( BUCKET_NAME )
+    @BucketName
     public String provideBucketName()
     {
-        // TODO: resolve default bucket name
-        return "c-toolkit";
+        return "ctoolkit-agent-morty.appspot.com";
+        // TODO: resolve
+//        return ServiceOptions.getDefaultProjectId(); // same as default project id
     }
 
     @Provides
@@ -255,7 +253,6 @@ public class AgentModule
     @ProjectId
     public String provideProjectId()
     {
-        // TODO: resolve project id
         return ServiceOptions.getDefaultProjectId();
     }
 
@@ -283,7 +280,7 @@ public class AgentModule
         private String json;
 
         @Inject
-        JsonAuthKeyProvider(  )
+        JsonAuthKeyProvider()
         {
         }
 

@@ -25,8 +25,7 @@ import com.google.cloud.datastore.IncompleteKey;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyValue;
 import com.google.inject.Injector;
-import com.googlecode.objectify.Ref;
-import com.googlecode.objectify.annotation.OnSave;
+import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.datastore.ShardedCounter;
 
@@ -37,8 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.googlecode.objectify.ObjectifyService.ofy;
-
 /**
  * Base metadata entity.
  *
@@ -46,9 +43,14 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  */
 public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         extends BaseEntity
+        implements Convertible
 {
     @Inject
     private static Injector injector;
+
+    @Inject
+    @ProjectId
+    private static String projectId;
 
     private Key key;
 
@@ -62,8 +64,7 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     private int itemsCount = 0;
 
-    @Deprecated
-    private List<Ref<ITEM>> itemsRef = new ArrayList<>();
+    private List<Key> itemsRef = new ArrayList<>();
 
     @Deprecated
     private List<String> jobContext = new ArrayList<>();
@@ -71,32 +72,6 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     public BaseMetadata()
     {
         this.key = injector.getInstance( KeyProvider.class ).key( this );
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public static <ITEM extends BaseMetadataItem> BaseMetadata<ITEM> convert( Entity entity, Class<?> clazz )
-    {
-        BaseMetadata<ITEM> metadata;
-
-        try
-        {
-            metadata = ( BaseMetadata<ITEM> ) clazz.newInstance();
-            metadata.convert( entity );
-        }
-        catch ( InstantiationException | IllegalAccessException e )
-        {
-            throw new RuntimeException( "Unable to create new instance of metadata" );
-        }
-
-        return metadata;
-    }
-
-    protected void convert( Entity entity )
-    {
-        setId( entity.getKey().getId() );
-        setName( entity.contains( "name" ) ? entity.getString( "name" ) : null );
-        setJobId( entity.contains( "jobId" ) ? entity.getString( "jobId" ) : null );
-        setItemsCount( entity.contains( "itemsCount" ) ? ( ( Long ) entity.getValue( "itemsCount" ).get() ).intValue() : 0 );
     }
 
     public String getName()
@@ -121,17 +96,19 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     public List<ITEM> getItems()
     {
+        if ( itemsRef.isEmpty() )
+        {
+            itemsLoaded = true;
+        }
+
         if ( !itemsLoaded )
         {
+            Iterator<Entity> entityIterator = datastore().get( itemsRef );
+            while ( entityIterator.hasNext() )
+            {
+                items.add( ModelConverter.convert( itemClass(), entityIterator.next() ) );
+            }
 
-//            TODO: refactor to new cloud API
-
-//            KeyFactory keyFactory = new KeyFactory(  );
-//            keyFactory.newKey( itemsRef )
-//
-//            Datastore datastore = injector.getInstance( Datastore.class );
-//            datastore.get(  )
-//            items.addAll( new ArrayList<>( ofy().load().refs( itemsRef ).values() ) );
             itemsLoaded = true;
         }
 
@@ -160,6 +137,11 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         this.itemsCount = itemsCount;
     }
 
+    public void incrementItemsCount()
+    {
+        itemsCount++;
+    }
+
     public int getItemsCount()
     {
         return itemsCount;
@@ -181,12 +163,12 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         ITEM item = newItem();
         getItems().add( item );
 
-        this.itemsLoaded = true;
-
         return item;
     }
 
     protected abstract ITEM newItem();
+
+    protected abstract Class<ITEM> itemClass();
 
     public void reset()
     {
@@ -241,7 +223,26 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         jobContext.add( key + "::" + value );
     }
 
-    // TODO: implement
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public void convert( Entity entity )
+    {
+        setId( entity.getKey().getId() );
+        setName( entity.contains( "name" ) ? entity.getString( "name" ) : null );
+        setJobId( entity.contains( "jobId" ) ? entity.getString( "jobId" ) : null );
+        setItemsCount( entity.contains( "itemsCount" ) ? ( ( Long ) entity.getValue( "itemsCount" ).get() ).intValue() : 0 );
+
+        key = entity.getKey();
+
+        List<KeyValue> itemsRefKeyValue = entity.contains( "itemsRef" ) ? ( List<KeyValue> ) entity.getValue( "itemsRef" ).get() : new ArrayList<KeyValue>();
+        itemsRef = new ArrayList<>();
+
+        for ( KeyValue keyValue : itemsRefKeyValue )
+        {
+            itemsRef.add( keyValue.get() );
+        }
+    }
+
     public void save()
     {
         FullEntity.Builder<IncompleteKey> builder = Entity.newBuilder();
@@ -257,76 +258,43 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
             builder.set( "jobId", getJobId() );
         }
 
-        // create
-        if ( getId() == null )
+        // remove old items
+        if ( !itemsRef.isEmpty() )
         {
-            builder.set( "itemsCount", getItemsCount() );
-            builder.set( "itemsRef", getItemsKeyValue() );
-
-            for ( ITEM item : getItems() )
+            for ( Entity item : datastore().fetch( itemsRef ) )
             {
-                item.save();
+                ModelConverter.convert( itemClass(), item ).delete();
             }
         }
-        // update
-        else
-        {
 
+        // add new items
+        setItemsCount( 0 );
+        for ( ITEM item : getItems() )
+        {
+            item.save();
+            incrementItemsCount();
         }
 
+        builder.set( "itemsRef", getItemsKeyValue() );
+        builder.set( "itemsCount", getItemsCount() );
+
+        // put metadata to datastore
         datastore().put( builder.build() );
     }
 
-    @OnSave
-    void updateObjectifyRefs()
+    public void delete()
     {
-        // first remove the items not presented in actual list. Ref list represents datastore state.
-        Iterator<Ref<ITEM>> iterator = itemsRef.iterator();
-
-        // loaded (true) item list means that some of the item could be removed
-        while ( itemsLoaded && iterator.hasNext() )
+        // remove items
+        if ( !itemsRef.isEmpty() )
         {
-            Ref<ITEM> originItem = iterator.next();
-
-            if ( !items.contains( originItem.get() ) )
+            for ( Entity item : datastore().fetch( itemsRef ) )
             {
-                iterator.remove();
-                ofy().delete().key( originItem.getKey() ).now();
+                ModelConverter.convert( itemClass(), item ).delete();
             }
         }
 
-        // add new items to be associated with this import
-        for ( ITEM item : items )
-        {
-            Ref<ITEM> ref = Ref.create( item );
-            if ( !itemsRef.contains( ref ) )
-            {
-                itemsRef.add( ref );
-            }
-        }
-
-        itemsCount = itemsRef.size();
-        items.clear();
-        itemsLoaded = false;
-    }
-
-    public List<ITEM> getOrphans()
-    {
-        List<ITEM> orphans = new ArrayList<>();
-        Iterator<Ref<ITEM>> iterator = itemsRef.iterator();
-
-        while ( itemsLoaded && iterator.hasNext() )
-        {
-            Ref<ITEM> originItem = iterator.next();
-
-            ITEM orphan = originItem.get();
-            if ( !items.contains( orphan ) )
-            {
-                orphans.add( orphan );
-            }
-        }
-
-        return orphans;
+        // remove metadata
+        datastore().delete( key() );
     }
 
     protected Datastore datastore()

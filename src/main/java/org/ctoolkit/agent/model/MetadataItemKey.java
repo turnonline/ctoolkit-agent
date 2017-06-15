@@ -21,21 +21,32 @@ package org.ctoolkit.agent.model;
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public class MetadataItemKey<MI extends BaseMetadataItem>
+public class MetadataItemKey<M extends BaseMetadata<MI>, MI extends BaseMetadataItem<M>>
 {
-    private String key;
+    private Long id;
+
+    private Long metadataId;
 
     private Class<MI> metadataItemClass;
 
-    public MetadataItemKey( String key, Class<MI> metadataItemClass )
+    private Class<M> metadataClass;
+
+    public MetadataItemKey( Long id, Long metadataId, Class<MI> metadataItemClass, Class<M> metadataClass )
     {
-        this.key = key;
+        this.id = id;
+        this.metadataId = metadataId;
         this.metadataItemClass = metadataItemClass;
+        this.metadataClass = metadataClass;
     }
 
-    public String getKey()
+    public Long getId()
     {
-        return key;
+        return id;
+    }
+
+    public Long getMetadataId()
+    {
+        return metadataId;
     }
 
     public Class<MI> getMetadataItemClass()
@@ -43,12 +54,19 @@ public class MetadataItemKey<MI extends BaseMetadataItem>
         return metadataItemClass;
     }
 
+    public Class<M> getMetadataClass()
+    {
+        return metadataClass;
+    }
+
     @Override
     public String toString()
     {
         return "MetadataItemKey{" +
-                "key='" + key + '\'' +
+                "id=" + id +
+                ", metadataId=" + metadataId +
                 ", metadataItemClass=" + metadataItemClass +
+                ", metadataClass=" + metadataClass +
                 '}';
     }
 }

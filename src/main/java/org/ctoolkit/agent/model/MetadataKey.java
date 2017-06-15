@@ -23,19 +23,19 @@ package org.ctoolkit.agent.model;
  */
 public class MetadataKey<M extends BaseMetadata>
 {
-    private String key;
+    private Long id;
 
     private Class<M> metadataClass;
 
-    public MetadataKey( String key, Class<M> metadataClass )
+    public MetadataKey( Long id, Class<M> metadataClass )
     {
-        this.key = key;
+        this.id = id;
         this.metadataClass = metadataClass;
     }
 
-    public String getKey()
+    public Long getId()
     {
-        return key;
+        return id;
     }
 
     public Class<M> getMetadataClass()
@@ -47,7 +47,7 @@ public class MetadataKey<M extends BaseMetadata>
     public String toString()
     {
         return "MetadataKey{" +
-                "key='" + key + '\'' +
+                "id='" + id + '\'' +
                 ", metadataClass=" + metadataClass +
                 '}';
     }

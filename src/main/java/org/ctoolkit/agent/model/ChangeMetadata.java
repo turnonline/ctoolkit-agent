@@ -36,6 +36,12 @@ public class ChangeMetadata
     }
 
     @Override
+    protected Class<ChangeMetadataItem> itemClass()
+    {
+        return ChangeMetadataItem.class;
+    }
+
+    @Override
     public String toString()
     {
         return "ChangeMetadata{} " + super.toString();

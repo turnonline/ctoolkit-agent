@@ -37,6 +37,12 @@ public class ExportMetadata
         return new ExportMetadataItem( this );
     }
 
+    @Override
+    protected Class<ExportMetadataItem> itemClass()
+    {
+        return ExportMetadataItem.class;
+    }
+
     public String getMapReduceMigrationJobId()
     {
         return mapReduceMigrationJobId;

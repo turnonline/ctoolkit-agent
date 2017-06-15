@@ -115,12 +115,12 @@ public interface DataAccess
     /**
      * Get entity by key
      *
-     * @param type entity class type
-     * @param key  key of entity
+     * @param type class type
+     * @param key entity key
      * @param <T>  entity type
      * @return entity
      */
-    <T> T find( Class<T> type, String key );
+    <T> T find( Class<T> type, com.google.cloud.datastore.Key key);
 
     /**
      * Get entities by specified filter

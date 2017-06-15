@@ -83,7 +83,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.update", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportBatch updateExport( @Named( "id" ) String id, ExportBatch exportBatch, User authUser ) throws Exception
+    public ExportBatch updateExport( @Named( "id" ) Long id, ExportBatch exportBatch, User authUser ) throws Exception
     {
         if ( service.get( new MetadataKey<>( id, ExportMetadata.class ) ) == null )
         {
@@ -97,7 +97,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.delete", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteExport( @Named( "id" ) String id, User authUser ) throws Exception
+    public void deleteExport( @Named( "id" ) Long id, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -109,7 +109,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.get", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public ExportBatch getExport( @Named( "id" ) String id, User authUser ) throws Exception
+    public ExportBatch getExport( @Named( "id" ) Long id, User authUser ) throws Exception
     {
         ExportMetadata exportMetadataBe = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadataBe == null )
@@ -165,10 +165,10 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.item.update", path = "export/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportBatch.ExportItem updateExportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, ExportBatch.ExportItem exportBatchItem, User authUser )
+    public ExportBatch.ExportItem updateExportItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, ExportBatch.ExportItem exportBatchItem, User authUser )
             throws Exception
     {
-        if ( service.get( new MetadataItemKey<>( id, ExportMetadataItem.class ) ) == null )
+        if ( service.get( new MetadataItemKey<>( id, metadataId, ExportMetadataItem.class, ExportMetadata.class ) ) == null )
         {
             throw new NotFoundException( "Export item not found for id: " + id );
         }
@@ -180,10 +180,10 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.item.delete", path = "export/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteExportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser )
+    public void deleteExportItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, User authUser )
             throws Exception
     {
-        ExportMetadataItem item = service.get( new MetadataItemKey<>( id, ExportMetadataItem.class ) );
+        ExportMetadataItem item = service.get( new MetadataItemKey<>( id, metadataId, ExportMetadataItem.class, ExportMetadata.class ) );
         if ( item == null )
         {
             throw new NotFoundException( "Export item not found for id: " + id );
@@ -193,10 +193,10 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.item.get", path = "export/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public ExportBatch.ExportItem getExportItem( @Named( "metadataId" ) String metadataId, @Named( "id" ) String id, User authUser )
+    public ExportBatch.ExportItem getExportItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, User authUser )
             throws Exception
     {
-        ExportMetadataItem item = service.get( new MetadataItemKey<>( id, ExportMetadataItem.class ) );
+        ExportMetadataItem item = service.get( new MetadataItemKey<>( id, metadataId, ExportMetadataItem.class, ExportMetadata.class ) );
         if ( item == null )
         {
             throw new NotFoundException( "Export item not found for id: " + id );
@@ -208,7 +208,7 @@ public class ExportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "exportBatch.job.start", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportJob startExportJob( @Named( "id" ) String id, ExportJob job, User authUser ) throws Exception
+    public ExportJob startExportJob( @Named( "id" ) Long id, ExportJob job, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -228,7 +228,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.job.cancel", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportJob cancelExportJob( @Named( "id" ) String id, ExportJob job, User authUser ) throws Exception
+    public ExportJob cancelExportJob( @Named( "id" ) Long id, ExportJob job, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -248,7 +248,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.job.delete", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteExportJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public void deleteExportJob( @Named( "id" ) Long id, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -267,7 +267,7 @@ public class ExportEndpoint
     }
 
     @ApiMethod( name = "exportBatch.job.progress", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public ExportJob getExportJob( @Named( "id" ) String id, User authUser ) throws Exception
+    public ExportJob getExportJob( @Named( "id" ) Long id, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -288,7 +288,7 @@ public class ExportEndpoint
     // -- migration
 
     @ApiMethod( name = "exportBatch.migrate.insert", path = "export/{id}/migrate", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportBatch insertMigration( @Named( "id" ) String id, User authUser ) throws Exception
+    public ImportBatch insertMigration( @Named( "id" ) Long id, User authUser ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )

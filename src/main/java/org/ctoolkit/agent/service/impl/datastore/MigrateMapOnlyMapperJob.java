@@ -20,9 +20,7 @@ package org.ctoolkit.agent.service.impl.datastore;
 
 import com.google.api.client.util.Base64;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.KeyFactory;
 import org.ctoolkit.agent.model.ExportMetadata;
-import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.restapi.client.Identifier;
 import org.ctoolkit.restapi.client.RequestCredential;
 import org.ctoolkit.restapi.client.ResourceFacade;
@@ -53,9 +51,10 @@ public class MigrateMapOnlyMapperJob
         DataType dataType = DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
 
         // load parent to retrieve context properties
-        ExportMetadata exportMetadata = changeSetService.get( new MetadataKey<>(
-                KeyFactory.keyToString( item.getParent() ), ExportMetadata.class ) );
+//        ExportMetadata exportMetadata = changeSetService.get( new MetadataKey<>(
+//                KeyFactory.keyToString( item.getParent() ), ExportMetadata.class ) );
 
+        ExportMetadata exportMetadata = null;
         String gtoken = exportMetadata.getJobContext().get( "gtoken" );
         String rootUrl = exportMetadata.getJobContext().get( "rootUrl" );
         String importKey = exportMetadata.getJobContext().get( "importKey" );

@@ -18,8 +18,11 @@
 
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
+import com.google.cloud.datastore.Key;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.ObjectFactory;
+import org.ctoolkit.agent.annotation.EntityMarker;
+import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.resource.ChangeBatch;
 import org.ctoolkit.agent.service.DataAccess;
@@ -34,19 +37,25 @@ public class ChangeMetadataFactory
 {
     private final DataAccess dataAccess;
 
+    private final String projectId;
+
     @Inject
-    public ChangeMetadataFactory( DataAccess dataAccess )
+    public ChangeMetadataFactory( DataAccess dataAccess, @ProjectId String projectId )
     {
         this.dataAccess = dataAccess;
+        this.projectId = projectId;
     }
 
     @Override
     public ChangeMetadata create( Object o, MappingContext mappingContext )
     {
         ChangeBatch asChange = ( ChangeBatch ) o;
-        if ( asChange.getKey() != null )
+        if ( asChange.getId() != null )
         {
-            return dataAccess.find( ChangeMetadata.class, asChange.getKey() );
+            String kind = ChangeMetadata.class.getAnnotation( EntityMarker.class ).name();
+            Long id = asChange.getId();
+
+            return dataAccess.find( ChangeMetadata.class, Key.newBuilder( projectId, kind, id ).build() );
         }
 
         return new ChangeMetadata();
