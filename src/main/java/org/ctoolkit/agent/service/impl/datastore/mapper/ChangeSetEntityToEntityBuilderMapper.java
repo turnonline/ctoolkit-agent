@@ -18,38 +18,42 @@
 
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
-import com.google.appengine.api.datastore.Entity;
+import com.google.cloud.datastore.Entity;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.resource.ChangeSetEntity;
 import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
+import org.ctoolkit.agent.service.impl.datastore.EntityDecoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * Mapper for {@link ChangeSetEntity} to {@link Entity} model beans
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public class ChangeSetEntityToEntityMapper
-        extends CustomMapper<ChangeSetEntity, Entity>
+public class ChangeSetEntityToEntityBuilderMapper
+        extends CustomMapper<ChangeSetEntity, Entity.Builder>
 {
+    private static Logger logger = LoggerFactory.getLogger( ChangeSetEntityToEntityBuilderMapper.class );
+
     private final EntityEncoder encoder;
 
-    private Logger logger = LoggerFactory.getLogger( ChangeSetEntityToEntityMapper.class );
+    private final EntityDecoder decoder;
 
     @Inject
-    public ChangeSetEntityToEntityMapper( EntityEncoder encoder )
+    public ChangeSetEntityToEntityBuilderMapper( EntityEncoder encoder,
+                                                 EntityDecoder decoder)
     {
         this.encoder = encoder;
+        this.decoder = decoder;
     }
 
     @Override
-    public void mapAtoB( ChangeSetEntity changeSetEntity, Entity entity, MappingContext context )
+    public void mapAtoB( ChangeSetEntity changeSetEntity, Entity.Builder entityBuilder, MappingContext context )
     {
         // the kind has to be specified
         if ( changeSetEntity.getKind() == null )
@@ -63,36 +67,30 @@ public class ChangeSetEntityToEntityMapper
         {
             for ( ChangeSetEntityProperty prop : changeSetEntity.getProperty() )
             {
-                if ( null == prop.getValue() )
-                {
-                    entity.setProperty( prop.getName(), encoder.decodeProperty( prop.getType(), null ) );
-                }
-                else
-                {
-                    entity.setProperty( prop.getName(), encoder.decodeProperty( prop.getType(), prop.getValue() ) );
-                }
+                decoder.decode( entityBuilder, prop.getName(), prop.getType(), prop.getValue() );
             }
         }
     }
 
     @Override
-    public void mapBtoA( Entity entity, ChangeSetEntity changeSetEntity, MappingContext context )
+    public void mapBtoA( Entity.Builder entity, ChangeSetEntity changeSetEntity, MappingContext context )
     {
-        // create main entity
-        changeSetEntity.setKind( entity.getKind() );
-        changeSetEntity.setName( entity.getKey().getName() );
-        if ( entity.getKey().getName() == null )
-        {
-            changeSetEntity.setId( entity.getKey().getId() );
-        }
-
-        changeSetEntity.setParentKey( encoder.formatKey( entity.getKey().getParent() ) );
-
-        // changeSetEntity up entity properties
-        for ( Map.Entry<String, Object> pairs : entity.getProperties().entrySet() )
-        {
-            ChangeSetEntityProperty property = encoder.encodeProperty( pairs.getKey(), pairs.getValue() );
-            changeSetEntity.getProperty().add( property );
-        }
+        // TODO: implement
+//        // create main entity
+//        changeSetEntity.setKind( entity.getKey().getKind() );
+//        changeSetEntity.setName( entity.getKey().getName() );
+//        if ( entity.getKey().getName() == null )
+//        {
+//            changeSetEntity.setId( entity.getKey().getId() );
+//        }
+//
+//        changeSetEntity.setParentKey( encoder.formatKey( entity.getKey().getParent() ) );
+//
+//        // changeSetEntity up entity properties
+//        for ( Map.Entry<String, Object> pairs : entity.getProperties().entrySet() )
+//        {
+//            ChangeSetEntityProperty property = encoder.encodeProperty( pairs.getKey(), pairs.getValue() );
+//            changeSetEntity.getProperty().add( property );
+//        }
     }
 }

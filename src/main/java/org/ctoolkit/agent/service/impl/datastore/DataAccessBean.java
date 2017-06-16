@@ -25,9 +25,9 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.KeyQuery;
 import com.google.cloud.datastore.QueryResults;
 import com.google.cloud.datastore.StructuredQuery;
-import com.googlecode.objectify.Key;
 import ma.glasnost.orika.MapperFacade;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.model.AuditFilter;
@@ -38,7 +38,6 @@ import org.ctoolkit.agent.model.MetadataAudit;
 import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
-import org.ctoolkit.agent.resource.ChangeSetEntities;
 import org.ctoolkit.agent.resource.ChangeSetEntity;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
@@ -57,6 +56,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
+// TODO: refactor to google cloud datastore
 public class DataAccessBean
         implements DataAccess
 {
@@ -94,28 +94,31 @@ public class DataAccessBean
     @Override
     public void addEntity( ChangeSetEntity csEntity )
     {
-        Entity entity = mapper.map( csEntity, Entity.class );
+        com.google.cloud.datastore.Entity entity = mapper.map( csEntity, com.google.cloud.datastore.Entity.Builder.class ).build();
         pool.get().put( entity );
     }
 
     @Override
     public ChangeSet exportChangeSet( String entityName )
     {
-        ChangeSet changeSet = new ChangeSet();
-        changeSet.setComment( "Export for entity " + entityName );
-        changeSet.setAuthor( "ctoolkit-agent" );
-        changeSet.setEntities( new ChangeSetEntities() );
+        // TODO: refactor to cloud datastore
+//        ChangeSet changeSet = new ChangeSet();
+//        changeSet.setComment( "Export for entity " + entityName );
+//        changeSet.setAuthor( "ctoolkit-agent" );
+//        changeSet.setEntities( new ChangeSetEntities() );
+//
+//        // add entities
+//        Query query = new Query( entityName );
+//        PreparedQuery preparedQuery = datastoreService.prepare( query );
+//        for ( Entity entity : preparedQuery.asIterable() )
+//        {
+//            ChangeSetEntity changeSetEntity = mapper.map( entity, ChangeSetEntity.class );
+//            changeSet.getEntities().getEntity().add( changeSetEntity );
+//        }
+//
+//        return changeSet;
 
-        // add entities
-        Query query = new Query( entityName );
-        PreparedQuery preparedQuery = datastoreService.prepare( query );
-        for ( Entity entity : preparedQuery.asIterable() )
-        {
-            ChangeSetEntity changeSetEntity = mapper.map( entity, ChangeSetEntity.class );
-            changeSet.getEntities().getEntity().add( changeSetEntity );
-        }
-
-        return changeSet;
+        return null;
     }
 
     @Override
@@ -129,24 +132,24 @@ public class DataAccessBean
     {
         while ( true )
         {
-            Query query = new Query( kind ).setKeysOnly();
-            PreparedQuery preparedQuery = datastoreService.prepare( query );
-            List<Entity> entList = preparedQuery.asList( withLimit( DEFAULT_COUNT_LIMIT ) );
-            if ( !entList.isEmpty() )
-            {
-                for ( Entity entity : entList )
-                {
-                    pool.get().delete( entity.getKey() );
-                }
+            KeyQuery query = KeyQuery.newKeyQueryBuilder()
+                    .setKind( kind )
+                    .setLimit( DEFAULT_COUNT_LIMIT )
+                    .build();
 
-                if ( entList.size() < DEFAULT_COUNT_LIMIT )
-                {
-                    pool.get().flush();
-                }
-            }
-            else
+            QueryResults<com.google.cloud.datastore.Key> results = datastore.run( query );
+            int items = 0;
+
+            while ( results.hasNext() )
             {
-                break;
+                pool.get().delete( results.next() );
+                items++;
+            }
+
+            if ( items < DEFAULT_COUNT_LIMIT )
+            {
+                pool.get().flush();
+                break; // break while cycle - no more items to process
             }
         }
 
@@ -160,6 +163,7 @@ public class DataAccessBean
     }
 
     @Override
+    // TODO: refactor to cloud datastore
     public void changeEntityProperty( String kind, String property, String newName, String newType, String newVal )
     {
         int offset = 0;
@@ -190,7 +194,7 @@ public class DataAccessBean
                     // create new migrated property
                     entity.setProperty( name, value );
 
-                    pool.get().put( entity );
+                    // pool.get().put( entity );
                 }
 
                 offset += DEFAULT_COUNT_LIMIT;
@@ -205,6 +209,7 @@ public class DataAccessBean
     }
 
     @Override
+    // TODO: refactor to cloud datastore
     public void removeEntityProperty( String kind, String property )
     {
         int offset = 0;
@@ -222,7 +227,7 @@ public class DataAccessBean
                 for ( Entity entity : entList )
                 {
                     entity.removeProperty( property );
-                    pool.get().put( entity );
+                    // pool.get().put( entity );
                 }
 
                 offset += DEFAULT_COUNT_LIMIT;
@@ -234,19 +239,6 @@ public class DataAccessBean
         }
 
         pool.get().flush();
-    }
-
-    @Override
-    public <T> T create( T entity )
-    {
-        ofy().save().entity( entity ).now();
-        return entity;
-    }
-
-    @Override
-    public <T> T update( T entity )
-    {
-        return create( entity );
     }
 
     @Override
@@ -280,6 +272,7 @@ public class DataAccessBean
     }
 
     @Override
+    // TODO: refactor to cloud datastore
     public List<MetadataAudit> find( AuditFilter filter )
     {
         com.googlecode.objectify.cmd.Query<MetadataAudit> query = ofy().load().type( MetadataAudit.class )
@@ -300,12 +293,7 @@ public class DataAccessBean
     }
 
     @Override
-    public <T> void delete( Class<T> entity, String key )
-    {
-        ofy().delete().key( Key.create( key ) ).now();
-    }
-
-    @Override
+    // TODO: refactor to cloud datastore
     public List<KindMetaData> kinds()
     {
         List<KindMetaData> kinds = new ArrayList<>();
@@ -323,6 +311,7 @@ public class DataAccessBean
     }
 
     @Override
+    // TODO: refactor to cloud datastore
     public List<PropertyMetaData> properties( String kind )
     {
         ArrayList<PropertyMetaData> properties = new ArrayList<>();

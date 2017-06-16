@@ -23,8 +23,6 @@ import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
 import org.ctoolkit.agent.model.BaseMetadataItem;
-import org.ctoolkit.agent.model.ExportMetadata;
-import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.JobInfo;
 import org.ctoolkit.agent.model.KindMetaData;
 import org.ctoolkit.agent.model.MetadataAudit;
@@ -33,7 +31,6 @@ import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -86,14 +83,6 @@ public interface ChangeSetService
      */
     <M extends BaseMetadata> List<M> list( BaseMetadataFilter<M> filter );
 
-    /**
-     * Migrate data from one agent to another
-     *
-     * @param exportMetadata {@link ExportMetadata} as source for {@link ImportMetadata}
-     * @return {@link ImportMetadata}
-     */
-    ImportMetadata migrate( ExportMetadata exportMetadata ) throws IOException;
-
     // ------------------------------------------
     // -- metadata item
     // ------------------------------------------
@@ -141,14 +130,6 @@ public interface ChangeSetService
      * @throws ProcessAlreadyRunning if job is already running
      */
     <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning;
-
-
-    /**
-     * Delete map reduce job for specified {@link BaseMetadata}
-     *
-     * @param metadata key of {@link BaseMetadata}
-     */
-    <M extends BaseMetadata> void deleteJob( M metadata );
 
     /**
      * Return {@link JobInfo} for specified metadata

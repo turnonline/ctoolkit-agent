@@ -21,8 +21,6 @@ package org.ctoolkit.agent.service.impl.datastore;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.ShortBlob;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.repackaged.com.google.api.client.util.Base64;
 import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
 import org.slf4j.Logger;
@@ -83,10 +81,6 @@ public class EntityEncoder
         {
             return createDateProperty( name, ( Date ) value );
         }
-        else if ( value instanceof ShortBlob )
-        {
-            return createShortBlobProperty( name, ( ShortBlob ) value );
-        }
         else if ( value instanceof Blob )
         {
             return createBlobProperty( name, ( Blob ) value );
@@ -110,6 +104,7 @@ public class EntityEncoder
      * @param value the string represented value of the property
      * @return ChangeSetEntityProperty representation of the property
      */
+    @Deprecated
     public Object decodeProperty( String type, String value )
     {
         if ( value == null )
@@ -144,18 +139,6 @@ public class EntityEncoder
         {
             return Long.valueOf( value );
         }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_SHORTBLOB.equals( type ) )
-        {
-            try
-            {
-                return new ShortBlob( Base64.decodeBase64( value ) );
-            }
-            catch ( Exception e )
-            {
-                logger.error( "Error by encoding short blob: '" + value + "'" );
-                return null;
-            }
-        }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BLOB.equals( type ) )
         {
             try
@@ -172,14 +155,6 @@ public class EntityEncoder
         {
             return parseKeyByIdOrName( value );
         }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_KEY_NAME.equals( type ) )
-        {
-            return parseKeyNames( value );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_TEXT.equals( type ) )
-        {
-            return new Text( value );
-        }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_LONG.equals( type ) )
         {
             List<Long> list = new ArrayList<>();
@@ -194,13 +169,6 @@ public class EntityEncoder
                     logger.error( "Unable to convert value to long: '" + s + "'" );
                 }
             }
-
-            return list;
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_ENUM.equals( type ) )
-        {
-            List<String> list = new ArrayList<>();
-            Collections.addAll( list, value.split( "," ) );
 
             return list;
         }
@@ -414,18 +382,6 @@ public class EntityEncoder
     private ChangeSetEntityProperty createBooleanProperty( String name, Boolean object )
     {
         return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN, object.toString() );
-    }
-
-    /**
-     * Renders a ShortBlob type property to String.
-     *
-     * @param name   the name of the property
-     * @param object the object to render
-     */
-    private ChangeSetEntityProperty createShortBlobProperty( String name, ShortBlob object )
-    {
-        return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_SHORTBLOB,
-                Base64.encodeBase64String( object.getBytes() ) );
     }
 
     /**

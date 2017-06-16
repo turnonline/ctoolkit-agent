@@ -18,35 +18,45 @@
 
 package org.ctoolkit.agent.model;
 
+
+import com.google.cloud.datastore.Key;
+import org.ctoolkit.agent.annotation.EntityMarker;
+import org.ctoolkit.agent.annotation.ProjectId;
+
+import javax.inject.Inject;
+
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class MetadataItemKey<M extends BaseMetadata<MI>, MI extends BaseMetadataItem<M>>
 {
-    private Long id;
+    @Inject
+    @ProjectId
+    private static String projectId;
 
-    private Long metadataId;
+    private Key key;
 
     private Class<MI> metadataItemClass;
 
-    private Class<M> metadataClass;
-
     public MetadataItemKey( Long id, Long metadataId, Class<MI> metadataItemClass, Class<M> metadataClass )
     {
-        this.id = id;
-        this.metadataId = metadataId;
+        String kind = metadataItemClass.getAnnotation( EntityMarker.class ).name();
+        String parentKind = metadataClass.getAnnotation( EntityMarker.class ).name();
+
+        Key parentKey = Key.newBuilder( projectId, parentKind, metadataId ).build();
+        this.key = Key.newBuilder( parentKey, kind, id ).build();
         this.metadataItemClass = metadataItemClass;
-        this.metadataClass = metadataClass;
     }
 
-    public Long getId()
+    public MetadataItemKey( Class<MI> metadataItemClass, Key key )
     {
-        return id;
+        this.metadataItemClass = metadataItemClass;
+        this.key = key;
     }
 
-    public Long getMetadataId()
+    public Key getKey()
     {
-        return metadataId;
+        return key;
     }
 
     public Class<MI> getMetadataItemClass()
@@ -54,19 +64,12 @@ public class MetadataItemKey<M extends BaseMetadata<MI>, MI extends BaseMetadata
         return metadataItemClass;
     }
 
-    public Class<M> getMetadataClass()
-    {
-        return metadataClass;
-    }
-
     @Override
     public String toString()
     {
         return "MetadataItemKey{" +
-                "id=" + id +
-                ", metadataId=" + metadataId +
+                "key=" + key +
                 ", metadataItemClass=" + metadataItemClass +
-                ", metadataClass=" + metadataClass +
                 '}';
     }
 }

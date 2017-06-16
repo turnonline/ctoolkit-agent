@@ -18,6 +18,7 @@
 
 package org.ctoolkit.agent.service.impl.datastore.mapper;
 
+import com.google.cloud.datastore.Datastore;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.model.BaseMetadata;
@@ -25,6 +26,7 @@ import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ISet;
 import org.ctoolkit.agent.model.ISetItem;
 
+import javax.inject.Inject;
 import java.util.Iterator;
 
 /**
@@ -35,6 +37,9 @@ import java.util.Iterator;
 public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends BaseMetadata<BI>, FI extends ISetItem, BI extends BaseMetadataItem<B>>
         extends CustomMapper<F, B>
 {
+    @Inject
+    private Datastore datastore;
+
     @Override
     @SuppressWarnings( "unchecked" )
     public void mapAtoB( F set, B metadata, MappingContext context )
@@ -51,6 +56,7 @@ public abstract class BaseSetToBaseMetadataMapper<F extends ISet<?>, B extends B
             if ( !contains( set, next ) )
             {
                 iterator.remove();
+                datastore.delete( next.key() );
             }
         }
 

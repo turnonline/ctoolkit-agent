@@ -2,11 +2,27 @@ package org.ctoolkit.agent.service.impl.dataflow;
 
 import com.google.cloud.dataflow.sdk.Pipeline;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
-import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.transforms.Create;
 import com.google.cloud.dataflow.sdk.transforms.DoFn;
+import com.google.cloud.dataflow.sdk.transforms.PTransform;
 import com.google.cloud.dataflow.sdk.transforms.ParDo;
+import com.google.cloud.dataflow.sdk.values.PBegin;
+import com.google.cloud.dataflow.sdk.values.PCollection;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.KeyValue;
+import com.google.inject.Injector;
+import org.ctoolkit.agent.annotation.EntityMarker;
+import org.ctoolkit.agent.annotation.ProjectId;
+import org.ctoolkit.agent.model.ImportMetadata;
+import org.ctoolkit.agent.model.ImportMetadataItem;
+import org.ctoolkit.agent.model.JobState;
+import org.ctoolkit.agent.model.MetadataItemKey;
+import org.ctoolkit.agent.model.ModelConverter;
+import org.ctoolkit.agent.service.ChangeSetService;
 
+import javax.inject.Inject;
 import java.io.Serializable;
 
 /**
@@ -15,68 +31,105 @@ import java.io.Serializable;
 public class ImportBatchTask
         implements Serializable
 {
-    /*
     @Inject
-    private transient ImportBatchJob job;
+    protected static Injector injector;
 
     @Inject
-    private static Injector injector;
+    private transient Datastore datastore;
 
+    @Inject
+    @ProjectId
+    private transient String projectId;
 
+    @Inject
+    private transient PipelineOptions pipelineOptions;
 
-    private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-*/
-
-    private Long parentId;
+    private Long metadataId;
 
     public ImportBatchTask()
     {
     }
 
-    public ImportBatchTask( Long parentId )
+    public ImportBatchTask( Long metadataId )
     {
-        this.parentId = parentId;
+        this.metadataId = metadataId;
     }
-
 
     public void run()
     {
-//        injector.injectMembers( this );
+        injector.injectMembers( this );
 
-        PipelineOptions options = PipelineOptionsFactory.create();
-//        options.setRunner( DataflowRunner.class ); // TODO: set only for test/prod environment
-        Pipeline pipeline = Pipeline.create( options );
+        String kind = ImportMetadata.class.getAnnotation( EntityMarker.class ).name();
+        Key key = Key.newBuilder( projectId, kind, metadataId ).build();
 
+        // create pipeline
+        Pipeline pipeline = Pipeline.create( pipelineOptions );
+
+        // define pipelines
         pipeline
-                .apply( "Load entities", Create.of( "John", "Foo" ) )
-                .apply( "Process entity", ParDo.of( new DoFn<String, Void>()
+                .apply( new LoadItems( key, datastore ) )
+                .apply( "Process item", ParDo.of( new DoFn<KeyValue, Void>()
                 {
                     @Override
                     public void processElement( ProcessContext c ) throws Exception
                     {
-                        String entity = c.element();
-                        System.out.println( ">>> " + entity );
+                        ChangeSetService changeSetService = injector.getInstance( ChangeSetService.class );
+                        ImportMetadataItem item = changeSetService.get( new MetadataItemKey<>( ImportMetadataItem.class, c.element().get() ) );
+
+                        JobState jobState;
+                        String error = null;
+
+                        // import change set
+                        try
+                        {
+                            changeSetService.importChangeSet( item.toChangeSet() );
+
+                            error = null;
+                            jobState = JobState.COMPLETED_SUCCESSFULLY;
+                        }
+                        catch ( Exception e )
+                        {
+                            e.printStackTrace(); // TODO: remove
+
+                            // TODO: revert
+                            // error = StackTraceResolver.resolve( e );
+                            jobState = JobState.STOPPED_BY_ERROR;
+                        }
+
+                        // update status in item
+                        item.setState( jobState );
+                        item.setError( error );
+                        item.saveFieldsOnly();
+
+                        // TODO: increment parent
                     }
                 } ) );
 
         pipeline.run();
     }
 
-    /*
-    private List<Entity> entities()
+    public class LoadItems
+            extends PTransform<PBegin, PCollection<KeyValue>>
     {
-        try
-        {
-            Entity parent = datastore.get( KeyFactory.stringToKey( parentId ) );
-            List<Key> itemsRef = ( List<Key> ) parent.getProperty( "itemsRef" );
+        private Datastore datastore;
 
-            return new ArrayList<>( datastore.get( itemsRef ).values() );
-        }
-        catch ( EntityNotFoundException e )
+        private Key key;
+
+        public LoadItems( Key key, Datastore datastore )
         {
-            throw new IllegalArgumentException( "Unable to load parent key: " + parentId, e );
+            super( "Load items" );
+
+            this.key = key;
+            this.datastore = datastore;
+        }
+
+        @Override
+        public PCollection<KeyValue> apply( PBegin input )
+        {
+            Entity entity = datastore.get( key );
+            ImportMetadata importMetadata = ModelConverter.convert( ImportMetadata.class, entity );
+
+            return input.apply( Create.of( importMetadata.getItemsKeyValue() ) );
         }
     }
-    */
 }

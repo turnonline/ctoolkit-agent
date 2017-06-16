@@ -47,7 +47,7 @@ public class MigrateMapOnlyMapperJob
 
         // get item property values
         String name = ( String ) item.getProperty( "name" );
-        byte[] data = storageService.serve( ( String ) item.getProperty( "fileName" ), bucketName );
+        byte[] data = storageService.read( bucketName, ( String ) item.getProperty( "fileName" ) );
         DataType dataType = DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
 
         // load parent to retrieve context properties

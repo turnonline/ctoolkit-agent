@@ -206,14 +206,13 @@ public class ImportEndpoint
     // -- job CRUD
 
     @ApiMethod( name = "importBatch.job.start", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportJob startImportJob( @Named( "id" ) String id, ImportJob job, User authUser ) throws Exception
+    public ImportJob startImportJob( @Named( "id" ) Long id, ImportJob job, User authUser ) throws Exception
     {
-        ImportMetadata importMetadata = new ImportMetadata();
-//        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
-//        if ( importMetadata == null )
-//        {
-//            throw new NotFoundException( "Import not found for id: " + id );
-//        }
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
+        if ( importMetadata == null )
+        {
+            throw new NotFoundException( "Import not found for id: " + id );
+        }
 
         try
         {
@@ -239,25 +238,6 @@ public class ImportEndpoint
         {
             service.cancelJob( importMetadata );
             return service.getJobInfo( importMetadata );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            throw new NotFoundException( e );
-        }
-    }
-
-    @ApiMethod( name = "importBatch.job.delete", path = "import/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteImportJob( @Named( "id" ) Long id, User authUser ) throws Exception
-    {
-        ImportMetadata importMetadata = service.get( new MetadataKey<>( id, ImportMetadata.class ) );
-        if ( importMetadata == null )
-        {
-            throw new NotFoundException( "Import not found for id: " + id );
-        }
-
-        try
-        {
-            service.deleteJob( importMetadata );
         }
         catch ( ObjectNotFoundException e )
         {

@@ -95,24 +95,6 @@ public interface DataAccess
     void removeEntityProperty( String kind, String property );
 
     /**
-     * Create entity
-     *
-     * @param entity entity to create
-     * @param <T>    entity type
-     * @return persisted entity
-     */
-    <T> T create( T entity );
-
-    /**
-     * Update entity
-     *
-     * @param entity entity to update
-     * @param <T>    entity type
-     * @return updated entity
-     */
-    <T> T update( T entity );
-
-    /**
      * Get entity by key
      *
      * @param type class type
@@ -138,15 +120,6 @@ public interface DataAccess
      * @return entity
      */
     List<MetadataAudit> find( AuditFilter filter );
-
-    /**
-     * Delete entity
-     *
-     * @param type entity class type
-     * @param key  key of entity
-     * @param <T>  entity type
-     */
-    <T> void delete( Class<T> type, String key );
 
     /**
      * Return list of {@link KindMetaData}

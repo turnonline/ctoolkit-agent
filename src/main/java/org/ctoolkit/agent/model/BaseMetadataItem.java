@@ -27,11 +27,16 @@ import com.google.cloud.datastore.Key;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.google.common.base.Charsets;
+import com.google.gson.Gson;
 import com.google.inject.Injector;
 import org.ctoolkit.agent.annotation.BucketName;
+import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
+import org.ctoolkit.agent.util.XmlUtils;
 
 import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
 
 /**
  * Base metadata item
@@ -41,7 +46,7 @@ import javax.inject.Inject;
  */
 public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         extends BaseEntity
-        implements Convertible
+        implements Convertible, Comparable<BaseMetadataItem<PARENT>>
 {
     @Inject
     private static Injector injector;
@@ -175,6 +180,23 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
 
     public void save()
     {
+        // save fields
+        saveFieldsOnly();
+
+        // save data
+        if ( getData() != null )
+        {
+            // put data to storage
+            BlobInfo blobInfo = BlobInfo
+                    .newBuilder( bucketName, getFileName() )
+                    .setContentType( getDataType().mimeType() )
+                    .build();
+            storage().create( blobInfo, getData() );
+        }
+    }
+
+    public void saveFieldsOnly()
+    {
         FullEntity.Builder<IncompleteKey> builder = Entity.newBuilder();
         builder.setKey( key() );
         builder.set( "name", getName() );
@@ -194,23 +216,17 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
             builder.set( "error", getError() );
         }
 
-        if ( getData() != null )
+        builder.set( "dataLength", dataLength );
+
+        if ( getFileName() == null )
         {
-            builder.set( "dataLength", data.length );
+            setFileName( newFileName() );
         }
 
-        String fileName = newFileName();
-        builder.set( "fileName", fileName );
+        builder.set( "fileName", getFileName() );
 
         // put item to datastore
         datastore().put( builder.build() );
-
-        // put data to storage
-        BlobInfo blobInfo = BlobInfo
-                .newBuilder( bucketName, fileName )
-                .setContentType( getDataType().mimeType() )
-                .build();
-        storage().create( blobInfo, getData() );
     }
 
     public void delete()
@@ -235,6 +251,29 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
     public Key key()
     {
         return key;
+    }
+
+    public ChangeSet toChangeSet()
+    {
+        switch ( getDataType() )
+        {
+            case JSON:
+            {
+                return new Gson().fromJson( new String( data, Charsets.UTF_8 ), ChangeSet.class );
+            }
+            case XML:
+            {
+                return XmlUtils.unmarshall( new ByteArrayInputStream( data ), ChangeSet.class );
+            }
+        }
+
+        throw new IllegalArgumentException( "Unknown data type: '" + getDataType() + "'" );
+    }
+
+    @Override
+    public int compareTo( BaseMetadataItem<PARENT> other )
+    {
+        return this.getName().compareTo( other.getName() );
     }
 
     @Override

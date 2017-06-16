@@ -16,20 +16,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.service.impl.datastore;
+package org.ctoolkit.agent.annotation;
 
-import com.google.cloud.datastore.FullEntity;
-import com.google.cloud.datastore.IncompleteKey;
-import com.google.cloud.datastore.Key;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
+ * Annotation for mark staging location fields
+ *
+ * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public interface EntityPool
+@Target( {ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER} )
+@Retention( RetentionPolicy.RUNTIME )
+@BindingAnnotation
+public @interface StagingLocation
 {
-    <K extends IncompleteKey> void put( FullEntity<K> ent );
-
-    void delete( Key key );
-
-    void flush();
 }

@@ -32,12 +32,10 @@ import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ExportMetadataItem;
-import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.agent.resource.ExportBatch;
 import org.ctoolkit.agent.resource.ExportJob;
-import org.ctoolkit.agent.resource.ImportBatch;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
@@ -247,25 +245,6 @@ public class ExportEndpoint
         }
     }
 
-    @ApiMethod( name = "exportBatch.job.delete", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteExportJob( @Named( "id" ) Long id, User authUser ) throws Exception
-    {
-        ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
-        if ( exportMetadata == null )
-        {
-            throw new NotFoundException( "Export not found for id: " + id );
-        }
-
-        try
-        {
-            service.deleteJob( exportMetadata );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            throw new NotFoundException( e );
-        }
-    }
-
     @ApiMethod( name = "exportBatch.job.progress", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ExportJob getExportJob( @Named( "id" ) Long id, User authUser ) throws Exception
     {
@@ -283,21 +262,5 @@ public class ExportEndpoint
         {
             throw new NotFoundException( e );
         }
-    }
-
-    // -- migration
-
-    @ApiMethod( name = "exportBatch.migrate.insert", path = "export/{id}/migrate", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportBatch insertMigration( @Named( "id" ) Long id, User authUser ) throws Exception
-    {
-        ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
-        if ( exportMetadata == null )
-        {
-            throw new NotFoundException( "Export not found for id: " + id );
-        }
-
-        ImportMetadata importMetadataBe = service.migrate( exportMetadata );
-
-        return mapper.map( importMetadataBe, ImportBatch.class );
     }
 }

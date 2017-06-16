@@ -43,7 +43,7 @@ public class ChangeMapOnlyMapperJob
     {
         super.map( item );
 
-        byte[] data = storageService.serve( ( String ) item.getProperty( "fileName" ), bucketName );
+        byte[] data = storageService.read( bucketName, ( String ) item.getProperty( "fileName" ) );
         ISetItem.DataType dataType = ISetItem.DataType.valueOf( ( String ) item.getProperty( "dataType" ) );
         ChangeSet changeSet;
 

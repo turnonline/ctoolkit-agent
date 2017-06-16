@@ -24,7 +24,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.tools.mapreduce.MapJob;
 import com.google.appengine.tools.mapreduce.MapReduceSettings;
 import com.google.appengine.tools.pipeline.NoSuchObjectException;
 import com.google.appengine.tools.pipeline.PipelineService;
@@ -53,7 +52,6 @@ import org.ctoolkit.agent.model.MetadataAudit;
 import org.ctoolkit.agent.model.MetadataAudit.Action;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
-import org.ctoolkit.agent.model.MigrationJobConfiguration;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeJob;
 import org.ctoolkit.agent.resource.ChangeSet;
@@ -66,19 +64,14 @@ import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
-import org.ctoolkit.agent.service.impl.datastore.JobSpecificationFactory;
-import org.ctoolkit.agent.service.impl.datastore.MapSpecificationProvider;
 import org.ctoolkit.agent.service.impl.event.Auditable;
-import org.ctoolkit.restapi.client.RequestCredential;
 import org.ctoolkit.restapi.client.ResourceFacade;
-import org.ctoolkit.restapi.client.agent.model.ImportBatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -104,8 +97,6 @@ public class ChangeSetServiceBean
     private final Provider<RestContext> restContext;
 
     private final Storage storage;
-
-    private JobSpecificationFactory jobSpecificationFactory;
 
     private final ResourceFacade facade;
 
@@ -244,49 +235,6 @@ public class ChangeSetServiceBean
         return dataAccess.find( filter );
     }
 
-    @Override
-    @Deprecated
-    // TODO: obsolete
-    public ImportMetadata migrate( ExportMetadata exportMetadata ) throws IOException
-    {
-        // check job is not already running, remove previous job
-        checkJobAndRemoveIfExists( exportMetadata.getMapReduceMigrationJobId() );
-
-        // create naked import
-        ImportMetadata importMetadata = new ImportMetadata();
-        importMetadata.setName( "Export from '" + exportMetadata.getName() + "'" );
-
-        // call remote agent and create import
-        ImportBatch importBatch = new ImportBatch();
-        importBatch.setName( importMetadata.getName() );
-
-        String agentUrl = restContext.get().getOnBehalfOfAgentUrl();
-        String token = restContext.get().getGtoken();
-
-        RequestCredential credential = new RequestCredential();
-        credential.setApiKey( token );
-        credential.setEndpointUrl( agentUrl );
-        importBatch = facade.insert( importBatch ).config( credential ).execute();
-
-        importMetadata.setUntemperedKey( importBatch.getKey() );
-
-        // start migrate job
-        MigrationJobConfiguration jobConfiguration = new MigrationJobConfiguration( exportMetadata.getKey(), importBatch.getKey() );
-
-        MapSpecificationProvider mapSpecificationProvider = jobSpecificationFactory
-                .createMigrateJobSpecification( jobConfiguration, agentUrl, token );
-        String id = MapJob.start( mapSpecificationProvider.get(), mapReduceSettings );
-
-        exportMetadata.setMapReduceMigrationJobId( id );
-        exportMetadata.clearJobContext();
-        exportMetadata.putToJobContext( "gtoken", token );
-        exportMetadata.putToJobContext( "rootUrl", agentUrl );
-        exportMetadata.putToJobContext( "importKey", importBatch.getKey() );
-        exportMetadata.save();
-
-        return importMetadata;
-    }
-
     // ------------------------------------------
     // -- metadata item
     // ------------------------------------------
@@ -297,7 +245,7 @@ public class ChangeSetServiceBean
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( final M metadata, final MI metadataItem )
     {
         // store again to persist file name
-        dataAccess.create( metadataItem );
+        //dataAccess.create( metadataItem );
 
         final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
 
@@ -345,7 +293,7 @@ public class ChangeSetServiceBean
         }
 
         // store again to persist file name
-        dataAccess.update( metadataItem );
+//        dataAccess.update( metadataItem );
 
         return metadataItem;
     }
@@ -361,14 +309,7 @@ public class ChangeSetServiceBean
     @Override
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<M, MI> metadataItemKey )
     {
-        Long id = metadataItemKey.getId();
-        Long parentId = metadataItemKey.getMetadataId();
-        String kind = metadataItemKey.getMetadataItemClass().getAnnotation( EntityMarker.class ).name();
-        String parentKind = metadataItemKey.getMetadataClass().getAnnotation( EntityMarker.class ).name();
-
-        com.google.cloud.datastore.Key parentKey = com.google.cloud.datastore.Key.newBuilder( projectId, parentKind, parentId ).build();
-        com.google.cloud.datastore.Key key = com.google.cloud.datastore.Key.newBuilder( parentKey, kind, id ).build();
-        MI item = dataAccess.find( metadataItemKey.getMetadataItemClass(), key );
+        MI item = dataAccess.find( metadataItemKey.getMetadataItemClass(), metadataItemKey.getKey() );
 
         if ( item.getFileName() != null )
         {
@@ -408,6 +349,7 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.START_JOB )
+    // TODO: refactor to dataflow
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
         /*
@@ -439,31 +381,14 @@ public class ChangeSetServiceBean
 //        metadata.reset();
 //        metadata.save();
 
+        // TODO: refactor to assisted injection
         ImportBatchTask task = new ImportBatchTask( metadata.getId() );
         task.run();
     }
 
     @Override
-    @Auditable( action = Action.DELETE_JOB )
-    public <M extends BaseMetadata> void deleteJob( M metadata )
-    {
-        if ( metadata.getJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
-        }
-
-        try
-        {
-            pipelineService.deletePipelineRecords( metadata.getJobId(), true, false );
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for key: " + metadata.getJobId(), e );
-        }
-    }
-
-    @Override
     @SuppressWarnings( "unchecked" )
+    // TODO: refactor to dataflow
     public <JI extends JobInfo, M extends BaseMetadata> JI getJobInfo( M metadata )
     {
         // TODO: use job id from dataflow
@@ -483,7 +408,7 @@ public class ChangeSetServiceBean
 
         JI jobInfo = ( JI ) jobInfoProviders.get( metadata.getClass() ).get();
         // jobInfo.setId( metadata.getKey() ); // TODO use new cloud API
-        jobInfo.setMapReduceJobId( metadata.getJobId() );
+        jobInfo.setJobId( metadata.getJobId() );
         // jobInfo.setProcessedItems( metadata.getProcessedItems() ); // TODO use new cloud API
         // jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() ); // TODO use new cloud API
         jobInfo.setTotalItems( metadata.getItemsCount() );
@@ -499,6 +424,7 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.CANCEL_JOB )
+    // TODO: refactor to daaflow
     public <M extends BaseMetadata> void cancelJob( M metadata )
     {
         if ( metadata.getJobId() == null )
@@ -521,12 +447,14 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
+    // TODO: refactor to datastore cloud
     public void importChangeSet( ChangeSet changeSet )
     {
         changeChangeSet( changeSet );
     }
 
     @Override
+    // TODO: refactor to datastore cloud
     public void changeChangeSet( ChangeSet changeSet )
     {
         dataAccess.flushPool();
@@ -621,6 +549,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
+    // TODO: refactor to datastore cloud
     public ChangeSet exportChangeSet( String entity )
     {
         return dataAccess.exportChangeSet( entity );
@@ -631,6 +560,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
+    // TODO: refactor to datastore cloud
     public List<MetadataAudit> list( AuditFilter filter )
     {
         return dataAccess.find( filter );
@@ -641,6 +571,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
+    // TODO: refactor to datastore cloud
     public List<KindMetaData> kinds()
     {
         List<KindMetaData> kinds = dataAccess.kinds();
@@ -665,12 +596,14 @@ public class ChangeSetServiceBean
     }
 
     @Override
+    // TODO: refactor to datastore cloud
     public List<PropertyMetaData> properties( String kind )
     {
         return dataAccess.properties( kind );
     }
 
     // -- private helpers
+    // TODO: refactor to dataflow
     private void checkJobAndRemoveIfExists( String jobId )
     {
         if ( jobId != null )

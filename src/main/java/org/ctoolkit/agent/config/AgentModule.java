@@ -20,12 +20,17 @@ package org.ctoolkit.agent.config;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.tools.pipeline.PipelineService;
 import com.google.appengine.tools.pipeline.impl.PipelineServiceImpl;
 import com.google.cloud.ServiceOptions;
+import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
+import com.google.cloud.dataflow.sdk.options.PipelineOptions;
+import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
+import com.google.cloud.dataflow.sdk.runners.DataflowPipelineRunner;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.Entity;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.base.Charsets;
@@ -44,20 +49,24 @@ import ma.glasnost.orika.metadata.TypeFactory;
 import net.oauth.jsontoken.Checker;
 import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.annotation.ProjectId;
+import org.ctoolkit.agent.annotation.StagingLocation;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ImportMetadata;
+import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.rest.IAMAuthenticator;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
 import org.ctoolkit.agent.service.impl.RestContextThreadLocal;
+import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
 import org.ctoolkit.agent.service.impl.datastore.AuditInterceptor;
 import org.ctoolkit.agent.service.impl.datastore.AuditSubscription;
 import org.ctoolkit.agent.service.impl.datastore.DataAccessBean;
+import org.ctoolkit.agent.service.impl.datastore.EntityDecoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
@@ -65,9 +74,9 @@ import org.ctoolkit.agent.service.impl.datastore.ImportMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeItemToChangeMetadataItemMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeMetadataFactory;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityMapper;
+import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityBuilderMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeToChangeMetadataMapper;
-import org.ctoolkit.agent.service.impl.datastore.mapper.EntityFactory;
+import org.ctoolkit.agent.service.impl.datastore.mapper.EntityBuilderFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ExportMetadataFactory;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ExportToExportMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.mapper.ImportItemToImportMetadataItemMapper;
@@ -124,6 +133,7 @@ public class AgentModule
 //        install( new CtoolkitCommonServicesModule() );
         install( new CtoolkitApiAgentModule() );
 
+        // define api credential
         ApiCredential credential = new ApiCredential( CtoolkitApiAgentModule.API_PREFIX );
         // initialized as non null value, will be overridden by request credential
         credential.setEndpointUrl( "http://localhost:8999/_ah/api" );
@@ -134,8 +144,9 @@ public class AgentModule
         bind( EntityPool.class ).to( EntityPoolThreadLocal.class ).in( RequestScoped.class );
         bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
-        bind( ChangeSetEntityToEntityMapper.class ).in( Singleton.class );
+        bind( ChangeSetEntityToEntityBuilderMapper.class ).in( Singleton.class );
         bind( EntityEncoder.class ).in( Singleton.class );
+        bind( EntityDecoder.class ).in( Singleton.class );
         bind( ImportMapOnlyMapperJob.class ).in( Singleton.class );
         bind( PipelineService.class ).to( PipelineServiceImpl.class ).in( Singleton.class );
 
@@ -165,8 +176,8 @@ public class AgentModule
         requestStaticInjection( BaseMetadata.class );
         requestStaticInjection( BaseMetadataItem.class );
         requestStaticInjection( IAMAuthenticator.class );
-
-//        requestStaticInjection( ImportBatchTask.class );
+        requestStaticInjection( ImportBatchTask.class );
+        requestStaticInjection( MetadataItemKey.class );
     }
 
     @Provides
@@ -206,7 +217,7 @@ public class AgentModule
     @Singleton
     public MapperFacade provideMapperFacade( MapperFactory factory,
                                              // mappers
-                                             ChangeSetEntityToEntityMapper changeSetEntityToEntityMapper,
+                                             ChangeSetEntityToEntityBuilderMapper changeSetEntityToEntityBuilderMapper,
                                              ImportToImportMetadataMapper importToImportMetadataMapper,
                                              ExportToExportMetadataMapper exportToExportMetadataMapper,
                                              ChangeToChangeMetadataMapper changeToChangeMetadataMapper,
@@ -215,13 +226,13 @@ public class AgentModule
                                              ChangeItemToChangeMetadataItemMapper changeItemToChangeMetadataItemMapper,
 
                                              // factories
-                                             EntityFactory entityFactory,
+                                             EntityBuilderFactory entityBuilderFactory,
                                              ImportMetadataFactory importMetadataFactory,
                                              ExportMetadataFactory exportMetadataFactory,
                                              ChangeMetadataFactory changeMetadataFactory )
     {
         // register custom mappers
-        factory.registerMapper( changeSetEntityToEntityMapper );
+        factory.registerMapper( changeSetEntityToEntityBuilderMapper );
         factory.registerMapper( importToImportMetadataMapper );
         factory.registerMapper( exportToExportMetadataMapper );
         factory.registerMapper( changeToChangeMetadataMapper );
@@ -230,7 +241,7 @@ public class AgentModule
         factory.registerMapper( changeItemToChangeMetadataItemMapper );
 
         // register factories
-        factory.registerObjectFactory( entityFactory, TypeFactory.valueOf( Entity.class ) );
+        factory.registerObjectFactory( entityBuilderFactory, TypeFactory.valueOf( Entity.Builder.class ) );
         factory.registerObjectFactory( importMetadataFactory, TypeFactory.valueOf( ImportMetadata.class ) );
         factory.registerObjectFactory( exportMetadataFactory, TypeFactory.valueOf( ExportMetadata.class ) );
         factory.registerObjectFactory( changeMetadataFactory, TypeFactory.valueOf( ChangeMetadata.class ) );
@@ -250,10 +261,37 @@ public class AgentModule
 
     @Provides
     @Singleton
+    @StagingLocation
+    public String provideBucketName( @BucketName String bucketName )
+    {
+        return "gs://staging." + bucketName + "/dataflow-staging";
+    }
+
+    @Provides
+    @Singleton
     @ProjectId
     public String provideProjectId()
     {
         return ServiceOptions.getDefaultProjectId();
+    }
+
+    @Provides
+    public PipelineOptions providePipelineOptions( @ProjectId String projectId, @StagingLocation String stagingLocation )
+    {
+        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )
+        {
+            // The app is running on App Engine...
+            DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );
+            options.setRunner( DataflowPipelineRunner.class );
+            options.setProject( projectId );
+            options.setStagingLocation( stagingLocation );
+
+            return options;
+        }
+        else
+        {
+            return PipelineOptionsFactory.create();
+        }
     }
 
     private static class AudienceChecker

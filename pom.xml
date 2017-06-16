@@ -292,10 +292,6 @@
         <!--CToolkit services-->
         <dependency>
             <groupId>org.ctoolkit.services</groupId>
-            <artifactId>ctoolkit-services-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ctoolkit.services</groupId>
             <artifactId>ctoolkit-services-common</artifactId>
         </dependency>
         <dependency>
@@ -319,6 +315,7 @@
             <artifactId>ctoolkit-client-identity-toolkit</artifactId>
         </dependency>
 
+        <!--DATAFLOW DEPENDENCIES-->
         <dependency>
             <groupId>com.google.cloud.dataflow</groupId>
             <artifactId>google-cloud-dataflow-java-sdk-all</artifactId>
@@ -486,7 +483,7 @@
         <gcp.projectId>c-toolkit</gcp.projectId>
         <endpoints.service.name>agent.endpoints.${gcp.projectId}.cloud.goog</endpoints.service.name>
         <ctoolkit-library-bom.version>4</ctoolkit-library-bom.version>
-        <ctoolkit-project-bom.version>1.9.50.1</ctoolkit-project-bom.version>
+        <ctoolkit-project-bom.version>1.9.54-SNAPSHOT</ctoolkit-project-bom.version>
         <endpoints.framework.version>2.0.4</endpoints.framework.version>
         <endpoints.management.version>1.0.2</endpoints.management.version>
         <appengine.maven.plugin.version>1.2.1</appengine.maven.plugin.version>

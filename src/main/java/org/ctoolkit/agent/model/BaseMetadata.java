@@ -25,12 +25,12 @@ import com.google.cloud.datastore.IncompleteKey;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyValue;
 import com.google.inject.Injector;
-import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.datastore.ShardedCounter;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,10 +47,6 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 {
     @Inject
     private static Injector injector;
-
-    @Inject
-    @ProjectId
-    private static String projectId;
 
     private Key key;
 
@@ -108,6 +104,9 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
             {
                 items.add( ModelConverter.convert( itemClass(), entityIterator.next() ) );
             }
+
+            // sort by name
+            Collections.sort( items );
 
             itemsLoaded = true;
         }
@@ -256,15 +255,6 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         if ( getJobId() != null )
         {
             builder.set( "jobId", getJobId() );
-        }
-
-        // remove old items
-        if ( !itemsRef.isEmpty() )
-        {
-            for ( Entity item : datastore().fetch( itemsRef ) )
-            {
-                ModelConverter.convert( itemClass(), item ).delete();
-            }
         }
 
         // add new items

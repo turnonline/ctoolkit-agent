@@ -246,25 +246,6 @@ public class ChangeEndpoint
         }
     }
 
-    @ApiMethod( name = "changeBatch.job.delete", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteChangeJob( @Named( "id" ) Long id, User authUser ) throws Exception
-    {
-        ChangeMetadata changeMetadata = service.get( new MetadataKey<>( id, ChangeMetadata.class ) );
-        if ( changeMetadata == null )
-        {
-            throw new NotFoundException( "Change not found for id: " + id );
-        }
-
-        try
-        {
-            service.deleteJob( changeMetadata );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            throw new NotFoundException( e );
-        }
-    }
-
     @ApiMethod( name = "changeBatch.job.progress", path = "change/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
     public ChangeJob getChangeJob( @Named( "id" ) Long id, User authUser ) throws Exception
     {
