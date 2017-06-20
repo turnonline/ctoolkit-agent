@@ -18,15 +18,14 @@
 
 package org.ctoolkit.agent.service.impl;
 
+import com.google.api.services.dataflow.Dataflow;
+import com.google.api.services.dataflow.model.Job;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.tools.mapreduce.MapReduceSettings;
-import com.google.appengine.tools.pipeline.NoSuchObjectException;
-import com.google.appengine.tools.pipeline.PipelineService;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.common.base.Predicate;
@@ -36,7 +35,6 @@ import com.googlecode.objectify.VoidWork;
 import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.annotation.ProjectId;
-import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
@@ -62,12 +60,8 @@ import org.ctoolkit.agent.resource.ExportJob;
 import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
-import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
 import org.ctoolkit.agent.service.impl.event.Auditable;
-import org.ctoolkit.restapi.client.ResourceFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -79,7 +73,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.appengine.tools.pipeline.JobInfo.State.RUNNING;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /**
@@ -90,19 +83,11 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 public class ChangeSetServiceBean
         implements ChangeSetService
 {
-    private static final Logger log = LoggerFactory.getLogger( ChangeSetServiceBean.class );
+    private final Dataflow dataflow;
 
     private final DataAccess dataAccess;
 
-    private final Provider<RestContext> restContext;
-
     private final Storage storage;
-
-    private final ResourceFacade facade;
-
-    private final MapReduceSettings mapReduceSettings = null;
-
-    private final PipelineService pipelineService;
 
     private final Set<String> systemKinds = new HashSet<>();
 
@@ -113,18 +98,15 @@ public class ChangeSetServiceBean
     private final String projectId;
 
     @Inject
-    public ChangeSetServiceBean( DataAccess dataAccess,
-                                 Provider<RestContext> restContext,
-                                 Storage storage, ResourceFacade facade,
-                                 PipelineService pipelineService,
+    public ChangeSetServiceBean( @Nullable Dataflow dataflow,
+                                 DataAccess dataAccess,
+                                 Storage storage,
                                  @BucketName String bucketName,
                                  @ProjectId String projectId )
     {
+        this.dataflow = dataflow;
         this.dataAccess = dataAccess;
-        this.restContext = restContext;
         this.storage = storage;
-        this.facade = facade;
-        this.pipelineService = pipelineService;
         this.bucketName = bucketName;
         this.projectId = projectId;
 
@@ -388,35 +370,29 @@ public class ChangeSetServiceBean
 
     @Override
     @SuppressWarnings( "unchecked" )
-    // TODO: refactor to dataflow
     public <JI extends JobInfo, M extends BaseMetadata> JI getJobInfo( M metadata )
     {
-        // TODO: use job id from dataflow
-        com.google.appengine.tools.pipeline.JobInfo pipelineJobInfo = null;
+        JI jobInfo = ( JI ) jobInfoProviders.get( metadata.getClass() ).get();
+        jobInfo.setId( metadata.getId() );
+        jobInfo.setJobId( metadata.getJobId() );
+        jobInfo.setJobUrl( metadata.getJobUrl() );
+        jobInfo.setProcessedItems( metadata.getProcessedOkItems() );
+        jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() );
+        jobInfo.setTotalItems( metadata.getItemsCount() );
 
-        if ( metadata.getJobId() != null )
+        if (metadata.getJobId() != null)
         {
             try
             {
-                pipelineJobInfo = pipelineService.getJobInfo( metadata.getJobId() );
+                Job job = dataflow.projects().jobs().get( projectId, metadata.getJobId() ).execute();
+                jobInfo.setState( JobState.valueOf( job.getCurrentState().replace( "JOB_STATE_", "" ) ) );
+                // TODO: try to obtain error if occured
             }
-            catch ( NoSuchObjectException e )
+            catch ( Exception e )
             {
-                log.error( "Map reduce job not found for key: " + metadata.getJobId(), e );
+                e.printStackTrace();
+                jobInfo.setState( JobState.UNKNOWN );
             }
-        }
-
-        JI jobInfo = ( JI ) jobInfoProviders.get( metadata.getClass() ).get();
-        // jobInfo.setId( metadata.getKey() ); // TODO use new cloud API
-        jobInfo.setJobId( metadata.getJobId() );
-        // jobInfo.setProcessedItems( metadata.getProcessedItems() ); // TODO use new cloud API
-        // jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() ); // TODO use new cloud API
-        jobInfo.setTotalItems( metadata.getItemsCount() );
-
-        if ( pipelineJobInfo != null )
-        {
-            jobInfo.setState( JobState.valueOf( pipelineJobInfo.getJobState().name() ) );
-            jobInfo.setStackTrace( pipelineJobInfo.getError() );
         }
 
         return jobInfo;
@@ -427,19 +403,19 @@ public class ChangeSetServiceBean
     // TODO: refactor to daaflow
     public <M extends BaseMetadata> void cancelJob( M metadata )
     {
-        if ( metadata.getJobId() == null )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
-        }
-
-        try
-        {
-            pipelineService.cancelPipeline( metadata.getJobId() );
-        }
-        catch ( NoSuchObjectException e )
-        {
-            throw new ObjectNotFoundException( "Map reduce job not found for id: " + metadata.getJobId(), e );
-        }
+//        if ( metadata.getJobId() == null )
+//        {
+//            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
+//        }
+//
+//        try
+//        {
+//            pipelineService.cancelPipeline( metadata.getJobId() );
+//        }
+//        catch ( NoSuchObjectException e )
+//        {
+//            throw new ObjectNotFoundException( "Map reduce job not found for id: " + metadata.getJobId(), e );
+//        }
     }
 
     // ------------------------------------------
@@ -601,31 +577,4 @@ public class ChangeSetServiceBean
     {
         return dataAccess.properties( kind );
     }
-
-    // -- private helpers
-    // TODO: refactor to dataflow
-    private void checkJobAndRemoveIfExists( String jobId )
-    {
-        if ( jobId != null )
-        {
-            try
-            {
-                com.google.appengine.tools.pipeline.JobInfo jobInfo = pipelineService.getJobInfo( jobId );
-                if ( jobInfo.getJobState() == RUNNING )
-                {
-                    throw new ProcessAlreadyRunning( "ImportJob process is already running: " + jobId );
-                }
-                else
-                {
-                    // remove previous job
-                    pipelineService.deletePipelineRecords( jobId, true, false );
-                }
-            }
-            catch ( NoSuchObjectException e )
-            {
-                // silently ignore
-            }
-        }
-    }
-
 }

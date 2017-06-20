@@ -19,22 +19,30 @@
 package org.ctoolkit.agent.model;
 
 /**
- * Map reduce job state
+ * Dataflow job state
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public enum JobState
 {
-    /**
-     * Job is currently executing.
-     */
+    /** The job state could not be obtained or was not specified. */
+    UNKNOWN,
+
+    /** The job has been paused, or has not yet started. */
+    STOPPED,
+
+    /** The job is currently running. */
     RUNNING,
-    /**
-     * Job has completed successfully.
-     */
-    COMPLETED_SUCCESSFULLY,
-    /**
-     * Job execution was stopped due to unhandled failure.
-     */
-    STOPPED_BY_ERROR,
+
+    /** The job has successfully completed. */
+    DONE,
+
+    /** The job has failed. */
+    FAILED,
+
+    /** The job has been explicitly cancelled. */
+    CANCELLED,
+
+    /** The job has been updated. */
+    UPDATED;
 }

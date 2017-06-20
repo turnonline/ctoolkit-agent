@@ -32,7 +32,7 @@ public interface ISet<JI extends JobInfo>
 
     void setName( String name );
 
-    void setMapReduceJobId( String mapReduceJobId );
+    void setJobId( String jobId );
 
     void setCreateDate( Date createDate );
 

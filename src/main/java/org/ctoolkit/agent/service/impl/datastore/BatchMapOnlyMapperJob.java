@@ -66,7 +66,7 @@ public abstract class BatchMapOnlyMapperJob
 
         int shardCount = getContext().getShardCount() * 5;
 
-        if ( jobState == JobState.COMPLETED_SUCCESSFULLY )
+        if ( jobState == JobState.DONE )
         {
             ShardedCounter.okCounter( parentKey.getKind(), parentKey.getId(), shardCount ).increment();
         }

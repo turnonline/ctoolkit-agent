@@ -56,14 +56,14 @@ public class EntityPoolThreadLocal
     private final int maxItems;
 
     /**
-     * The list of holding entities waiting for putting them into data store
+     * Thread local which holds list of entities to put
      */
-    private final List<FullEntity> toPut = new ArrayList<>();
+    private static ThreadLocal<List<FullEntity>> toPutTL = new ThreadLocal<>();
 
     /**
-     * The list of holding entities waiting for deleting them from data store
+     * Thread local which holds list of keys to delete
      */
-    private final List<Key> toDelete = new ArrayList<>();
+    private static ThreadLocal<List<Key>> toDeleteTL = new ThreadLocal<>();
 
     /**
      * The default constructor
@@ -86,55 +86,75 @@ public class EntityPoolThreadLocal
     public <K extends IncompleteKey> void put( FullEntity<K> ent )
     {
         logger.info( "Adding entity into the put-pool" );
-        if ( toPut.size() >= maxItems )
+        if ( toPut().size() >= maxItems )
         {
             flushPuts();
         }
-        toPut.add( ent );
+        toPut().add( ent );
     }
 
     public void delete( Key key )
     {
-        if ( toDelete.size() >= maxItems )
+        if ( toDelete().size() >= maxItems )
         {
             flushDeletes();
         }
-        toDelete.add( key );
+        toDelete().add( key );
     }
 
     public void flush()
     {
         try
         {
-            if ( !toDelete.isEmpty() )
+            if ( !toDelete().isEmpty() )
             {
                 flushDeletes();
             }
-            if ( !toPut.isEmpty() )
+            if ( !toPut().isEmpty() )
             {
                 flushPuts();
             }
         }
         catch ( ConcurrentModificationException e )
         {
-            logger.info( "::PUT POOL (" + toPut.size() + " items)" );
-            logger.info( "::DELETE POOL (" + toDelete.size() + " items)" );
+            logger.info( "::PUT POOL (" + toPut().size() + " items)" );
+            logger.info( "::DELETE POOL (" + toDelete().size() + " items)" );
             throw e;
         }
     }
 
+    private List<FullEntity> toPut()
+    {
+        if ( toPutTL.get() == null )
+        {
+            toPutTL.set( new ArrayList<FullEntity>() );
+        }
+
+        return toPutTL.get();
+    }
+
+    private List<Key> toDelete()
+    {
+        if ( toDeleteTL.get() == null )
+        {
+            toDeleteTL.set( new ArrayList<Key>() );
+        }
+
+        return toDeleteTL.get();
+    }
+
     private void flushPuts()
     {
-        logger.info( "Flushing the put-pool (" + toPut.size() + " items)" );
-        ds.put( toPut.toArray( new FullEntity[]{} ) );
-        toPut.clear();
+        logger.info( "Flushing the put-pool (" + toPut().size() + " items)" );
+        ds.put( toPut().toArray( new FullEntity[]{} ) );
+        toPut().clear();
     }
 
     private void flushDeletes()
     {
-        logger.info( "Flushing the delete-pool (" + toDelete.size() + " items)" );
-        ds.delete( toDelete.toArray( new Key[]{} ) );
-        toDelete.clear();
+        logger.info( "Flushing the delete-pool (" + toDelete().size() + " items)" );
+        ds.delete( toDelete().toArray( new Key[]{} ) );
+        toDelete().clear();
     }
 
 }

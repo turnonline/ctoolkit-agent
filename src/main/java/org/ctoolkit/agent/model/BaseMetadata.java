@@ -25,16 +25,15 @@ import com.google.cloud.datastore.IncompleteKey;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyValue;
 import com.google.inject.Injector;
+import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
-import org.ctoolkit.agent.service.impl.datastore.ShardedCounter;
 
 import javax.inject.Inject;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Base metadata entity.
@@ -45,8 +44,14 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         extends BaseEntity
         implements Convertible
 {
+    private static final String JOB_URL = "https://console.developers.google.com/project/{0}/dataflow/job/{1}";
+
     @Inject
     private static Injector injector;
+
+    @Inject
+    @ProjectId
+    private static String projectId;
 
     private Key key;
 
@@ -88,6 +93,11 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
     public void setJobId( String jobId )
     {
         this.jobId = jobId;
+    }
+
+    public String getJobUrl()
+    {
+        return MessageFormat.format( JOB_URL, projectId, jobId );
     }
 
     public List<ITEM> getItems()
@@ -175,51 +185,35 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         {
             item.setState( JobState.RUNNING );
         }
-
-        ShardedCounter.clearCounters( getClass().getSimpleName(), getId() );
     }
 
-    public int getProcessedItems()
+    public int getProcessedOkItems()
     {
-        if ( getId() == null )
-        {
-            return 0;
-        }
-        return ( int ) ShardedCounter.okCounter( getClass().getSimpleName(), getId() ).getCount();
+        return getProcessedItems( JobState.DONE );
     }
 
     public int getProcessedErrorItems()
     {
+        return getProcessedItems( JobState.FAILED );
+    }
+
+    private int getProcessedItems( JobState state )
+    {
         if ( getId() == null )
         {
             return 0;
         }
-        return ( int ) ShardedCounter.errorCounter( getClass().getSimpleName(), getId() ).getCount();
-    }
 
-    @Deprecated
-    public Map<String, String> getJobContext()
-    {
-        Map<String, String> ctx = new HashMap<>();
-        for ( String item : jobContext )
+        int total = 0;
+        for ( ITEM item : getItems() )
         {
-            String[] split = item.split( "\\::" );
-            ctx.put( split[0], split[1] );
+            if ( state == item.getState() )
+            {
+                total++;
+            }
         }
 
-        return ctx;
-    }
-
-    @Deprecated
-    public void clearJobContext()
-    {
-        jobContext = new ArrayList<>();
-    }
-
-    @Deprecated
-    public void putToJobContext( String key, String value )
-    {
-        jobContext.add( key + "::" + value );
+        return total;
     }
 
     @Override

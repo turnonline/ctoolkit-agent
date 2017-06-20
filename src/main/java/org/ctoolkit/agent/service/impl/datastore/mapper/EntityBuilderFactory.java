@@ -86,9 +86,8 @@ public class EntityBuilderFactory
 
             if ( parentKey != null )
             {
-                // build the entity key
                 Key key = Key
-                        .newBuilder( parentKey, changeSetEntity.getParentKind(), changeSetEntity.getId() )
+                        .newBuilder( parentKey, changeSetEntity.getKind(), changeSetEntity.getId() )
                         .build();
 
                 entityBuilder = Entity.newBuilder( key );
@@ -109,7 +108,7 @@ public class EntityBuilderFactory
             if ( parentKey != null )
             {
                 Key key = Key
-                        .newBuilder( parentKey, changeSetEntity.getParentKind(), changeSetEntity.getId() )
+                        .newBuilder( parentKey, changeSetEntity.getKind(), changeSetEntity.getName() )
                         .build();
 
                 entityBuilder = Entity.newBuilder( key );
@@ -123,6 +122,7 @@ public class EntityBuilderFactory
                 entityBuilder = Entity.newBuilder( key );
             }
         }
+        // let the datastore allocate id
         else
         {
             Key key = datastore

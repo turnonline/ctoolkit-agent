@@ -18,6 +18,7 @@
 
 package org.ctoolkit.agent.config;
 
+import com.google.api.services.dataflow.Dataflow;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
@@ -98,6 +99,8 @@ import org.ctoolkit.restapi.client.appengine.FacadeAppEngineModule;
 import org.ctoolkit.restapi.client.identity.verifier.IdentityVerifierModule;
 import org.ctoolkit.restapi.client.provider.AuthKeyProvider;
 import org.ctoolkit.services.common.PropertyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -114,6 +117,8 @@ public class AgentModule
         extends AbstractModule
 {
     public static final String CONFIG_JSON_CREDENTIALS = "ctoolkit.agent.jsonCredentials";
+
+    private static final Logger logger = LoggerFactory.getLogger( AgentModule.class );
 
     @Override
     protected void configure()
@@ -141,7 +146,7 @@ public class AgentModule
 
         bind( AuthKeyProvider.class ).to( JsonAuthKeyProvider.class ).in( Singleton.class );
         bind( Checker.class ).to( AudienceChecker.class );
-        bind( EntityPool.class ).to( EntityPoolThreadLocal.class ).in( RequestScoped.class );
+        bind( EntityPool.class ).to( EntityPoolThreadLocal.class );
         bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
         bind( ChangeSetEntityToEntityBuilderMapper.class ).in( Singleton.class );
@@ -153,6 +158,7 @@ public class AgentModule
         bind( EventBus.class ).in( Singleton.class );
         bind( AuditEvent.class ).in( Singleton.class );
         bind( AuditSubscription.class ).asEagerSingleton();
+
         AuditInterceptor auditInterceptor = new AuditInterceptor();
         requestInjection( auditInterceptor );
         bindInterceptor(
@@ -262,7 +268,7 @@ public class AgentModule
     @Provides
     @Singleton
     @StagingLocation
-    public String provideBucketName( @BucketName String bucketName )
+    public String provideStagingLocation( @BucketName String bucketName )
     {
         return "gs://staging." + bucketName + "/dataflow-staging";
     }
@@ -278,7 +284,7 @@ public class AgentModule
     @Provides
     public PipelineOptions providePipelineOptions( @ProjectId String projectId, @StagingLocation String stagingLocation )
     {
-        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )
+        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production || true ) // TODO: revert '|| true'
         {
             // The app is running on App Engine...
             DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );
@@ -292,6 +298,17 @@ public class AgentModule
         {
             return PipelineOptionsFactory.create();
         }
+    }
+
+    @Provides
+    @Singleton
+    public Dataflow provideDataflow( PipelineOptions pipelineOptions )
+    {
+        if ( pipelineOptions instanceof DataflowPipelineOptions )
+        {
+            return ( ( DataflowPipelineOptions ) pipelineOptions ).getDataflowClient();
+        }
+        return null;
     }
 
     private static class AudienceChecker

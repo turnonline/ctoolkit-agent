@@ -25,9 +25,11 @@ package org.ctoolkit.agent.model;
  */
 public abstract class JobInfo
 {
-    private String id;
+    private Long id;
 
     private String jobId;
+
+    private String jobUrl;
 
     private int totalItems;
 
@@ -39,12 +41,12 @@ public abstract class JobInfo
 
     private String stackTrace;
 
-    public String getId()
+    public Long getId()
     {
         return id;
     }
 
-    public void setId( String id )
+    public void setId( Long id )
     {
         this.id = id;
     }
@@ -57,6 +59,16 @@ public abstract class JobInfo
     public void setJobId( String jobId )
     {
         this.jobId = jobId;
+    }
+
+    public String getJobUrl()
+    {
+        return jobUrl;
+    }
+
+    public void setJobUrl( String jobUrl )
+    {
+        this.jobUrl = jobUrl;
     }
 
     public int getTotalItems()
@@ -113,8 +125,9 @@ public abstract class JobInfo
     public String toString()
     {
         return "JobInfo{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", jobId='" + jobId + '\'' +
+                ", jobUrl='" + jobUrl + '\'' +
                 ", totalItems=" + totalItems +
                 ", processedItems=" + processedItems +
                 ", processedErrorItems=" + processedErrorItems +

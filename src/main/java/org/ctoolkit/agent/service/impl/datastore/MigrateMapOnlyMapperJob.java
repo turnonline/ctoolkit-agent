@@ -21,7 +21,6 @@ package org.ctoolkit.agent.service.impl.datastore;
 import com.google.api.client.util.Base64;
 import com.google.appengine.api.datastore.Entity;
 import org.ctoolkit.agent.model.ExportMetadata;
-import org.ctoolkit.restapi.client.Identifier;
 import org.ctoolkit.restapi.client.RequestCredential;
 import org.ctoolkit.restapi.client.ResourceFacade;
 import org.ctoolkit.restapi.client.agent.model.DataType;
@@ -55,13 +54,13 @@ public class MigrateMapOnlyMapperJob
 //                KeyFactory.keyToString( item.getParent() ), ExportMetadata.class ) );
 
         ExportMetadata exportMetadata = null;
-        String gtoken = exportMetadata.getJobContext().get( "gtoken" );
-        String rootUrl = exportMetadata.getJobContext().get( "rootUrl" );
-        String importKey = exportMetadata.getJobContext().get( "importKey" );
+//        String gtoken = exportMetadata.getJobContext().get( "gtoken" );
+//        String rootUrl = exportMetadata.getJobContext().get( "rootUrl" );
+//        String importKey = exportMetadata.getJobContext().get( "importKey" );
 
         RequestCredential credential = new RequestCredential();
-        credential.setApiKey( gtoken );
-        credential.setEndpointUrl( rootUrl );
+//        credential.setApiKey( gtoken );
+//        credential.setEndpointUrl( rootUrl );
 
         // create new import item
         ImportItem importItem = new ImportItem();
@@ -73,7 +72,7 @@ public class MigrateMapOnlyMapperJob
         try
         {
             // parent import key as identifier
-            facade.insert( importItem, new Identifier( importKey ) ).config( credential ).execute();
+//            facade.insert( importItem, new Identifier( importKey ) ).config( credential ).execute();
         }
         catch ( Exception e )
         {

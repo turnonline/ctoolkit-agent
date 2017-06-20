@@ -71,12 +71,12 @@ public class ImportMapOnlyMapperJob
         try
         {
             changeSetService.importChangeSet( changeSet );
-            jobState = JobState.COMPLETED_SUCCESSFULLY;
+            jobState = JobState.DONE;
         }
         catch ( Exception e )
         {
             error = new Text( StackTraceResolver.resolve( e ) );
-            jobState = JobState.STOPPED_BY_ERROR;
+            jobState = JobState.FAILED;
         }
 
         // update state

@@ -38,7 +38,7 @@ public class ImportBatch
 
     private String name;
 
-    private String mapReduceJobId;
+    private String jobId;
 
     private String token;
 
@@ -71,14 +71,14 @@ public class ImportBatch
         this.name = name;
     }
 
-    public String getMapReduceJobId()
+    public String getJobId()
     {
-        return mapReduceJobId;
+        return jobId;
     }
 
-    public void setMapReduceJobId( String mapReduceJobId )
+    public void setJobId( String jobId )
     {
-        this.mapReduceJobId = mapReduceJobId;
+        this.jobId = jobId;
     }
 
     public String getToken()
@@ -139,7 +139,7 @@ public class ImportBatch
         return "Import{" +
                 "id='" + id + '\'' +
                 ", name=" + name +
-                ", mapReduceJobId='" + mapReduceJobId + '\'' +
+                ", jobId='" + jobId + '\'' +
                 ", token='" + token + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +

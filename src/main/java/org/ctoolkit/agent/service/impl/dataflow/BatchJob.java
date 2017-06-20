@@ -37,7 +37,7 @@ public abstract class BatchJob
 
         int shardCount = 10; // TODO: what value?
 
-        if ( jobState == JobState.COMPLETED_SUCCESSFULLY )
+        if ( jobState == JobState.DONE )
         {
             ShardedCounter.okCounter( parentKey.getKind(), parentKey.getId(), shardCount ).increment();
         }

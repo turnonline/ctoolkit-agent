@@ -44,7 +44,6 @@ import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
 import org.ctoolkit.agent.service.impl.datastore.rule.IChangeRule;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,35 +66,31 @@ public class DataAccessBean
     private static final int DEFAULT_COUNT_LIMIT = 100;
 
     @Deprecated
-    private final DatastoreService datastoreService;
+    private DatastoreService datastoreService;
 
     private final Datastore datastore;
 
-    private final Provider<EntityPool> pool;
+    private final EntityPool pool;
 
     private final MapperFacade mapper;
 
-    private final ChangeRuleEngine changeRuleEngine;
+    private ChangeRuleEngine changeRuleEngine;
 
     @Inject
-    protected DataAccessBean( DatastoreService datastoreService,
-                              Datastore datastore,
-                              Provider<EntityPool> pool,
-                              MapperFacade mapper,
-                              ChangeRuleEngine changeRuleEngine )
+    protected DataAccessBean( Datastore datastore,
+                              EntityPool pool,
+                              MapperFacade mapper )
     {
-        this.datastoreService = datastoreService;
         this.datastore = datastore;
         this.pool = pool;
         this.mapper = mapper;
-        this.changeRuleEngine = changeRuleEngine;
     }
 
     @Override
     public void addEntity( ChangeSetEntity csEntity )
     {
         com.google.cloud.datastore.Entity entity = mapper.map( csEntity, com.google.cloud.datastore.Entity.Builder.class ).build();
-        pool.get().put( entity );
+        pool.put( entity );
     }
 
     @Override
@@ -142,18 +137,18 @@ public class DataAccessBean
 
             while ( results.hasNext() )
             {
-                pool.get().delete( results.next() );
+                pool.delete( results.next() );
                 items++;
             }
 
             if ( items < DEFAULT_COUNT_LIMIT )
             {
-                pool.get().flush();
+                pool.flush();
                 break; // break while cycle - no more items to process
             }
         }
 
-        pool.get().flush();
+        pool.flush();
     }
 
     @Override
@@ -205,7 +200,7 @@ public class DataAccessBean
             }
         }
 
-        pool.get().flush();
+        pool.flush();
     }
 
     @Override
@@ -238,7 +233,7 @@ public class DataAccessBean
             }
         }
 
-        pool.get().flush();
+        pool.flush();
     }
 
     @Override
@@ -336,6 +331,6 @@ public class DataAccessBean
     @Override
     public void flushPool()
     {
-        pool.get().flush();
+        pool.flush();
     }
 }
