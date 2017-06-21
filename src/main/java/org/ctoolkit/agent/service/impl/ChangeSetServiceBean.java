@@ -35,6 +35,7 @@ import com.googlecode.objectify.VoidWork;
 import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.annotation.ProjectId;
+import org.ctoolkit.agent.exception.ObjectNotFoundException;
 import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
@@ -66,6 +67,7 @@ import org.ctoolkit.agent.service.impl.event.Auditable;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -331,41 +333,15 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.START_JOB )
-    // TODO: refactor to dataflow
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
-        /*
-        // check if mapReduceJob is running
-        checkJobAndRemoveIfExists( metadata.getJobId() );
-
-        MapSpecificationProvider mapSpecificationProvider;
+        // TODO: check if job is running
 
         if ( metadata.getClass() == ImportMetadata.class )
         {
-            mapSpecificationProvider = jobSpecificationFactory.createImportJobSpecification( metadata.getKey() );
+            ImportBatchTask task = new ImportBatchTask( metadata.getId() );
+            task.run();
         }
-        else if ( metadata.getClass() == ExportMetadata.class )
-        {
-            mapSpecificationProvider = jobSpecificationFactory.createExportJobSpecification( metadata.getKey() );
-        }
-        else if ( metadata.getClass() == ChangeMetadata.class )
-        {
-            mapSpecificationProvider = jobSpecificationFactory.createChangeJobSpecification( metadata.getKey() );
-        }
-        else
-        {
-            throw new IllegalArgumentException( "Unknown metadata type: " + metadata.getClass() );
-        }
-
-        String id = MapJob.start( mapSpecificationProvider.get(), mapReduceSettings );
-        metadata.setJobId( id );*/
-
-//        metadata.reset();
-//        metadata.save();
-
-        // TODO: refactor to assisted injection
-        ImportBatchTask task = new ImportBatchTask( metadata.getId() );
-        task.run();
     }
 
     @Override
@@ -380,7 +356,7 @@ public class ChangeSetServiceBean
         jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() );
         jobInfo.setTotalItems( metadata.getItemsCount() );
 
-        if (metadata.getJobId() != null)
+        if ( metadata.getJobId() != null )
         {
             try
             {
@@ -400,22 +376,26 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.CANCEL_JOB )
-    // TODO: refactor to daaflow
     public <M extends BaseMetadata> void cancelJob( M metadata )
     {
-//        if ( metadata.getJobId() == null )
-//        {
-//            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
-//        }
-//
-//        try
-//        {
-//            pipelineService.cancelPipeline( metadata.getJobId() );
-//        }
-//        catch ( NoSuchObjectException e )
-//        {
-//            throw new ObjectNotFoundException( "Map reduce job not found for id: " + metadata.getJobId(), e );
-//        }
+        if ( metadata.getJobId() == null )
+        {
+            throw new ObjectNotFoundException( "Map reduce job not created yet for: " + metadata );
+        }
+
+        try
+        {
+            Job content = new Job();
+            content.setProjectId( projectId );
+            content.setId( metadata.getJobId() );
+            content.setRequestedState( JobState.CANCELLED.toDataflowState() );
+
+            dataflow.projects().jobs().update( projectId, metadata.getJobId(), content ).execute();
+        }
+        catch ( IOException e )
+        {
+            throw new ObjectNotFoundException( "Unable to cancel job for id: " + metadata.getJobId(), e );
+        }
     }
 
     // ------------------------------------------

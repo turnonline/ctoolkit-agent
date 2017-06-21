@@ -123,20 +123,11 @@ public class AgentModule
     @Override
     protected void configure()
     {
-        // install map reduce job specification providers factory
-//        install( new FactoryModuleBuilder()
-//                .implement( MapSpecificationProvider.class, ImportJob.class, ImportJobMapSpecificationProvider.class )
-//                .implement( MapSpecificationProvider.class, ChangeJob.class, ChangeJobMapSpecificationProvider.class )
-//                .implement( MapSpecificationProvider.class, ExportJob.class, ExportJobMapSpecificationProvider.class )
-//                .implement( MapSpecificationProvider.class, MigrateJob.class, MigrateJobMapSpecificationProvider.class )
-//                .build( JobSpecificationFactory.class ) );
-
         install( new FacadeAppEngineModule() );
         install( new IdentityVerifierModule() );
-//        install( new CtoolkitServicesAppEngineModule() );
-//        install( new CtoolkitServicesAppEngineStorageModule() );
-//        install( new CtoolkitCommonServicesModule() );
-        install( new CtoolkitApiAgentModule() );
+
+        // TODO: it throws MalformedParameterizedTypeException
+//        install( new CtoolkitApiAgentModule() );
 
         // define api credential
         ApiCredential credential = new ApiCredential( CtoolkitApiAgentModule.API_PREFIX );
@@ -308,6 +299,7 @@ public class AgentModule
         {
             return ( ( DataflowPipelineOptions ) pipelineOptions ).getDataflowClient();
         }
+
         return null;
     }
 
