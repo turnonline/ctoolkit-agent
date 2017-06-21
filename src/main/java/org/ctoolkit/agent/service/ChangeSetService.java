@@ -30,6 +30,7 @@ import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
+import org.ctoolkit.agent.service.impl.event.AuditEvent;
 
 import java.util.List;
 
@@ -175,6 +176,13 @@ public interface ChangeSetService
     // ------------------------------------------
     // -- audits
     // ------------------------------------------
+
+    /**
+     * Create metadata audit
+     *
+     * @param event {@link AuditEvent}
+     */
+    void create( AuditEvent event );
 
     /**
      * Filter {@link MetadataAudit} by specified filter

@@ -484,7 +484,7 @@
         <endpoints.service.name>agent.endpoints.${gcp.projectId}.cloud.goog</endpoints.service.name>
         <ctoolkit-library-bom.version>4</ctoolkit-library-bom.version>
         <ctoolkit-project-bom.version>1.9.54-SNAPSHOT</ctoolkit-project-bom.version>
-        <endpoints.framework.version>2.0.4</endpoints.framework.version>
+        <endpoints.framework.version>2.0.7</endpoints.framework.version>
         <endpoints.management.version>1.0.2</endpoints.management.version>
         <appengine.maven.plugin.version>1.2.1</appengine.maven.plugin.version>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>

@@ -26,6 +26,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.cloud.Timestamp;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.EntityQuery;
+import com.google.cloud.datastore.Query;
+import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.common.base.Predicate;
@@ -51,6 +57,7 @@ import org.ctoolkit.agent.model.MetadataAudit;
 import org.ctoolkit.agent.model.MetadataAudit.Action;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
+import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeJob;
 import org.ctoolkit.agent.resource.ChangeSet;
@@ -61,14 +68,20 @@ import org.ctoolkit.agent.resource.ExportJob;
 import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.DataAccess;
+import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
+import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
+import org.ctoolkit.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.agent.service.impl.event.Auditable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,11 +98,19 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 public class ChangeSetServiceBean
         implements ChangeSetService
 {
+    private static Logger log = LoggerFactory.getLogger( ChangeSetServiceBean.class );
+
     private final Dataflow dataflow;
 
     private final DataAccess dataAccess;
 
+    private final KeyProvider keyProvider;
+
+    private final Datastore datastore;
+
     private final Storage storage;
+
+    private final Provider<RestContext> restContextProvider;
 
     private final Set<String> systemKinds = new HashSet<>();
 
@@ -102,13 +123,19 @@ public class ChangeSetServiceBean
     @Inject
     public ChangeSetServiceBean( @Nullable Dataflow dataflow,
                                  DataAccess dataAccess,
+                                 KeyProvider keyProvider,
+                                 Datastore datastore,
                                  Storage storage,
+                                 @Nullable Provider<RestContext> restContextProvider,
                                  @BucketName String bucketName,
                                  @ProjectId String projectId )
     {
         this.dataflow = dataflow;
+        this.keyProvider = keyProvider;
         this.dataAccess = dataAccess;
+        this.datastore = datastore;
         this.storage = storage;
+        this.restContextProvider = restContextProvider;
         this.bucketName = bucketName;
         this.projectId = projectId;
 
@@ -203,7 +230,7 @@ public class ChangeSetServiceBean
         Long id = metadataKey.getId();
 
         com.google.cloud.datastore.Key key = com.google.cloud.datastore.Key.newBuilder( projectId, kind, id ).build();
-        return dataAccess.find( metadataKey.getMetadataClass(), key );
+        return ModelConverter.convert( metadataKey.getMetadataClass(), datastore.get( key ) );
     }
 
     @Override
@@ -293,7 +320,7 @@ public class ChangeSetServiceBean
     @Override
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI get( MetadataItemKey<M, MI> metadataItemKey )
     {
-        MI item = dataAccess.find( metadataItemKey.getMetadataItemClass(), metadataItemKey.getKey() );
+        MI item = ModelConverter.convert( metadataItemKey.getMetadataItemClass(), datastore.get( metadataItemKey.getKey() ) );
 
         if ( item.getFileName() != null )
         {
@@ -362,11 +389,10 @@ public class ChangeSetServiceBean
             {
                 Job job = dataflow.projects().jobs().get( projectId, metadata.getJobId() ).execute();
                 jobInfo.setState( JobState.valueOf( job.getCurrentState().replace( "JOB_STATE_", "" ) ) );
-                // TODO: try to obtain error if occured
             }
             catch ( Exception e )
             {
-                e.printStackTrace();
+                log.error( "Error occur during getting job info", e );
                 jobInfo.setState( JobState.UNKNOWN );
             }
         }
@@ -511,6 +537,22 @@ public class ChangeSetServiceBean
         return dataAccess.exportChangeSet( entity );
     }
 
+    @Override
+    public void create( AuditEvent event )
+    {
+        com.google.cloud.datastore.Entity.Builder builder = com.google.cloud.datastore.Entity.newBuilder( keyProvider.key( new MetadataAudit() ) );
+
+        builder.set( "ownerId", event.getOwner().getId() ); // TODO: solve owner key
+        builder.set( "action", event.getAction().name() );
+        builder.set( "operation", event.getOperation().name() );
+        builder.set( "createDate", Timestamp.of( new Date() ) );
+        builder.set( "createdBy", restContextProvider.get().getUserEmail() );
+        builder.set( "userPhotoUrl", restContextProvider.get().getPhotoUrl() );
+        builder.set( "userDisplayName", restContextProvider.get().getDisplayName() );
+
+        datastore.put( builder.build() );
+    }
+
     // ------------------------------------------
     // -- audits
     // ------------------------------------------
@@ -527,10 +569,26 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    // TODO: refactor to datastore cloud
     public List<KindMetaData> kinds()
     {
-        List<KindMetaData> kinds = dataAccess.kinds();
+        List<KindMetaData> kinds = new ArrayList<>();
+
+        EntityQuery query = Query
+                .newEntityQueryBuilder()
+                .setKind( "__kind__" )
+                .build();
+        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( query );
+
+        while ( results.hasNext() )
+        {
+            com.google.cloud.datastore.Entity e = results.next();
+
+            KindMetaData kind = new KindMetaData();
+            kind.setKind( e.getKey().getName() );
+            kind.setNamespace( e.getKey().getNamespace() );
+            kinds.add( kind );
+        }
+
         Iterable<KindMetaData> result = Iterables.filter( kinds, new Predicate<KindMetaData>()
         {
             @Override
@@ -552,9 +610,32 @@ public class ChangeSetServiceBean
     }
 
     @Override
-    // TODO: refactor to datastore cloud
     public List<PropertyMetaData> properties( String kind )
     {
-        return dataAccess.properties( kind );
+        List<PropertyMetaData> properties = new ArrayList<>();
+
+        com.google.cloud.datastore.Key ancestorKey = datastore.newKeyFactory().setKind( "__kind__" ).newKey( kind );
+
+        EntityQuery query = Query
+                .newEntityQueryBuilder()
+                .setKind( "__property__" )
+                .setFilter( PropertyFilter.hasAncestor( ancestorKey ) )
+                .build();
+        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( query );
+
+        // Build list of query results
+        while ( results.hasNext() )
+        {
+            com.google.cloud.datastore.Entity e = results.next();
+
+            PropertyMetaData property = new PropertyMetaData();
+            property.setProperty( e.getKey().getName() );
+            property.setType( e.getList( "property_representation" ).get( 0 ).get().toString().toLowerCase() );
+            property.setKind( e.getKey().getParent().getName() );
+            property.setNamespace( e.getKey().getNamespace() );
+            properties.add( property );
+        }
+
+        return properties;
     }
 }

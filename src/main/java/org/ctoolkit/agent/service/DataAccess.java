@@ -21,9 +21,7 @@ package org.ctoolkit.agent.service;
 import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
-import org.ctoolkit.agent.model.KindMetaData;
 import org.ctoolkit.agent.model.MetadataAudit;
-import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.resource.ChangeSetEntity;
 
@@ -34,6 +32,7 @@ import java.util.List;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
+@Deprecated
 public interface DataAccess
 {
     /**
@@ -41,6 +40,7 @@ public interface DataAccess
      *
      * @param entity the entity to be added
      */
+    @Deprecated
     void addEntity( ChangeSetEntity entity );
 
     /**
@@ -49,6 +49,7 @@ public interface DataAccess
      * @param entityName name of entity
      * @return {@link ChangeSet}
      */
+    @Deprecated
     ChangeSet exportChangeSet( String entityName );
 
     /**
@@ -56,6 +57,7 @@ public interface DataAccess
      *
      * @param kind the entity kind to be cleared
      */
+    @Deprecated
     void clearEntity( String kind );
 
     /**
@@ -63,6 +65,7 @@ public interface DataAccess
      *
      * @param kind the entity kind to be removed
      */
+    @Deprecated
     void dropEntity( String kind );
 
     /**
@@ -73,6 +76,7 @@ public interface DataAccess
      * @param newType  the type of the property
      * @param newVal   the value of the property
      */
+    @Deprecated
     void addEntityProperty( String kind, String property, String newType, String newVal );
 
     /**
@@ -84,6 +88,7 @@ public interface DataAccess
      * @param newType  the type of the property to be changed
      * @param newVal   the value of the property to be changed
      */
+    @Deprecated
     void changeEntityProperty( String kind, String property, String newName, String newType, String newVal );
 
     /**
@@ -92,6 +97,7 @@ public interface DataAccess
      * @param kind     the entity kind to be modified
      * @param property the name of the property to be removed
      */
+    @Deprecated
     void removeEntityProperty( String kind, String property );
 
     /**
@@ -102,6 +108,7 @@ public interface DataAccess
      * @param <T>  entity type
      * @return entity
      */
+    @Deprecated
     <T> T find( Class<T> type, com.google.cloud.datastore.Key key);
 
     /**
@@ -111,6 +118,7 @@ public interface DataAccess
      * @param <T>    entity type
      * @return entity
      */
+    @Deprecated
     <T extends BaseMetadata> List<T> find( BaseMetadataFilter<T> filter );
 
     /**
@@ -119,25 +127,12 @@ public interface DataAccess
      * @param filter filter for list
      * @return entity
      */
+    @Deprecated
     List<MetadataAudit> find( AuditFilter filter );
-
-    /**
-     * Return list of {@link KindMetaData}
-     *
-     * @return list of {@link KindMetaData}
-     */
-    List<KindMetaData> kinds();
-
-    /**
-     * Return list of {@link PropertyMetaData}
-     *
-     * @param kind entity kind
-     * @return list of {@link PropertyMetaData}
-     */
-    List<PropertyMetaData> properties( String kind );
 
     /**
      * Flush pool
      */
+    @Deprecated
     void flushPool();
 }

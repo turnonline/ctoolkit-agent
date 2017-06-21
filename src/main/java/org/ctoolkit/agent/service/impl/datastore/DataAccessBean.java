@@ -18,12 +18,6 @@
 
 package org.ctoolkit.agent.service.impl.datastore;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.Entities;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.KeyQuery;
 import com.google.cloud.datastore.QueryResults;
@@ -33,21 +27,17 @@ import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
-import org.ctoolkit.agent.model.KindMetaData;
 import org.ctoolkit.agent.model.MetadataAudit;
 import org.ctoolkit.agent.model.ModelConverter;
-import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.resource.ChangeSetEntity;
 import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
-import org.ctoolkit.agent.service.impl.datastore.rule.IChangeRule;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /**
@@ -64,9 +54,6 @@ public class DataAccessBean
      */
     // TODO: configurable
     private static final int DEFAULT_COUNT_LIMIT = 100;
-
-    @Deprecated
-    private DatastoreService datastoreService;
 
     private final Datastore datastore;
 
@@ -161,79 +148,79 @@ public class DataAccessBean
     // TODO: refactor to cloud datastore
     public void changeEntityProperty( String kind, String property, String newName, String newType, String newVal )
     {
-        int offset = 0;
-
-        while ( true )
-        {
-            Query query = new Query( kind );
-            PreparedQuery prepQuery = datastoreService.prepare( query );
-            FetchOptions fetchOptions = withLimit( DEFAULT_COUNT_LIMIT );
-            fetchOptions.offset( offset );
-
-            List<Entity> entList = prepQuery.asList( fetchOptions );
-            if ( !entList.isEmpty() )
-            {
-                for ( Entity entity : entList )
-                {
-                    // property exists - change property
-                    IChangeRule changeRule = changeRuleEngine.provideRule( newName, newType, newVal );
-                    String name = changeRule.getName( property, newName );
-                    Object value = changeRule.getValue( entity.getProperty( property ), newType, newVal );
-
-                    // remove old property if exists
-                    if ( entity.getProperties().containsKey( property ) )
-                    {
-                        entity.removeProperty( property );
-                    }
-
-                    // create new migrated property
-                    entity.setProperty( name, value );
-
-                    // pool.get().put( entity );
-                }
-
-                offset += DEFAULT_COUNT_LIMIT;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        pool.flush();
+//        int offset = 0;
+//
+//        while ( true )
+//        {
+//            Query query = new Query( kind );
+//            PreparedQuery prepQuery = datastoreService.prepare( query );
+//            FetchOptions fetchOptions = withLimit( DEFAULT_COUNT_LIMIT );
+//            fetchOptions.offset( offset );
+//
+//            List<Entity> entList = prepQuery.asList( fetchOptions );
+//            if ( !entList.isEmpty() )
+//            {
+//                for ( Entity entity : entList )
+//                {
+//                    // property exists - change property
+//                    IChangeRule changeRule = changeRuleEngine.provideRule( newName, newType, newVal );
+//                    String name = changeRule.getName( property, newName );
+//                    Object value = changeRule.getValue( entity.getProperty( property ), newType, newVal );
+//
+//                    // remove old property if exists
+//                    if ( entity.getProperties().containsKey( property ) )
+//                    {
+//                        entity.removeProperty( property );
+//                    }
+//
+//                    // create new migrated property
+//                    entity.setProperty( name, value );
+//
+//                    // pool.get().put( entity );
+//                }
+//
+//                offset += DEFAULT_COUNT_LIMIT;
+//            }
+//            else
+//            {
+//                break;
+//            }
+//        }
+//
+//        pool.flush();
     }
 
     @Override
     // TODO: refactor to cloud datastore
     public void removeEntityProperty( String kind, String property )
     {
-        int offset = 0;
-
-        while ( true )
-        {
-            Query query = new Query( kind );
-            PreparedQuery pq = datastoreService.prepare( query );
-            FetchOptions fetchOptions = withLimit( DEFAULT_COUNT_LIMIT );
-            fetchOptions.offset( offset );
-
-            List<Entity> entList = pq.asQueryResultList( fetchOptions );
-            if ( !entList.isEmpty() )
-            {
-                for ( Entity entity : entList )
-                {
-                    entity.removeProperty( property );
-                    // pool.get().put( entity );
-                }
-
-                offset += DEFAULT_COUNT_LIMIT;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        pool.flush();
+//        int offset = 0;
+//
+//        while ( true )
+//        {
+//            Query query = new Query( kind );
+//            PreparedQuery pq = datastoreService.prepare( query );
+//            FetchOptions fetchOptions = withLimit( DEFAULT_COUNT_LIMIT );
+//            fetchOptions.offset( offset );
+//
+//            List<Entity> entList = pq.asQueryResultList( fetchOptions );
+//            if ( !entList.isEmpty() )
+//            {
+//                for ( Entity entity : entList )
+//                {
+//                    entity.removeProperty( property );
+//                    // pool.get().put( entity );
+//                }
+//
+//                offset += DEFAULT_COUNT_LIMIT;
+//            }
+//            else
+//            {
+//                break;
+//            }
+//        }
+//
+//        pool.flush();
     }
 
     @Override
@@ -285,47 +272,6 @@ public class DataAccessBean
         }
 
         return query.list();
-    }
-
-    @Override
-    // TODO: refactor to cloud datastore
-    public List<KindMetaData> kinds()
-    {
-        List<KindMetaData> kinds = new ArrayList<>();
-        Query q = new Query( Entities.KIND_METADATA_KIND );
-
-        for ( Entity e : datastoreService.prepare( q ).asIterable() )
-        {
-            KindMetaData kind = new KindMetaData();
-            kind.setKind( e.getKey().getName() );
-            kind.setNamespace( e.getKey().getNamespace() );
-            kinds.add( kind );
-        }
-
-        return kinds;
-    }
-
-    @Override
-    // TODO: refactor to cloud datastore
-    public List<PropertyMetaData> properties( String kind )
-    {
-        ArrayList<PropertyMetaData> properties = new ArrayList<>();
-        Query q = new Query( Entities.PROPERTY_METADATA_KIND );
-        q.setAncestor( Entities.createKindKey( kind ) );
-
-
-        //Build list of query results
-        for ( Entity e : datastoreService.prepare( q ).asIterable() )
-        {
-            PropertyMetaData property = new PropertyMetaData();
-            property.setProperty( e.getKey().getName() );
-            property.setType( ( ( List ) e.getProperty( "property_representation" ) ).get( 0 ).toString().toLowerCase() );
-            property.setKind( e.getParent().getName() );
-            property.setNamespace( e.getKey().getNamespace() );
-            properties.add( property );
-        }
-
-        return properties;
     }
 
     @Override
