@@ -16,23 +16,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.annotation;
+package org.ctoolkit.agent.service.impl.event;
 
-import com.google.inject.BindingAnnotation;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.ctoolkit.agent.service.ChangeSetService;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
 
 /**
- * Annotation for mark map reduce MapSpecification as import job specification
+ * Audit subscription
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Target( {ElementType.TYPE, ElementType.PARAMETER, ElementType.METHOD} )
-@Retention( RetentionPolicy.RUNTIME )
-@BindingAnnotation
-public @interface ImportJob
+public class AuditSubscription
 {
+    private final ChangeSetService changeSetService;
+
+    @Inject
+    public AuditSubscription( EventBus eventBus,
+                              ChangeSetService changeSetService )
+    {
+        eventBus.register( this );
+
+        this.changeSetService = changeSetService;
+    }
+
+    @Subscribe
+    public void handle( AuditEvent event )
+    {
+        changeSetService.create( event );
+    }
 }

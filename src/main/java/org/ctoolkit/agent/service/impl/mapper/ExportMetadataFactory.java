@@ -16,16 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.service.impl.datastore.mapper;
+package org.ctoolkit.agent.service.impl.mapper;
 
+import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.Key;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.ObjectFactory;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.model.ExportMetadata;
+import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.resource.ExportBatch;
-import org.ctoolkit.agent.service.DataAccess;
 
 import javax.inject.Inject;
 
@@ -35,14 +36,14 @@ import javax.inject.Inject;
 public class ExportMetadataFactory
         implements ObjectFactory<ExportMetadata>
 {
-    private final DataAccess dataAccess;
+    private final Datastore datastore;
 
     private final String projectId;
 
     @Inject
-    public ExportMetadataFactory( DataAccess dataAccess, @ProjectId String projectId )
+    public ExportMetadataFactory( Datastore datastore, @ProjectId String projectId )
     {
-        this.dataAccess = dataAccess;
+        this.datastore = datastore;
         this.projectId = projectId;
     }
 
@@ -55,7 +56,8 @@ public class ExportMetadataFactory
             String kind = ExportMetadata.class.getAnnotation( EntityMarker.class ).name();
             Long id = asExport.getId();
 
-            return dataAccess.find( ExportMetadata.class, Key.newBuilder( projectId, kind, id ).build() );
+            Key key = Key.newBuilder( projectId, kind, id ).build();
+            return ModelConverter.convert( ExportMetadata.class, datastore.get( key ) );
         }
 
         return new ExportMetadata();

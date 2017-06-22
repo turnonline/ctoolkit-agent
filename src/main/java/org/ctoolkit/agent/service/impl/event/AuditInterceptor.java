@@ -16,14 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.service.impl.datastore;
+package org.ctoolkit.agent.service.impl.event;
 
 import com.google.common.eventbus.EventBus;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.ctoolkit.agent.model.BaseEntity;
-import org.ctoolkit.agent.service.impl.event.AuditEvent;
-import org.ctoolkit.agent.service.impl.event.Auditable;
 
 import javax.inject.Inject;
 

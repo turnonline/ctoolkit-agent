@@ -26,6 +26,7 @@ import com.googlecode.objectify.annotation.Entity;
 @Entity( name = "_MetadataAudit" )
 public class MetadataAudit
         extends BaseEntity
+        implements Convertible
 {
     private Action action;
 
@@ -99,6 +100,12 @@ public class MetadataAudit
                 "} " + super.toString();
     }
 
+    @Override
+    public void convert( com.google.cloud.datastore.Entity entity )
+    {
+        // TODO: implement
+    }
+
     public enum Action
     {
         CREATE,
@@ -118,7 +125,5 @@ public class MetadataAudit
         IMPORT_ITEM,
         EXPORT,
         EXPORT_ITEM,
-        CHANGE,
-        CHANGE_ITEM
     }
 }

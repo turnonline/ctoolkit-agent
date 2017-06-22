@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.service.impl.datastore.mapper;
+package org.ctoolkit.agent.service.impl.mapper;
 
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ExportMetadataItem;

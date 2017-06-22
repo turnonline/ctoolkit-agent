@@ -20,15 +20,10 @@ package org.ctoolkit.agent.service.impl;
 
 import com.google.api.services.dataflow.Dataflow;
 import com.google.api.services.dataflow.model.Job;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.EntityQuery;
+import com.google.cloud.datastore.KeyQuery;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
 import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
@@ -37,7 +32,8 @@ import com.google.cloud.storage.Storage;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.googlecode.objectify.VoidWork;
+import ma.glasnost.orika.MapperFacade;
+import org.apache.commons.lang3.NotImplementedException;
 import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.annotation.ProjectId;
@@ -47,7 +43,6 @@ import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataFilter;
 import org.ctoolkit.agent.model.BaseMetadataItem;
-import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.JobInfo;
@@ -59,17 +54,15 @@ import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.model.PropertyMetaData;
-import org.ctoolkit.agent.resource.ChangeJob;
 import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.resource.ChangeSetEntity;
 import org.ctoolkit.agent.resource.ChangeSetModelKindOp;
-import org.ctoolkit.agent.resource.ChangeSetModelKindPropOp;
 import org.ctoolkit.agent.resource.ExportJob;
 import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
-import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
+import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.agent.service.impl.event.Auditable;
@@ -88,7 +81,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.googlecode.objectify.ObjectifyService.ofy;
+import static com.google.cloud.datastore.StructuredQuery.OrderBy.asc;
+import static com.google.cloud.datastore.StructuredQuery.OrderBy.desc;
 
 /**
  * Implementation of {@link ChangeSetService}
@@ -100,15 +94,23 @@ public class ChangeSetServiceBean
 {
     private static Logger log = LoggerFactory.getLogger( ChangeSetServiceBean.class );
 
-    private final Dataflow dataflow;
+    /**
+     * The default number of entities to put.delete from the data store
+     */
+    // TODO: configurable
+    private static final int DEFAULT_COUNT_LIMIT = 100;
 
-    private final DataAccess dataAccess;
+    private final Dataflow dataflow;
 
     private final KeyProvider keyProvider;
 
     private final Datastore datastore;
 
     private final Storage storage;
+
+    private final EntityPool pool;
+
+    private final MapperFacade mapper;
 
     private final Provider<RestContext> restContextProvider;
 
@@ -122,36 +124,24 @@ public class ChangeSetServiceBean
 
     @Inject
     public ChangeSetServiceBean( @Nullable Dataflow dataflow,
-                                 DataAccess dataAccess,
                                  KeyProvider keyProvider,
                                  Datastore datastore,
                                  Storage storage,
+                                 EntityPool pool,
+                                 MapperFacade mapper,
                                  @Nullable Provider<RestContext> restContextProvider,
                                  @BucketName String bucketName,
                                  @ProjectId String projectId )
     {
         this.dataflow = dataflow;
         this.keyProvider = keyProvider;
-        this.dataAccess = dataAccess;
         this.datastore = datastore;
         this.storage = storage;
+        this.pool = pool;
+        this.mapper = mapper;
         this.restContextProvider = restContextProvider;
         this.bucketName = bucketName;
         this.projectId = projectId;
-
-        systemKinds.add( "MR-IncrementalTask" );
-        systemKinds.add( "MR-ShardedJob" );
-        systemKinds.add( "MR-ShardRetryState" );
-        systemKinds.add( "pipeline-barrier" );
-        systemKinds.add( "pipeline-fanoutTask" );
-        systemKinds.add( "pipeline-job" );
-        systemKinds.add( "pipeline-jobInstanceRecord" );
-        systemKinds.add( "pipeline-slot" );
-        systemKinds.add( "pipeline-exception" );
-
-        systemKinds.add( "__BlobInfo__" );
-        systemKinds.add( "__GsFileInfo__" );
-        systemKinds.add( "_ah_FakeCloudStorage__app_default_bucket" );
 
         systemKinds.add( "__Stat_Kind_IsRootEntity__" );
         systemKinds.add( "__Stat_Kind_NotRootEntity__" );
@@ -163,8 +153,6 @@ public class ChangeSetServiceBean
         systemKinds.add( "__Stat_Total__" );
         systemKinds.add( "__Stat_Kind_CompositeIndex__" );
         systemKinds.add( "_ah_SESSION" );
-
-        systemKinds.add( "CounterShard_" );
 
         systemKinds.add( "_ImportMetadata" );
         systemKinds.add( "_ImportMetadataItem" );
@@ -189,14 +177,6 @@ public class ChangeSetServiceBean
             public JobInfo get()
             {
                 return new ExportJob();
-            }
-        } );
-        jobInfoProviders.put( ChangeMetadata.class, new Provider<JobInfo>()
-        {
-            @Override
-            public JobInfo get()
-            {
-                return new ChangeJob();
             }
         } );
     }
@@ -243,7 +223,23 @@ public class ChangeSetServiceBean
     @Override
     public <M extends BaseMetadata> List<M> list( BaseMetadataFilter<M> filter )
     {
-        return dataAccess.find( filter );
+        com.google.cloud.datastore.Query<com.google.cloud.datastore.Entity> query = com.google.cloud.datastore.Query.newEntityQueryBuilder()
+                .setKind( filter.getMetadataClass().getAnnotation( EntityMarker.class ).name() )
+                .setLimit( filter.getLength() )
+                .setOffset( filter.getStart() )
+                .addOrderBy( filter.isAscending() ? asc( filter.getOrderBy() ) : desc( filter.getOrderBy() ) )
+                .build();
+
+        List<M> list = new ArrayList<>();
+        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( query );
+        while ( results.hasNext() )
+        {
+            com.google.cloud.datastore.Entity entity = results.next();
+            M metadata = ModelConverter.convert( filter.getMetadataClass(), entity );
+            list.add( metadata );
+        }
+
+        return list;
     }
 
     // ------------------------------------------
@@ -252,61 +248,9 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.CREATE )
-    // TODO: refactor to cloud datastore
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> MI create( final M metadata, final MI metadataItem )
     {
-        // store again to persist file name
-        //dataAccess.create( metadataItem );
-
-        final DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
-
-        // update parent - in transaction because multiple threads can access parent
-        ofy().transactNew( 100, new VoidWork()
-        {
-            @Override
-            public void vrun()
-            {
-                Key parentKey = KeyFactory.stringToKey( metadata.getKey() );
-
-                try
-                {
-                    Entity metadataEntity = datastoreService.get( parentKey );
-                    List<Key> items = ( List<Key> ) metadataEntity.getProperty( "itemsRef" );
-                    if ( items == null )
-                    {
-                        items = new ArrayList<>();
-                    }
-                    Key itemKey = KeyFactory.stringToKey( metadataItem.getKey() );
-                    if ( !items.contains( itemKey ) )
-                    {
-                        items.add( itemKey );
-                    }
-
-                    metadataEntity.setUnindexedProperty( "itemsCount", items.size() );
-                    metadataEntity.setUnindexedProperty( "itemsRef", items );
-                    datastoreService.put( ofy().getTransaction(), metadataEntity );
-                }
-                catch ( EntityNotFoundException e )
-                {
-                    throw new RuntimeException( "Parent for item not found: " + parentKey, e );
-                }
-            }
-        } );
-
-        if ( metadataItem.getData() != null )
-        {
-//            storageService.store(
-//                    metadataItem.getData(),
-//                    metadataItem.getDataType().mimeType(),
-//                    metadataItem.newFileName(),
-//                    bucketName
-//            );
-        }
-
-        // store again to persist file name
-//        dataAccess.update( metadataItem );
-
-        return metadataItem;
+        throw new NotImplementedException( "Method not implemented" );
     }
 
     @Override
@@ -333,25 +277,9 @@ public class ChangeSetServiceBean
 
     @Override
     @Auditable( action = Action.DELETE )
-    // TODO: refactor to cloud datastore
     public <MI extends BaseMetadataItem<M>, M extends BaseMetadata<MI>> void delete( final MI metadataItem )
     {
-        if ( metadataItem.getFileName() != null )
-        {
-//            storageService.delete( metadataItem.getFileName(), bucketName );
-        }
-
-        ofy().transactNew( 5, new VoidWork()
-        {
-
-            @Override
-            public void vrun()
-            {
-                M importMetadata = metadataItem.getMetadata();
-                importMetadata.getItems().remove( metadataItem );
-                importMetadata.save();
-            }
-        } );
+        throw new NotImplementedException( "Method not implemented" );
     }
 
     // ------------------------------------------
@@ -362,7 +290,18 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.START_JOB )
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
-        // TODO: check if job is running
+        try
+        {
+            Job job = dataflow.projects().jobs().get( projectId, metadata.getJobId() ).execute();
+            if ( JobState.RUNNING.toDataflowState().equals( job.getCurrentState() ) )
+            {
+                throw new ProcessAlreadyRunning( "Job already running" );
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new ObjectNotFoundException( "Unable to get job status", e );
+        }
 
         if ( metadata.getClass() == ImportMetadata.class )
         {
@@ -429,17 +368,9 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    // TODO: refactor to datastore cloud
     public void importChangeSet( ChangeSet changeSet )
     {
-        changeChangeSet( changeSet );
-    }
-
-    @Override
-    // TODO: refactor to datastore cloud
-    public void changeChangeSet( ChangeSet changeSet )
-    {
-        dataAccess.flushPool();
+        pool.flush();
 
         // apply model changes
         if ( changeSet.hasModelObject() )
@@ -452,13 +383,32 @@ public class ChangeSetServiceBean
                     switch ( kindOp.getOp() )
                     {
                         case ChangeSetModelKindOp.OP_DROP:
-                        {
-                            dataAccess.dropEntity( kindOp.getKind() );
-                            break;
-                        }
                         case ChangeSetModelKindOp.OP_CLEAN:
                         {
-                            dataAccess.clearEntity( kindOp.getKind() );
+                            while ( true )
+                            {
+                                KeyQuery query = KeyQuery.newKeyQueryBuilder()
+                                        .setKind( kindOp.getKind() )
+                                        .setLimit( DEFAULT_COUNT_LIMIT )
+                                        .build();
+
+                                QueryResults<com.google.cloud.datastore.Key> results = datastore.run( query );
+                                int items = 0;
+
+                                while ( results.hasNext() )
+                                {
+                                    pool.delete( results.next() );
+                                    items++;
+                                }
+
+                                if ( items < DEFAULT_COUNT_LIMIT )
+                                {
+                                    pool.flush();
+                                    break; // break while cycle - no more items to process
+                                }
+                            }
+
+                            pool.flush();
                             break;
                         }
                         default:
@@ -468,62 +418,19 @@ public class ChangeSetServiceBean
                     }
                 }
             }
-
-            // process KindPropOps
-            if ( changeSet.getModel().hasKindPropOpsObject() )
-            {
-                for ( ChangeSetModelKindPropOp kindPropOp : changeSet.getModel().getKindPropsOp() )
-                {
-                    switch ( kindPropOp.getOp() )
-                    {
-                        case ChangeSetModelKindPropOp.OP_ADD:
-                        {
-                            dataAccess.addEntityProperty(
-                                    kindPropOp.getKind(),
-                                    kindPropOp.getNewName(),
-                                    kindPropOp.getNewType(),
-                                    kindPropOp.getNewValue()
-                            );
-                            break;
-                        }
-                        case ChangeSetModelKindPropOp.OP_REMOVE:
-                        {
-                            dataAccess.removeEntityProperty(
-                                    kindPropOp.getKind(),
-                                    kindPropOp.getProperty()
-                            );
-                            break;
-                        }
-                        case ChangeSetModelKindPropOp.OP_CHANGE:
-                        {
-                            dataAccess.changeEntityProperty(
-                                    kindPropOp.getKind(),
-                                    kindPropOp.getProperty(),
-                                    kindPropOp.getNewName(),
-                                    kindPropOp.getNewType(),
-                                    kindPropOp.getNewValue()
-                            );
-                            break;
-                        }
-                        default:
-                        {
-                            throw new IllegalArgumentException( "Unsupported Kind prop operation! " + kindPropOp.getOp() );
-                        }
-                    }
-                }
-            }
         }
 
         // apply entity changes
         if ( changeSet.hasEntities() )
         {
-            for ( ChangeSetEntity cse : changeSet.getEntities().getEntity() )
+            for ( ChangeSetEntity csEntity : changeSet.getEntities().getEntity() )
             {
-                dataAccess.addEntity( cse );
+                com.google.cloud.datastore.Entity entity = mapper.map( csEntity, com.google.cloud.datastore.Entity.Builder.class ).build();
+                pool.put( entity );
             }
         }
 
-        dataAccess.flushPool();
+        pool.flush();
     }
 
     // ------------------------------------------
@@ -531,10 +438,9 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    // TODO: refactor to datastore cloud
     public ChangeSet exportChangeSet( String entity )
     {
-        return dataAccess.exportChangeSet( entity );
+        throw new NotImplementedException( "Method not implemented yet" );
     }
 
     @Override
@@ -558,10 +464,32 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    // TODO: refactor to datastore cloud
     public List<MetadataAudit> list( AuditFilter filter )
     {
-        return dataAccess.find( filter );
+        EntityQuery.Builder queryBuilder = Query.newEntityQueryBuilder()
+                .setKind( MetadataAudit.class.getAnnotation( EntityMarker.class ).name() )
+                .setLimit( filter.getLength() )
+                .setOffset( filter.getStart() );
+
+        if ( filter.getOrderBy() != null )
+        {
+            queryBuilder.addOrderBy( filter.isAscending() ? asc( filter.getOrderBy() ) : desc( filter.getOrderBy() ) );
+        }
+
+        if ( filter.getOwnerId() != null )
+        {
+            queryBuilder.setFilter( PropertyFilter.eq( "ownerId", filter.getOwnerId() ) );
+        }
+
+        List<MetadataAudit> list = new ArrayList<>();
+        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( queryBuilder.build() );
+        while ( results.hasNext() )
+        {
+            list.add( ModelConverter.convert( MetadataAudit.class, results.next() ) );
+        }
+
+        return list;
+
     }
 
     // ------------------------------------------

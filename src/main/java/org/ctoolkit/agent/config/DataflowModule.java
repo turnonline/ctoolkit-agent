@@ -19,13 +19,11 @@ import org.ctoolkit.agent.annotation.StagingLocation;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.service.ChangeSetService;
-import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
-import org.ctoolkit.agent.service.impl.datastore.DataAccessBean;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityBuilderMapper;
-import org.ctoolkit.agent.service.impl.datastore.mapper.EntityBuilderFactory;
+import org.ctoolkit.agent.service.impl.mapper.ChangeSetEntityToEntityBuilderMapper;
+import org.ctoolkit.agent.service.impl.mapper.EntityBuilderFactory;
 
 import javax.inject.Singleton;
 
@@ -41,7 +39,6 @@ public class DataflowModule
     protected void configure()
     {
         bind( EntityPool.class ).to( EntityPoolThreadLocal.class );
-        bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
 
         requestStaticInjection( BaseMetadata.class );

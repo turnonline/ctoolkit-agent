@@ -16,23 +16,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.annotation;
+package org.ctoolkit.agent.service.impl.mapper;
 
-import com.google.inject.BindingAnnotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.ctoolkit.agent.model.ImportMetadataItem;
+import org.ctoolkit.agent.resource.ImportBatch;
 
 /**
- * Annotation for mark map reduce MapSpecification as export job specification
+ * Mapper for {@link ImportBatch.ImportItem} to {@link ImportMetadataItem} model beans
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Target( {ElementType.TYPE, ElementType.PARAMETER, ElementType.METHOD} )
-@Retention( RetentionPolicy.RUNTIME )
-@BindingAnnotation
-public @interface ExportJob
+public class ImportItemToImportMetadataItemMapper
+        extends BaseSetItemToBaseMetadataItemMapper<ImportBatch.ImportItem, ImportMetadataItem>
 {
 }

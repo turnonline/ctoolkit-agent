@@ -19,11 +19,7 @@
 package org.ctoolkit.agent.config;
 
 import com.google.api.services.dataflow.Dataflow;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
-import com.google.appengine.tools.pipeline.PipelineService;
-import com.google.appengine.tools.pipeline.impl.PipelineServiceImpl;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
@@ -53,36 +49,20 @@ import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.annotation.StagingLocation;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataItem;
-import org.ctoolkit.agent.model.ChangeMetadata;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.rest.IAMAuthenticator;
 import org.ctoolkit.agent.service.ChangeSetService;
-import org.ctoolkit.agent.service.DataAccess;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
 import org.ctoolkit.agent.service.impl.RestContextThreadLocal;
 import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
-import org.ctoolkit.agent.service.impl.datastore.AuditInterceptor;
-import org.ctoolkit.agent.service.impl.datastore.AuditSubscription;
-import org.ctoolkit.agent.service.impl.datastore.DataAccessBean;
 import org.ctoolkit.agent.service.impl.datastore.EntityDecoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
-import org.ctoolkit.agent.service.impl.datastore.ImportMapOnlyMapperJob;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeItemToChangeMetadataItemMapper;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeMetadataFactory;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeSetEntityToEntityBuilderMapper;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ChangeToChangeMetadataMapper;
-import org.ctoolkit.agent.service.impl.datastore.mapper.EntityBuilderFactory;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ExportMetadataFactory;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ExportToExportMetadataMapper;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ImportItemToImportMetadataItemMapper;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ImportMetadataFactory;
-import org.ctoolkit.agent.service.impl.datastore.mapper.ImportToImportMetadataMapper;
 import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
 import org.ctoolkit.agent.service.impl.datastore.rule.NewNameChangeRule;
 import org.ctoolkit.agent.service.impl.datastore.rule.NewNameNewTypeChangeRule;
@@ -92,15 +72,22 @@ import org.ctoolkit.agent.service.impl.datastore.rule.NewTypeChangeRule;
 import org.ctoolkit.agent.service.impl.datastore.rule.NewTypeNewValueChangeRule;
 import org.ctoolkit.agent.service.impl.datastore.rule.NewValueChangeRule;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
+import org.ctoolkit.agent.service.impl.event.AuditInterceptor;
+import org.ctoolkit.agent.service.impl.event.AuditSubscription;
 import org.ctoolkit.agent.service.impl.event.Auditable;
+import org.ctoolkit.agent.service.impl.mapper.ChangeSetEntityToEntityBuilderMapper;
+import org.ctoolkit.agent.service.impl.mapper.EntityBuilderFactory;
+import org.ctoolkit.agent.service.impl.mapper.ExportMetadataFactory;
+import org.ctoolkit.agent.service.impl.mapper.ExportToExportMetadataMapper;
+import org.ctoolkit.agent.service.impl.mapper.ImportItemToImportMetadataItemMapper;
+import org.ctoolkit.agent.service.impl.mapper.ImportMetadataFactory;
+import org.ctoolkit.agent.service.impl.mapper.ImportToImportMetadataMapper;
 import org.ctoolkit.restapi.client.ApiCredential;
 import org.ctoolkit.restapi.client.agent.CtoolkitApiAgentModule;
 import org.ctoolkit.restapi.client.appengine.FacadeAppEngineModule;
 import org.ctoolkit.restapi.client.identity.verifier.IdentityVerifierModule;
 import org.ctoolkit.restapi.client.provider.AuthKeyProvider;
 import org.ctoolkit.services.common.PropertyService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -117,8 +104,6 @@ public class AgentModule
         extends AbstractModule
 {
     public static final String CONFIG_JSON_CREDENTIALS = "ctoolkit.agent.jsonCredentials";
-
-    private static final Logger logger = LoggerFactory.getLogger( AgentModule.class );
 
     @Override
     protected void configure()
@@ -138,18 +123,16 @@ public class AgentModule
         bind( AuthKeyProvider.class ).to( JsonAuthKeyProvider.class ).in( Singleton.class );
         bind( Checker.class ).to( AudienceChecker.class );
         bind( EntityPool.class ).to( EntityPoolThreadLocal.class );
-        bind( DataAccess.class ).to( DataAccessBean.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
         bind( ChangeSetEntityToEntityBuilderMapper.class ).in( Singleton.class );
         bind( EntityEncoder.class ).in( Singleton.class );
         bind( EntityDecoder.class ).in( Singleton.class );
-        bind( ImportMapOnlyMapperJob.class ).in( Singleton.class );
-        bind( PipelineService.class ).to( PipelineServiceImpl.class ).in( Singleton.class );
-
+        bind( RestContext.class ).to( RestContextThreadLocal.class ).in( RequestScoped.class );
         bind( EventBus.class ).in( Singleton.class );
+
+        // audit
         bind( AuditEvent.class ).in( Singleton.class );
         bind( AuditSubscription.class ).asEagerSingleton();
-
         AuditInterceptor auditInterceptor = new AuditInterceptor();
         requestInjection( auditInterceptor );
         bindInterceptor(
@@ -158,6 +141,7 @@ public class AgentModule
                 auditInterceptor
         );
 
+        // change rule
         bind( ChangeRuleEngine.class ).in( Singleton.class );
         bind( NewNameChangeRule.class ).in( Singleton.class );
         bind( NewTypeChangeRule.class ).in( Singleton.class );
@@ -167,33 +151,13 @@ public class AgentModule
         bind( NewTypeNewValueChangeRule.class ).in( Singleton.class );
         bind( NewNameNewTypeNewValueChangeRule.class ).in( Singleton.class );
 
-        bind( RestContext.class ).to( RestContextThreadLocal.class ).in( RequestScoped.class );
-
+        // static injections
         requestStaticInjection( KeyProvider.class );
         requestStaticInjection( BaseMetadata.class );
         requestStaticInjection( BaseMetadataItem.class );
         requestStaticInjection( IAMAuthenticator.class );
         requestStaticInjection( ImportBatchTask.class );
         requestStaticInjection( MetadataItemKey.class );
-    }
-
-    @Provides
-    @Singleton
-    // TODO: drop
-    public DatastoreService provideDatastoreService()
-    {
-        return DatastoreServiceFactory.getDatastoreService();
-    }
-
-    @Provides
-    @Singleton
-    public MapperFactory provideMapperFactory()
-    {
-        return new DefaultMapperFactory.Builder()
-                .dumpStateOnException( false )
-                .mapNulls( false )
-                .useBuiltinConverters( true )
-                .build();
     }
 
     @Provides
@@ -212,36 +176,41 @@ public class AgentModule
 
     @Provides
     @Singleton
+    public MapperFactory provideMapperFactory()
+    {
+        return new DefaultMapperFactory.Builder()
+                .dumpStateOnException( false )
+                .mapNulls( false )
+                .useBuiltinConverters( true )
+                .build();
+    }
+
+    @Provides
+    @Singleton
     public MapperFacade provideMapperFacade( MapperFactory factory,
                                              // mappers
                                              ChangeSetEntityToEntityBuilderMapper changeSetEntityToEntityBuilderMapper,
                                              ImportToImportMetadataMapper importToImportMetadataMapper,
                                              ExportToExportMetadataMapper exportToExportMetadataMapper,
-                                             ChangeToChangeMetadataMapper changeToChangeMetadataMapper,
 
                                              ImportItemToImportMetadataItemMapper importItemToImportMetadataItemMapper,
-                                             ChangeItemToChangeMetadataItemMapper changeItemToChangeMetadataItemMapper,
 
                                              // factories
                                              EntityBuilderFactory entityBuilderFactory,
                                              ImportMetadataFactory importMetadataFactory,
-                                             ExportMetadataFactory exportMetadataFactory,
-                                             ChangeMetadataFactory changeMetadataFactory )
+                                             ExportMetadataFactory exportMetadataFactory)
     {
         // register custom mappers
         factory.registerMapper( changeSetEntityToEntityBuilderMapper );
         factory.registerMapper( importToImportMetadataMapper );
         factory.registerMapper( exportToExportMetadataMapper );
-        factory.registerMapper( changeToChangeMetadataMapper );
 
         factory.registerMapper( importItemToImportMetadataItemMapper );
-        factory.registerMapper( changeItemToChangeMetadataItemMapper );
 
         // register factories
         factory.registerObjectFactory( entityBuilderFactory, TypeFactory.valueOf( Entity.Builder.class ) );
         factory.registerObjectFactory( importMetadataFactory, TypeFactory.valueOf( ImportMetadata.class ) );
         factory.registerObjectFactory( exportMetadataFactory, TypeFactory.valueOf( ExportMetadata.class ) );
-        factory.registerObjectFactory( changeMetadataFactory, TypeFactory.valueOf( ChangeMetadata.class ) );
 
         return factory.getMapperFacade();
     }

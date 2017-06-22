@@ -23,13 +23,10 @@ import com.google.api.server.spi.ServletInitializationParameters;
 import com.google.api.server.spi.guice.EndpointsModule;
 import com.google.appengine.tools.appstats.AppstatsFilter;
 import com.google.appengine.tools.appstats.AppstatsServlet;
-import com.google.appengine.tools.mapreduce.MapReduceServlet;
-import com.google.appengine.tools.pipeline.impl.servlets.PipelineServlet;
 import com.googlecode.objectify.ObjectifyFilter;
 import org.ctoolkit.agent.AccessControlAllowOrignFilter;
 import org.ctoolkit.agent.UploadJsonCredentialsServlet;
 import org.ctoolkit.agent.rest.AuditEndpoint;
-import org.ctoolkit.agent.rest.ChangeEndpoint;
 import org.ctoolkit.agent.rest.ExportEndpoint;
 import org.ctoolkit.agent.rest.ImportEndpoint;
 import org.ctoolkit.agent.rest.MetadataEndpoint;
@@ -50,7 +47,6 @@ public class AgentServletModule
         // endpoints filter
         ServletInitializationParameters params = ServletInitializationParameters.builder()
                 .addServiceClass( ImportEndpoint.class )
-                .addServiceClass( ChangeEndpoint.class )
                 .addServiceClass( ExportEndpoint.class )
                 .addServiceClass( MetadataEndpoint.class )
                 .addServiceClass( AuditEndpoint.class )
@@ -80,13 +76,6 @@ public class AgentServletModule
         // access control filter
         bind( AccessControlAllowOrignFilter.class ).in( Singleton.class );
         filter( "/*" ).through( AccessControlAllowOrignFilter.class );
-
-        // map reduce servlets
-        bind( MapReduceServlet.class ).in( Singleton.class );
-        serve( "/mapreduce/*" ).with( MapReduceServlet.class );
-
-        bind( PipelineServlet.class ).in( Singleton.class );
-        serve( "/_ah/pipeline/*" ).with( PipelineServlet.class );
 
         // upload json credentials servlet
         bind( UploadJsonCredentialsServlet.class ).in( Singleton.class );

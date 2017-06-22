@@ -19,8 +19,6 @@
 package org.ctoolkit.agent.service.impl.event;
 
 import org.ctoolkit.agent.model.BaseEntity;
-import org.ctoolkit.agent.model.ChangeMetadata;
-import org.ctoolkit.agent.model.ChangeMetadataItem;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ExportMetadataItem;
 import org.ctoolkit.agent.model.ImportMetadata;
@@ -47,8 +45,6 @@ public class AuditEvent
         operationMap.put( ImportMetadataItem.class, Operation.IMPORT_ITEM );
         operationMap.put( ExportMetadata.class, Operation.EXPORT );
         operationMap.put( ExportMetadataItem.class, Operation.EXPORT_ITEM );
-        operationMap.put( ChangeMetadata.class, Operation.CHANGE );
-        operationMap.put( ChangeMetadataItem.class, Operation.CHANGE_ITEM );
     }
 
     private Operation operation;

@@ -161,13 +161,6 @@ public interface ChangeSetService
     /**
      * Process change data change set
      *
-     * @param changeSet {@link ChangeSet} to process
-     */
-    void changeChangeSet( final ChangeSet changeSet );
-
-    /**
-     * Process change data change set
-     *
      * @param entity entity object to export
      * @return change set containing change set data
      */
