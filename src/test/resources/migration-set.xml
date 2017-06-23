@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Migration set is stored in source agent.
+
+Use cases:
+=======================================================================
+Source 1                            >                          Target 1
+(MS)                                >                   [migration(S1)]
+=======================================================================
+Source 1                            >                          Target 2
+(MS) > [export by rules(S1)] > [create import batch(T2)] > [import(T2)]
+-->
+
+<migrationset>
+    <kindOp>
+        <!-- op = add, remove, change -->
+        <kindOp op="" kind="" property="" newKind="" newType="" newName="" newValue="">
+            <kindOpRules>
+                <!-- type = simple (default), composite - minimal 2 kindPropOpRule are required -->
+                <!-- value (optional) = and, or -->
+                <kindOpRuleBucket type="" value="">
+                    <!-- op = eq, lt, lte, gt, gte, regexp -->
+                    <!-- property = name, value, key -->
+                    <kindOpRule op="" property="" value=""/>
+                </kindOpRuleBucket>
+            </kindOpRules>
+        </kindOp>
+    </kindOp>
+</migrationset>

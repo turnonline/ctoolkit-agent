@@ -18,11 +18,6 @@
 
 package org.ctoolkit.agent.model;
 
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.annotation.Id;
-import com.googlecode.objectify.annotation.Ignore;
-import com.googlecode.objectify.annotation.OnSave;
-
 import java.util.Date;
 
 /**
@@ -30,7 +25,6 @@ import java.util.Date;
  */
 public class BaseEntity
 {
-    @Id
     private Long id;
 
     private Date createDate;
@@ -40,15 +34,6 @@ public class BaseEntity
     private String createdBy;
 
     private String updatedBy;
-
-    @Ignore
-    /*
-     * Temporal key is used to store full key instead of simple ID.
-     * In some cases (i.e. migration) we need to preserve whole untempered key
-     * and return it in endpoint response
-     */
-    @Deprecated
-    private String untemperedKey;
 
     public Long getId()
     {
@@ -123,44 +108,9 @@ public class BaseEntity
     }
 
     /**
-     * Returns the unique string identification unique across all entities.
-     *
-     * @return the unique string identification
-     */
-    @Deprecated
-    public String getKey()
-    {
-        if ( id == null )
-        {
-            return null;
-        }
-
-        return Key.create( this ).getString();
-    }
-
-    @Deprecated
-    public void setKey( String key )
-    {
-        this.id = Key.create( key ).getId();
-    }
-
-    @Deprecated
-    public String getUntemperedKey()
-    {
-        return untemperedKey;
-    }
-
-    @Deprecated
-    public void setUntemperedKey( String untemperedKey )
-    {
-        this.untemperedKey = untemperedKey;
-    }
-
-    /**
      * Method is called before every update. If entity is updated first time
      * change <code>createDate</code>, else change <code>updateDate</code>
      */
-    @OnSave
     private void onSave()
     {
         if ( createDate == null )
