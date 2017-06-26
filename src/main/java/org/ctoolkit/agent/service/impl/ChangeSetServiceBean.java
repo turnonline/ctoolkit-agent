@@ -22,7 +22,9 @@ import com.google.api.services.dataflow.Dataflow;
 import com.google.api.services.dataflow.model.Job;
 import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.EntityQuery;
+import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyQuery;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
@@ -209,7 +211,7 @@ public class ChangeSetServiceBean
         String kind = metadataKey.getMetadataClass().getAnnotation( EntityMarker.class ).name();
         Long id = metadataKey.getId();
 
-        com.google.cloud.datastore.Key key = com.google.cloud.datastore.Key.newBuilder( projectId, kind, id ).build();
+        Key key = Key.newBuilder( projectId, kind, id ).build();
         return ModelConverter.convert( metadataKey.getMetadataClass(), datastore.get( key ) );
     }
 
@@ -223,7 +225,7 @@ public class ChangeSetServiceBean
     @Override
     public <M extends BaseMetadata> List<M> list( BaseMetadataFilter<M> filter )
     {
-        com.google.cloud.datastore.Query<com.google.cloud.datastore.Entity> query = com.google.cloud.datastore.Query.newEntityQueryBuilder()
+        com.google.cloud.datastore.Query<Entity> query = com.google.cloud.datastore.Query.newEntityQueryBuilder()
                 .setKind( filter.getMetadataClass().getAnnotation( EntityMarker.class ).name() )
                 .setLimit( filter.getLength() )
                 .setOffset( filter.getStart() )
@@ -231,10 +233,10 @@ public class ChangeSetServiceBean
                 .build();
 
         List<M> list = new ArrayList<>();
-        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( query );
+        QueryResults<Entity> results = datastore.run( query );
         while ( results.hasNext() )
         {
-            com.google.cloud.datastore.Entity entity = results.next();
+            Entity entity = results.next();
             M metadata = ModelConverter.convert( filter.getMetadataClass(), entity );
             list.add( metadata );
         }
@@ -392,7 +394,7 @@ public class ChangeSetServiceBean
                                         .setLimit( DEFAULT_COUNT_LIMIT )
                                         .build();
 
-                                QueryResults<com.google.cloud.datastore.Key> results = datastore.run( query );
+                                QueryResults<Key> results = datastore.run( query );
                                 int items = 0;
 
                                 while ( results.hasNext() )
@@ -425,7 +427,7 @@ public class ChangeSetServiceBean
         {
             for ( ChangeSetEntity csEntity : changeSet.getEntities().getEntity() )
             {
-                com.google.cloud.datastore.Entity entity = mapper.map( csEntity, com.google.cloud.datastore.Entity.Builder.class ).build();
+                Entity entity = mapper.map( csEntity, Entity.Builder.class ).build();
                 pool.put( entity );
             }
         }
@@ -446,7 +448,7 @@ public class ChangeSetServiceBean
     @Override
     public void create( AuditEvent event )
     {
-        com.google.cloud.datastore.Entity.Builder builder = com.google.cloud.datastore.Entity.newBuilder( keyProvider.key( new MetadataAudit() ) );
+        Entity.Builder builder = Entity.newBuilder( keyProvider.key( new MetadataAudit() ) );
 
         builder.set( "ownerId", event.getOwner().getId() ); // TODO: solve owner key
         builder.set( "action", event.getAction().name() );
@@ -482,7 +484,7 @@ public class ChangeSetServiceBean
         }
 
         List<MetadataAudit> list = new ArrayList<>();
-        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( queryBuilder.build() );
+        QueryResults<Entity> results = datastore.run( queryBuilder.build() );
         while ( results.hasNext() )
         {
             list.add( ModelConverter.convert( MetadataAudit.class, results.next() ) );
@@ -505,11 +507,11 @@ public class ChangeSetServiceBean
                 .newEntityQueryBuilder()
                 .setKind( "__kind__" )
                 .build();
-        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( query );
+        QueryResults<Entity> results = datastore.run( query );
 
         while ( results.hasNext() )
         {
-            com.google.cloud.datastore.Entity e = results.next();
+            Entity e = results.next();
 
             KindMetaData kind = new KindMetaData();
             kind.setKind( e.getKey().getName() );
@@ -542,19 +544,19 @@ public class ChangeSetServiceBean
     {
         List<PropertyMetaData> properties = new ArrayList<>();
 
-        com.google.cloud.datastore.Key ancestorKey = datastore.newKeyFactory().setKind( "__kind__" ).newKey( kind );
+        Key ancestorKey = datastore.newKeyFactory().setKind( "__kind__" ).newKey( kind );
 
         EntityQuery query = Query
                 .newEntityQueryBuilder()
                 .setKind( "__property__" )
                 .setFilter( PropertyFilter.hasAncestor( ancestorKey ) )
                 .build();
-        QueryResults<com.google.cloud.datastore.Entity> results = datastore.run( query );
+        QueryResults<Entity> results = datastore.run( query );
 
         // Build list of query results
         while ( results.hasNext() )
         {
-            com.google.cloud.datastore.Entity e = results.next();
+            Entity e = results.next();
 
             PropertyMetaData property = new PropertyMetaData();
             property.setProperty( e.getKey().getName() );

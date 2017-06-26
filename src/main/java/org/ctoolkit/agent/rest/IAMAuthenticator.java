@@ -20,6 +20,7 @@ package org.ctoolkit.agent.rest;
 
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Authenticator;
+import com.google.api.server.spi.config.Singleton;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudresourcemanager.model.TestIamPermissionsRequest;
 import com.google.api.services.cloudresourcemanager.model.TestIamPermissionsResponse;
@@ -27,7 +28,6 @@ import com.google.appengine.api.utils.SystemProperty;
 import com.google.inject.Injector;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.restapi.client.identity.Identity;
-import org.ctoolkit.services.common.PropertyService;
 import org.ctoolkit.services.identity.IdentityHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
+@Singleton
 public class IAMAuthenticator
         implements Authenticator
 {
@@ -59,14 +60,14 @@ public class IAMAuthenticator
     @Inject
     private CloudResourceManager cloudResourceManager;
 
-    @Inject
-    private PropertyService propertyService;
+    public IAMAuthenticator()
+    {
+        injector.injectMembers( this );
+    }
 
     @Override
     public User authenticate( HttpServletRequest request )
     {
-        injector.injectMembers( this );
-
         try
         {
             Identity identity = identityHandler.resolve( request );
@@ -86,7 +87,7 @@ public class IAMAuthenticator
                 ctx.setOnBehalfOfAgentUrl( request.getHeader( X_CTOOLKIT_AGENT_ON_BEHALF_OF_AGENT_URL ) );
 
                 // if agent is running on app engine - check permissions
-                if ( !propertyService.isDevelopmentEnvironment() )
+                if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )
                 {
                     String resource = SystemProperty.applicationId.get();
                     TestIamPermissionsRequest content = new TestIamPermissionsRequest();
