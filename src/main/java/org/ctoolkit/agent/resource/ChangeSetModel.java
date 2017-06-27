@@ -40,12 +40,6 @@ public class ChangeSetModel
     @XmlElement( name = "kindOp" )
     private List<ChangeSetModelKindOp> kindOp;
 
-    /**
-     * Optional Kind property operations descriptors
-     */
-    @XmlElement( name = "kindPropsOp" )
-    private List<ChangeSetModelKindPropOp> kindPropsOp;
-
     public List<ChangeSetModelKindOp> getKindOp()
     {
         if ( kindOp == null )
@@ -65,31 +59,11 @@ public class ChangeSetModel
         return !getKindOp().isEmpty();
     }
 
-    public List<ChangeSetModelKindPropOp> getKindPropsOp()
-    {
-        if ( kindPropsOp == null )
-        {
-            kindPropsOp = new ArrayList<>();
-        }
-        return kindPropsOp;
-    }
-
-    public void setKindPropsOp( List<ChangeSetModelKindPropOp> kindPropsOp )
-    {
-        this.kindPropsOp = kindPropsOp;
-    }
-
-    public boolean hasKindPropOpsObject()
-    {
-        return !getKindPropsOp().isEmpty();
-    }
-
     @Override
     public String toString()
     {
         return "ChangeSetModel{" +
                 "kindOp=" + kindOp +
-                ", kindPropsOp=" + kindPropsOp +
                 '}';
     }
 }

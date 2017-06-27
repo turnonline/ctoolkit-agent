@@ -173,7 +173,7 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         setFileName( entity.getString( "fileName" ) );
         setDataType( entity.contains( "dataType" ) ? ISetItem.DataType.valueOf( entity.getString( "dataType" ) ) : null );
         setState( entity.contains( "state" ) ? JobState.valueOf( entity.getString( "state" ) ) : null );
-        setError( entity.contains( "error" ) ? new String( entity.getBlob( "error" ).toByteArray(), Charsets.UTF_8) : null );
+        setError( entity.contains( "error" ) ? new String( entity.getBlob( "error" ).toByteArray(), Charsets.UTF_8 ) : null );
 
         key = entity.getKey();
         dataLength = entity.contains( "dataLength" ) ? entity.getLong( "dataLength" ) : 0;
@@ -214,7 +214,7 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
 
         if ( getError() != null )
         {
-            builder.set( "error", Blob.copyFrom( getError().getBytes( Charsets.UTF_8 ) ));
+            builder.set( "error", Blob.copyFrom( getError().getBytes( Charsets.UTF_8 ) ) );
         }
 
         builder.set( "dataLength", dataLength );
@@ -226,8 +226,16 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
 
         builder.set( "fileName", getFileName() );
 
+        // save additional fields
+        saveFieldsOnlyAdditional( builder );
+
         // put item to datastore
         datastore().put( builder.build() );
+    }
+
+    protected void saveFieldsOnlyAdditional( FullEntity.Builder<IncompleteKey> builder )
+    {
+        // noop
     }
 
     public void delete()

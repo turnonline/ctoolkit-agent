@@ -79,7 +79,7 @@ public class ChangeSet
 
     public boolean hasModelObject()
     {
-        return getModel() != null && ( getModel().hasKindOpsObject() || getModel().hasKindPropOpsObject() );
+        return getModel() != null && getModel().hasKindOpsObject();
     }
 
     public ChangeSetEntities getEntities()

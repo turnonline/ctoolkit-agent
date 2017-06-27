@@ -40,8 +40,6 @@ public class ImportBatch
 
     private String jobId;
 
-    private String token;
-
     private Date createDate;
 
     private Date updateDate;
@@ -79,16 +77,6 @@ public class ImportBatch
     public void setJobId( String jobId )
     {
         this.jobId = jobId;
-    }
-
-    public String getToken()
-    {
-        return token;
-    }
-
-    public void setToken( String token )
-    {
-        this.token = token;
     }
 
     public Date getCreateDate()
@@ -140,7 +128,6 @@ public class ImportBatch
                 "id='" + id + '\'' +
                 ", name=" + name +
                 ", jobId='" + jobId + '\'' +
-                ", token='" + token + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
                 ", jobInfo=" + jobInfo +

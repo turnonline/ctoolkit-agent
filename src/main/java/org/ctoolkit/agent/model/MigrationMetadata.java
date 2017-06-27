@@ -24,33 +24,53 @@ import com.google.cloud.datastore.IncompleteKey;
 import org.ctoolkit.agent.annotation.EntityMarker;
 
 /**
- * Export metadata item entity
+ * Migration metadata entity.
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@EntityMarker( name = "_ExportMetadataItem" )
-public class ExportMetadataItem
-        extends BaseMetadataItem<ExportMetadata>
+@EntityMarker( name = "_MigrationMetadata" )
+public class MigrationMetadata
+        extends BaseMetadata<MigrationMetadataItem>
 {
-    private String entityToExport;
+    private String source;
 
-    public ExportMetadataItem()
+    private String target;
+
+    @Override
+    protected MigrationMetadataItem newItem()
     {
+        return new MigrationMetadataItem( this );
     }
 
-    public ExportMetadataItem( ExportMetadata metadata )
+    @Override
+    protected Class<MigrationMetadataItem> itemClass()
     {
-        super( metadata );
+        return MigrationMetadataItem.class;
     }
 
-    public String getEntityToExport()
+    public String getSource()
     {
-        return entityToExport;
+        return source;
     }
 
-    public void setEntityToExport( String entityToExport )
+    public void setSource( String source )
     {
-        this.entityToExport = entityToExport;
+        this.source = source;
+    }
+
+    public String getTarget()
+    {
+        return target;
+    }
+
+    public void setTarget( String target )
+    {
+        this.target = target;
+    }
+
+    public boolean isSourceSameAsTarget()
+    {
+        return source.equals( target );
     }
 
     @Override
@@ -58,28 +78,29 @@ public class ExportMetadataItem
     {
         super.convert( entity );
 
-        if ( entity.contains( "entityToExport" ) )
-        {
-            entityToExport = entity.getString( "entityToExport" );
-        }
+        setSource( entity.contains( "source" ) ? entity.getString( "source" ) : null );
+        setTarget( entity.contains( "target" ) ? entity.getString( "target" ) : null );
     }
 
     @Override
-    protected void saveFieldsOnlyAdditional( FullEntity.Builder<IncompleteKey> builder )
+    protected void saveAdditional( FullEntity.Builder<IncompleteKey> builder )
     {
-        super.saveFieldsOnlyAdditional( builder );
+        super.saveAdditional( builder );
 
-        if ( entityToExport != null )
+        if ( getSource() != null )
         {
-            builder.set( "entityToExport", entityToExport );
+            builder.set( "source", getSource() );
+        }
+        if ( getTarget() != null )
+        {
+            builder.set( "target", getTarget() );
         }
     }
 
     @Override
     public String toString()
     {
-        return "ExportMetadataItem{" +
-                "entityToExport='" + entityToExport + '\'' +
+        return "MigrationMetadata{" +
                 "} " + super.toString();
     }
 }

@@ -24,44 +24,42 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.ObjectFactory;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.annotation.ProjectId;
-import org.ctoolkit.agent.model.ExportMetadata;
+import org.ctoolkit.agent.model.MigrationMetadata;
 import org.ctoolkit.agent.model.ModelConverter;
-import org.ctoolkit.agent.resource.ExportBatch;
+import org.ctoolkit.agent.resource.MigrationBatch;
 
 import javax.inject.Inject;
 
 /**
- * Factory for {@link ExportMetadata}
- *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public class ExportMetadataFactory
-        implements ObjectFactory<ExportMetadata>
+public class MigrationMetadataFactory
+        implements ObjectFactory<MigrationMetadata>
 {
     private final Datastore datastore;
 
     private final String projectId;
 
     @Inject
-    public ExportMetadataFactory( Datastore datastore, @ProjectId String projectId )
+    public MigrationMetadataFactory( Datastore datastore, @ProjectId String projectId )
     {
         this.datastore = datastore;
         this.projectId = projectId;
     }
 
     @Override
-    public ExportMetadata create( Object o, MappingContext mappingContext )
+    public MigrationMetadata create( Object o, MappingContext mappingContext )
     {
-        ExportBatch asExport = ( ExportBatch ) o;
-        if ( asExport.getId() != null )
+        MigrationBatch asMigration = ( MigrationBatch ) o;
+        if ( asMigration.getId() != null )
         {
-            String kind = ExportMetadata.class.getAnnotation( EntityMarker.class ).name();
-            Long id = asExport.getId();
+            String kind = MigrationMetadata.class.getAnnotation( EntityMarker.class ).name();
+            Long id = asMigration.getId();
 
             Key key = Key.newBuilder( projectId, kind, id ).build();
-            return ModelConverter.convert( ExportMetadata.class, datastore.get( key ) );
+            return ModelConverter.convert( MigrationMetadata.class, datastore.get( key ) );
         }
 
-        return new ExportMetadata();
+        return new MigrationMetadata();
     }
 }

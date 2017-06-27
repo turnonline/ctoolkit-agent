@@ -27,12 +27,12 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Export DTO for rest communication
+ * Migration DTO for rest communication
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public class ExportBatch
-        implements ISet<ExportJob>
+public class MigrationBatch
+        implements ISet<MigrationJob>
 {
     private Long id;
 
@@ -44,9 +44,13 @@ public class ExportBatch
 
     private Date updateDate;
 
-    private ExportJob jobInfo;
+    private String source;
 
-    private List<ExportItem> items = new ArrayList<>();
+    private String target;
+
+    private MigrationJob jobInfo;
+
+    private List<MigrationItem> items = new ArrayList<>();
 
     public Long getId()
     {
@@ -100,24 +104,44 @@ public class ExportBatch
         this.updateDate = updateDate;
     }
 
+    public String getSource()
+    {
+        return source;
+    }
+
+    public void setSource( String source )
+    {
+        this.source = source;
+    }
+
+    public String getTarget()
+    {
+        return target;
+    }
+
+    public void setTarget( String target )
+    {
+        this.target = target;
+    }
+
     @Override
-    public ExportJob getJobInfo()
+    public MigrationJob getJobInfo()
     {
         return jobInfo;
     }
 
     @Override
-    public void setJobInfo( ExportJob jobInfo )
+    public void setJobInfo( MigrationJob jobInfo )
     {
         this.jobInfo = jobInfo;
     }
 
-    public List<ExportItem> getItems()
+    public List<MigrationItem> getItems()
     {
         return items;
     }
 
-    public void setItems( List<ExportItem> items )
+    public void setItems( List<MigrationItem> items )
     {
         this.items = items;
     }
@@ -125,18 +149,20 @@ public class ExportBatch
     @Override
     public String toString()
     {
-        return "Export{" +
-                "id='" + id + '\'' +
-                ", name=" + name +
+        return "MigrationBatch{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", jobId='" + jobId + '\'' +
                 ", createDate=" + createDate +
                 ", updateDate=" + updateDate +
+                ", source='" + source + '\'' +
+                ", target='" + target + '\'' +
                 ", jobInfo=" + jobInfo +
                 ", items=" + items +
                 '}';
     }
 
-    public static class ExportItem
+    public static class MigrationItem
             implements ISetItem
     {
         private Long id;
@@ -152,8 +178,6 @@ public class ExportBatch
         private long dataLength;
 
         private JobState state;
-
-        private String entityToExport;
 
         private Date createDate;
 
@@ -240,16 +264,6 @@ public class ExportBatch
             this.dataLength = dataLength;
         }
 
-        public String getEntityToExport()
-        {
-            return entityToExport;
-        }
-
-        public void setEntityToExport( String entityToExport )
-        {
-            this.entityToExport = entityToExport;
-        }
-
         public Date getCreateDate()
         {
             return createDate;
@@ -290,7 +304,6 @@ public class ExportBatch
                     ", name=" + name +
                     ", data.length=" + ( data != null ? data.length : null ) +
                     ", fileName=" + fileName +
-                    ", entityToExport='" + entityToExport + '\'' +
                     ", dataType=" + dataType +
                     ", dataLength=" + dataLength +
                     ", state=" + state +

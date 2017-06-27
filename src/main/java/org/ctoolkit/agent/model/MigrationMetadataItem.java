@@ -21,30 +21,26 @@ package org.ctoolkit.agent.model;
 import org.ctoolkit.agent.annotation.EntityMarker;
 
 /**
- * Export metadata entity.
+ * Migration metadata item entity
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@EntityMarker( name = "_ExportMetadata" )
-public class ExportMetadata
-        extends BaseMetadata<ExportMetadataItem>
+@EntityMarker( name = "_ExportMetadataItem" )
+public class MigrationMetadataItem extends BaseMetadataItem<MigrationMetadata>
 {
-    @Override
-    protected ExportMetadataItem newItem()
+    public MigrationMetadataItem()
     {
-        return new ExportMetadataItem( this );
     }
 
-    @Override
-    protected Class<ExportMetadataItem> itemClass()
+    public MigrationMetadataItem( MigrationMetadata metadata )
     {
-        return ExportMetadataItem.class;
+        super( metadata );
     }
 
     @Override
     public String toString()
     {
-        return "ExportMetadata{" +
+        return "ExportMetadataItem{" +
                 "} " + super.toString();
     }
 }

@@ -67,9 +67,6 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     private List<Key> itemsRef = new ArrayList<>();
 
-    @Deprecated
-    private List<String> jobContext = new ArrayList<>();
-
     public BaseMetadata()
     {
         this.key = injector.getInstance( KeyProvider.class ).key( this );
@@ -262,8 +259,16 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         builder.set( "itemsRef", getItemsKeyValue() );
         builder.set( "itemsCount", getItemsCount() );
 
+        // save additional fields
+        saveAdditional( builder );
+
         // put metadata to datastore
         datastore().put( builder.build() );
+    }
+
+    protected void saveAdditional( FullEntity.Builder<IncompleteKey> builder )
+    {
+        // noop
     }
 
     public void delete()
@@ -299,7 +304,6 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
                 ", name='" + name + '\'' +
                 ", itemsLoaded=" + itemsLoaded +
                 ", itemsCount=" + itemsCount +
-                ", jobContext=" + jobContext +
                 "} " + super.toString();
     }
 }

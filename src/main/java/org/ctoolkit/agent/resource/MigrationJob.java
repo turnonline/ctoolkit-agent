@@ -16,35 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.resource;
 
-import org.ctoolkit.agent.annotation.EntityMarker;
+import org.ctoolkit.agent.model.JobInfo;
 
 /**
- * Export metadata entity.
+ * Migration job info
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@EntityMarker( name = "_ExportMetadata" )
-public class ExportMetadata
-        extends BaseMetadata<ExportMetadataItem>
+public class MigrationJob
+        extends JobInfo
 {
-    @Override
-    protected ExportMetadataItem newItem()
-    {
-        return new ExportMetadataItem( this );
-    }
-
-    @Override
-    protected Class<ExportMetadataItem> itemClass()
-    {
-        return ExportMetadataItem.class;
-    }
-
     @Override
     public String toString()
     {
-        return "ExportMetadata{" +
-                "} " + super.toString();
+        return "MigrationJob{} " + super.toString();
     }
 }

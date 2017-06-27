@@ -31,6 +31,8 @@ import org.ctoolkit.agent.resource.ImportBatch;
 import javax.inject.Inject;
 
 /**
+ * Factory for {@link ImportMetadata}
+ *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class ImportMetadataFactory
