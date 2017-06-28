@@ -2,23 +2,12 @@ package org.ctoolkit.agent.service.impl.dataflow;
 
 import com.google.cloud.dataflow.sdk.Pipeline;
 import com.google.cloud.dataflow.sdk.PipelineResult;
-import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.dataflow.sdk.runners.DataflowPipelineJob;
-import com.google.cloud.dataflow.sdk.transforms.Create;
 import com.google.cloud.dataflow.sdk.transforms.DoFn;
-import com.google.cloud.dataflow.sdk.transforms.PTransform;
 import com.google.cloud.dataflow.sdk.transforms.ParDo;
-import com.google.cloud.dataflow.sdk.values.PBegin;
-import com.google.cloud.dataflow.sdk.values.PCollection;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyValue;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.ctoolkit.agent.annotation.EntityMarker;
-import org.ctoolkit.agent.annotation.ProjectId;
-import org.ctoolkit.agent.config.DataflowModule;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
 import org.ctoolkit.agent.model.JobState;
@@ -27,47 +16,33 @@ import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.io.Serializable;
-
 /**
+ * Import dataflow definition
+ * 
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-public class ImportBatchTask
-        implements Serializable
+public class ImportDataflowDefinition
+        extends BaseDataflowDefinition<ImportMetadata>
 {
-    @Inject
-    protected static Injector injector;
-
-    @Inject
-    private transient Datastore datastore;
-
-    @Inject
-    @ProjectId
-    private transient String projectId;
-
-    @Inject
-    private transient PipelineOptions pipelineOptions;
-
-    private Long metadataId;
-
-    public ImportBatchTask()
+    public ImportDataflowDefinition()
     {
+        super();
     }
 
-    public ImportBatchTask( Long metadataId )
+    public ImportDataflowDefinition( Long metadataId )
     {
-        this.metadataId = metadataId;
+        super(metadataId, ImportMetadata.class);
     }
 
+    @Override
     public void run()
     {
-        injector.injectMembers( this );
+        super.run();
 
         String kind = ImportMetadata.class.getAnnotation( EntityMarker.class ).name();
         Key key = Key.newBuilder( projectId, kind, metadataId ).build();
 
-        // reset metadata counters and staet
+        // reset metadata counters and state
         resetMetadata( key );
 
         // create pipeline
@@ -75,7 +50,7 @@ public class ImportBatchTask
 
         // define pipelines
         pipeline
-                .apply( new LoadItems( key, datastore ) )
+                .apply( new LoadItems<>( key, clazz, datastore ) )
                 .apply( "Process item", ParDo.of( new DoFn<KeyValue, Void>()
                 {
                     @Override
@@ -95,7 +70,7 @@ public class ImportBatchTask
                         catch ( Exception e )
                         {
                             LoggerFactory
-                                    .getLogger( ImportBatchTask.class )
+                                    .getLogger( ImportDataflowDefinition.class )
                                     .error( "Error occur during importing change set", e );
 
                             //item.setError( StackTraceResolver.resolve( e ) );
@@ -113,49 +88,9 @@ public class ImportBatchTask
         {
             DataflowPipelineJob jobResult = ( DataflowPipelineJob ) result;
 
-            ImportMetadata importMetadata = ModelConverter.convert( ImportMetadata.class, datastore.get( key ) );
-            importMetadata.setJobId( jobResult.getJobId() );
-            importMetadata.save();
-        }
-    }
-
-    private void resetMetadata( Key key )
-    {
-        ImportMetadata importMetadata = ModelConverter.convert( ImportMetadata.class, datastore.get( key ) );
-        importMetadata.reset();
-        importMetadata.save();
-    }
-
-    private Injector injector()
-    {
-        return Guice.createInjector( new DataflowModule() );
-    }
-
-    /**
-     * PTransform for loading ImportMetadata items
-     */
-    public class LoadItems
-            extends PTransform<PBegin, PCollection<KeyValue>>
-    {
-        private Datastore datastore;
-
-        private Key key;
-
-        public LoadItems( Key key, Datastore datastore )
-        {
-            super( "Load items" );
-
-            this.key = key;
-            this.datastore = datastore;
-        }
-
-        @Override
-        public PCollection<KeyValue> apply( PBegin input )
-        {
-            Entity entity = datastore.get( key );
-            ImportMetadata importMetadata = ModelConverter.convert( ImportMetadata.class, entity );
-
-            return input.apply( Create.of( importMetadata.getItemsKeyValue() ) );
+            ImportMetadata metadata = ModelConverter.convert( ImportMetadata.class, datastore.get( key ) );
+            metadata.setJobId( jobResult.getJobId() );
+            metadata.save();
         }
     }
 }

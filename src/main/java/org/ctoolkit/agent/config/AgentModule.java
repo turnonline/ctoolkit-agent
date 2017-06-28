@@ -57,7 +57,7 @@ import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
 import org.ctoolkit.agent.service.impl.RestContextThreadLocal;
-import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
+import org.ctoolkit.agent.service.impl.dataflow.ImportDataflowDefinition;
 import org.ctoolkit.agent.service.impl.datastore.EntityDecoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
@@ -156,7 +156,7 @@ public class AgentModule
         requestStaticInjection( BaseMetadata.class );
         requestStaticInjection( BaseMetadataItem.class );
         requestStaticInjection( IAMAuthenticator.class );
-        requestStaticInjection( ImportBatchTask.class );
+        requestStaticInjection( ImportDataflowDefinition.class );
         requestStaticInjection( MetadataItemKey.class );
     }
 

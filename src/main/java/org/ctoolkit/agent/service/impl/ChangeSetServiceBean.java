@@ -54,6 +54,7 @@ import org.ctoolkit.agent.model.MetadataAudit;
 import org.ctoolkit.agent.model.MetadataAudit.Action;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
+import org.ctoolkit.agent.model.MigrationMetadata;
 import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
@@ -61,9 +62,11 @@ import org.ctoolkit.agent.resource.ChangeSetEntity;
 import org.ctoolkit.agent.resource.ChangeSetModelKindOp;
 import org.ctoolkit.agent.resource.ExportJob;
 import org.ctoolkit.agent.resource.ImportJob;
+import org.ctoolkit.agent.resource.MigrationJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.RestContext;
-import org.ctoolkit.agent.service.impl.dataflow.ImportBatchTask;
+import org.ctoolkit.agent.service.impl.dataflow.ImportDataflowDefinition;
+import org.ctoolkit.agent.service.impl.dataflow.MigrationDataflowDefinition;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
@@ -179,6 +182,14 @@ public class ChangeSetServiceBean
             public JobInfo get()
             {
                 return new ExportJob();
+            }
+        } );
+        jobInfoProviders.put( MigrationMetadata.class, new Provider<JobInfo>()
+        {
+            @Override
+            public JobInfo get()
+            {
+                return new MigrationJob();
             }
         } );
     }
@@ -297,19 +308,30 @@ public class ChangeSetServiceBean
             Job job = dataflow.projects().jobs().get( projectId, metadata.getJobId() ).execute();
             if ( JobState.RUNNING.toDataflowState().equals( job.getCurrentState() ) )
             {
-                throw new ProcessAlreadyRunning( "Job already running" );
+                throw new ProcessAlreadyRunning( "Job with id '" + metadata.getJobId() + "' is already running. Wait until job is finished or cancel existing job." );
             }
         }
         catch ( IOException e )
         {
-            throw new ObjectNotFoundException( "Unable to get job status", e );
+            throw new ObjectNotFoundException( "Unable to get job status. Job will not start.", e );
         }
+
+        Runnable definition;
 
         if ( metadata.getClass() == ImportMetadata.class )
         {
-            ImportBatchTask task = new ImportBatchTask( metadata.getId() );
-            task.run();
+            definition = new ImportDataflowDefinition( metadata.getId() );
         }
+        else if ( metadata.getClass() == MigrationMetadata.class )
+        {
+            definition = new MigrationDataflowDefinition( metadata.getId() );
+        }
+        else
+        {
+            throw new ObjectNotFoundException( "Unexpected metadata class '" + metadata.getClass() + "'." );
+        }
+
+        definition.run();
     }
 
     @Override
