@@ -30,6 +30,7 @@ import org.ctoolkit.agent.rest.AuditEndpoint;
 import org.ctoolkit.agent.rest.ExportEndpoint;
 import org.ctoolkit.agent.rest.ImportEndpoint;
 import org.ctoolkit.agent.rest.MetadataEndpoint;
+import org.ctoolkit.agent.rest.MigrationEndpoint;
 
 import javax.inject.Singleton;
 
@@ -48,6 +49,7 @@ public class AgentServletModule
         ServletInitializationParameters params = ServletInitializationParameters.builder()
                 .addServiceClass( ImportEndpoint.class )
                 .addServiceClass( ExportEndpoint.class )
+                .addServiceClass( MigrationEndpoint.class )
                 .addServiceClass( MetadataEndpoint.class )
                 .addServiceClass( AuditEndpoint.class )
                 .setRestricted( false )

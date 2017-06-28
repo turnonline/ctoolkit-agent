@@ -404,6 +404,7 @@
                                 <argument>org.ctoolkit.agent.rest.AuditEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.ExportEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.ImportEndpoint</argument>
+                                <argument>org.ctoolkit.agent.rest.MigrationEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.MetadataEndpoint</argument>
                             </arguments>
                         </configuration>
@@ -443,6 +444,7 @@
                                 <argument>org.ctoolkit.agent.rest.AuditEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.ExportEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.ImportEndpoint</argument>
+                                <argument>org.ctoolkit.agent.rest.MigrationEndpoint</argument>
                                 <argument>org.ctoolkit.agent.rest.MetadataEndpoint</argument>
                             </arguments>
                         </configuration>

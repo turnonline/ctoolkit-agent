@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Endpoint for DB export
+ * Endpoint for export
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
@@ -147,14 +147,13 @@ public class ExportEndpoint
     // -- export item CRUD
 
     @ApiMethod( name = "exportBatch.item.insert", path = "export/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportBatch.ExportItem insertExportItem( @Named( "metadataId" ) String metadataId, ExportBatch.ExportItem exportBatchItem, User authUser )
+    public ExportBatch.ExportItem insertExportItem( @Named( "metadataId" ) Long metadataId, ExportBatch.ExportItem exportBatchItem, User authUser )
     {
         Map<Object, Object> props = new HashMap<>();
         props.put( "metadataId", metadataId );
         MappingContext ctx = new MappingContext( props );
 
-        ExportMetadata exportMetadata = new ExportMetadata();
-//        exportMetadata.setKey( metadataId );
+        ExportMetadata exportMetadata = service.get( new MetadataKey<>( metadataId, ExportMetadata.class ) );
 
         ExportMetadataItem exportMetadataItem = mapper.map( exportBatchItem, ExportMetadataItem.class, ctx );
         ExportMetadataItem exportMetadataItemBe = service.create( exportMetadata, exportMetadataItem );

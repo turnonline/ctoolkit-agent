@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Endpoint for DB import
+ * Endpoint for import
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
@@ -147,14 +147,13 @@ public class ImportEndpoint
     // -- import item CRUD
 
     @ApiMethod( name = "importBatch.item.insert", path = "import/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
-    public ImportBatch.ImportItem insertImportItem( @Named( "metadataId" ) String metadataId, ImportBatch.ImportItem importBatchItem, User authUser )
+    public ImportBatch.ImportItem insertImportItem( @Named( "metadataId" ) Long metadataId, ImportBatch.ImportItem importBatchItem, User authUser )
     {
         Map<Object, Object> props = new HashMap<>();
         props.put( "metadataId", metadataId );
         MappingContext ctx = new MappingContext( props );
 
-        ImportMetadata importMetadata = new ImportMetadata();
-//        importMetadata.setKey( metadataId );
+        ImportMetadata importMetadata = service.get( new MetadataKey<>( metadataId, ImportMetadata.class ) );
 
         ImportMetadataItem importMetadataItem = mapper.map( importBatchItem, ImportMetadataItem.class, ctx );
         ImportMetadataItem importMetadataItemBe = service.create( importMetadata, importMetadataItem );
