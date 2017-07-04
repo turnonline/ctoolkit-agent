@@ -49,7 +49,7 @@ public class MigrationDataflowDefinition
         // define pipelines
         pipeline
                 .apply( new LoadItems<>( key, clazz, datastore ) )
-                .apply( "Process item", ParDo.of( new DoFn<KeyValue, Void>()
+                .apply( "Group item", ParDo.of( new DoFn<KeyValue, Void>()
                 {
                     @Override
                     public void processElement( ProcessContext c ) throws Exception
@@ -57,7 +57,8 @@ public class MigrationDataflowDefinition
                         ChangeSetService changeSetService = injector().getInstance( ChangeSetService.class );
                         MigrationMetadataItem item = changeSetService.get( new MetadataItemKey<>( MigrationMetadataItem.class, c.element().get() ) );
 
-                        // TODO: implement
+                        // TODO: 1. group operations by kind
+                        // TODO: 2. call changeSetService.migrate
                     }
                 } ) );
 

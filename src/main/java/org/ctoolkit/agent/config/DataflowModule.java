@@ -41,6 +41,8 @@ public class DataflowModule
         bind( EntityPool.class ).to( EntityPoolThreadLocal.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
 
+        install( new MigrationModule() );
+
         requestStaticInjection( BaseMetadata.class );
         requestStaticInjection( BaseMetadataItem.class );
     }

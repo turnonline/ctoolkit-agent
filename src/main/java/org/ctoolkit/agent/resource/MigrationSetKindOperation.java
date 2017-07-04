@@ -11,17 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 @XmlAccessorType( XmlAccessType.FIELD )
-public class MigrationSetKindOp
+public abstract class MigrationSetKindOperation
 {
-    public final static String OP_ADD = "add";
-
-    public final static String OP_REMOVE = "remove";
-
-    public final static String OP_CHANGE = "change";
-
-    @XmlAttribute( name = "op" )
-    private String op;
-
     @XmlAttribute( name = "kind" )
     private String kind;
 
@@ -42,16 +33,6 @@ public class MigrationSetKindOp
 
     @XmlElement( name = "ruleset" )
     private MigrationSetKindOpRuleSet ruleSet;
-
-    public String getOp()
-    {
-        return op;
-    }
-
-    public void setOp( String op )
-    {
-        this.op = op;
-    }
 
     public String getKind()
     {
@@ -127,7 +108,6 @@ public class MigrationSetKindOp
     public String toString()
     {
         return "MigrationSetKindOp{" +
-                "op='" + op + '\'' +
                 ", kind='" + kind + '\'' +
                 ", property='" + property + '\'' +
                 ", newKind='" + newKind + '\'' +

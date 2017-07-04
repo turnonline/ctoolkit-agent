@@ -29,6 +29,7 @@ import com.google.cloud.datastore.KeyQuery;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
 import com.google.cloud.datastore.StructuredQuery.PropertyFilter;
+import com.google.cloud.datastore.Value;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.common.base.Predicate;
@@ -63,10 +64,13 @@ import org.ctoolkit.agent.resource.ChangeSetModelKindOp;
 import org.ctoolkit.agent.resource.ExportJob;
 import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.resource.MigrationJob;
+import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.dataflow.ImportDataflowDefinition;
 import org.ctoolkit.agent.service.impl.dataflow.MigrationDataflowDefinition;
+import org.ctoolkit.agent.service.impl.dataflow.migration.UseCase;
+import org.ctoolkit.agent.service.impl.dataflow.migration.UseCaseResolver;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
@@ -115,6 +119,8 @@ public class ChangeSetServiceBean
 
     private final EntityPool pool;
 
+    private final UseCaseResolver useCaseResolver;
+
     private final MapperFacade mapper;
 
     private final Provider<RestContext> restContextProvider;
@@ -133,6 +139,7 @@ public class ChangeSetServiceBean
                                  Datastore datastore,
                                  Storage storage,
                                  EntityPool pool,
+                                 @Nullable UseCaseResolver useCaseResolver,
                                  MapperFacade mapper,
                                  @Nullable Provider<RestContext> restContextProvider,
                                  @BucketName String bucketName,
@@ -143,6 +150,7 @@ public class ChangeSetServiceBean
         this.datastore = datastore;
         this.storage = storage;
         this.pool = pool;
+        this.useCaseResolver = useCaseResolver;
         this.mapper = mapper;
         this.restContextProvider = restContextProvider;
         this.bucketName = bucketName;
@@ -163,8 +171,8 @@ public class ChangeSetServiceBean
         systemKinds.add( "_ImportMetadataItem" );
         systemKinds.add( "_ExportMetadata" );
         systemKinds.add( "_ExportMetadataItem" );
-        systemKinds.add( "_ChangeMetadata" );
-        systemKinds.add( "_ChangeMetadataItem" );
+        systemKinds.add( "_MigrationMetadata" );
+        systemKinds.add( "_MigrationMetadataItem" );
         systemKinds.add( "_MetadataAudit" );
 
         // init job info providers
@@ -388,7 +396,7 @@ public class ChangeSetServiceBean
     }
 
     // ------------------------------------------
-    // -- changesets
+    // -- job core BL
     // ------------------------------------------
 
     @Override
@@ -457,15 +465,50 @@ public class ChangeSetServiceBean
         pool.flush();
     }
 
-    // ------------------------------------------
-    // -- meta info
-    // ------------------------------------------
-
     @Override
     public ChangeSet exportChangeSet( String entity )
     {
         throw new NotImplementedException( "Method not implemented yet" );
     }
+
+    @Override
+    public void migrate( MigrationSetKindOperation operation, Entity entity )
+    {
+        UseCase useCase = useCaseResolver.resolve( operation );
+
+        // check if entity applies to rule set
+        if ( useCase.applyRuleSet( operation.getRuleSet(), entity ) )
+        {
+            String newName = useCase.name( operation );
+
+            // add/change property
+            if ( newName != null )
+            {
+                Entity.Builder builder = Entity.newBuilder( entity );
+                Value<?> newValue = useCase.value( operation, entity );
+                builder.set( newName, newValue );
+                entity = datastore.put( builder.build() );
+            }
+
+            // remove old property
+            if ( useCase.removeOldProperty() )
+            {
+                Entity.Builder builder = Entity.newBuilder( entity );
+                builder.remove( operation.getProperty() );
+                datastore.put( builder.build() );
+            }
+
+            // remove entire entity from datastore
+            if ( useCase.removeEntity() )
+            {
+                datastore.delete( entity.getKey() );
+            }
+        }
+    }
+
+    // ------------------------------------------
+    // -- audits
+    // ------------------------------------------
 
     @Override
     public void create( AuditEvent event )
@@ -482,10 +525,6 @@ public class ChangeSetServiceBean
 
         datastore.put( builder.build() );
     }
-
-    // ------------------------------------------
-    // -- audits
-    // ------------------------------------------
 
     @Override
     public List<MetadataAudit> list( AuditFilter filter )

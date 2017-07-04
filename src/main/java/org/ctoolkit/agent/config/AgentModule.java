@@ -63,14 +63,6 @@ import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
-import org.ctoolkit.agent.service.impl.datastore.rule.ChangeRuleEngine;
-import org.ctoolkit.agent.service.impl.datastore.rule.NewNameChangeRule;
-import org.ctoolkit.agent.service.impl.datastore.rule.NewNameNewTypeChangeRule;
-import org.ctoolkit.agent.service.impl.datastore.rule.NewNameNewTypeNewValueChangeRule;
-import org.ctoolkit.agent.service.impl.datastore.rule.NewNameNewValueChangeRule;
-import org.ctoolkit.agent.service.impl.datastore.rule.NewTypeChangeRule;
-import org.ctoolkit.agent.service.impl.datastore.rule.NewTypeNewValueChangeRule;
-import org.ctoolkit.agent.service.impl.datastore.rule.NewValueChangeRule;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.agent.service.impl.event.AuditInterceptor;
 import org.ctoolkit.agent.service.impl.event.AuditSubscription;
@@ -140,16 +132,6 @@ public class AgentModule
                 Matchers.annotatedWith( Auditable.class ),
                 auditInterceptor
         );
-
-        // change rule
-        bind( ChangeRuleEngine.class ).in( Singleton.class );
-        bind( NewNameChangeRule.class ).in( Singleton.class );
-        bind( NewTypeChangeRule.class ).in( Singleton.class );
-        bind( NewValueChangeRule.class ).in( Singleton.class );
-        bind( NewNameNewTypeChangeRule.class ).in( Singleton.class );
-        bind( NewNameNewValueChangeRule.class ).in( Singleton.class );
-        bind( NewTypeNewValueChangeRule.class ).in( Singleton.class );
-        bind( NewNameNewTypeNewValueChangeRule.class ).in( Singleton.class );
 
         // static injections
         requestStaticInjection( KeyProvider.class );

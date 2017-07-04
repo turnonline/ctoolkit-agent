@@ -13,6 +13,7 @@ import org.ctoolkit.agent.model.ImportMetadataItem;
 import org.ctoolkit.agent.model.JobState;
 import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.ModelConverter;
+import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ public class ImportDataflowDefinition
                         try
                         {
                             // import change set
-                            changeSetService.importChangeSet( item.toChangeSet() );
+                            changeSetService.importChangeSet( item.unmarshallData( ChangeSet.class) );
 
                             // set state to COMPLETED_SUCCESSFULLY
                             item.setState( JobState.DONE );

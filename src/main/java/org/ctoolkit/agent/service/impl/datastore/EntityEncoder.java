@@ -18,13 +18,19 @@
 
 package org.ctoolkit.agent.service.impl.datastore;
 
-import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.repackaged.com.google.api.client.util.Base64;
+import com.google.api.client.util.Base64;
+import com.google.cloud.datastore.BlobValue;
+import com.google.cloud.datastore.BooleanValue;
+import com.google.cloud.datastore.DoubleValue;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.KeyValue;
+import com.google.cloud.datastore.ListValue;
+import com.google.cloud.datastore.LongValue;
+import com.google.cloud.datastore.NullValue;
+import com.google.cloud.datastore.StringValue;
+import com.google.cloud.datastore.TimestampValue;
+import com.google.cloud.datastore.Value;
 import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,10 +42,9 @@ import java.util.List;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
+// TODO: write unit test
 public class EntityEncoder
 {
-    private static final Logger logger = LoggerFactory.getLogger( EntityEncoder.class );
-
     /**
      * Encodes an entity property into a ChangeSetEntityProperty.
      *
@@ -47,199 +52,46 @@ public class EntityEncoder
      * @param value the value of the property
      * @return ChangeSetEntityProperty representation of the property
      */
-    public ChangeSetEntityProperty encodeProperty( final String name, final Object value )
+    public ChangeSetEntityProperty encode( final String name, final Value<?> value )
     {
-        if ( value == null )
+        if ( value == null || value instanceof NullValue )
         {
             return createNullProperty( name );
         }
-        else if ( value instanceof String )
+        else if ( value instanceof StringValue )
         {
-            return createStringProperty( name, ( String ) value );
+            return createStringProperty( name, ( ( StringValue ) value ).get() );
         }
-        else if ( value instanceof Double )
+        else if ( value instanceof DoubleValue )
         {
-            return createDoubleProperty( name, ( Double ) value );
+            return createDoubleProperty( name, ( ( DoubleValue ) value ).get() );
         }
-        else if ( value instanceof Float )
+        else if ( value instanceof LongValue )
         {
-            return createFloatProperty( name, ( Float ) value );
+            return createLongProperty( name, ( ( LongValue ) value ).get() );
         }
-        else if ( value instanceof Integer )
+        else if ( value instanceof BooleanValue )
         {
-            return createIntegerProperty( name, ( Integer ) value );
+            return createBooleanProperty( name, ( ( BooleanValue ) value ).get() );
         }
-        else if ( value instanceof Long )
+        else if ( value instanceof TimestampValue )
         {
-            return createLongProperty( name, ( Long ) value );
+            return createDateProperty( name, new Date( ( ( TimestampValue ) value ).get().getSeconds() ) );
         }
-        else if ( value instanceof Boolean )
+        else if ( value instanceof BlobValue )
         {
-            return createBooleanProperty( name, ( Boolean ) value );
+            return createBlobProperty( name, ( ( BlobValue ) value ).get().toByteArray() );
         }
-        else if ( value instanceof Date )
+        else if ( value instanceof KeyValue )
         {
-            return createDateProperty( name, ( Date ) value );
+            return createKeyProperty( name, ( ( KeyValue ) value ).get() );
         }
-        else if ( value instanceof Blob )
+        else if ( value instanceof ListValue )
         {
-            return createBlobProperty( name, ( Blob ) value );
-        }
-        else if ( value instanceof Key )
-        {
-            return createKeyProperty( name, ( Key ) value );
-        }
-        else if ( value instanceof List )
-        {
-            return createListProperty( name, ( List ) value );
+            return createListProperty( name, ( ( ListValue ) value ).get() );
         }
 
         throw new IllegalArgumentException( "Unknown entity type '" + value.getClass().getName() + "'" );
-    }
-
-    /**
-     * Transforms a type and a string value to real object with given type and value.
-     *
-     * @param type  the type of the property
-     * @param value the string represented value of the property
-     * @return ChangeSetEntityProperty representation of the property
-     */
-    @Deprecated
-    public Object decodeProperty( String type, String value )
-    {
-        if ( value == null )
-        {
-            return null;
-        }
-        if ( ChangeSetEntityProperty.PROPERTY_TYPE_STRING.equals( type ) )
-        {
-            return value;
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE.equals( type ) )
-        {
-            return Double.valueOf( value );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_FLOAT.equals( type ) )
-        {
-            return Float.valueOf( value );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_INTEGER.equals( type ) )
-        {
-            return Integer.valueOf( value );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN.equals( type ) )
-        {
-            return Boolean.valueOf( value );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_DATE.equals( type ) )
-        {
-            return new Date( Long.valueOf( value ) );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LONG.equals( type ) )
-        {
-            return Long.valueOf( value );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BLOB.equals( type ) )
-        {
-            try
-            {
-                return new Blob( Base64.decodeBase64( value ) );
-            }
-            catch ( Exception e )
-            {
-                logger.error( "Error by encoding blob: '" + value + "'" );
-                return null;
-            }
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_KEY.equals( type ) )
-        {
-            return parseKeyByIdOrName( value );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_LONG.equals( type ) )
-        {
-            List<Long> list = new ArrayList<>();
-            for ( String s : value.split( "," ) )
-            {
-                try
-                {
-                    list.add( Long.valueOf( s ) );
-                }
-                catch ( NumberFormatException e )
-                {
-                    logger.error( "Unable to convert value to long: '" + s + "'" );
-                }
-            }
-
-            return list;
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_STRING.equals( type ) )
-        {
-            List<String> list = new ArrayList<>();
-            Collections.addAll( list, value.split( "," ) );
-
-            return list;
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_KEY.equals( type ) )
-        {
-            List<Key> list = new ArrayList<>();
-
-            for ( String fullKey : value.split( "," ) )
-            {
-                list.add( parseKeyByIdOrName( fullKey ) );
-            }
-
-            return list;
-        }
-
-        logger.error( "Unknown entity type '" + type + "'" );
-        return null;
-    }
-
-    /**
-     * Parse given string to Key first try as Long Id then if parsing fails as String name.
-     *
-     * @param stringKey the input string key to parse
-     * @return the parsed key
-     */
-    public Key parseKeyByIdOrName( String stringKey )
-    {
-        String[] split = stringKey.trim().split( "::" );
-
-        String kind;
-        String idName;
-        Key parentKey = null;
-
-        for ( String s : split )
-        {
-            String[] spl = s.split( ":" );
-            kind = spl[0].trim();
-            idName = spl[1].trim();
-
-            if ( parentKey == null )
-            {
-                try
-                {
-                    parentKey = KeyFactory.createKey( kind, Long.parseLong( idName ) );
-                }
-                catch ( NumberFormatException e )
-                {
-                    parentKey = KeyFactory.createKey( kind, idName );
-                }
-            }
-            else
-            {
-                try
-                {
-                    parentKey = KeyFactory.createKey( parentKey, kind, Long.parseLong( idName ) );
-                }
-                catch ( NumberFormatException e )
-                {
-                    parentKey = KeyFactory.createKey( parentKey, kind, idName );
-                }
-            }
-        }
-
-        return parentKey;
     }
 
     public String formatKey( Key key )
@@ -267,33 +119,6 @@ public class EntityEncoder
         }
 
         return formattedKey.length() > 0 ? formattedKey.toString() : null;
-    }
-
-    private Key parseKeyNames( String stringKey )
-    {
-        String[] split = stringKey.trim().split( "::" );
-
-        String kind;
-        String name;
-        Key parentKey = null;
-
-        for ( String s : split )
-        {
-            String[] spl = s.split( ":" );
-            kind = spl[0].trim();
-            name = spl[1].trim();
-
-            if ( parentKey == null )
-            {
-                parentKey = KeyFactory.createKey( kind, name );
-            }
-            else
-            {
-                parentKey = KeyFactory.createKey( parentKey, kind, name );
-            }
-        }
-
-        return parentKey;
     }
 
     /**
@@ -390,10 +215,10 @@ public class EntityEncoder
      * @param name   the name of the property
      * @param object the object to render
      */
-    private ChangeSetEntityProperty createBlobProperty( String name, Blob object )
+    private ChangeSetEntityProperty createBlobProperty( String name, byte[] object )
     {
         return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_BLOB,
-                Base64.encodeBase64String( object.getBytes() ) );
+                Base64.encodeBase64String( object ) );
     }
 
     /**
@@ -425,14 +250,14 @@ public class EntityEncoder
                 value.append( "," );
             }
 
-            if ( o instanceof String )
+            if ( o instanceof StringValue )
             {
-                value.append( o );
+                value.append( ( ( StringValue ) o ).get() );
                 propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_STRING;
             }
-            else if ( o instanceof Key )
+            else if ( o instanceof KeyValue )
             {
-                value.append( formatKey( ( Key ) o ) );
+                value.append( formatKey( ( ( KeyValue ) o ).get() ) );
                 propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_KEY;
             }
             else

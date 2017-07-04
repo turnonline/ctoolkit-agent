@@ -67,7 +67,7 @@ public class ChangeSetEntityToEntityBuilderMapper
         {
             for ( ChangeSetEntityProperty prop : changeSetEntity.getProperty() )
             {
-                decoder.decode( entityBuilder, prop.getName(), prop.getType(), prop.getValue() );
+                entityBuilder.set( prop.getName(), decoder.decode( prop.getType(), prop.getValue() ) );
             }
         }
     }

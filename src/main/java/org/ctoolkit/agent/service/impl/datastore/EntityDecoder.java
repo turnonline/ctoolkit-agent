@@ -3,11 +3,17 @@ package org.ctoolkit.agent.service.impl.datastore;
 import com.google.appengine.repackaged.com.google.api.client.util.Base64;
 import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.Blob;
-import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.BlobValue;
+import com.google.cloud.datastore.BooleanValue;
+import com.google.cloud.datastore.DoubleValue;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyValue;
+import com.google.cloud.datastore.ListValue;
 import com.google.cloud.datastore.LongValue;
+import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.StringValue;
+import com.google.cloud.datastore.TimestampValue;
+import com.google.cloud.datastore.Value;
 import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
 import org.slf4j.Logger;
@@ -19,10 +25,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Entity decoder is used to decode changeset to Entity.Builder
+ * Datastore entity decoder
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
+// TODO: write unit test
 public class EntityDecoder
 {
     private static Logger logger = LoggerFactory.getLogger( EntityDecoder.class );
@@ -31,55 +38,55 @@ public class EntityDecoder
     @ProjectId
     private String projectId;
 
-    public void decode( Entity.Builder entityBuilder, String name, String type, String value )
+    public Value<?> decode( String type, String value )
     {
         if ( null == value )
         {
-            entityBuilder.setNull( name );
+            return new NullValue();
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_STRING.equals( type ) )
         {
-            entityBuilder.set( name, value );
+            return new StringValue( value );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE.equals( type ) )
         {
-            entityBuilder.set( name, Double.valueOf( value ) );
+            return new DoubleValue( Double.valueOf( value ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_FLOAT.equals( type ) )
         {
-            entityBuilder.set( name, Float.valueOf( value ) );
+            return new DoubleValue( Float.valueOf( value ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_INTEGER.equals( type ) )
         {
-            entityBuilder.set( name, Integer.valueOf( value ) );
+            return new LongValue( Integer.valueOf( value ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LONG.equals( type ) )
         {
-            entityBuilder.set( name, Long.valueOf( value ) );
+            return new LongValue( Long.valueOf( value ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN.equals( type ) )
         {
-            entityBuilder.set( name, Boolean.valueOf( value ) );
+            return new BooleanValue( Boolean.valueOf( value ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_DATE.equals( type ) )
         {
-            entityBuilder.set( name, Timestamp.of( new Date( Long.valueOf( value ) ) ) );
+            return new TimestampValue( Timestamp.of( new Date( Long.valueOf( value ) ) ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BLOB.equals( type ) )
         {
             try
             {
-                entityBuilder.set( name, Blob.copyFrom( Base64.decodeBase64( value ) ) );
+                return new BlobValue( Blob.copyFrom( Base64.decodeBase64( value ) ) );
             }
             catch ( Exception e )
             {
                 logger.error( "Error by encoding blob: '" + value + "'" );
-                entityBuilder.setNull( name );
+                return new NullValue();
             }
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_KEY.equals( type ) )
         {
-            entityBuilder.set( name, parseKeyByIdOrName( value ) );
+            return new KeyValue( parseKeyByIdOrName( value ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_LONG.equals( type ) )
         {
@@ -97,7 +104,7 @@ public class EntityDecoder
                 }
             }
 
-            entityBuilder.set( name, list );
+            return new ListValue( list );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_STRING.equals( type ) )
         {
@@ -108,7 +115,7 @@ public class EntityDecoder
                 list.add( StringValue.of( s ) );
             }
 
-            entityBuilder.set( name, list );
+            return new ListValue( list );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_KEY.equals( type ) )
         {
@@ -119,12 +126,14 @@ public class EntityDecoder
                 list.add( KeyValue.of( parseKeyByIdOrName( fullKey ) ) );
             }
 
-            entityBuilder.set( name, list );
+            return new ListValue( list );
         }
         else
         {
             logger.error( "Unknown entity type '" + type + "'" );
         }
+
+        return new NullValue();
     }
 
     public Key parseKeyByIdOrName( String stringKey )

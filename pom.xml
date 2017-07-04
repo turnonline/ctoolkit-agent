@@ -257,6 +257,7 @@
         <dependency>
             <groupId>org.ctoolkit.test</groupId>
             <artifactId>ctoolkit-test</artifactId>
+            <version>1.2</version> <!--TODO: version should be taken from bom-->
         </dependency>
         <dependency>
             <groupId>cpsuite</groupId>

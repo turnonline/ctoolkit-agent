@@ -18,6 +18,8 @@
 
 package org.ctoolkit.agent.service;
 
+import com.google.cloud.datastore.Entity;
+import org.ctoolkit.agent.exception.MigrationUseCaseNotExists;
 import org.ctoolkit.agent.exception.ProcessAlreadyRunning;
 import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.BaseMetadata;
@@ -30,6 +32,8 @@ import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
+import org.ctoolkit.agent.resource.MigrationSet;
+import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 import org.ctoolkit.agent.service.impl.event.AuditEvent;
 
 import java.util.List;
@@ -148,7 +152,7 @@ public interface ChangeSetService
     <M extends BaseMetadata> void cancelJob( M metadata );
 
     // ------------------------------------------
-    // -- changesets
+    // -- job core BL
     // ------------------------------------------
 
     /**
@@ -156,7 +160,7 @@ public interface ChangeSetService
      *
      * @param changeSet {@link ChangeSet} to process
      */
-    void importChangeSet( final ChangeSet changeSet );
+    void importChangeSet( ChangeSet changeSet );
 
     /**
      * Process change data change set
@@ -164,7 +168,16 @@ public interface ChangeSetService
      * @param entity entity object to export
      * @return change set containing change set data
      */
-    ChangeSet exportChangeSet( final String entity );
+    ChangeSet exportChangeSet( String entity );
+
+    /**
+     * Migrate data with specified operation on entity
+     *
+     * @param operation {@link MigrationSet}
+     * @param entity    {@link Entity}
+     * @throws MigrationUseCaseNotExists if no use case is found for {@link MigrationSetKindOperation}
+     */
+    void migrate( MigrationSetKindOperation operation, Entity entity ) throws MigrationUseCaseNotExists;
 
     // ------------------------------------------
     // -- audits

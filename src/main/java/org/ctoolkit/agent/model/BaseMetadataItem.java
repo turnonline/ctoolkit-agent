@@ -32,7 +32,6 @@ import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.inject.Injector;
 import org.ctoolkit.agent.annotation.BucketName;
-import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
 import org.ctoolkit.agent.util.XmlUtils;
 
@@ -262,17 +261,17 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         return key;
     }
 
-    public ChangeSet toChangeSet()
+    public <T> T unmarshallData(Class<T> clazz)
     {
         switch ( getDataType() )
         {
             case JSON:
             {
-                return new Gson().fromJson( new String( data, Charsets.UTF_8 ), ChangeSet.class );
+                return new Gson().fromJson( new String( data, Charsets.UTF_8 ), clazz );
             }
             case XML:
             {
-                return XmlUtils.unmarshall( new ByteArrayInputStream( data ), ChangeSet.class );
+                return XmlUtils.unmarshall( new ByteArrayInputStream( data ), clazz );
             }
         }
 

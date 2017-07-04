@@ -15,23 +15,23 @@ import java.util.List;
 @XmlAccessorType( XmlAccessType.FIELD )
 public class MigrationSetKindOpRuleSet
 {
-    public static final String RESTRICTION_VALUE_AND = "and";
-    public static final String RESTRICTION_VALUE_OR = "or";
+    public static final String AND = "and";
+    public static final String OR = "or";
 
-    @XmlAttribute( name = "op" )
-    private String op;
+    @XmlAttribute( name = "operation" )
+    private String operation;
 
     @XmlElement( name = "rule" )
     private List<MigrationSetKindOpRule> rules;
 
-    public String getOp()
+    public String getOperation()
     {
-        return op;
+        return operation;
     }
 
-    public void setOp( String op )
+    public void setOperation( String operation )
     {
-        this.op = op;
+        this.operation = operation;
     }
 
     public List<MigrationSetKindOpRule> getRules()
@@ -52,7 +52,7 @@ public class MigrationSetKindOpRuleSet
     public String toString()
     {
         return "MigrationSetKindOpRestriction{" +
-                ", op='" + op + '\'' +
+                ", operation='" + operation + '\'' +
                 ", rules=" + rules +
                 '}';
     }

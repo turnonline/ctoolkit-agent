@@ -6,8 +6,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Migration set descriptors.
@@ -25,8 +23,8 @@ public class MigrationSet
     @XmlAttribute( name = "comment" )
     private String comment;
 
-    @XmlElement( name = "operation" )
-    private List<MigrationSetKindOp> kindOps;
+    @XmlElement( name = "operations" )
+    private MigrationSetKindOperations operations;
 
     public String getAuthor()
     {
@@ -48,18 +46,14 @@ public class MigrationSet
         this.comment = comment;
     }
 
-    public List<MigrationSetKindOp> getKindOps()
+    public MigrationSetKindOperations getOperations()
     {
-        if ( kindOps == null )
-        {
-            kindOps = new ArrayList<>();
-        }
-        return kindOps;
+        return operations;
     }
 
-    public void setKindOps( List<MigrationSetKindOp> kindOps )
+    public void setOperations( MigrationSetKindOperations operations )
     {
-        this.kindOps = kindOps;
+        this.operations = operations;
     }
 
     @Override
@@ -68,7 +62,7 @@ public class MigrationSet
         return "MigrationSet{" +
                 "author='" + author + '\'' +
                 ", comment='" + comment + '\'' +
-                ", kindOps=" + kindOps +
+                ", operations=" + operations +
                 '}';
     }
 }

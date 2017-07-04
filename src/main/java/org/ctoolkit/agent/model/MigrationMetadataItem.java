@@ -25,7 +25,7 @@ import org.ctoolkit.agent.annotation.EntityMarker;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@EntityMarker( name = "_ExportMetadataItem" )
+@EntityMarker( name = "_MigrationMetadataItem" )
 public class MigrationMetadataItem extends BaseMetadataItem<MigrationMetadata>
 {
     public MigrationMetadataItem()
@@ -40,7 +40,7 @@ public class MigrationMetadataItem extends BaseMetadataItem<MigrationMetadata>
     @Override
     public String toString()
     {
-        return "ExportMetadataItem{" +
+        return "MigrationMetadataItem{" +
                 "} " + super.toString();
     }
 }

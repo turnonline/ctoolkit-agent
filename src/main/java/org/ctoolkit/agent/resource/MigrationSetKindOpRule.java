@@ -12,18 +12,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType( XmlAccessType.FIELD )
 public class MigrationSetKindOpRule
 {
-    public final static String OP_EQ = "eq";
-    public final static String OP_LT = "lt";
-    public final static String OP_LTE = "lte";
-    public final static String OP_GT = "gt";
-    public final static String OP_GTE = "gte";
-    public final static String OP_REGEXP = "regexp";
+    public final static String EQUALS = "eq";
+    public final static String LOWER_THAN = "lt";
+    public final static String LOWER_THAN_EQUALS = "lte";
+    public final static String GREATER_THAN = "gt";
+    public final static String GREATER_THAN_EQUALS = "gte";
+    public final static String REGEXP = "regexp";
 
     @XmlAttribute( name = "property" )
     private String property;
 
-    @XmlAttribute( name = "op" )
-    private String op;
+    @XmlAttribute( name = "operation" )
+    private String operation;
 
     @XmlAttribute( name = "value" )
     private String value;
@@ -38,14 +38,14 @@ public class MigrationSetKindOpRule
         this.property = property;
     }
 
-    public String getOp()
+    public String getOperation()
     {
-        return op;
+        return operation;
     }
 
-    public void setOp( String op )
+    public void setOperation( String operation )
     {
-        this.op = op;
+        this.operation = operation;
     }
 
     public String getValue()
@@ -63,7 +63,7 @@ public class MigrationSetKindOpRule
     {
         return "MigrationSetKindOpRule{" +
                 "property='" + property + '\'' +
-                ", op='" + op + '\'' +
+                ", operation='" + operation + '\'' +
                 ", value='" + value + '\'' +
                 '}';
     }
