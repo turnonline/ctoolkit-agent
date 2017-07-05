@@ -13,14 +13,12 @@ import javax.inject.Inject;
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class RuleStrategyEquals
-        implements RuleStrategy
+        extends RuleStrategyBase
 {
-    private final EntityEncoder encoder;
-
     @Inject
     public RuleStrategyEquals( EntityEncoder encoder )
     {
-        this.encoder = encoder;
+        super( encoder );
     }
 
     @Override
@@ -28,13 +26,33 @@ public class RuleStrategyEquals
     {
         String property = rule.getProperty();
         ChangeSetEntityProperty changeSetEntityProperty = encoder.encode( property, entity.getValue( property ) );
-        return rule.getValue().equals( changeSetEntityProperty.getValue() );
-    }
 
-    @Override
-    public boolean isTypeAllowed( MigrationSetKindOpRule rule, Entity entity )
-    {
-        return true;
+        switch ( changeSetEntityProperty.getType() )
+        {
+            case ChangeSetEntityProperty.PROPERTY_TYPE_STRING:
+            case ChangeSetEntityProperty.PROPERTY_TYPE_KEY:
+            {
+                return rule.getValue().equals( changeSetEntityProperty.getValue() );
+            }
+            case ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE:
+            {
+                return Double.valueOf( rule.getValue() ).equals( Double.valueOf( changeSetEntityProperty.getValue() ) );
+            }
+            case ChangeSetEntityProperty.PROPERTY_TYPE_LONG:
+            {
+                return Long.valueOf( rule.getValue() ).equals( Long.valueOf( changeSetEntityProperty.getValue() ) );
+            }
+            case ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN:
+            {
+                return Boolean.valueOf( rule.getValue() ).equals( Boolean.valueOf( changeSetEntityProperty.getValue() ) );
+            }
+            case ChangeSetEntityProperty.PROPERTY_TYPE_NULL:
+            {
+                return rule.getValue().equals( "null" );
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -44,14 +62,9 @@ public class RuleStrategyEquals
                 ChangeSetEntityProperty.PROPERTY_TYPE_STRING,
                 ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE,
                 ChangeSetEntityProperty.PROPERTY_TYPE_LONG,
-                ChangeSetEntityProperty.PROPERTY_TYPE_DATE,
                 ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN,
-                ChangeSetEntityProperty.PROPERTY_TYPE_BLOB,
                 ChangeSetEntityProperty.PROPERTY_TYPE_NULL,
                 ChangeSetEntityProperty.PROPERTY_TYPE_KEY,
-                ChangeSetEntityProperty.PROPERTY_TYPE_LIST_KEY,
-                ChangeSetEntityProperty.PROPERTY_TYPE_LIST_LONG,
-                ChangeSetEntityProperty.PROPERTY_TYPE_LIST_STRING,
         };
     }
 }

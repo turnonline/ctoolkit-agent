@@ -19,6 +19,7 @@
 package org.ctoolkit.agent.service.impl.datastore;
 
 import com.google.api.client.util.Base64;
+import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.BlobValue;
 import com.google.cloud.datastore.BooleanValue;
 import com.google.cloud.datastore.DoubleValue;
@@ -76,7 +77,8 @@ public class EntityEncoder
         }
         else if ( value instanceof TimestampValue )
         {
-            return createDateProperty( name, new Date( ( ( TimestampValue ) value ).get().getSeconds() ) );
+            Timestamp timestamp = ( ( TimestampValue ) value ).get();
+            return createDateProperty( name, new Date( timestamp.getSeconds() + timestamp.getNanos() ) );
         }
         else if ( value instanceof BlobValue )
         {
@@ -253,12 +255,17 @@ public class EntityEncoder
             if ( o instanceof StringValue )
             {
                 value.append( ( ( StringValue ) o ).get() );
-                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_STRING;
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LIST_STRING;
+            }
+            else if ( o instanceof LongValue )
+            {
+                value.append( ( ( LongValue ) o ).get() );
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LIST_LONG;
             }
             else if ( o instanceof KeyValue )
             {
                 value.append( formatKey( ( ( KeyValue ) o ).get() ) );
-                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_KEY;
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LIST_KEY;
             }
             else
             {

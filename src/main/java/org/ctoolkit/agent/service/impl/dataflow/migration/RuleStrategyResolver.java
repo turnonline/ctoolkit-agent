@@ -9,6 +9,7 @@ import org.ctoolkit.agent.resource.MigrationSetKindOpRuleSet;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +24,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 // TODO: write unit test
 public class RuleStrategyResolver
 {
+    private static final String MESSAGE_TYPE_NOT_ALLOWED = "Type is not allowed for rule: {0}. Allowed types are: {1} but actual entity property ''{2}'' is type of {3}.";
+    private static final String MESSAGE_STRATEGY_NOT_EXISTS = "No rule strategy exists for rule operation: {0}. Allowed operations are: {1} but actual operation is {2}";
+
     private Map<String, RuleStrategy> strategies = new HashMap<>();
 
-    private static final String[] ALLOWED_OPERATIONS = new String[] {
+    private static final String[] ALLOWED_OPERATIONS = new String[]{
             MigrationSetKindOpRule.EQUALS,
             MigrationSetKindOpRule.LOWER_THAN,
             MigrationSetKindOpRule.LOWER_THAN_EQUALS,
@@ -126,11 +130,20 @@ public class RuleStrategyResolver
                 }
 
                 // throw exception if type is not allowed
-                throw new RuleStrategyException( "Type is not allowed for rule: " + rule + ". Allowed types are: " + Arrays.toString( ruleStrategy.allowedTypes() ) );
+                throw new RuleStrategyException( MessageFormat.format( MESSAGE_TYPE_NOT_ALLOWED,
+                        rule,
+                        Arrays.toString( ruleStrategy.allowedTypes() ),
+                        ruleStrategy.encodedProperty().getName(),
+                        ruleStrategy.encodedProperty().getType() )
+                );
             }
 
             // throw exception if rule strategy cannot be found - this can happen for xml/json typos
-            throw new RuleStrategyException( "No rule strategy exists for rule operation: " + rule + ". Allowed operations are: " + Arrays.toString( ALLOWED_OPERATIONS ));
+            throw new RuleStrategyException( MessageFormat.format( MESSAGE_STRATEGY_NOT_EXISTS,
+                    rule,
+                    Arrays.toString( ALLOWED_OPERATIONS ),
+                    rule.getOperation() )
+            );
         }
     }
 }

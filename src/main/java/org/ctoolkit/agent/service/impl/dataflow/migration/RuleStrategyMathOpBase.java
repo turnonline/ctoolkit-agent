@@ -5,21 +5,17 @@ import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
 import org.ctoolkit.agent.resource.MigrationSetKindOpRule;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 
-import java.util.Arrays;
-
 /**
  * Base rule strategy for mathematical operations
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public abstract class RuleStrategyMathOpBase
-        implements RuleStrategy
+        extends RuleStrategyBase
 {
-    private final EntityEncoder encoder;
-
     public RuleStrategyMathOpBase( EntityEncoder encoder )
     {
-        this.encoder = encoder;
+        super( encoder );
     }
 
     @Override
@@ -40,20 +36,11 @@ public abstract class RuleStrategyMathOpBase
             }
             case ChangeSetEntityProperty.PROPERTY_TYPE_DATE:
             {
-                return apply( entity.getTimestamp( property ).getSeconds(), Long.valueOf( rule.getValue() ) );
+                return apply( entity.getTimestamp( property ).toSqlTimestamp().getTime(), Long.valueOf( rule.getValue() ) );
             }
         }
 
         return false;
-    }
-
-    @Override
-    public boolean isTypeAllowed( MigrationSetKindOpRule rule, Entity entity )
-    {
-        String property = rule.getProperty();
-        ChangeSetEntityProperty changeSetEntityProperty = encoder.encode( property, entity.getValue( property ) );
-
-        return Arrays.asList( allowedTypes() ).contains( changeSetEntityProperty.getType() );
     }
 
     @Override
