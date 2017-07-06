@@ -4,6 +4,8 @@ import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Value;
 import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 
+import javax.inject.Inject;
+
 /**
  * Use case - REMOVE - property
  *
@@ -12,7 +14,8 @@ import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 public class Remove__Property
         extends UseCaseBase
 {
-    public Remove__Property( RuleStrategyResolver ruleStrategyResolver )
+    @Inject
+    public Remove__Property( IRuleStrategyResolver ruleStrategyResolver )
     {
         super( ruleStrategyResolver );
     }

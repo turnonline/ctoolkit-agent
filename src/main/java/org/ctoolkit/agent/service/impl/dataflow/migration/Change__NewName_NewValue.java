@@ -22,7 +22,7 @@ public class Change__NewName_NewValue
     private final EntityDecoder decoder;
 
     @Inject
-    public Change__NewName_NewValue( RuleStrategyResolver ruleStrategyResolver,
+    public Change__NewName_NewValue( IRuleStrategyResolver ruleStrategyResolver,
                                      EntityEncoder encoder,
                                      EntityDecoder decoder )
     {

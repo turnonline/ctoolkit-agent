@@ -5,6 +5,8 @@ import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.Value;
 import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 
+import javax.inject.Inject;
+
 /**
  * Use case - ADD - new property + new type + new value (value is null)
  *
@@ -13,7 +15,8 @@ import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 public class Add__NewName_NewType_NewValueNull
         extends UseCaseBase
 {
-    public Add__NewName_NewType_NewValueNull( RuleStrategyResolver ruleStrategyResolver )
+    @Inject
+    public Add__NewName_NewType_NewValueNull( IRuleStrategyResolver ruleStrategyResolver )
     {
         super( ruleStrategyResolver );
     }
@@ -32,7 +35,7 @@ public class Add__NewName_NewType_NewValueNull
     @Override
     public String name( MigrationSetKindOperation operation )
     {
-        return operation.getProperty();
+        return operation.getNewName();
     }
 
     @Override

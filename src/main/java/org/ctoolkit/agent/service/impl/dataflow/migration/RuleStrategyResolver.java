@@ -21,8 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-// TODO: write unit test
 public class RuleStrategyResolver
+        implements IRuleStrategyResolver
 {
     private static final String MESSAGE_TYPE_NOT_ALLOWED = "Type is not allowed for rule: {0}. Allowed types are: {1} but actual entity property ''{2}'' is type of {3}.";
     private static final String MESSAGE_STRATEGY_NOT_EXISTS = "No rule strategy exists for rule operation: {0}. Allowed operations are: {1} but actual operation is {2}";
@@ -54,13 +54,7 @@ public class RuleStrategyResolver
         strategies.put( MigrationSetKindOpRule.REGEXP, ruleStrategyRegexp );
     }
 
-    /**
-     * Apply rule set to entity
-     *
-     * @param ruleSet {@link MigrationSetKindOpRuleSet }
-     * @param entity  {@link Entity}
-     * @return <code>true</code> if rule set is applicable to entity, <code>false</code> otherwise
-     */
+    @Override
     public boolean apply( MigrationSetKindOpRuleSet ruleSet, final Entity entity )
     {
         boolean apply;

@@ -107,8 +107,8 @@ public abstract class MigrationSetKindOperation
     @Override
     public String toString()
     {
-        return "MigrationSetKindOp{" +
-                ", kind='" + kind + '\'' +
+        return "MigrationSetKindOperation{" +
+                "kind='" + kind + '\'' +
                 ", property='" + property + '\'' +
                 ", newKind='" + newKind + '\'' +
                 ", newType='" + newType + '\'' +

@@ -4,6 +4,8 @@ import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Value;
 import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 
+import javax.inject.Inject;
+
 /**
  * Use case - REMOVE - kind
  *
@@ -12,7 +14,8 @@ import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 public class Remove__Kind
         extends UseCaseBase
 {
-    public Remove__Kind( RuleStrategyResolver ruleStrategyResolver )
+    @Inject
+    public Remove__Kind( IRuleStrategyResolver ruleStrategyResolver )
     {
         super( ruleStrategyResolver );
     }

@@ -2,10 +2,8 @@ package org.ctoolkit.agent.service.impl.dataflow.migration;
 
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Value;
-import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
 import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 import org.ctoolkit.agent.service.impl.datastore.EntityDecoder;
-import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 
 import javax.inject.Inject;
 
@@ -17,17 +15,13 @@ import javax.inject.Inject;
 public class Add__NewName_NewType_NewValue
         extends UseCaseBase
 {
-    private final EntityEncoder encoder;
-
     private final EntityDecoder decoder;
 
     @Inject
-    public Add__NewName_NewType_NewValue( RuleStrategyResolver ruleStrategyResolver,
-                                          EntityEncoder encoder,
+    public Add__NewName_NewType_NewValue( IRuleStrategyResolver ruleStrategyResolver,
                                           EntityDecoder decoder )
     {
         super( ruleStrategyResolver );
-        this.encoder = encoder;
         this.decoder = decoder;
     }
 
@@ -45,16 +39,13 @@ public class Add__NewName_NewType_NewValue
     @Override
     public String name( MigrationSetKindOperation operation )
     {
-        return operation.getProperty();
+        return operation.getNewName();
     }
 
     @Override
     public Value<?> value( MigrationSetKindOperation operation, Entity entity )
     {
-        String property = operation.getProperty();
-
-        ChangeSetEntityProperty changeSetEntityProperty = encoder.encode( property, entity.getValue( property ) );
-        return decoder.decode( operation.getNewType(), changeSetEntityProperty.getValue() );
+        return decoder.decode( operation.getNewType(), operation.getNewValue() );
     }
 
     @Override

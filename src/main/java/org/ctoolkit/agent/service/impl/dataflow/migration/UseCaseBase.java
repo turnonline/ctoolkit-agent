@@ -15,9 +15,9 @@ import org.ctoolkit.agent.resource.MigrationSetKindOperationRemove;
 public abstract class UseCaseBase
         implements UseCase
 {
-    private final RuleStrategyResolver ruleStrategyResolver;
+    private final IRuleStrategyResolver ruleStrategyResolver;
 
-    public UseCaseBase( RuleStrategyResolver ruleStrategyResolver )
+    public UseCaseBase( IRuleStrategyResolver ruleStrategyResolver )
     {
         this.ruleStrategyResolver = ruleStrategyResolver;
     }

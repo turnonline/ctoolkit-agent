@@ -12,7 +12,6 @@ import java.util.List;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-// TODO: write unit test
 public class UseCaseResolver
 {
     private List<UseCase> useCases = new ArrayList<>();

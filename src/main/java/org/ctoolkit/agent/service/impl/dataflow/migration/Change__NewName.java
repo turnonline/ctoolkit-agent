@@ -4,6 +4,8 @@ import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Value;
 import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 
+import javax.inject.Inject;
+
 /**
  * Use case - CHANGE - new name
  *
@@ -12,7 +14,8 @@ import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 public class Change__NewName
         extends UseCaseBase
 {
-    public Change__NewName( RuleStrategyResolver ruleStrategyResolver )
+    @Inject
+    public Change__NewName( IRuleStrategyResolver ruleStrategyResolver )
     {
         super( ruleStrategyResolver );
     }

@@ -10,6 +10,7 @@ import org.ctoolkit.agent.service.impl.dataflow.migration.Change__NewName_NewVal
 import org.ctoolkit.agent.service.impl.dataflow.migration.Change__NewType;
 import org.ctoolkit.agent.service.impl.dataflow.migration.Change__NewType_NewValue;
 import org.ctoolkit.agent.service.impl.dataflow.migration.Change__NewValue;
+import org.ctoolkit.agent.service.impl.dataflow.migration.IRuleStrategyResolver;
 import org.ctoolkit.agent.service.impl.dataflow.migration.Remove__Kind;
 import org.ctoolkit.agent.service.impl.dataflow.migration.Remove__Property;
 import org.ctoolkit.agent.service.impl.dataflow.migration.RuleStrategyEquals;
@@ -53,7 +54,7 @@ public class MigrationModule extends AbstractModule
         bind( Change__NewName_NewType_NewValue.class ).in( Singleton.class );
 
         // strategies for rule set
-        bind( RuleStrategyResolver.class ).in( Singleton.class );
+        bind( IRuleStrategyResolver.class ).to( RuleStrategyResolver.class ).in( Singleton.class );
 
         bind( RuleStrategyEquals.class ).in( Singleton.class );
         bind( RuleStrategyLowerThan.class ).in( Singleton.class );

@@ -18,7 +18,7 @@ public class Change__NewName_NewType_NewValue
     private final EntityDecoder decoder;
 
     @Inject
-    public Change__NewName_NewType_NewValue( RuleStrategyResolver ruleStrategyResolver,
+    public Change__NewName_NewType_NewValue( IRuleStrategyResolver ruleStrategyResolver,
                                              EntityDecoder decoder )
     {
         super( ruleStrategyResolver );
