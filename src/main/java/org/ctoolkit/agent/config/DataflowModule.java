@@ -60,6 +60,7 @@ public class DataflowModule
     {
         return StorageOptions.getDefaultInstance().getService();
     }
+
     @Provides
     @Singleton
     @BucketName

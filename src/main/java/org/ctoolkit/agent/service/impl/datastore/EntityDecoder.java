@@ -29,7 +29,6 @@ import java.util.List;
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
-// TODO: write unit test
 public class EntityDecoder
 {
     private static Logger logger = LoggerFactory.getLogger( EntityDecoder.class );
@@ -52,14 +51,6 @@ public class EntityDecoder
         {
             return new DoubleValue( Double.valueOf( value ) );
         }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_FLOAT.equals( type ) )
-        {
-            return new DoubleValue( Float.valueOf( value ) );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_INTEGER.equals( type ) )
-        {
-            return new LongValue( Integer.valueOf( value ) );
-        }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LONG.equals( type ) )
         {
             return new LongValue( Long.valueOf( value ) );
@@ -74,15 +65,7 @@ public class EntityDecoder
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BLOB.equals( type ) )
         {
-            try
-            {
-                return new BlobValue( Blob.copyFrom( Base64.decodeBase64( value ) ) );
-            }
-            catch ( Exception e )
-            {
-                logger.error( "Error by encoding blob: '" + value + "'" );
-                return new NullValue();
-            }
+            return new BlobValue( Blob.copyFrom( Base64.decodeBase64( value ) ) );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_KEY.equals( type ) )
         {
@@ -94,14 +77,7 @@ public class EntityDecoder
 
             for ( String s : value.split( "," ) )
             {
-                try
-                {
-                    list.add( LongValue.of( Long.valueOf( s ) ) );
-                }
-                catch ( NumberFormatException e )
-                {
-                    logger.error( "Unable to convert value to long: '" + s + "'" );
-                }
+                list.add( LongValue.of( Long.valueOf( s ) ) );
             }
 
             return new ListValue( list );

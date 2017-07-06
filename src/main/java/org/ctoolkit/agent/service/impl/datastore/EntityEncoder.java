@@ -31,6 +31,7 @@ import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.StringValue;
 import com.google.cloud.datastore.TimestampValue;
 import com.google.cloud.datastore.Value;
+import com.google.common.annotations.VisibleForTesting;
 import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class EntityEncoder
         else if ( value instanceof TimestampValue )
         {
             Timestamp timestamp = ( ( TimestampValue ) value ).get();
-            return createDateProperty( name, new Date( timestamp.getSeconds() + timestamp.getNanos() ) );
+            return createDateProperty( name, new Date( timestamp.toSqlTimestamp().getTime() ) );
         }
         else if ( value instanceof BlobValue )
         {
@@ -96,6 +97,7 @@ public class EntityEncoder
         throw new IllegalArgumentException( "Unknown entity type '" + value.getClass().getName() + "'" );
     }
 
+    @VisibleForTesting
     public String formatKey( Key key )
     {
         List<Key> parentKeys = new ArrayList<>();
@@ -153,28 +155,6 @@ public class EntityEncoder
     private ChangeSetEntityProperty createDoubleProperty( String name, Double value )
     {
         return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE, value.toString() );
-    }
-
-    /**
-     * Renders a Float type property to String.
-     *
-     * @param name   the name of the property
-     * @param object the object to render
-     */
-    private ChangeSetEntityProperty createFloatProperty( String name, Float object )
-    {
-        return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_FLOAT, object.toString() );
-    }
-
-    /**
-     * Renders a Integer type property to String.
-     *
-     * @param name   the name of the property
-     * @param object the object to render
-     */
-    private ChangeSetEntityProperty createIntegerProperty( String name, Integer object )
-    {
-        return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_INTEGER, object.toString() );
     }
 
     /**

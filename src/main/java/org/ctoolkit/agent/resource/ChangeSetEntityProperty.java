@@ -43,11 +43,7 @@ public class ChangeSetEntityProperty
      */
     public static final String PROPERTY_TYPE_STRING = "string";
 
-    public static final String PROPERTY_TYPE_FLOAT = "float";
-
     public static final String PROPERTY_TYPE_DOUBLE = "double";
-
-    public static final String PROPERTY_TYPE_INTEGER = "int";
 
     public static final String PROPERTY_TYPE_LONG = "long";
 

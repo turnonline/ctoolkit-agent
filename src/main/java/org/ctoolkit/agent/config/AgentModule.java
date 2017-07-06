@@ -52,6 +52,7 @@ import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.MetadataItemKey;
+import org.ctoolkit.agent.model.MigrationMetadata;
 import org.ctoolkit.agent.rest.IAMAuthenticator;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.RestContext;
@@ -74,6 +75,8 @@ import org.ctoolkit.agent.service.impl.mapper.ExportToExportMetadataMapper;
 import org.ctoolkit.agent.service.impl.mapper.ImportItemToImportMetadataItemMapper;
 import org.ctoolkit.agent.service.impl.mapper.ImportMetadataFactory;
 import org.ctoolkit.agent.service.impl.mapper.ImportToImportMetadataMapper;
+import org.ctoolkit.agent.service.impl.mapper.MigrationMetadataFactory;
+import org.ctoolkit.agent.service.impl.mapper.MigrationToMigrationMetadataMapper;
 import org.ctoolkit.restapi.client.ApiCredential;
 import org.ctoolkit.restapi.client.agent.CtoolkitApiAgentModule;
 import org.ctoolkit.restapi.client.appengine.FacadeAppEngineModule;
@@ -174,18 +177,21 @@ public class AgentModule
                                              ChangeSetEntityToEntityBuilderMapper changeSetEntityToEntityBuilderMapper,
                                              ImportToImportMetadataMapper importToImportMetadataMapper,
                                              ExportToExportMetadataMapper exportToExportMetadataMapper,
+                                             MigrationToMigrationMetadataMapper migrationToMigrationMetadataMapper,
 
                                              ImportItemToImportMetadataItemMapper importItemToImportMetadataItemMapper,
 
                                              // factories
                                              EntityBuilderFactory entityBuilderFactory,
                                              ImportMetadataFactory importMetadataFactory,
-                                             ExportMetadataFactory exportMetadataFactory)
+                                             ExportMetadataFactory exportMetadataFactory,
+                                             MigrationMetadataFactory migrationMetadataFactory)
     {
         // register custom mappers
         factory.registerMapper( changeSetEntityToEntityBuilderMapper );
         factory.registerMapper( importToImportMetadataMapper );
         factory.registerMapper( exportToExportMetadataMapper );
+        factory.registerMapper( migrationToMigrationMetadataMapper );
 
         factory.registerMapper( importItemToImportMetadataItemMapper );
 
@@ -193,6 +199,7 @@ public class AgentModule
         factory.registerObjectFactory( entityBuilderFactory, TypeFactory.valueOf( Entity.Builder.class ) );
         factory.registerObjectFactory( importMetadataFactory, TypeFactory.valueOf( ImportMetadata.class ) );
         factory.registerObjectFactory( exportMetadataFactory, TypeFactory.valueOf( ExportMetadata.class ) );
+        factory.registerObjectFactory( migrationMetadataFactory, TypeFactory.valueOf( MigrationMetadata.class ) );
 
         return factory.getMapperFacade();
     }

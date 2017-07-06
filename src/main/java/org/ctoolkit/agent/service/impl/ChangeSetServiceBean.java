@@ -98,6 +98,7 @@ import static com.google.cloud.datastore.StructuredQuery.OrderBy.desc;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
+// TODO: write integration test
 public class ChangeSetServiceBean
         implements ChangeSetService
 {
