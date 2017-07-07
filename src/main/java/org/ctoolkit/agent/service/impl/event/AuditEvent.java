@@ -19,12 +19,15 @@
 package org.ctoolkit.agent.service.impl.event;
 
 import org.ctoolkit.agent.model.BaseEntity;
+import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ExportMetadataItem;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
 import org.ctoolkit.agent.model.MetadataAudit.Action;
 import org.ctoolkit.agent.model.MetadataAudit.Operation;
+import org.ctoolkit.agent.model.MigrationMetadata;
+import org.ctoolkit.agent.model.MigrationMetadataItem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +38,6 @@ import java.util.Map;
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
 public class AuditEvent
-        extends HashMap<String, String>
 {
     private static Map<Class, Operation> operationMap = new HashMap<>();
 
@@ -45,13 +47,15 @@ public class AuditEvent
         operationMap.put( ImportMetadataItem.class, Operation.IMPORT_ITEM );
         operationMap.put( ExportMetadata.class, Operation.EXPORT );
         operationMap.put( ExportMetadataItem.class, Operation.EXPORT_ITEM );
+        operationMap.put( MigrationMetadata.class, Operation.MIGRATION );
+        operationMap.put( MigrationMetadataItem.class, Operation.MIGRATION_ITEM );
     }
 
     private Operation operation;
 
     private Action action;
 
-    private BaseEntity owner;
+    private String owner;
 
     public AuditEvent()
     {
@@ -61,7 +65,7 @@ public class AuditEvent
     {
         this.operation = operationMap.get( owner.getClass() );
         this.action = action;
-        this.owner = owner;
+        this.owner = owner instanceof BaseMetadataItem ? owner.key().getParent().getId().toString() : owner.key().getId().toString();
     }
 
     public Operation getOperation()
@@ -75,7 +79,7 @@ public class AuditEvent
     }
 
     @SuppressWarnings( "unchecked" )
-    public BaseEntity getOwner()
+    public String getOwner()
     {
         return owner;
     }

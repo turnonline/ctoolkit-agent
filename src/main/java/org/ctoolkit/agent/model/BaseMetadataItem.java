@@ -229,7 +229,8 @@ public abstract class BaseMetadataItem<PARENT extends BaseMetadata>
         saveFieldsOnlyAdditional( builder );
 
         // put item to datastore
-        datastore().put( builder.build() );
+        Entity stored = datastore().put( builder.build() );
+        convert( stored );
     }
 
     protected void saveFieldsOnlyAdditional( FullEntity.Builder<IncompleteKey> builder )

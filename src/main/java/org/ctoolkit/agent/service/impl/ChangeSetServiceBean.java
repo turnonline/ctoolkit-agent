@@ -516,7 +516,7 @@ public class ChangeSetServiceBean
     {
         Entity.Builder builder = Entity.newBuilder( keyProvider.key( new MetadataAudit() ) );
 
-        builder.set( "ownerId", event.getOwner().getId() ); // TODO: solve owner key
+        builder.set( "ownerId", event.getOwner() );
         builder.set( "action", event.getAction().name() );
         builder.set( "operation", event.getOperation().name() );
         builder.set( "createDate", Timestamp.of( new Date() ) );

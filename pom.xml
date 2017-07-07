@@ -97,6 +97,12 @@
                     <httpConnector>
                         <port>8999</port>
                     </httpConnector>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>com.google.appengine.runtime.environment</name>
+                            <value>Development</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>

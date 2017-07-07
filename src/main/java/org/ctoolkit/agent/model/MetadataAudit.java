@@ -18,12 +18,12 @@
 
 package org.ctoolkit.agent.model;
 
-import com.googlecode.objectify.annotation.Entity;
+import org.ctoolkit.agent.annotation.EntityMarker;
 
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Entity( name = "_MetadataAudit" )
+@EntityMarker( name = "_MetadataAudit" )
 public class MetadataAudit
         extends BaseEntity
         implements Convertible
@@ -103,7 +103,11 @@ public class MetadataAudit
     @Override
     public void convert( com.google.cloud.datastore.Entity entity )
     {
-        // TODO: implement
+        this.action = Action.valueOf( entity.getString( "action" ) );
+        this.operation = Operation.valueOf( entity.getString( "operation" ) );
+        this.ownerId = entity.getString( "ownerId" );
+        this.userPhotoUrl = entity.getString( "userPhotoUrl" );
+        this.userDisplayName = entity.getString( "userDisplayName" );
     }
 
     public enum Action
@@ -114,9 +118,6 @@ public class MetadataAudit
 
         START_JOB,
         CANCEL_JOB,
-        DELETE_JOB,
-
-        MIGRATION
     }
 
     public enum Operation
@@ -125,5 +126,7 @@ public class MetadataAudit
         IMPORT_ITEM,
         EXPORT,
         EXPORT_ITEM,
+        MIGRATION,
+        MIGRATION_ITEM,
     }
 }

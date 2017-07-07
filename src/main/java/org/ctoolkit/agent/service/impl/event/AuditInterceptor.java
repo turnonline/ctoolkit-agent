@@ -44,7 +44,7 @@ public class AuditInterceptor
         BaseEntity owner = ( BaseEntity ) invocation.getArguments()[0];
         Auditable auditable = invocation.getMethod().getAnnotation( Auditable.class );
 
-        eventBus.post( new AuditEvent( auditable.action(), owner ) );
+        eventBus.post( new AuditEvent( auditable.action(), owner ));
 
         return proceed;
     }

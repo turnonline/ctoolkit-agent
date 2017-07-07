@@ -94,6 +94,11 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
 
     public String getJobUrl()
     {
+        if ( jobId == null )
+        {
+            return null;
+        }
+
         return MessageFormat.format( JOB_URL, projectId, jobId );
     }
 
@@ -262,8 +267,10 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         // save additional fields
         saveAdditional( builder );
 
-        // put metadata to datastore
-        datastore().put( builder.build() );
+        // put metadata to datastore and reinitialize
+        Entity stored = datastore().put( builder.build() );
+        convert( stored );
+        itemsLoaded = false;
     }
 
     protected void saveAdditional( FullEntity.Builder<IncompleteKey> builder )

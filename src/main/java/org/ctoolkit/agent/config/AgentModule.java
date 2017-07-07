@@ -64,7 +64,6 @@ import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
 import org.ctoolkit.agent.service.impl.datastore.KeyProvider;
-import org.ctoolkit.agent.service.impl.event.AuditEvent;
 import org.ctoolkit.agent.service.impl.event.AuditInterceptor;
 import org.ctoolkit.agent.service.impl.event.AuditSubscription;
 import org.ctoolkit.agent.service.impl.event.Auditable;
@@ -108,6 +107,7 @@ public class AgentModule
 
         // TODO: it throws MalformedParameterizedTypeException
 //        install( new CtoolkitApiAgentModule() );
+        install( new MigrationModule() );
 
         // define api credential
         ApiCredential credential = new ApiCredential( CtoolkitApiAgentModule.API_PREFIX );
@@ -126,7 +126,6 @@ public class AgentModule
         bind( EventBus.class ).in( Singleton.class );
 
         // audit
-        bind( AuditEvent.class ).in( Singleton.class );
         bind( AuditSubscription.class ).asEagerSingleton();
         AuditInterceptor auditInterceptor = new AuditInterceptor();
         requestInjection( auditInterceptor );
