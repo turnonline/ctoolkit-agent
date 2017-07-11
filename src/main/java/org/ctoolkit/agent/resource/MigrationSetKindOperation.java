@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
 
 /**
  * The bean holding migration set kind operations
@@ -12,6 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @XmlAccessorType( XmlAccessType.FIELD )
 public abstract class MigrationSetKindOperation
+        implements Serializable
 {
     @XmlAttribute( name = "kind" )
     private String kind;
@@ -107,7 +109,7 @@ public abstract class MigrationSetKindOperation
     @Override
     public String toString()
     {
-        return "MigrationSetKindOperation{" +
+        return getClass().getSimpleName() + "{" +
                 "kind='" + kind + '\'' +
                 ", property='" + property + '\'' +
                 ", newKind='" + newKind + '\'' +

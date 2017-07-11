@@ -25,11 +25,7 @@ import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.runners.DataflowPipelineRunner;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -58,7 +54,7 @@ import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
 import org.ctoolkit.agent.service.impl.RestContextThreadLocal;
-import org.ctoolkit.agent.service.impl.dataflow.ImportDataflowDefinition;
+import org.ctoolkit.agent.service.impl.dataflow.shared.BaseDataflowDefinition;
 import org.ctoolkit.agent.service.impl.datastore.EntityDecoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
@@ -140,22 +136,8 @@ public class AgentModule
         requestStaticInjection( BaseMetadata.class );
         requestStaticInjection( BaseMetadataItem.class );
         requestStaticInjection( IAMAuthenticator.class );
-        requestStaticInjection( ImportDataflowDefinition.class );
+        requestStaticInjection( BaseDataflowDefinition.class );
         requestStaticInjection( MetadataItemKey.class );
-    }
-
-    @Provides
-    @Singleton
-    public Datastore provideDatastore()
-    {
-        return DatastoreOptions.getDefaultInstance().getService();
-    }
-
-    @Provides
-    @Singleton
-    public Storage provideStorage()
-    {
-        return StorageOptions.getDefaultInstance().getService();
     }
 
     @Provides
@@ -184,7 +166,7 @@ public class AgentModule
                                              EntityBuilderFactory entityBuilderFactory,
                                              ImportMetadataFactory importMetadataFactory,
                                              ExportMetadataFactory exportMetadataFactory,
-                                             MigrationMetadataFactory migrationMetadataFactory)
+                                             MigrationMetadataFactory migrationMetadataFactory )
     {
         // register custom mappers
         factory.registerMapper( changeSetEntityToEntityBuilderMapper );
@@ -232,7 +214,7 @@ public class AgentModule
     @Provides
     public PipelineOptions providePipelineOptions( @ProjectId String projectId, @StagingLocation String stagingLocation )
     {
-        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production || true ) // TODO: revert '|| true'
+        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )
         {
             // The app is running on App Engine...
             DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );

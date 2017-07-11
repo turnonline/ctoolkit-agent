@@ -1,14 +1,8 @@
-package org.ctoolkit.agent.service.impl.dataflow;
+package org.ctoolkit.agent.service.impl.dataflow.shared;
 
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
-import com.google.cloud.dataflow.sdk.transforms.Create;
-import com.google.cloud.dataflow.sdk.transforms.PTransform;
-import com.google.cloud.dataflow.sdk.values.PBegin;
-import com.google.cloud.dataflow.sdk.values.PCollection;
 import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyValue;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.ctoolkit.agent.annotation.ProjectId;
@@ -62,7 +56,17 @@ public abstract class BaseDataflowDefinition<M extends BaseMetadata<?>>
 
     protected Injector injector()
     {
+        if ( injector != null )
+        {
+            return injector;
+        }
+
         return Guice.createInjector( new DataflowModule() );
+    }
+
+    protected Datastore datastore()
+    {
+        return injector().getInstance( Datastore.class );
     }
 
     // -- private helpers
@@ -72,38 +76,5 @@ public abstract class BaseDataflowDefinition<M extends BaseMetadata<?>>
         M metadata = ModelConverter.convert( clazz, datastore.get( key ) );
         metadata.reset();
         metadata.save();
-    }
-
-    // -- common transforms
-
-    /**
-     * PTransform for loading BaseMetadata items
-     */
-    public class LoadItems<M extends BaseMetadata<?>>
-            extends PTransform<PBegin, PCollection<KeyValue>>
-    {
-        private Datastore datastore;
-
-        private Key key;
-
-        private Class<M> clazz;
-
-        public LoadItems( Key key, Class<M> clazz, Datastore datastore )
-        {
-            super( "Load items" );
-
-            this.key = key;
-            this.clazz = clazz;
-            this.datastore = datastore;
-        }
-
-        @Override
-        public PCollection<KeyValue> apply( PBegin input )
-        {
-            Entity entity = datastore.get( key );
-            M metadata = ModelConverter.convert( clazz, entity );
-
-            return input.apply( Create.of( metadata.getItemsKeyValue() ) );
-        }
     }
 }

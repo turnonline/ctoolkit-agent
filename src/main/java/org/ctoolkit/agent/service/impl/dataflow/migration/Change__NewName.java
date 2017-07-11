@@ -41,7 +41,13 @@ public class Change__NewName
     @Override
     public Value<?> value( MigrationSetKindOperation operation, Entity entity )
     {
-        return entity.getValue( operation.getProperty() );
+        String property = operation.getProperty();
+        if ( !entity.contains( property ) )
+        {
+            return null;
+        }
+
+        return entity.getValue( property );
     }
 
     @Override

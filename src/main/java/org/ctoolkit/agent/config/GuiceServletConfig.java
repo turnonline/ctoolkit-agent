@@ -37,7 +37,8 @@ public class GuiceServletConfig
         return Guice.createInjector( Stage.PRODUCTION, // TODO: remove
                 new AgentModule(),
                 new AgentServletModule(),
-                new IAMModule()
+                new IAMModule(),
+                new StorageModule()
         );
     }
 
@@ -46,7 +47,8 @@ public class GuiceServletConfig
         return Guice.createInjector( Stage.PRODUCTION,
                 new AgentModule(),
                 new AgentServletModule(),
-                new IAMModule()
+                new IAMModule(),
+                new StorageModule()
         );
     }
 

@@ -3,6 +3,7 @@ package org.ctoolkit.agent.resource;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.io.Serializable;
 
 /**
  * The bean holding migration set kind rule
@@ -11,6 +12,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @XmlAccessorType( XmlAccessType.FIELD )
 public class MigrationSetKindOpRule
+        implements Serializable
 {
     public final static String EQUALS = "eq";
     public final static String LOWER_THAN = "lt";

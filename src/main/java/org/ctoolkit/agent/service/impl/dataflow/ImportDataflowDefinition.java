@@ -15,6 +15,8 @@ import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.service.ChangeSetService;
+import org.ctoolkit.agent.service.impl.dataflow.shared.BaseDataflowDefinition;
+import org.ctoolkit.agent.service.impl.dataflow.shared.LoadItems;
 import org.slf4j.LoggerFactory;
 
 /**

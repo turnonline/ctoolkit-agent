@@ -53,6 +53,10 @@ public class Change__NewValue
     public Value<?> value( MigrationSetKindOperation operation, Entity entity )
     {
         String property = operation.getProperty();
+        if ( !entity.contains( property ) )
+        {
+            return null;
+        }
 
         ChangeSetEntityProperty changeSetEntityProperty = encoder.encode( property, entity.getValue( property ) );
         return decoder.decode( changeSetEntityProperty.getType(), operation.getNewValue() );

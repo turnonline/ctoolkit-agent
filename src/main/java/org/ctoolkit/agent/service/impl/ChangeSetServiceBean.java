@@ -487,8 +487,12 @@ public class ChangeSetServiceBean
             {
                 Entity.Builder builder = Entity.newBuilder( entity );
                 Value<?> newValue = useCase.value( operation, entity );
-                builder.set( newName, newValue );
-                entity = datastore.put( builder.build() );
+
+                if ( newValue != null )
+                {
+                    builder.set( newName, newValue );
+                    entity = datastore.put( builder.build() );
+                }
             }
 
             // remove old property

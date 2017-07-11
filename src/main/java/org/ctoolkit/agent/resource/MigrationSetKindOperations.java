@@ -65,6 +65,17 @@ public class MigrationSetKindOperations
         this.remove = remove;
     }
 
+    public List<MigrationSetKindOperation> getAll()
+    {
+        List<MigrationSetKindOperation> all = new ArrayList<>();
+
+        all.addAll( getAdd() );
+        all.addAll( getChange() );
+        all.addAll( getRemove() );
+
+        return all;
+    }
+
     @Override
     public String toString()
     {

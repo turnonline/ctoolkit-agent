@@ -2,11 +2,7 @@ package org.ctoolkit.agent.config;
 
 import com.google.api.services.dataflow.Dataflow;
 import com.google.cloud.ServiceOptions;
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import ma.glasnost.orika.MapperFacade;
@@ -19,7 +15,9 @@ import org.ctoolkit.agent.annotation.StagingLocation;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.service.ChangeSetService;
+import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.ChangeSetServiceBean;
+import org.ctoolkit.agent.service.impl.RestContextThreadLocal;
 import org.ctoolkit.agent.service.impl.datastore.EntityPool;
 import org.ctoolkit.agent.service.impl.datastore.EntityPoolThreadLocal;
 import org.ctoolkit.agent.service.impl.mapper.ChangeSetEntityToEntityBuilderMapper;
@@ -40,25 +38,13 @@ public class DataflowModule
     {
         bind( EntityPool.class ).to( EntityPoolThreadLocal.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
+        bind( RestContext.class ).to( RestContextThreadLocal.class ).in( Singleton.class );
 
         install( new MigrationModule() );
+        install( new StorageModule() );
 
         requestStaticInjection( BaseMetadata.class );
         requestStaticInjection( BaseMetadataItem.class );
-    }
-
-    @Provides
-    @Singleton
-    public Datastore provideDatastore()
-    {
-        return DatastoreOptions.getDefaultInstance().getService();
-    }
-
-    @Provides
-    @Singleton
-    public Storage provideStorage()
-    {
-        return StorageOptions.getDefaultInstance().getService();
     }
 
     @Provides
