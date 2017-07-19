@@ -18,16 +18,15 @@
 
 package org.ctoolkit.agent.rest;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiReference;
-import com.google.api.server.spi.config.Named;
-import com.google.appengine.api.users.User;
 import org.ctoolkit.agent.model.KindMetaData;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import java.util.List;
 
 /**
@@ -35,9 +34,7 @@ import java.util.List;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Api
-@ApiReference( AgentEndpointConfig.class )
-@Authorized
+@Path( "/" )
 public class MetadataEndpoint
 {
     private ChangeSetService service;
@@ -52,14 +49,18 @@ public class MetadataEndpoint
         this.service = service;
     }
 
-    @ApiMethod( name = "metadata.kind.list", path = "metadata/kind", httpMethod = ApiMethod.HttpMethod.GET )
-    public List<KindMetaData> listKinds( User authUser ) throws Exception
+    @GET
+    @Path( "/metadata/kind" )
+    @Produces( "application/json" )
+    public List<KindMetaData> listKinds() throws Exception
     {
         return service.kinds();
     }
 
-    @ApiMethod( name = "metadata.kind.property.list", path = "metadata/{kind}/property", httpMethod = ApiMethod.HttpMethod.GET )
-    public List<PropertyMetaData> listProperties( @Named( "kind" ) String kind, User authUser ) throws Exception
+    @GET
+    @Path( "/metadata/{kind}/property" )
+    @Produces( "application/json" )
+    public List<PropertyMetaData> listProperties( @PathParam( "kind" ) String kind ) throws Exception
     {
         return service.properties( kind );
     }

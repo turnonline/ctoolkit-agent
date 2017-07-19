@@ -18,16 +18,16 @@
 
 package org.ctoolkit.agent.service.impl.event;
 
+import org.ctoolkit.agent.model.Action;
 import org.ctoolkit.agent.model.BaseEntity;
 import org.ctoolkit.agent.model.BaseMetadataItem;
 import org.ctoolkit.agent.model.ExportMetadata;
 import org.ctoolkit.agent.model.ExportMetadataItem;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
-import org.ctoolkit.agent.model.MetadataAudit.Action;
-import org.ctoolkit.agent.model.MetadataAudit.Operation;
 import org.ctoolkit.agent.model.MigrationMetadata;
 import org.ctoolkit.agent.model.MigrationMetadataItem;
+import org.ctoolkit.agent.model.Operation;
 
 import java.util.HashMap;
 import java.util.Map;

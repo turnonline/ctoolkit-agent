@@ -18,14 +18,6 @@
 
 package org.ctoolkit.agent.rest;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiReference;
-import com.google.api.server.spi.config.DefaultValue;
-import com.google.api.server.spi.config.Named;
-import com.google.api.server.spi.config.Nullable;
-import com.google.api.server.spi.response.NotFoundException;
-import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
@@ -39,6 +31,17 @@ import org.ctoolkit.agent.resource.MigrationJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,9 +52,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Api
-@ApiReference( AgentEndpointConfig.class )
-@Authorized
+@Path( "/" )
 public class MigrationEndpoint
 {
     private ChangeSetService service;
@@ -71,8 +72,11 @@ public class MigrationEndpoint
 
     // -- migration CRUD
 
-    @ApiMethod( name = "migrationBatch.insert", path = "migration", httpMethod = ApiMethod.HttpMethod.POST )
-    public MigrationBatch insertMigration( MigrationBatch migrationBatch, User authUser )
+    @POST
+    @Path( "/migration" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public MigrationBatch insertMigration( MigrationBatch migrationBatch )
     {
         MigrationMetadata migrationMetadata = mapper.map( migrationBatch, MigrationMetadata.class );
         MigrationMetadata migrationMetadataBe = service.create( migrationMetadata );
@@ -80,8 +84,12 @@ public class MigrationEndpoint
         return mapper.map( migrationMetadataBe, MigrationBatch.class );
     }
 
-    @ApiMethod( name = "migrationBatch.update", path = "migration/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public MigrationBatch updateMigration( @Named( "id" ) Long id, MigrationBatch migrationBatch, User authUser ) throws Exception
+    @PUT
+    @Path( "/migration/{migrationId}" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public MigrationBatch updateMigration( @PathParam( "migrationId" ) Long id,
+                                           MigrationBatch migrationBatch )
     {
         if ( service.get( new MetadataKey<>( id, MigrationMetadata.class ) ) == null )
         {
@@ -94,8 +102,9 @@ public class MigrationEndpoint
         return mapper.map( migrationMetadataBe, MigrationBatch.class );
     }
 
-    @ApiMethod( name = "migrationBatch.delete", path = "migration/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteMigration( @Named( "id" ) Long id, User authUser ) throws Exception
+    @DELETE
+    @Path( "/migration/{migrationId}" )
+    public void deleteMigration( @PathParam( "migrationId" ) Long id )
     {
         MigrationMetadata migrationMetadata = service.get( new MetadataKey<>( id, MigrationMetadata.class ) );
         if ( migrationMetadata == null )
@@ -106,8 +115,10 @@ public class MigrationEndpoint
         service.delete( migrationMetadata );
     }
 
-    @ApiMethod( name = "migrationBatch.get", path = "migration/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public MigrationBatch getMigration( @Named( "id" ) Long id, User authUser ) throws Exception
+    @GET
+    @Path( "/migration/{migrationId}" )
+    @Produces( "application/json" )
+    public MigrationBatch getMigration( @PathParam( "migrationId" ) Long id )
     {
         MigrationMetadata migrationMetadata = service.get( new MetadataKey<>( id, MigrationMetadata.class ) );
         if ( migrationMetadata == null )
@@ -118,13 +129,14 @@ public class MigrationEndpoint
         return mapper.map( migrationMetadata, MigrationBatch.class );
     }
 
-    @ApiMethod( name = "migrationBatch.list", path = "migration", httpMethod = ApiMethod.HttpMethod.GET )
+    @GET
+    @Path( "/migration" )
+    @Produces( "application/json" )
     @SuppressWarnings( "unchecked" )
-    public List<MigrationBatch> listMigration( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
-                                         @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
-                                         @Nullable @Named( "orderBy" ) String orderBy,
-                                         @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
-                                         User authUser ) throws Exception
+    public List<MigrationBatch> listMigration( @DefaultValue( "0" ) @QueryParam( "start" ) Integer start,
+                                               @DefaultValue( "10" ) @QueryParam( "length" ) Integer length,
+                                               @DefaultValue( "name" ) @QueryParam( "orderBy" ) String orderBy,
+                                               @DefaultValue( "true" ) @QueryParam( "ascending" ) Boolean ascending )
     {
         BaseMetadataFilter filter = new BaseMetadataFilter.Builder()
                 .start( start )
@@ -146,8 +158,12 @@ public class MigrationEndpoint
 
     // -- migration item CRUD
 
-    @ApiMethod( name = "migrationBatch.item.insert", path = "migration/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
-    public MigrationBatch.MigrationItem insertMigrationItem( @Named( "metadataId" ) Long metadataId, MigrationBatch.MigrationItem migrationBatchItem, User authUser )
+    @POST
+    @Path( "/migration/{migrationId}/item" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public MigrationBatch.MigrationItem insertMigrationItem( @PathParam( "migrationId" ) Long metadataId,
+                                                             MigrationBatch.MigrationItem migrationBatchItem )
     {
         Map<Object, Object> props = new HashMap<>();
         props.put( "metadataId", metadataId );
@@ -161,13 +177,18 @@ public class MigrationEndpoint
         return mapper.map( migrationMetadataItemBe, MigrationBatch.MigrationItem.class );
     }
 
-    @ApiMethod( name = "migrationBatch.item.update", path = "migration/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public MigrationBatch.MigrationItem updateMigrationItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, MigrationBatch.MigrationItem migrationBatchItem, User authUser )
+    @PUT
+    @Path( "/migration/{migrationId}/item/{itemId}" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public MigrationBatch.MigrationItem updateMigrationItem( @PathParam( "migrationId" ) Long metadataId,
+                                                             @PathParam( "itemId" ) Long itemId,
+                                                             MigrationBatch.MigrationItem migrationBatchItem )
             throws Exception
     {
-        if ( service.get( new MetadataItemKey<>( id, metadataId, MigrationMetadataItem.class, MigrationMetadata.class ) ) == null )
+        if ( service.get( new MetadataItemKey<>( itemId, metadataId, MigrationMetadataItem.class, MigrationMetadata.class ) ) == null )
         {
-            throw new NotFoundException( "Migration item not found for id: " + id );
+            throw new NotFoundException( "Migration item not found for itemId: " + itemId );
         }
 
         MigrationMetadataItem migrationMetadataItem = mapper.map( migrationBatchItem, MigrationMetadataItem.class );
@@ -176,27 +197,32 @@ public class MigrationEndpoint
         return mapper.map( migrationMetadataItemBe, MigrationBatch.MigrationItem.class );
     }
 
-    @ApiMethod( name = "migrationBatch.item.delete", path = "migration/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteMigrationItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, User authUser )
+    @DELETE
+    @Path( "/migration/{migrationId}/item/{itemId}" )
+    public void deleteMigrationItem( @PathParam( "migrationId" ) Long metadataId,
+                                     @PathParam( "itemId" ) Long itemId )
             throws Exception
     {
-        MigrationMetadataItem item = service.get( new MetadataItemKey<>( id, metadataId, MigrationMetadataItem.class, MigrationMetadata.class ) );
+        MigrationMetadataItem item = service.get( new MetadataItemKey<>( itemId, metadataId, MigrationMetadataItem.class, MigrationMetadata.class ) );
         if ( item == null )
         {
-            throw new NotFoundException( "Migration item not found for id: " + id );
+            throw new NotFoundException( "Migration item not found for itemId: " + itemId );
         }
 
         service.delete( item );
     }
 
-    @ApiMethod( name = "migrationBatch.item.get", path = "migration/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public MigrationBatch.MigrationItem getMigrationItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, User authUser )
+    @GET
+    @Path( "/migration/{migrationId}/item/{itemId}" )
+    @Produces( "application/json" )
+    public MigrationBatch.MigrationItem getMigrationItem( @PathParam( "migrationId" ) Long metadataId,
+                                                          @PathParam( "itemId" ) Long itemId )
             throws Exception
     {
-        MigrationMetadataItem item = service.get( new MetadataItemKey<>(id, metadataId, MigrationMetadataItem.class, MigrationMetadata.class ) );
+        MigrationMetadataItem item = service.get( new MetadataItemKey<>( itemId, metadataId, MigrationMetadataItem.class, MigrationMetadata.class ) );
         if ( item == null )
         {
-            throw new NotFoundException( "Migration item not found for id: " + id );
+            throw new NotFoundException( "Migration item not found for itemId: " + itemId );
         }
 
         return mapper.map( item, MigrationBatch.MigrationItem.class );
@@ -204,8 +230,10 @@ public class MigrationEndpoint
 
     // -- job CRUD
 
-    @ApiMethod( name = "migrationBatch.job.start", path = "migration/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public MigrationJob startMigrationJob( @Named( "id" ) Long id, MigrationJob job, User authUser ) throws Exception
+    @POST
+    @Path( "/migration/{migrationId}/job" )
+    @Produces( "application/json" )
+    public MigrationJob startMigrationJob( @PathParam( "migrationId" ) Long id )
     {
         MigrationMetadata migrationMetadata = service.get( new MetadataKey<>( id, MigrationMetadata.class ) );
         if ( migrationMetadata == null )
@@ -224,8 +252,10 @@ public class MigrationEndpoint
         }
     }
 
-    @ApiMethod( name = "migrationBatch.job.cancel", path = "migration/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public MigrationJob cancelMigrationJob( @Named( "id" ) Long id, MigrationJob job, User authUser ) throws Exception
+    @DELETE
+    @Path( "/migration/{migrationId}/job" )
+    @Produces( "application/json" )
+    public MigrationJob cancelMigrationJob( @PathParam( "migrationId" ) Long id )
     {
         MigrationMetadata migrationMetadata = service.get( new MetadataKey<>( id, MigrationMetadata.class ) );
         if ( migrationMetadata == null )
@@ -244,8 +274,10 @@ public class MigrationEndpoint
         }
     }
 
-    @ApiMethod( name = "migrationBatch.job.progress", path = "migration/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public MigrationJob getMigrationJob( @Named( "id" ) Long id, User authUser ) throws Exception
+    @GET
+    @Path( "/migration/{migrationId}/job" )
+    @Produces( "application/json" )
+    public MigrationJob getMigrationJob( @PathParam( "migrationId" ) Long id )
     {
         MigrationMetadata migrationMetadata = service.get( new MetadataKey<>( id, MigrationMetadata.class ) );
         if ( migrationMetadata == null )

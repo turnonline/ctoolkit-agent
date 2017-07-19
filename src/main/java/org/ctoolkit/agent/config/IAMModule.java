@@ -23,13 +23,9 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.matcher.Matchers;
-import org.ctoolkit.agent.rest.AuthorizationInterceptor;
-import org.ctoolkit.agent.rest.Authorized;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -47,11 +43,6 @@ public class IAMModule
     @Override
     protected void configure()
     {
-        bindInterceptor(
-                Matchers.annotatedWith( Authorized.class ),
-                Matchers.annotatedWith( ApiMethod.class ),
-                new AuthorizationInterceptor()
-        );
     }
 
     @Provides

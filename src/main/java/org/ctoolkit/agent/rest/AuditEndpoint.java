@@ -18,19 +18,20 @@
 
 package org.ctoolkit.agent.rest;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiReference;
-import com.google.api.server.spi.config.DefaultValue;
-import com.google.api.server.spi.config.Named;
-import com.google.api.server.spi.config.Nullable;
-import com.google.appengine.api.users.User;
+import ma.glasnost.orika.MapperFacade;
+import org.ctoolkit.agent.model.Audit;
 import org.ctoolkit.agent.model.AuditFilter;
 import org.ctoolkit.agent.model.MetadataAudit;
-import org.ctoolkit.agent.model.MetadataAudit.Operation;
+import org.ctoolkit.agent.model.Operation;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,31 +39,33 @@ import java.util.List;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Api
-@ApiReference( AgentEndpointConfig.class )
-@Authorized
+@Path( "/" )
 public class AuditEndpoint
 {
     private ChangeSetService service;
+
+    private MapperFacade mapper;
 
     public AuditEndpoint()
     {
     }
 
     @Inject
-    public AuditEndpoint( ChangeSetService service )
+    public AuditEndpoint( ChangeSetService service, MapperFacade mapper )
     {
         this.service = service;
+        this.mapper = mapper;
     }
 
-    @ApiMethod( name = "audit.list", path = "audit", httpMethod = ApiMethod.HttpMethod.GET )
-    public List<MetadataAudit> listAudit( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
-                                          @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
-                                          @DefaultValue( "createDate" ) @Nullable @Named( "orderBy" ) String orderBy,
-                                          @DefaultValue( "false" ) @Nullable @Named( "ascending" ) Boolean ascending,
-                                          @Nullable @Named( "operation" ) Operation operation,
-                                          @Nullable @Named( "ownerId" ) String ownerId,
-                                          User authUser ) throws Exception
+    @GET
+    @Path( "/audit" )
+    @Produces( "application/json" )
+    public List<Audit> listAudit( @DefaultValue( "0" ) @QueryParam( "start" ) Integer start,
+                                  @DefaultValue( "10" ) @QueryParam( "length" ) Integer length,
+                                  @DefaultValue( "createDate" ) @QueryParam( "orderBy" ) String orderBy,
+                                  @DefaultValue( "false" ) @QueryParam( "ascending" ) Boolean ascending,
+                                  @QueryParam( "operation" ) Operation operation,
+                                  @QueryParam( "ownerId" ) String ownerId )
     {
         AuditFilter filter = new AuditFilter.Builder()
                 .setStart( start )
@@ -73,6 +76,13 @@ public class AuditEndpoint
                 .setOwnerId( ownerId )
                 .build();
 
-        return service.list( filter );
+        List<MetadataAudit> list = service.list( filter );
+        List<Audit> auditList = new ArrayList<>();
+        for ( MetadataAudit metadataAudit : list )
+        {
+            auditList.add( mapper.map( metadataAudit, Audit.class ) );
+        }
+
+        return auditList;
     }
 }

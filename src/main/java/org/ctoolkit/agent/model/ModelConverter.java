@@ -7,8 +7,14 @@ import com.google.cloud.datastore.Entity;
  */
 public class ModelConverter
 {
+    @SuppressWarnings( "unchecked" )
     public static <T> T convert( Class<T> type, Entity entity )
     {
+        if ( entity == null )
+        {
+            return null;
+        }
+
         if ( Convertible.class.isAssignableFrom( type ) )
         {
             try

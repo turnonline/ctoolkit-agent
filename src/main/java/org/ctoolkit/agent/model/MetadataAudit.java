@@ -109,24 +109,4 @@ public class MetadataAudit
         this.userPhotoUrl = entity.getString( "userPhotoUrl" );
         this.userDisplayName = entity.getString( "userDisplayName" );
     }
-
-    public enum Action
-    {
-        CREATE,
-        UPDATE,
-        DELETE,
-
-        START_JOB,
-        CANCEL_JOB,
-    }
-
-    public enum Operation
-    {
-        IMPORT,
-        IMPORT_ITEM,
-        EXPORT,
-        EXPORT_ITEM,
-        MIGRATION,
-        MIGRATION_ITEM,
-    }
 }

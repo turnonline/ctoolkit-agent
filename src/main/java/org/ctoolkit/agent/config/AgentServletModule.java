@@ -18,62 +18,34 @@
 
 package org.ctoolkit.agent.config;
 
-import com.google.api.control.ServiceManagementConfigFilter;
-import com.google.api.server.spi.ServletInitializationParameters;
-import com.google.api.server.spi.guice.EndpointsModule;
-import com.google.appengine.tools.appstats.AppstatsFilter;
-import com.google.appengine.tools.appstats.AppstatsServlet;
-import com.googlecode.objectify.ObjectifyFilter;
+import com.google.inject.servlet.ServletModule;
 import org.ctoolkit.agent.AccessControlAllowOrignFilter;
 import org.ctoolkit.agent.UploadJsonCredentialsServlet;
-import org.ctoolkit.agent.rest.AuditEndpoint;
-import org.ctoolkit.agent.rest.ExportEndpoint;
-import org.ctoolkit.agent.rest.ImportEndpoint;
-import org.ctoolkit.agent.rest.MetadataEndpoint;
-import org.ctoolkit.agent.rest.MigrationEndpoint;
+import org.ctoolkit.agent.rest.AgentApplication;
+import org.glassfish.jersey.servlet.ServletContainer;
+import org.glassfish.jersey.servlet.ServletProperties;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:aurel.medvegy@ctoolkit.org">Aurel Medvegy</a>
  */
 public class AgentServletModule
-        extends EndpointsModule
+        extends ServletModule
 {
-    private static final String ENDPOINTS_SERVLET_PATH = "/_ah/api/*";
+    private static final String ENDPOINTS_SERVLET_PATH = "/api/agent/*";
 
     @Override
     protected void configureServlets()
     {
-        // endpoints filter
-        ServletInitializationParameters params = ServletInitializationParameters.builder()
-                .addServiceClass( ImportEndpoint.class )
-                .addServiceClass( ExportEndpoint.class )
-                .addServiceClass( MigrationEndpoint.class )
-                .addServiceClass( MetadataEndpoint.class )
-                .addServiceClass( AuditEndpoint.class )
-                .setRestricted( false )
-                // this is important, otherwise we cannot use certificates from third-party applications
-                .setClientIdWhitelistEnabled( false ).build();
+        // setup jersey
+        Map<String, String> params = new HashMap<>();
+        params.put( ServletProperties.JAXRS_APPLICATION_CLASS, AgentApplication.class.getName() );
 
-        configureEndpoints( ENDPOINTS_SERVLET_PATH, params );
-
-        bind( ServiceManagementConfigFilter.class ).in( Singleton.class );
-        filter( ENDPOINTS_SERVLET_PATH ).through( ServiceManagementConfigFilter.class );
-
-        /* TODO: not working for flexible environment
-        String projectId = SystemProperty.applicationId.get();
-        Map<String, String> apiController = new HashMap<>();
-        apiController.put( "endpoints.projectId", projectId );
-        apiController.put( "endpoints.serviceName", "agent.endpoints." + projectId + ".cloud.goog" );
-
-        bind( GoogleAppEngineControlFilter.class ).in( Singleton.class );
-        filter( ENDPOINTS_SERVLET_PATH ).through( GoogleAppEngineControlFilter.class, apiController );
-        */
-
-        // objectify filter
-        bind( ObjectifyFilter.class ).in( Singleton.class );
-        filter( "/*" ).through( ObjectifyFilter.class );
+        bind( ServletContainer.class ).in( Singleton.class );
+        serve( ENDPOINTS_SERVLET_PATH ).with( ServletContainer.class, params );
 
         // access control filter
         bind( AccessControlAllowOrignFilter.class ).in( Singleton.class );
@@ -83,11 +55,12 @@ public class AgentServletModule
         bind( UploadJsonCredentialsServlet.class ).in( Singleton.class );
         serve( "/upload-json-credentials" ).with( UploadJsonCredentialsServlet.class );
 
+        // TODO: fix appstats - probably does not work becaues it is defined here and also in web.xml
         // appstats configuration
-        bind( AppstatsServlet.class ).in( Singleton.class );
-        bind( AppstatsFilter.class ).in( Singleton.class );
+//        bind( AppstatsServlet.class ).in( Singleton.class );
+//        bind( AppstatsFilter.class ).in( Singleton.class );
 
-        serve( "/appstats/*" ).with( AppstatsServlet.class );
+//        serve( "/appstats/*" ).with( AppstatsServlet.class );
 
         // Appstats configuration
 //        Map<String, String> initParams = new HashMap<String, String>();

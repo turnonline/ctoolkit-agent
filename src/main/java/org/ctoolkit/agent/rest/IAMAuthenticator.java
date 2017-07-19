@@ -18,9 +18,6 @@
 
 package org.ctoolkit.agent.rest;
 
-import com.google.api.server.spi.auth.common.User;
-import com.google.api.server.spi.config.Authenticator;
-import com.google.api.server.spi.config.Singleton;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudresourcemanager.model.TestIamPermissionsRequest;
 import com.google.api.services.cloudresourcemanager.model.TestIamPermissionsResponse;
@@ -40,9 +37,8 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Singleton
+// TODO: refactor to javax.servlet.Filter or REST filter or override auth jersey mechanism
 public class IAMAuthenticator
-        implements Authenticator
 {
     private static final String X_CTOOLKIT_AGENT_ON_BEHALF_OF_AGENT_URL = "-X-CtoolkitAgent-onBehalfOfAgentUrl";
 
@@ -65,8 +61,7 @@ public class IAMAuthenticator
         injector.injectMembers( this );
     }
 
-    @Override
-    public User authenticate( HttpServletRequest request )
+    public void authenticate( HttpServletRequest request )
     {
         try
         {
@@ -101,21 +96,20 @@ public class IAMAuthenticator
                     TestIamPermissionsResponse response = testRequest.execute();
                     if ( !response.getPermissions().isEmpty() ) // if user has permission API returns same list as requested
                     {
-                        return new User( email );
+                        // TODO: process
                     }
                 }
                 // if agent is running in in localhost - skip permission check
                 else
                 {
-                    return new User( email );
+                    // TODO: process
                 }
             }
         }
         catch ( Exception e )
         {
+            // TODO: throw 401 exception
             log.error( "Unable to verify token", e );
         }
-
-        return null;
     }
 }

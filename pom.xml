@@ -145,42 +145,27 @@
             <artifactId>appengine-api-labs</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.endpoints</groupId>
-            <artifactId>endpoints-framework</artifactId>
-            <version>${endpoints.framework.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-nop</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.google.endpoints</groupId>
-            <artifactId>endpoints-framework-guice</artifactId>
-            <version>${endpoints.framework.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.endpoints</groupId>
-            <artifactId>endpoints-management-control-appengine-all</artifactId>
-            <version>${endpoints.management.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
         </dependency>
+
+        <!--JERSEY DEPENDENCIES-->
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet-core</artifactId>
+            <version>${jersey2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>guice-bridge</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
         <!-- AppEngine test scope -->
         <dependency>
             <groupId>com.google.appengine</groupId>
@@ -386,95 +371,13 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <!--build OpenAPI document openapi.json 'mvn exec:java -P api' -->
-            <id>api</id>
-            <activation>
-                <property>
-                    <name>get-openapi-doc</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.4.0</version>
-                        <configuration>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <mainClass>com.google.api.server.spi.tools.EndpointsTool</mainClass>
-                            <arguments>
-                                <argument>get-openapi-doc</argument>
-                                <argument>--output=target/openapi.json</argument>
-                                <argument>--hostname=${endpoints.service.name}</argument>
-                                <argument>--war=target/${project.build.finalName}</argument>
-                                <argument>org.ctoolkit.agent.rest.AuditEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.ExportEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.ImportEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.MigrationEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.MetadataEndpoint</argument>
-                            </arguments>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.google.endpoints</groupId>
-                                <artifactId>endpoints-framework-tools</artifactId>
-                                <version>${endpoints.framework.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!--build api client as maven source 'mvn exec:java -P client' -->
-            <id>client</id>
-            <activation>
-                <property>
-                    <name>get-client-lib</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.4.0</version>
-                        <configuration>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <mainClass>com.google.api.server.spi.tools.EndpointsTool</mainClass>
-                            <arguments>
-                                <argument>get-client-lib</argument>
-                                <argument>--war=target/${project.build.finalName}</argument>
-                                <argument>--build-system=maven</argument>
-                                <argument>--output=target</argument>
-                                <argument>org.ctoolkit.agent.rest.AuditEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.ExportEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.ImportEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.MigrationEndpoint</argument>
-                                <argument>org.ctoolkit.agent.rest.MetadataEndpoint</argument>
-                            </arguments>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.google.endpoints</groupId>
-                                <artifactId>endpoints-framework-tools</artifactId>
-                                <version>${endpoints.framework.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
     <properties>
+        <jersey2-version>2.22.2</jersey2-version>
         <gcp.projectId>c-toolkit</gcp.projectId>
-        <endpoints.service.name>agent.endpoints.${gcp.projectId}.cloud.goog</endpoints.service.name>
         <ctoolkit-library-bom.version>4</ctoolkit-library-bom.version>
         <ctoolkit-microservice-bom.version>1.9.55-SNAPSHOT</ctoolkit-microservice-bom.version>
-        <endpoints.framework.version>2.0.7</endpoints.framework.version>
-        <endpoints.management.version>1.0.2</endpoints.management.version>
         <appengine.maven.plugin.version>1.2.1</appengine.maven.plugin.version>
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
         <!-- Overrides version from bom -->

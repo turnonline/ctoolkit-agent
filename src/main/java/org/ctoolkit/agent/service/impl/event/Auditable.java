@@ -18,7 +18,7 @@
 
 package org.ctoolkit.agent.service.impl.event;
 
-import org.ctoolkit.agent.model.MetadataAudit.Action;
+import org.ctoolkit.agent.model.Action;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.ElementType;

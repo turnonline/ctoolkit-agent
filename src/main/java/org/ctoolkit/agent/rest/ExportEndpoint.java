@@ -18,14 +18,6 @@
 
 package org.ctoolkit.agent.rest;
 
-import com.google.api.server.spi.config.Api;
-import com.google.api.server.spi.config.ApiMethod;
-import com.google.api.server.spi.config.ApiReference;
-import com.google.api.server.spi.config.DefaultValue;
-import com.google.api.server.spi.config.Named;
-import com.google.api.server.spi.config.Nullable;
-import com.google.api.server.spi.response.NotFoundException;
-import com.google.appengine.api.users.User;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MappingContext;
 import org.ctoolkit.agent.exception.ObjectNotFoundException;
@@ -39,6 +31,17 @@ import org.ctoolkit.agent.resource.ExportJob;
 import org.ctoolkit.agent.service.ChangeSetService;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,9 +52,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-@Api
-@ApiReference( AgentEndpointConfig.class )
-@Authorized
+@Path( "/" )
 public class ExportEndpoint
 {
     private ChangeSetService service;
@@ -71,8 +72,11 @@ public class ExportEndpoint
 
     // -- export CRUD
 
-    @ApiMethod( name = "exportBatch.insert", path = "export", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportBatch insertExport( ExportBatch exportBatch, User authUser )
+    @POST
+    @Path( "/export" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public ExportBatch insertExport( ExportBatch exportBatch )
     {
         ExportMetadata exportMetadata = mapper.map( exportBatch, ExportMetadata.class );
         ExportMetadata exportMetadataBe = service.create( exportMetadata );
@@ -80,8 +84,12 @@ public class ExportEndpoint
         return mapper.map( exportMetadataBe, ExportBatch.class );
     }
 
-    @ApiMethod( name = "exportBatch.update", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportBatch updateExport( @Named( "id" ) Long id, ExportBatch exportBatch, User authUser ) throws Exception
+    @PUT
+    @Path( "/export/{exportId}" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public ExportBatch updateExport( @PathParam( "exportId" ) Long id,
+                                     ExportBatch exportBatch )
     {
         if ( service.get( new MetadataKey<>( id, ExportMetadata.class ) ) == null )
         {
@@ -94,8 +102,9 @@ public class ExportEndpoint
         return mapper.map( exportMetadataBe, ExportBatch.class );
     }
 
-    @ApiMethod( name = "exportBatch.delete", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteExport( @Named( "id" ) Long id, User authUser ) throws Exception
+    @DELETE
+    @Path( "/export/{exportId}" )
+    public void deleteExport( @PathParam( "exportId" ) Long id )
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -106,8 +115,10 @@ public class ExportEndpoint
         service.delete( exportMetadata );
     }
 
-    @ApiMethod( name = "exportBatch.get", path = "export/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public ExportBatch getExport( @Named( "id" ) Long id, User authUser ) throws Exception
+    @GET
+    @Path( "/export/{exportId}" )
+    @Produces( "application/json" )
+    public ExportBatch getExport( @PathParam( "exportId" ) Long id )
     {
         ExportMetadata exportMetadataBe = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadataBe == null )
@@ -118,13 +129,14 @@ public class ExportEndpoint
         return mapper.map( exportMetadataBe, ExportBatch.class );
     }
 
-    @ApiMethod( name = "exportBatch.list", path = "export", httpMethod = ApiMethod.HttpMethod.GET )
+    @GET
+    @Path( "/export" )
+    @Produces( "application/json" )
     @SuppressWarnings( "unchecked" )
-    public List<ExportBatch> listExport( @DefaultValue( "0" ) @Nullable @Named( "start" ) Integer start,
-                                         @DefaultValue( "10" ) @Nullable @Named( "length" ) Integer length,
-                                         @Nullable @Named( "orderBy" ) String orderBy,
-                                         @DefaultValue( "true" ) @Nullable @Named( "ascending" ) Boolean ascending,
-                                         User authUser ) throws Exception
+    public List<ExportBatch> listExport( @DefaultValue( "0" ) @QueryParam( "start" ) Integer start,
+                                         @DefaultValue( "10" ) @QueryParam( "length" ) Integer length,
+                                         @DefaultValue( "name" ) @QueryParam( "orderBy" ) String orderBy,
+                                         @DefaultValue( "true" ) @QueryParam( "ascending" ) Boolean ascending )
     {
         BaseMetadataFilter filter = new BaseMetadataFilter.Builder<>()
                 .start( start )
@@ -146,8 +158,12 @@ public class ExportEndpoint
 
     // -- export item CRUD
 
-    @ApiMethod( name = "exportBatch.item.insert", path = "export/{metadataId}/item", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportBatch.ExportItem insertExportItem( @Named( "metadataId" ) Long metadataId, ExportBatch.ExportItem exportBatchItem, User authUser )
+    @POST
+    @Path( "/export/{exportId}/item" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public ExportBatch.ExportItem insertExportItem( @PathParam( "exportId" ) Long metadataId,
+                                                    ExportBatch.ExportItem exportBatchItem )
     {
         Map<Object, Object> props = new HashMap<>();
         props.put( "metadataId", metadataId );
@@ -161,13 +177,18 @@ public class ExportEndpoint
         return mapper.map( exportMetadataItemBe, ExportBatch.ExportItem.class );
     }
 
-    @ApiMethod( name = "exportBatch.item.update", path = "export/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportBatch.ExportItem updateExportItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, ExportBatch.ExportItem exportBatchItem, User authUser )
+    @PUT
+    @Path( "/export/{exportId}/item/{itemId}" )
+    @Consumes( "application/json" )
+    @Produces( "application/json" )
+    public ExportBatch.ExportItem updateExportItem( @PathParam( "exportId" ) Long metadataId,
+                                                    @PathParam( "itemId" ) Long itemId,
+                                                    ExportBatch.ExportItem exportBatchItem )
             throws Exception
     {
-        if ( service.get( new MetadataItemKey<>( id, metadataId, ExportMetadataItem.class, ExportMetadata.class ) ) == null )
+        if ( service.get( new MetadataItemKey<>( itemId, metadataId, ExportMetadataItem.class, ExportMetadata.class ) ) == null )
         {
-            throw new NotFoundException( "Export item not found for id: " + id );
+            throw new NotFoundException( "Export item not found for itemId: " + itemId );
         }
 
         ExportMetadataItem exportMetadataItem = mapper.map( exportBatchItem, ExportMetadataItem.class );
@@ -176,27 +197,32 @@ public class ExportEndpoint
         return mapper.map( exportMetadataItemBe, ExportBatch.ExportItem.class );
     }
 
-    @ApiMethod( name = "exportBatch.item.delete", path = "export/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.DELETE )
-    public void deleteExportItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, User authUser )
+    @DELETE
+    @Path( "/export/{exportId}/item/{itemId}" )
+    public void deleteExportItem( @PathParam( "exportId" ) Long metadataId,
+                                  @PathParam( "itemId" ) Long itemId )
             throws Exception
     {
-        ExportMetadataItem item = service.get( new MetadataItemKey<>( id, metadataId, ExportMetadataItem.class, ExportMetadata.class ) );
+        ExportMetadataItem item = service.get( new MetadataItemKey<>( itemId, metadataId, ExportMetadataItem.class, ExportMetadata.class ) );
         if ( item == null )
         {
-            throw new NotFoundException( "Export item not found for id: " + id );
+            throw new NotFoundException( "Export item not found for itemId: " + itemId );
         }
 
         service.delete( item );
     }
 
-    @ApiMethod( name = "exportBatch.item.get", path = "export/{metadataId}/item/{id}", httpMethod = ApiMethod.HttpMethod.GET )
-    public ExportBatch.ExportItem getExportItem( @Named( "metadataId" ) Long metadataId, @Named( "id" ) Long id, User authUser )
+    @GET
+    @Path( "/export/{exportId}/item/{itemId}" )
+    @Produces( "application/json" )
+    public ExportBatch.ExportItem getExportItem( @PathParam( "exportId" ) Long metadataId,
+                                                 @PathParam( "itemId" ) Long itemId )
             throws Exception
     {
-        ExportMetadataItem item = service.get( new MetadataItemKey<>( id, metadataId, ExportMetadataItem.class, ExportMetadata.class ) );
+        ExportMetadataItem item = service.get( new MetadataItemKey<>( itemId, metadataId, ExportMetadataItem.class, ExportMetadata.class ) );
         if ( item == null )
         {
-            throw new NotFoundException( "Export item not found for id: " + id );
+            throw new NotFoundException( "Export item not found for itemId: " + itemId );
         }
 
         return mapper.map( item, ExportBatch.ExportItem.class );
@@ -204,8 +230,10 @@ public class ExportEndpoint
 
     // -- job CRUD
 
-    @ApiMethod( name = "exportBatch.job.start", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.POST )
-    public ExportJob startExportJob( @Named( "id" ) Long id, ExportJob job, User authUser ) throws Exception
+    @POST
+    @Path( "/export/{exportId}/job" )
+    @Produces( "application/json" )
+    public ExportJob startExportJob( @PathParam( "exportId" ) Long id )
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -224,8 +252,10 @@ public class ExportEndpoint
         }
     }
 
-    @ApiMethod( name = "exportBatch.job.cancel", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.PUT )
-    public ExportJob cancelExportJob( @Named( "id" ) Long id, ExportJob job, User authUser ) throws Exception
+    @DELETE
+    @Path( "/export/{exportId}/job" )
+    @Produces( "application/json" )
+    public ExportJob cancelExportJob( @PathParam( "exportId" ) Long id )
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )
@@ -244,8 +274,10 @@ public class ExportEndpoint
         }
     }
 
-    @ApiMethod( name = "exportBatch.job.progress", path = "export/{id}/job", httpMethod = ApiMethod.HttpMethod.GET )
-    public ExportJob getExportJob( @Named( "id" ) Long id, User authUser ) throws Exception
+    @GET
+    @Path( "/export/{exportId}/job" )
+    @Produces( "application/json" )
+    public ExportJob getExportJob( @PathParam( "exportId" ) Long id ) throws Exception
     {
         ExportMetadata exportMetadata = service.get( new MetadataKey<>( id, ExportMetadata.class ) );
         if ( exportMetadata == null )

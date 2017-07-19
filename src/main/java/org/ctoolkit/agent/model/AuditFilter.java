@@ -18,8 +18,6 @@
 
 package org.ctoolkit.agent.model;
 
-import org.ctoolkit.agent.model.MetadataAudit.Operation;
-
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
