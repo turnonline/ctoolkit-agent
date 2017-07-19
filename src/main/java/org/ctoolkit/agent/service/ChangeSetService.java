@@ -216,4 +216,6 @@ public interface ChangeSetService
      * @return list of {@link PropertyMetaData}
      */
     List<PropertyMetaData> properties( String kind );
+
+    void flushPool();
 }

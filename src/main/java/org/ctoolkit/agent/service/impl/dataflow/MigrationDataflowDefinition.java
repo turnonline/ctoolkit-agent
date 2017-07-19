@@ -124,29 +124,38 @@ public class MigrationDataflowDefinition
                 .apply( "Group splitted queries by unique ID", GroupByKey.<Integer, Query>create() )
                 .apply( "Create values from split groups", Values.<Iterable<Query>>create() )
                 .apply( "Flatten split group values", Flatten.<Query>iterables() )
-                .apply( "Read entities from split queries", ParDo.of( new CustomReadFn( projectId ) ) )
-                .apply( "Migrate entity", ParDo.of( new DoFn<Entity, Void>()
+                .apply( "Read entities from split queries", ParDo.of( new CustomReadFn( projectId ) ) ) // TODO: refaktor to make return bulk of entities with size 100
+                .apply( "Migrate entity", ParDo.of( new DoFn<Iterable<Entity>, Void>()
                 {
                     @Override
                     public void processElement( ProcessContext c ) throws Exception
                     {
-                        // load list of operations
-                        com.google.datastore.v1.Key key = c.element().getKey();
-                        String kind = key.getPath( key.getPathCount() - 1 ).getKind();
-                        com.google.cloud.datastore.Entity entity = datastore().get( migrationKindGroupKey( kind ) );
-
-                        List<BlobValue> ops = entity.getList( "operations" );
-                        Class xmlRoot = Class.forName( entity.getString( "xmlRoot" ) );
-
-                        // migrate entity for every element in operation list
                         ChangeSetService changeSetService = injector().getInstance( ChangeSetService.class );
-                        com.google.cloud.datastore.Entity entityToMigrate = fromPb( c.element() );
 
-                        for ( BlobValue blobValue : ops )
+                        for (Entity entityPb : c.element())
                         {
-                            MigrationSetKindOperation operation = ( MigrationSetKindOperation ) XmlUtils.unmarshall( blobValue.get().asInputStream(), xmlRoot );
-                            changeSetService.migrate( operation, entityToMigrate );
+                            // load list of operations
+                            com.google.datastore.v1.Key key = entityPb.getKey();
+                            String kind = key.getPath( key.getPathCount() - 1 ).getKind();
+                            com.google.cloud.datastore.Entity entity = datastore().get( migrationKindGroupKey( kind ) );
+
+                            List<BlobValue> ops = entity.getList( "operations" );
+                            Class xmlRoot = Class.forName( entity.getString( "xmlRoot" ) );
+
+                            // migrate entity for every element in operation list
+                            com.google.cloud.datastore.Entity entityToMigrate = fromPb( entityPb );
+
+                            for ( BlobValue blobValue : ops )
+                            {
+                                MigrationSetKindOperation operation = ( MigrationSetKindOperation ) XmlUtils.unmarshall( blobValue.get().asInputStream(), xmlRoot );
+                                changeSetService.migrate( operation, entityToMigrate );
+                            }
                         }
+
+                        System.out.println(">>>> Processing");
+
+                        // flush unflushed entities
+                        changeSetService.flushPool();
                     }
                 } ) );
 

@@ -51,23 +51,9 @@ public class MigrationDataflowDefinitionIT
     @Test
     public void testMockEntities() throws Exception
     {
-        mockEntities();
-    }
-
-    @Test
-    public void run() throws Exception
-    {
-        dataflow.run();
-    }
-
-    // -- private helpers
-
-    private void mockEntities()
-    {
-        for ( int i = 1; i <= 10000; i++ )
+        for ( int i = 1; i <= 1000; i++ )
         {
             Key key = Key.newBuilder( projectId, "City", i ).build();
-//            pool.delete( key );
 
             Entity city = Entity.newBuilder( key )
                     .set( "name", "New York" )
@@ -76,11 +62,33 @@ public class MigrationDataflowDefinitionIT
 
             if ( i % 100 == 0 )
             {
-                System.out.println( "Processed: " + i + " items" );
+                System.out.println( "Created: " + i + " items" );
             }
         }
 
         pool.flush();
+    }
+
+    @Test
+    public void testDeleteEntities() throws Exception
+    {
+        for ( int i = 1; i <= 1000; i++ )
+        {
+            pool.delete( Key.newBuilder( projectId, "City", i ).build() );
+
+            if ( i % 100 == 0 )
+            {
+                System.out.println( "Deleted: " + i + " items" );
+            }
+        }
+
+        pool.flush();
+    }
+
+    @Test
+    public void run() throws Exception
+    {
+        dataflow.run();
     }
 
     private MigrationMetadata mockMigrationMetadata()

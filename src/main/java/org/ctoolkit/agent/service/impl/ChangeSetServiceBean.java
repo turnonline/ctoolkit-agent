@@ -487,26 +487,32 @@ public class ChangeSetServiceBean
             {
                 Entity.Builder builder = Entity.newBuilder( entity );
                 Value<?> newValue = useCase.value( operation, entity );
+                boolean putToDb = false;
 
+                // remove old property
+                if ( useCase.removeOldProperty() )
+                {
+                    builder.remove( operation.getProperty() );
+                    putToDb = true;
+                }
+
+                // set new property
                 if ( newValue != null )
                 {
                     builder.set( newName, newValue );
-                    entity = datastore.put( builder.build() );
+                    putToDb = true;
                 }
-            }
 
-            // remove old property
-            if ( useCase.removeOldProperty() )
-            {
-                Entity.Builder builder = Entity.newBuilder( entity );
-                builder.remove( operation.getProperty() );
-                datastore.put( builder.build() );
+                if ( putToDb )
+                {
+                    pool.put( builder.build() );
+                }
             }
 
             // remove entire entity from datastore
             if ( useCase.removeEntity() )
             {
-                datastore.delete( entity.getKey() );
+                pool.delete( entity.getKey() );
             }
         }
     }
@@ -633,5 +639,11 @@ public class ChangeSetServiceBean
         }
 
         return properties;
+    }
+
+    @Override
+    public void flushPool()
+    {
+        pool.flush();
     }
 }

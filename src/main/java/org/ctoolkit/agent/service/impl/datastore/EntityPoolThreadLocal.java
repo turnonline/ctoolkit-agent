@@ -85,7 +85,6 @@ public class EntityPoolThreadLocal
 
     public <K extends IncompleteKey> void put( FullEntity<K> ent )
     {
-        logger.info( "Adding entity into the put-pool" );
         if ( toPut().size() >= maxItems )
         {
             flushPuts();

@@ -113,7 +113,7 @@ public class AgentModule
 
         bind( AuthKeyProvider.class ).to( JsonAuthKeyProvider.class ).in( Singleton.class );
         bind( Checker.class ).to( AudienceChecker.class );
-        bind( EntityPool.class ).to( EntityPoolThreadLocal.class );
+        bind( EntityPool.class ).to( EntityPoolThreadLocal.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
         bind( ChangeSetEntityToEntityBuilderMapper.class ).in( Singleton.class );
         bind( EntityEncoder.class ).in( Singleton.class );
@@ -214,7 +214,7 @@ public class AgentModule
     @Provides
     public PipelineOptions providePipelineOptions( @ProjectId String projectId, @StagingLocation String stagingLocation )
     {
-        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production )
+        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production || true)
         {
             // The app is running on App Engine...
             DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );

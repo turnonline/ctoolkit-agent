@@ -1,5 +1,7 @@
 package com.google.cloud.dataflow.sdk.io.datastore;
 
+import com.google.cloud.dataflow.sdk.transforms.DoFn;
+import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.EntityResult;
 import com.google.datastore.v1.Query;
 import com.google.datastore.v1.QueryResultBatch;
@@ -8,16 +10,19 @@ import com.google.datastore.v1.RunQueryResponse;
 import com.google.datastore.v1.client.Datastore;
 import com.google.protobuf.Int32Value;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.base.Verify.verify;
 import static com.google.datastore.v1.QueryResultBatch.MoreResultsType.NOT_FINISHED;
 
 /**
+ * Custom read function - Inspired by {@link com.google.cloud.dataflow.sdk.io.datastore.DatastoreV1.Read.ReadFn}
+ *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class CustomReadFn
-        extends DatastoreV1.Read.ReadFn
+        extends DoFn<Query, Iterable<Entity>>
 {
     static final int QUERY_BATCH_LIMIT = 500;
 
@@ -27,7 +32,6 @@ public class CustomReadFn
 
     public CustomReadFn( String projectId )
     {
-        super( DatastoreV1.Read.V1Options.from( projectId, Query.newBuilder().build(), null ) );
         this.projectId = projectId;
     }
 
@@ -37,14 +41,12 @@ public class CustomReadFn
     }
 
     /**
-     * Read and output entities for the given query.
+     * Read and output list of entities for the given query.
      */
-    // TODO: override because original method throws NoSuchMethod for query.toBuilder().clone();
     @Override
     public void processElement( ProcessContext context ) throws Exception
     {
         Query query = context.element();
-        String namespace = null;
         int userLimit = query.hasLimit()
                 ? query.getLimit().getValue() : Integer.MAX_VALUE;
 
@@ -62,7 +64,7 @@ public class CustomReadFn
                 queryBuilder.setStartCursor( currentBatch.getEndCursor() );
             }
 
-            RunQueryRequest request = makeRequest( queryBuilder.build(), namespace );
+            RunQueryRequest request = RunQueryRequest.newBuilder().setQuery( queryBuilder.build() ).build();
             RunQueryResponse response = datastore.runQuery( request );
 
             currentBatch = response.getBatch();
@@ -80,10 +82,12 @@ public class CustomReadFn
             }
 
             // output all the entities from the current batch.
+            List<Entity> entities = new ArrayList<>();
             for ( EntityResult entityResult : currentBatch.getEntityResultsList() )
             {
-                context.output( entityResult.getEntity() );
+                entities.add( entityResult.getEntity() );
             }
+            context.output( entities );
 
             // Check if we have more entities to be read.
             moreResults =
@@ -93,15 +97,5 @@ public class CustomReadFn
                             && ( ( numFetch == QUERY_BATCH_LIMIT )
                             || ( currentBatch.getMoreResults() == NOT_FINISHED ) );
         }
-    }
-
-    static RunQueryRequest makeRequest( Query query, @Nullable String namespace )
-    {
-        RunQueryRequest.Builder requestBuilder = RunQueryRequest.newBuilder().setQuery( query );
-        if ( namespace != null )
-        {
-            requestBuilder.getPartitionIdBuilder().setNamespaceId( namespace );
-        }
-        return requestBuilder.build();
     }
 }

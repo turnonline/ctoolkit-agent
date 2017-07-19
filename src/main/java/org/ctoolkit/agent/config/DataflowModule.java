@@ -36,7 +36,7 @@ public class DataflowModule
     @Override
     protected void configure()
     {
-        bind( EntityPool.class ).to( EntityPoolThreadLocal.class );
+        bind( EntityPool.class ).to( EntityPoolThreadLocal.class ).in( Singleton.class );
         bind( ChangeSetService.class ).to( ChangeSetServiceBean.class ).in( Singleton.class );
         bind( RestContext.class ).to( RestContextThreadLocal.class ).in( Singleton.class );
 
