@@ -17,7 +17,6 @@ import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.service.ChangeSetService;
 import org.ctoolkit.agent.service.impl.dataflow.shared.BaseDataflowDefinition;
 import org.ctoolkit.agent.service.impl.dataflow.shared.LoadItems;
-import org.slf4j.LoggerFactory;
 
 /**
  * Import dataflow definition
@@ -72,9 +71,7 @@ public class ImportDataflowDefinition
                         }
                         catch ( Exception e )
                         {
-                            LoggerFactory
-                                    .getLogger( ImportDataflowDefinition.class )
-                                    .error( "Error occur during importing change set", e );
+                            log().error( "Error occur during importing change set", e );
 
                             //item.setError( StackTraceResolver.resolve( e ) );
                             item.setState( JobState.FAILED );

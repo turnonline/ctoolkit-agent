@@ -2,6 +2,10 @@ package org.ctoolkit.agent.config;
 
 import com.google.api.services.dataflow.Dataflow;
 import com.google.cloud.ServiceOptions;
+import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
+import com.google.cloud.dataflow.sdk.options.PipelineOptions;
+import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
+import com.google.cloud.dataflow.sdk.runners.DataflowPipelineRunner;
 import com.google.cloud.datastore.Entity;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -103,9 +107,25 @@ public class DataflowModule
     }
 
     @Provides
-    @Singleton
-    public Dataflow provideDataflow( )
+    public PipelineOptions providePipelineOptions( @ProjectId String projectId, @StagingLocation String stagingLocation )
     {
-        return null; // it is here only because ChangeSetServiceBean requires this. but for dataflow module is not required
+        DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );
+        options.setRunner( DataflowPipelineRunner.class );
+        options.setProject( projectId );
+        options.setStagingLocation( stagingLocation );
+
+        return options;
+    }
+
+    @Provides
+    @Singleton
+    public Dataflow provideDataflow(PipelineOptions pipelineOptions )
+    {
+        if ( pipelineOptions instanceof DataflowPipelineOptions )
+        {
+            return ( ( DataflowPipelineOptions ) pipelineOptions ).getDataflowClient();
+        }
+
+        return null;
     }
 }

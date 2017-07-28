@@ -124,7 +124,7 @@ public class MigrationDataflowDefinition
                 .apply( "Group splitted queries by unique ID", GroupByKey.<Integer, Query>create() )
                 .apply( "Create values from split groups", Values.<Iterable<Query>>create() )
                 .apply( "Flatten split group values", Flatten.<Query>iterables() )
-                .apply( "Read entities from split queries", ParDo.of( new CustomReadFn( projectId ) ) ) // TODO: refaktor to make return bulk of entities with size 100
+                .apply( "Read entities from split queries", ParDo.of( new CustomReadFn( projectId ) ) )
                 .apply( "Migrate entity", ParDo.of( new DoFn<Iterable<Entity>, Void>()
                 {
                     @Override
@@ -151,8 +151,6 @@ public class MigrationDataflowDefinition
                                 changeSetService.migrate( operation, entityToMigrate );
                             }
                         }
-
-                        System.out.println(">>>> Processing");
 
                         // flush unflushed entities
                         changeSetService.flushPool();

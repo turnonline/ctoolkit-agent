@@ -9,6 +9,8 @@ import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.config.DataflowModule;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.ModelConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.Serializable;
@@ -67,6 +69,11 @@ public abstract class BaseDataflowDefinition<M extends BaseMetadata<?>>
     protected Datastore datastore()
     {
         return injector().getInstance( Datastore.class );
+    }
+
+    protected Logger log()
+    {
+        return LoggerFactory.getLogger( getClass() );
     }
 
     // -- private helpers

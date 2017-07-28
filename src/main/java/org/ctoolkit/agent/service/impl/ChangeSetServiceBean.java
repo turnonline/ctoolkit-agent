@@ -312,17 +312,20 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.START_JOB )
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
-        try
+        if (metadata.getJobId() !=null)
         {
-            Job job = dataflow.projects().jobs().get( projectId, metadata.getJobId() ).execute();
-            if ( JobState.RUNNING.toDataflowState().equals( job.getCurrentState() ) )
+            try
             {
-                throw new ProcessAlreadyRunning( "Job with id '" + metadata.getJobId() + "' is already running. Wait until job is finished or cancel existing job." );
+                Job job = dataflow.projects().jobs().get( projectId, metadata.getJobId() ).execute();
+                if ( JobState.RUNNING.toDataflowState().equals( job.getCurrentState() ) )
+                {
+                    throw new ProcessAlreadyRunning( "Job with id '" + metadata.getJobId() + "' is already running. Wait until job is finished or cancel existing job." );
+                }
             }
-        }
-        catch ( IOException e )
-        {
-            throw new ObjectNotFoundException( "Unable to get job status. Job will not start.", e );
+            catch ( IOException e )
+            {
+                throw new ObjectNotFoundException( "Unable to get job status. Job will not start.", e );
+            }
         }
 
         Runnable definition;
