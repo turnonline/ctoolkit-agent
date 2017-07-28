@@ -35,7 +35,7 @@ import java.util.Map;
 public class AgentServletModule
         extends ServletModule
 {
-    private static final String ENDPOINTS_SERVLET_PATH = "/api/agent/v1/*";
+    private static final String ENDPOINTS_SERVLET_PATH = "/_ah/api/agent/v1/*";
 
     @Override
     protected void configureServlets()
