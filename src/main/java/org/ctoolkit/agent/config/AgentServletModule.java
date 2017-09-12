@@ -19,7 +19,7 @@
 package org.ctoolkit.agent.config;
 
 import com.google.inject.servlet.ServletModule;
-import org.ctoolkit.agent.AccessControlAllowOrignFilter;
+import org.ctoolkit.agent.AccessControlAllowOriginFilter;
 import org.ctoolkit.agent.UploadJsonCredentialsServlet;
 import org.ctoolkit.agent.rest.AgentApplication;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -48,8 +48,8 @@ public class AgentServletModule
         serve( ENDPOINTS_SERVLET_PATH ).with( ServletContainer.class, params );
 
         // access control filter
-        bind( AccessControlAllowOrignFilter.class ).in( Singleton.class );
-        filter( "/*" ).through( AccessControlAllowOrignFilter.class );
+        bind( AccessControlAllowOriginFilter.class ).in( Singleton.class );
+        filter( "/*" ).through( AccessControlAllowOriginFilter.class );
 
         // upload json credentials servlet
         bind( UploadJsonCredentialsServlet.class ).in( Singleton.class );

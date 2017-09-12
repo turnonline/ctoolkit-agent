@@ -35,7 +35,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-public class AccessControlAllowOrignFilter
+public class AccessControlAllowOriginFilter
         implements Filter
 {
     @Override
