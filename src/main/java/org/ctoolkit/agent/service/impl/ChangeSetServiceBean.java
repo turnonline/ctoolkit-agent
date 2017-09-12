@@ -57,6 +57,7 @@ import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.MetadataKey;
 import org.ctoolkit.agent.model.MigrationMetadata;
 import org.ctoolkit.agent.model.ModelConverter;
+import org.ctoolkit.agent.model.NativeToAgentTypeMapper;
 import org.ctoolkit.agent.model.PropertyMetaData;
 import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.resource.ChangeSetEntity;
@@ -133,6 +134,8 @@ public class ChangeSetServiceBean
     private final String bucketName;
 
     private final String projectId;
+
+    private final NativeToAgentTypeMapper typeMapper = NativeToAgentTypeMapper.INSTANCE;
 
     @Inject
     public ChangeSetServiceBean( @Nullable Dataflow dataflow,
@@ -312,7 +315,7 @@ public class ChangeSetServiceBean
     @Auditable( action = Action.START_JOB )
     public <M extends BaseMetadata> void startJob( M metadata ) throws ProcessAlreadyRunning
     {
-        if (metadata.getJobId() !=null)
+        if ( metadata.getJobId() != null )
         {
             try
             {
@@ -628,14 +631,25 @@ public class ChangeSetServiceBean
                 .build();
         QueryResults<Entity> results = datastore.run( query );
 
+        // TODO: take values from entity
+        // datastore.run( Query.newEntityQueryBuilder().setKind( "Invoice" ).setLimit( 1 ).build()).next()
+
         // Build list of query results
         while ( results.hasNext() )
         {
             Entity e = results.next();
 
+            List<Value<?>> representation = e.getList( "property_representation" );
+            log.error( representation.toString() );
+
+            // IncompleteKey k = datastore.newKeyFactory().setKind( "Invoice" ).newKey();
+            // datastore.run( Query.newKeyQueryBuilder().setFilter( PropertyFilter.eq( "billingItems", e.getKey() ) ).build());
+
+            String nativeType = typeMapper.toAgent( representation.get( representation.size() - 1 ) );
+
             PropertyMetaData property = new PropertyMetaData();
             property.setProperty( e.getKey().getName() );
-            property.setType( e.getList( "property_representation" ).get( 0 ).get().toString().toLowerCase() );
+            property.setType( nativeType );
             property.setKind( e.getKey().getParent().getName() );
             property.setNamespace( e.getKey().getNamespace() );
             properties.add( property );

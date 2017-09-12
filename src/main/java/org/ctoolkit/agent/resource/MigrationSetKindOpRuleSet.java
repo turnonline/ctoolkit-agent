@@ -23,7 +23,7 @@ public class MigrationSetKindOpRuleSet
     @XmlAttribute( name = "operation" )
     private String operation;
 
-    @XmlElement( name = "rule" )
+    @XmlElement( name = "rules" )
     private List<MigrationSetKindOpRule> rules;
 
     public String getOperation()
