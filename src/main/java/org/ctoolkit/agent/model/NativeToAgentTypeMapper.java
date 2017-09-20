@@ -27,7 +27,7 @@ public class NativeToAgentTypeMapper
         register( "DOUBLE", SimpleTypeResolver.INSTANCE );
         register( "BOOLEAN", SimpleTypeResolver.INSTANCE );
         register( "TIMESTAMP", SimpleTypeResolver.INSTANCE );
-        register( "REFERENCE", ReferenceTypeResolver.INSTANCE );
+        register( "REFERENCE", SimpleTypeResolver.INSTANCE );
     }
 
     public String toAgent( Value<?> value )
@@ -67,26 +67,6 @@ public class NativeToAgentTypeMapper
             }
 
             return val.toLowerCase();
-        }
-    }
-
-    public static class ReferenceTypeResolver
-            extends SimpleTypeResolver
-    {
-        static ReferenceTypeResolver INSTANCE = new ReferenceTypeResolver();
-
-        @Override
-        String resolveValue( Value<?> value )
-        {
-            switch ( value.getType() )
-            {
-                case STRING:
-                {
-                    return "key";
-                }
-            }
-
-            return UNKNOWN_TYPE;
         }
     }
 }

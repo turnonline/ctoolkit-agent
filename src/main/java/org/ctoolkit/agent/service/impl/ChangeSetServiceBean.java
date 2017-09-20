@@ -631,19 +631,12 @@ public class ChangeSetServiceBean
                 .build();
         QueryResults<Entity> results = datastore.run( query );
 
-        // TODO: take values from entity
-        // datastore.run( Query.newEntityQueryBuilder().setKind( "Invoice" ).setLimit( 1 ).build()).next()
-
         // Build list of query results
         while ( results.hasNext() )
         {
             Entity e = results.next();
 
             List<Value<?>> representation = e.getList( "property_representation" );
-            log.error( representation.toString() );
-
-            // IncompleteKey k = datastore.newKeyFactory().setKind( "Invoice" ).newKey();
-            // datastore.run( Query.newKeyQueryBuilder().setFilter( PropertyFilter.eq( "billingItems", e.getKey() ) ).build());
 
             String nativeType = typeMapper.toAgent( representation.get( representation.size() - 1 ) );
 

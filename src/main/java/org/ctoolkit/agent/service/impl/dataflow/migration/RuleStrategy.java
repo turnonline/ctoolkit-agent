@@ -35,12 +35,12 @@ public interface RuleStrategy
      *
      * @return ChangeSetEntityProperty
      */
-    ChangeSetEntityProperty encodedProperty();
+    ChangeSetEntityProperty encodedProperty( MigrationSetKindOpRule rule, Entity entity );
 
     /**
      * Return array of allowed types for strategy
      *
-     * @return array ow allowed types
+     * @return array of allowed types
      */
-    String[] allowedTypes();
+    AllowedType[] allowedTypes();
 }

@@ -109,7 +109,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_KeyValue()
     {
-        Value<?> value = decoder.decode( "key", "Person:1" );
+        Value<?> value = decoder.decode( "reference", "Person:1" );
 
         assertTrue( value instanceof KeyValue );
         assertEquals( "Person", ( ( KeyValue ) value ).get().getKind() );
@@ -119,7 +119,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_ListLongValue()
     {
-        Value<?> value = decoder.decode( "list-long", "1,2" );
+        Value<?> value = decoder.decode( "long", "1,2" );
 
         assertTrue( value instanceof ListValue );
         assertEquals( 1L, ( ( ListValue ) value ).get().get( 0 ).get() );
@@ -129,7 +129,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_ListStringValue()
     {
-        Value<?> value = decoder.decode( "list-string", "John,Foo" );
+        Value<?> value = decoder.decode( "string", "John,Foo" );
 
         assertTrue( value instanceof ListValue );
         assertEquals( "John", ( ( ListValue ) value ).get().get( 0 ).get() );
@@ -139,7 +139,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_ListKeyValue()
     {
-        Value<?> value = decoder.decode( "list-key", "Person:1,Person:2" );
+        Value<?> value = decoder.decode( "reference", "Person:1,Person:2" );
 
         assertTrue( value instanceof ListValue );
 

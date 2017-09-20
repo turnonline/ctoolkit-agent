@@ -1,11 +1,10 @@
 package org.ctoolkit.agent.service.impl.dataflow.migration;
 
 import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.ListValue;
 import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
 import org.ctoolkit.agent.resource.MigrationSetKindOpRule;
 import org.ctoolkit.agent.service.impl.datastore.EntityEncoder;
-
-import java.util.Arrays;
 
 /**
  * Base for rule strategies
@@ -17,8 +16,6 @@ public abstract class RuleStrategyBase
 {
     protected final EntityEncoder encoder;
 
-    private ChangeSetEntityProperty encodedProperty;
-
     public RuleStrategyBase( EntityEncoder encoder )
     {
         this.encoder = encoder;
@@ -27,15 +24,29 @@ public abstract class RuleStrategyBase
     @Override
     public boolean isTypeAllowed( MigrationSetKindOpRule rule, Entity entity )
     {
-        String property = rule.getProperty();
-        encodedProperty = encoder.encode( property, entity.getValue( property ) );
+        ChangeSetEntityProperty changeSetEntityProperty = encodedProperty( rule, entity );
 
-        return Arrays.asList( allowedTypes() ).contains( encodedProperty.getType() );
+        for ( AllowedType allowedType : allowedTypes() )
+        {
+            if ( allowedType.getType().equals( changeSetEntityProperty.getType() ) )
+            {
+                // if allowed type does not support list values and entity value is list, return false
+                if ( !allowedType.isSupportList() && entity.getValue( rule.getProperty() ) instanceof ListValue )
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
-    public ChangeSetEntityProperty encodedProperty()
+    public ChangeSetEntityProperty encodedProperty( MigrationSetKindOpRule rule, Entity entity )
     {
-        return encodedProperty;
+        String property = rule.getProperty();
+        return encoder.encode( property, entity.getValue( property ) );
     }
 }

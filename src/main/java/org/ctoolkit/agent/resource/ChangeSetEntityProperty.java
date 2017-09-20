@@ -55,13 +55,7 @@ public class ChangeSetEntityProperty
 
     public static final String PROPERTY_TYPE_NULL = "null";
 
-    public static final String PROPERTY_TYPE_KEY = "key";
-
-    public static final String PROPERTY_TYPE_LIST_KEY = "list-key";
-
-    public static final String PROPERTY_TYPE_LIST_LONG = "list-long";
-
-    public static final String PROPERTY_TYPE_LIST_STRING = "list-string";
+    public static final String PROPERTY_TYPE_REFERENCE = "reference";
 
     @XmlAttribute( name = "name" )
     private String name;

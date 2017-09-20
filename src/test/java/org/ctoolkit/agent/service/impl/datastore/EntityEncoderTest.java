@@ -135,7 +135,7 @@ public class EntityEncoderTest
         ChangeSetEntityProperty prop = encoder.encode( "prop", new KeyValue( Key.newBuilder( "c-toolkit", "Person", 1L ).build() ) );
 
         assertEquals( "prop", prop.getName() );
-        assertEquals( "key", prop.getType() );
+        assertEquals( "reference", prop.getType() );
         assertEquals( "Person:1", prop.getValue() );
     }
 
@@ -145,7 +145,7 @@ public class EntityEncoderTest
         ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new LongValue( 1 ), new LongValue( 2 ) ) );
 
         assertEquals( "prop", prop.getName() );
-        assertEquals( "list-long", prop.getType() );
+        assertEquals( "long", prop.getType() );
         assertEquals( "1,2", prop.getValue() );
     }
 
@@ -155,7 +155,7 @@ public class EntityEncoderTest
         ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new StringValue( "John" ), new StringValue( "Foo" ) ) );
 
         assertEquals( "prop", prop.getName() );
-        assertEquals( "list-string", prop.getType() );
+        assertEquals( "string", prop.getType() );
         assertEquals( "John,Foo", prop.getValue() );
     }
 
@@ -168,7 +168,7 @@ public class EntityEncoderTest
         ) );
 
         assertEquals( "prop", prop.getName() );
-        assertEquals( "list-key", prop.getType() );
+        assertEquals( "reference", prop.getType() );
         assertEquals( "Person:1,Person:2", prop.getValue() );
     }
 

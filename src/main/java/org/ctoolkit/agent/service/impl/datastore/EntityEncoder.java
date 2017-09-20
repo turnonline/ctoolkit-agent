@@ -44,7 +44,6 @@ import java.util.List;
  *
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
-// TODO: write unit test
 public class EntityEncoder
 {
     /**
@@ -211,7 +210,7 @@ public class EntityEncoder
      */
     private ChangeSetEntityProperty createKeyProperty( String name, Key object )
     {
-        return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_KEY, formatKey( object ) );
+        return new ChangeSetEntityProperty( name, ChangeSetEntityProperty.PROPERTY_TYPE_REFERENCE, formatKey( object ) );
     }
 
     /**
@@ -235,17 +234,17 @@ public class EntityEncoder
             if ( o instanceof StringValue )
             {
                 value.append( ( ( StringValue ) o ).get() );
-                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LIST_STRING;
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_STRING;
             }
             else if ( o instanceof LongValue )
             {
                 value.append( ( ( LongValue ) o ).get() );
-                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LIST_LONG;
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LONG;
             }
             else if ( o instanceof KeyValue )
             {
                 value.append( formatKey( ( ( KeyValue ) o ).get() ) );
-                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LIST_KEY;
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_REFERENCE;
             }
             else
             {

@@ -45,7 +45,14 @@ public class EntityDecoder
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_STRING.equals( type ) )
         {
-            return new StringValue( value );
+            return new ValueResolver()
+            {
+                @Override
+                Value<?> toValue( String value )
+                {
+                    return new StringValue( value );
+                }
+            }.resolve( value );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE.equals( type ) )
         {
@@ -53,7 +60,14 @@ public class EntityDecoder
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LONG.equals( type ) )
         {
-            return new LongValue( Long.valueOf( value ) );
+            return new ValueResolver()
+            {
+                @Override
+                Value<?> toValue( String value )
+                {
+                    return new LongValue( Long.valueOf( value ) );
+                }
+            }.resolve( value );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN.equals( type ) )
         {
@@ -67,42 +81,16 @@ public class EntityDecoder
         {
             return new BlobValue( Blob.copyFrom( Base64.decodeBase64( value ) ) );
         }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_KEY.equals( type ) )
+        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_REFERENCE.equals( type ) )
         {
-            return new KeyValue( parseKeyByIdOrName( value ) );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_LONG.equals( type ) )
-        {
-            List<LongValue> list = new ArrayList<>();
-
-            for ( String s : value.split( "," ) )
+            return new ValueResolver()
             {
-                list.add( LongValue.of( Long.valueOf( s ) ) );
-            }
-
-            return new ListValue( list );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_STRING.equals( type ) )
-        {
-            List<StringValue> list = new ArrayList<>();
-
-            for ( String s : value.split( "," ) )
-            {
-                list.add( StringValue.of( s ) );
-            }
-
-            return new ListValue( list );
-        }
-        else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LIST_KEY.equals( type ) )
-        {
-            List<KeyValue> list = new ArrayList<>();
-
-            for ( String fullKey : value.split( "," ) )
-            {
-                list.add( KeyValue.of( parseKeyByIdOrName( fullKey ) ) );
-            }
-
-            return new ListValue( list );
+                @Override
+                Value<?> toValue( String value )
+                {
+                    return new KeyValue( parseKeyByIdOrName( value ) );
+                }
+            }.resolve( value );
         }
         else
         {
@@ -151,5 +139,29 @@ public class EntityDecoder
         }
 
         return parentKey;
+    }
+
+    private static abstract class ValueResolver
+    {
+        Value<?> resolve( String value )
+        {
+            if ( value.contains( "," ) )
+            {
+                List<Value<?>> list = new ArrayList<>();
+
+                for ( String splitValue : value.split( "," ) )
+                {
+                    list.add( toValue( splitValue ) );
+                }
+
+                return new ListValue( list );
+            }
+            else
+            {
+                return toValue( value );
+            }
+        }
+
+        abstract Value<?> toValue( String value );
     }
 }

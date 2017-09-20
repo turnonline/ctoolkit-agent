@@ -1,9 +1,11 @@
 package org.ctoolkit.agent.service.impl.dataflow.migration;
 
 import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.ListValue;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import org.ctoolkit.agent.exception.RuleStrategyException;
+import org.ctoolkit.agent.resource.ChangeSetEntityProperty;
 import org.ctoolkit.agent.resource.MigrationSetKindOpRule;
 import org.ctoolkit.agent.resource.MigrationSetKindOpRuleSet;
 
@@ -124,11 +126,14 @@ public class RuleStrategyResolver
                 }
 
                 // throw exception if type is not allowed
+                ChangeSetEntityProperty changeSetEntityProperty = ruleStrategy.encodedProperty( rule, entity );
+                String listSuffix = entity.getValue( rule.getProperty() ) instanceof ListValue ? " (list)" : ""; // add list suffix for list values
+
                 throw new RuleStrategyException( MessageFormat.format( MESSAGE_TYPE_NOT_ALLOWED,
                         rule,
                         Arrays.toString( ruleStrategy.allowedTypes() ),
-                        ruleStrategy.encodedProperty().getName(),
-                        ruleStrategy.encodedProperty().getType() )
+                        changeSetEntityProperty.getName(),
+                        changeSetEntityProperty.getType() + listSuffix )
                 );
             }
 

@@ -33,10 +33,10 @@ public class RuleStrategyRegexp
     }
 
     @Override
-    public String[] allowedTypes()
+    public AllowedType[] allowedTypes()
     {
-        return new String[]{
-                ChangeSetEntityProperty.PROPERTY_TYPE_STRING
+        return new AllowedType[]{
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_STRING )
         };
     }
 }

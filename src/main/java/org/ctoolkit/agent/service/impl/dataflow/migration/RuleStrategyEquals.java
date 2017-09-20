@@ -30,7 +30,7 @@ public class RuleStrategyEquals
         switch ( changeSetEntityProperty.getType() )
         {
             case ChangeSetEntityProperty.PROPERTY_TYPE_STRING:
-            case ChangeSetEntityProperty.PROPERTY_TYPE_KEY:
+            case ChangeSetEntityProperty.PROPERTY_TYPE_REFERENCE:
             {
                 return rule.getValue().equals( changeSetEntityProperty.getValue() );
             }
@@ -56,15 +56,15 @@ public class RuleStrategyEquals
     }
 
     @Override
-    public String[] allowedTypes()
+    public AllowedType[] allowedTypes()
     {
-        return new String[]{
-                ChangeSetEntityProperty.PROPERTY_TYPE_STRING,
-                ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE,
-                ChangeSetEntityProperty.PROPERTY_TYPE_LONG,
-                ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN,
-                ChangeSetEntityProperty.PROPERTY_TYPE_NULL,
-                ChangeSetEntityProperty.PROPERTY_TYPE_KEY,
+        return new AllowedType[]{
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_STRING ),
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE ),
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_LONG ),
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN ),
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_NULL ),
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_REFERENCE )
         };
     }
 }

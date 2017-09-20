@@ -312,7 +312,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, key] but actual entity property 'prop' is type of date.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, reference] but actual entity property 'prop' is type of date.", e.getMessage() );
             throw e;
         }
     }
@@ -330,7 +330,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, key] but actual entity property 'prop' is type of blob.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, reference] but actual entity property 'prop' is type of blob.", e.getMessage() );
             throw e;
         }
     }
@@ -348,7 +348,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, key] but actual entity property 'prop' is type of list-key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, reference] but actual entity property 'prop' is type of reference (list).", e.getMessage() );
             throw e;
         }
     }
@@ -366,7 +366,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, key] but actual entity property 'prop' is type of list-string.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, reference] but actual entity property 'prop' is type of string (list).", e.getMessage() );
             throw e;
         }
     }
@@ -384,7 +384,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, key] but actual entity property 'prop' is type of list-long.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='eq', value='John'}. Allowed types are: [string, double, long, boolean, null, reference] but actual entity property 'prop' is type of long (list).", e.getMessage() );
             throw e;
         }
     }
@@ -528,7 +528,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference.", e.getMessage() );
             throw e;
         }
     }
@@ -599,7 +599,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference (list).", e.getMessage() );
             throw e;
         }
     }
@@ -618,7 +618,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-string.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of string (list).", e.getMessage() );
             throw e;
         }
     }
@@ -637,7 +637,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-long.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of long (list).", e.getMessage() );
             throw e;
         }
     }
@@ -781,7 +781,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference.", e.getMessage() );
             throw e;
         }
     }
@@ -852,7 +852,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference (list).", e.getMessage() );
             throw e;
         }
     }
@@ -871,7 +871,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-string.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of string (list).", e.getMessage() );
             throw e;
         }
     }
@@ -890,7 +890,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-long.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='lte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of long (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1034,7 +1034,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference.", e.getMessage() );
             throw e;
         }
     }
@@ -1105,7 +1105,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1124,7 +1124,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-string.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of string (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1143,7 +1143,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-long.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gt', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of long (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1287,7 +1287,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference.", e.getMessage() );
             throw e;
         }
     }
@@ -1358,7 +1358,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of reference (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1377,7 +1377,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-string.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of string (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1396,7 +1396,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of list-long.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='gte', value='John'}. Allowed types are: [double, long, date] but actual entity property 'prop' is type of long (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1517,7 +1517,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of reference.", e.getMessage() );
             throw e;
         }
     }
@@ -1574,7 +1574,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of list-key.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of reference (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1593,7 +1593,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of list-string.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of string (list).", e.getMessage() );
             throw e;
         }
     }
@@ -1612,7 +1612,7 @@ public class RuleStrategyResolverTest
         }
         catch ( RuleStrategyException e )
         {
-            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of list-long.", e.getMessage() );
+            assertEquals( "Type is not allowed for rule: MigrationSetKindOpRule{property='prop', operation='regexp', value='John'}. Allowed types are: [string] but actual entity property 'prop' is type of long (list).", e.getMessage() );
             throw e;
         }
     }

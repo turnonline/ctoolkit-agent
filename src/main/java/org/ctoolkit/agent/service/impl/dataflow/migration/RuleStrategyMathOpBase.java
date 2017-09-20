@@ -44,12 +44,12 @@ public abstract class RuleStrategyMathOpBase
     }
 
     @Override
-    public String[] allowedTypes()
+    public AllowedType[] allowedTypes()
     {
-        return new String[]{
-                ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE,
-                ChangeSetEntityProperty.PROPERTY_TYPE_LONG,
-                ChangeSetEntityProperty.PROPERTY_TYPE_DATE,
+        return new AllowedType[]{
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE ),
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_LONG ),
+                new AllowedType( ChangeSetEntityProperty.PROPERTY_TYPE_DATE )
         };
     }
 
