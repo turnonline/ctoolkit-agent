@@ -63,13 +63,13 @@ public class EntityEncoder
         {
             return createStringProperty( name, ( ( StringValue ) value ).get() );
         }
-        else if ( value instanceof DoubleValue )
-        {
-            return createDoubleProperty( name, ( ( DoubleValue ) value ).get() );
-        }
         else if ( value instanceof LongValue )
         {
             return createLongProperty( name, ( ( LongValue ) value ).get() );
+        }
+        else if ( value instanceof DoubleValue )
+        {
+            return createDoubleProperty( name, ( ( DoubleValue ) value ).get() );
         }
         else if ( value instanceof BooleanValue )
         {
@@ -241,6 +241,26 @@ public class EntityEncoder
                 value.append( ( ( LongValue ) o ).get() );
                 propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_LONG;
             }
+            else if ( o instanceof DoubleValue )
+            {
+                value.append( ( ( DoubleValue ) o ).get() );
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE;
+            }
+            else if ( o instanceof BooleanValue )
+            {
+                value.append( ( ( BooleanValue ) o ).get() );
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN;
+            }
+            else if ( o instanceof TimestampValue )
+            {
+                value.append( ( ( TimestampValue ) o ).get().toSqlTimestamp().getTime() );
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_DATE;
+            }
+            else if ( o instanceof BlobValue )
+            {
+                value.append( Base64.encodeBase64String( ( ( BlobValue ) o ).get().toByteArray() ) );
+                propertyType = ChangeSetEntityProperty.PROPERTY_TYPE_BLOB;
+            }
             else if ( o instanceof KeyValue )
             {
                 value.append( formatKey( ( ( KeyValue ) o ).get() ) );
@@ -252,6 +272,10 @@ public class EntityEncoder
             }
         }
 
-        return new ChangeSetEntityProperty( name, propertyType, value.toString() );
+        return new ChangeSetEntityProperty( name,
+                propertyType,
+                ChangeSetEntityProperty.PROPERTY_MULTIPLICITY_LIST,
+                value.toString()
+        );
     }
 }

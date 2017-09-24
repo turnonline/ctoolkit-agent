@@ -37,7 +37,7 @@ public class EntityDecoder
     @ProjectId
     private String projectId;
 
-    public Value<?> decode( String type, String value )
+    public Value<?> decode( String type, String multiplicity, String value )
     {
         if ( null == value )
         {
@@ -52,11 +52,18 @@ public class EntityDecoder
                 {
                     return new StringValue( value );
                 }
-            }.resolve( value );
+            }.resolve( value, multiplicity );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_DOUBLE.equals( type ) )
         {
-            return new DoubleValue( Double.valueOf( value ) );
+            return new ValueResolver()
+            {
+                @Override
+                Value<?> toValue( String value )
+                {
+                    return new DoubleValue( Double.valueOf( value ) );
+                }
+            }.resolve( value, multiplicity );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_LONG.equals( type ) )
         {
@@ -67,19 +74,40 @@ public class EntityDecoder
                 {
                     return new LongValue( Long.valueOf( value ) );
                 }
-            }.resolve( value );
+            }.resolve( value, multiplicity );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BOOLEAN.equals( type ) )
         {
-            return new BooleanValue( Boolean.valueOf( value ) );
+            return new ValueResolver()
+            {
+                @Override
+                Value<?> toValue( String value )
+                {
+                    return new BooleanValue( Boolean.valueOf( value ) );
+                }
+            }.resolve( value, multiplicity );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_DATE.equals( type ) )
         {
-            return new TimestampValue( Timestamp.of( new Date( Long.valueOf( value ) ) ) );
+            return new ValueResolver()
+            {
+                @Override
+                Value<?> toValue( String value )
+                {
+                    return new TimestampValue( Timestamp.of( new Date( Long.valueOf( value ) ) ) );
+                }
+            }.resolve( value, multiplicity );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_BLOB.equals( type ) )
         {
-            return new BlobValue( Blob.copyFrom( Base64.decodeBase64( value ) ) );
+            return new ValueResolver()
+            {
+                @Override
+                Value<?> toValue( String value )
+                {
+                    return new BlobValue( Blob.copyFrom( Base64.decodeBase64( value ) ) );
+                }
+            }.resolve( value, multiplicity );
         }
         else if ( ChangeSetEntityProperty.PROPERTY_TYPE_REFERENCE.equals( type ) )
         {
@@ -90,7 +118,7 @@ public class EntityDecoder
                 {
                     return new KeyValue( parseKeyByIdOrName( value ) );
                 }
-            }.resolve( value );
+            }.resolve( value, multiplicity );
         }
         else
         {
@@ -143,9 +171,9 @@ public class EntityDecoder
 
     private static abstract class ValueResolver
     {
-        Value<?> resolve( String value )
+        Value<?> resolve( String value, String multiplicity )
         {
-            if ( value.contains( "," ) )
+            if ( multiplicity != null && multiplicity.equals( ChangeSetEntityProperty.PROPERTY_MULTIPLICITY_LIST ) )
             {
                 List<Value<?>> list = new ArrayList<>();
 

@@ -45,7 +45,7 @@ public class Add__NewName_NewType_NewValue
     @Override
     public Value<?> value( MigrationSetKindOperation operation, Entity entity )
     {
-        return decoder.decode( operation.getNewType(), operation.getNewValue() );
+        return decoder.decode( operation.getNewType(), operation.getMultiplicity(), operation.getNewValue() );
     }
 
     @Override

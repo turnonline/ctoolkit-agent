@@ -59,7 +59,7 @@ public class Change__NewValue
         }
 
         ChangeSetEntityProperty changeSetEntityProperty = encoder.encode( property, entity.getValue( property ) );
-        return decoder.decode( changeSetEntityProperty.getType(), operation.getNewValue() );
+        return decoder.decode( changeSetEntityProperty.getType(), operation.getMultiplicity(), operation.getNewValue() );
     }
 
     @Override

@@ -140,6 +140,16 @@ public class EntityEncoderTest
     }
 
     @Test
+    public void testEncode_ListStringValue()
+    {
+        ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new StringValue( "John" ), new StringValue( "Foo" ) ) );
+
+        assertEquals( "prop", prop.getName() );
+        assertEquals( "string", prop.getType() );
+        assertEquals( "John,Foo", prop.getValue() );
+    }
+
+    @Test
     public void testEncode_ListLongValue()
     {
         ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new LongValue( 1 ), new LongValue( 2 ) ) );
@@ -150,13 +160,43 @@ public class EntityEncoderTest
     }
 
     @Test
-    public void testEncode_ListStringValue()
+    public void testEncode_ListDoubleValue()
     {
-        ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new StringValue( "John" ), new StringValue( "Foo" ) ) );
+        ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new DoubleValue( 1 ), new DoubleValue( 2 ) ) );
 
         assertEquals( "prop", prop.getName() );
-        assertEquals( "string", prop.getType() );
-        assertEquals( "John,Foo", prop.getValue() );
+        assertEquals( "double", prop.getType() );
+        assertEquals( "1.0,2.0", prop.getValue() );
+    }
+
+    @Test
+    public void testEncode_ListBooleanValue()
+    {
+        ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new BooleanValue( true ), new BooleanValue( false ) ) );
+
+        assertEquals( "prop", prop.getName() );
+        assertEquals( "boolean", prop.getType() );
+        assertEquals( "true,false", prop.getValue() );
+    }
+
+    @Test
+    public void testEncode_ListDateValue()
+    {
+        ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new TimestampValue( Timestamp.of( new Date( 1499287122907L ) ) ), new TimestampValue( Timestamp.of( new Date( 1499287122908L ) ) ) ) );
+
+        assertEquals( "prop", prop.getName() );
+        assertEquals( "date", prop.getType() );
+        assertEquals( "1499287122907,1499287122908", prop.getValue() );
+    }
+
+    @Test
+    public void testEncode_ListBlobValue()
+    {
+        ChangeSetEntityProperty prop = encoder.encode( "prop", new ListValue( new BlobValue( Blob.copyFrom( "1".getBytes() ) ), new BlobValue( Blob.copyFrom( "2".getBytes() ) )) );
+
+        assertEquals( "prop", prop.getName() );
+        assertEquals( "blob", prop.getType() );
+        assertEquals( "MQ==,Mg==", prop.getValue() );
     }
 
     @Test
@@ -177,12 +217,12 @@ public class EntityEncoderTest
     {
         try
         {
-            encoder.encode( "prop", new ListValue( new DoubleValue( 1D ), new DoubleValue( 2D ) ) );
+            encoder.encode( "prop", new ListValue( new LatLngValue( LatLng.of( 1D, 2D ) ) ) );
             fail( IllegalArgumentException.class.getName() + " expected!" );
         }
         catch ( IllegalArgumentException e )
         {
-            assertEquals( "Unknown list type: com.google.cloud.datastore.DoubleValue", e.getMessage() );
+            assertEquals( "Unknown list type: com.google.cloud.datastore.LatLngValue", e.getMessage() );
             throw e;
         }
     }

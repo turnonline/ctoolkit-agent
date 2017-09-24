@@ -15,6 +15,8 @@ import mockit.Deencapsulation;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -39,7 +41,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_UnsupportedValue()
     {
-        Value<?> value = decoder.decode( "bigDecimal", "1" );
+        Value<?> value = decoder.decode( "bigDecimal", null, "1" );
 
         assertTrue( value instanceof NullValue );
     }
@@ -47,7 +49,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_NullValue()
     {
-        Value<?> value = decoder.decode( null, null );
+        Value<?> value = decoder.decode( null, null, null );
 
         assertTrue( value instanceof NullValue );
     }
@@ -55,7 +57,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_StringValue()
     {
-        Value<?> value = decoder.decode( "string", "foo" );
+        Value<?> value = decoder.decode( "string", null, "foo" );
 
         assertTrue( value instanceof StringValue );
         assertEquals( "foo", value.get() );
@@ -64,7 +66,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_DoubleValue()
     {
-        Value<?> value = decoder.decode( "double", "1" );
+        Value<?> value = decoder.decode( "double", null, "1" );
 
         assertTrue( value instanceof DoubleValue );
         assertEquals( 1D, value.get() );
@@ -73,7 +75,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_LongValue()
     {
-        Value<?> value = decoder.decode( "long", "1" );
+        Value<?> value = decoder.decode( "long", null, "1" );
 
         assertTrue( value instanceof LongValue );
         assertEquals( 1L, value.get() );
@@ -82,7 +84,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_BooleanValue()
     {
-        Value<?> value = decoder.decode( "boolean", "true" );
+        Value<?> value = decoder.decode( "boolean", null, "true" );
 
         assertTrue( value instanceof BooleanValue );
         assertEquals( true, value.get() );
@@ -91,7 +93,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_DateValue()
     {
-        Value<?> value = decoder.decode( "date", "1499287122907" );
+        Value<?> value = decoder.decode( "date", null, "1499287122907" );
 
         assertTrue( value instanceof TimestampValue );
         assertEquals( 1499287122907L, ( ( TimestampValue ) value ).get().toSqlTimestamp().getTime() );
@@ -100,7 +102,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_BlobValue()
     {
-        Value<?> value = decoder.decode( "blob", "MQ==" ); // base64 encoded '1'
+        Value<?> value = decoder.decode( "blob", null, "MQ==" ); // base64 encoded '1'
 
         assertTrue( value instanceof BlobValue );
         assertEquals( "1", new String( ( ( BlobValue ) value ).get().toByteArray() ) );
@@ -109,7 +111,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_KeyValue()
     {
-        Value<?> value = decoder.decode( "reference", "Person:1" );
+        Value<?> value = decoder.decode( "reference", null, "Person:1" );
 
         assertTrue( value instanceof KeyValue );
         assertEquals( "Person", ( ( KeyValue ) value ).get().getKind() );
@@ -119,7 +121,7 @@ public class EntityDecoderTest
     @Test
     public void testDecode_ListLongValue()
     {
-        Value<?> value = decoder.decode( "long", "1,2" );
+        Value<?> value = decoder.decode( "long", "list", "1,2" );
 
         assertTrue( value instanceof ListValue );
         assertEquals( 1L, ( ( ListValue ) value ).get().get( 0 ).get() );
@@ -127,9 +129,19 @@ public class EntityDecoderTest
     }
 
     @Test
+    public void testDecode_ListDoubleValue()
+    {
+        Value<?> value = decoder.decode( "double", "list", "1,2" );
+
+        assertTrue( value instanceof ListValue );
+        assertEquals( 1D, ( ( ListValue ) value ).get().get( 0 ).get() );
+        assertEquals( 2D, ( ( ListValue ) value ).get().get( 1 ).get() );
+    }
+
+    @Test
     public void testDecode_ListStringValue()
     {
-        Value<?> value = decoder.decode( "string", "John,Foo" );
+        Value<?> value = decoder.decode( "string", "list", "John,Foo" );
 
         assertTrue( value instanceof ListValue );
         assertEquals( "John", ( ( ListValue ) value ).get().get( 0 ).get() );
@@ -137,9 +149,43 @@ public class EntityDecoderTest
     }
 
     @Test
+    public void testDecode_ListBooleanValue()
+    {
+        Value<?> value = decoder.decode( "boolean", "list", "true,false" );
+
+        assertTrue( value instanceof ListValue );
+        assertEquals( true, ( ( ListValue ) value ).get().get( 0 ).get() );
+        assertEquals( false, ( ( ListValue ) value ).get().get( 1 ).get() );
+    }
+
+    @Test
+    public void testDecode_ListDateValue()
+    {
+        Value<?> value = decoder.decode( "date", "list", "1499287122907,1499287122908" );
+
+        assertTrue( value instanceof ListValue );
+
+        List<? extends Value<?>> values = ( ( ListValue ) value ).get();
+        assertEquals( 1499287122907L, ( ( TimestampValue ) values.get( 0 ) ).get().toSqlTimestamp().getTime() );
+        assertEquals( 1499287122908L, ( ( TimestampValue ) values.get( 1 ) ).get().toSqlTimestamp().getTime() );
+    }
+
+    @Test
+    public void testDecode_ListBlobValue()
+    {
+        Value<?> value = decoder.decode( "blob", "list", "MQ==,Mg==" );
+
+        assertTrue( value instanceof ListValue );
+
+        List<? extends Value<?>> values = ( ( ListValue ) value ).get();
+        assertEquals( "1", new String( ( ( BlobValue ) values.get( 0 ) ).get().toByteArray() ) );
+        assertEquals( "2", new String( ( ( BlobValue ) values.get( 1 ) ).get().toByteArray() ) );
+    }
+
+    @Test
     public void testDecode_ListKeyValue()
     {
-        Value<?> value = decoder.decode( "reference", "Person:1,Person:2" );
+        Value<?> value = decoder.decode( "reference", "list", "Person:1,Person:2" );
 
         assertTrue( value instanceof ListValue );
 
