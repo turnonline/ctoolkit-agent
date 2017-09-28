@@ -1,5 +1,7 @@
 package org.ctoolkit.agent.model;
 
+import java.util.Date;
+
 /**
  * Audit
  *
@@ -7,6 +9,10 @@ package org.ctoolkit.agent.model;
  */
 public class Audit
 {
+    private Date createDate;
+
+    private String createdBy;
+
     private Action action;
 
     private Operation operation;
@@ -16,6 +22,26 @@ public class Audit
     private String userPhotoUrl;
 
     private String userDisplayName;
+
+    public Date getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( Date createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    public String getCreatedBy()
+    {
+        return createdBy;
+    }
+
+    public void setCreatedBy( String createdBy )
+    {
+        this.createdBy = createdBy;
+    }
 
     public Action getAction()
     {
@@ -71,7 +97,9 @@ public class Audit
     public String toString()
     {
         return "Audit{" +
-                "action=" + action +
+                "createDate=" + createDate +
+                ", createdBy='" + createdBy + '\'' +
+                ", action=" + action +
                 ", operation=" + operation +
                 ", ownerId='" + ownerId + '\'' +
                 ", userPhotoUrl='" + userPhotoUrl + '\'' +
