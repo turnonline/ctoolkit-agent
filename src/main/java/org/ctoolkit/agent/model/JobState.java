@@ -56,9 +56,19 @@ public enum JobState
     CANCELLED,
 
     /**
+     * Job is being cancelled
+     */
+    CANCELLING,
+
+    /**
      * The job has been updated.
      */
-    UPDATED;
+    UPDATED,
+
+    /**
+     * The job is pending
+     */
+    PENDING;
 
     public String toDataflowState()
     {

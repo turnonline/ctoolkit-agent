@@ -98,6 +98,12 @@ public class MigrationMetadata
     }
 
     @Override
+    public String metricsSelector()
+    {
+        return "Read entities from split queries-out0-ElementCount";
+    }
+
+    @Override
     public String toString()
     {
         return "MigrationMetadata{" +

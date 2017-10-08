@@ -43,6 +43,12 @@ public class ImportMetadata
     }
 
     @Override
+    public String metricsSelector()
+    {
+        return "Process item-out0-ElementCount";
+    }
+
+    @Override
     public String toString()
     {
         return "ImportMetadata{} " + super.toString();

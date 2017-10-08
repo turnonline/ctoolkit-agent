@@ -303,6 +303,8 @@ public abstract class BaseMetadata<ITEM extends BaseMetadataItem>
         return key;
     }
 
+    public abstract String metricsSelector();
+
     @Override
     public String toString()
     {

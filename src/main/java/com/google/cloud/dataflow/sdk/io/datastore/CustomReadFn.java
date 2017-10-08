@@ -24,7 +24,8 @@ import static com.google.datastore.v1.QueryResultBatch.MoreResultsType.NOT_FINIS
 public class CustomReadFn
         extends DoFn<Query, Iterable<Entity>>
 {
-    static final int QUERY_BATCH_LIMIT = 500;
+//    static final int QUERY_BATCH_LIMIT = 500; TODO: revert???
+    static final int QUERY_BATCH_LIMIT = 1;
 
     private transient Datastore datastore;
 

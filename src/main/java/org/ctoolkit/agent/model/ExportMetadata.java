@@ -42,6 +42,12 @@ public class ExportMetadata
     }
 
     @Override
+    public String metricsSelector()
+    {
+        throw new NullPointerException( "Metrics selector not implemented yet!" );
+    }
+
+    @Override
     public String toString()
     {
         return "ExportMetadata{" +

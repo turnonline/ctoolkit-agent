@@ -222,6 +222,10 @@ public class AgentModule
             options.setProject( projectId );
             options.setStagingLocation( stagingLocation );
 
+//            options.setNumWorkers( 64 );
+//            options.setAutoscalingAlgorithm( DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType.BASIC  );
+//            options.setWorkerMachineType( "n1-highcpu-64" );
+
             return options;
         }
         else

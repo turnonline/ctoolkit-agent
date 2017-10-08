@@ -132,7 +132,7 @@ public class MigrationDataflowDefinition
                     {
                         ChangeSetService changeSetService = injector().getInstance( ChangeSetService.class );
 
-                        for (Entity entityPb : c.element())
+                        for ( Entity entityPb : c.element() )
                         {
                             // load list of operations
                             com.google.datastore.v1.Key key = entityPb.getKey();
@@ -183,7 +183,7 @@ public class MigrationDataflowDefinition
 
     /**
      * // TODO: this is hack. Hopefully #fromPb method will be made visible in future versions
-     *
+     * <p>
      * Convert low level v1 Entity to com.google.cloud.datastore.Entity wrapper.
      * This is just workaround because com.google.cloud.datastore.Entity#fromPb method is package private
      *

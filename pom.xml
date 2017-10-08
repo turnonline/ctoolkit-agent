@@ -298,7 +298,7 @@
         <dependency>
             <groupId>com.google.cloud.dataflow</groupId>
             <artifactId>google-cloud-dataflow-java-sdk-all</artifactId>
-            <version>1.9.0</version>
+            <version>1.9.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.protobuf</groupId>

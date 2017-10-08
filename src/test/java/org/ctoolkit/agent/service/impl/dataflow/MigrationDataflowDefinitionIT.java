@@ -1,5 +1,8 @@
 package org.ctoolkit.agent.service.impl.dataflow;
 
+import com.google.api.services.dataflow.Dataflow;
+import com.google.api.services.dataflow.model.JobMetrics;
+import com.google.api.services.dataflow.model.MetricUpdate;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
 import com.google.common.base.Charsets;
@@ -39,6 +42,9 @@ public class MigrationDataflowDefinitionIT
 
     private MigrationDataflowDefinition dataflow;
 
+    @Inject
+    protected Dataflow dataflowApi;
+
     @Before
     public void setUp() throws Exception
     {
@@ -51,7 +57,7 @@ public class MigrationDataflowDefinitionIT
     @Test
     public void testMockEntities() throws Exception
     {
-        for ( int i = 1; i <= 1000; i++ )
+        for ( int i = 1; i <= 10000; i++ )
         {
             Key key = Key.newBuilder( projectId, "City", i ).build();
 
@@ -60,7 +66,7 @@ public class MigrationDataflowDefinitionIT
                     .build();
             pool.put( city );
 
-            if ( i % 100 == 0 )
+            if ( i % 500 == 0 )
             {
                 System.out.println( "Created: " + i + " items" );
             }
@@ -89,6 +95,27 @@ public class MigrationDataflowDefinitionIT
     public void run() throws Exception
     {
         dataflow.run();
+    }
+
+    @Test
+    public void getStatus() throws Exception
+    {
+        while ( true )
+        {
+            String jobId = "2017-10-06_13_05_44-16697639906962320284";
+
+            JobMetrics jobMetrics = dataflowApi.projects().jobs().getMetrics( projectId, jobId ).execute();
+            for ( MetricUpdate update : jobMetrics.getMetrics() )
+            {
+                if ( update.getName().getContext().get( "original_name" ).equals( "Read entities from split queries-out0-ElementCount" ))
+                {
+                    System.out.println( "Processed items: " + update.getScalar() );
+                    break;
+                }
+            }
+
+            Thread.sleep( 5000 );
+        }
     }
 
     private MigrationMetadata mockMigrationMetadata()

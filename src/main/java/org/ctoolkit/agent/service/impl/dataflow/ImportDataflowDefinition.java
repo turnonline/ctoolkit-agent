@@ -15,12 +15,13 @@ import org.ctoolkit.agent.model.MetadataItemKey;
 import org.ctoolkit.agent.model.ModelConverter;
 import org.ctoolkit.agent.resource.ChangeSet;
 import org.ctoolkit.agent.service.ChangeSetService;
+import org.ctoolkit.agent.service.CounterCallback;
 import org.ctoolkit.agent.service.impl.dataflow.shared.BaseDataflowDefinition;
 import org.ctoolkit.agent.service.impl.dataflow.shared.LoadItems;
 
 /**
  * Import dataflow definition
- * 
+ *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class ImportDataflowDefinition
@@ -33,7 +34,7 @@ public class ImportDataflowDefinition
 
     public ImportDataflowDefinition( Long metadataId )
     {
-        super(metadataId, ImportMetadata.class);
+        super( metadataId, ImportMetadata.class );
     }
 
     @Override
@@ -53,10 +54,10 @@ public class ImportDataflowDefinition
         // define pipelines
         pipeline
                 .apply( new LoadItems<>( key, clazz, datastore ) )
-                .apply( "Process item", ParDo.of( new DoFn<KeyValue, Void>()
+                .apply( "Process item", ParDo.of( new DoFn<KeyValue, String>()
                 {
                     @Override
-                    public void processElement( ProcessContext c ) throws Exception
+                    public void processElement( final ProcessContext c ) throws Exception
                     {
                         ChangeSetService changeSetService = injector().getInstance( ChangeSetService.class );
                         ImportMetadataItem item = changeSetService.get( new MetadataItemKey<>( ImportMetadataItem.class, c.element().get() ) );
@@ -64,7 +65,14 @@ public class ImportDataflowDefinition
                         try
                         {
                             // import change set
-                            changeSetService.importChangeSet( item.unmarshallData( ChangeSet.class) );
+                            changeSetService.importChangeSet( item.unmarshallData( ChangeSet.class ), new CounterCallback()
+                            {
+                                @Override
+                                public void onCallback()
+                                {
+                                    c.output( "x" ); // send dummy data, otherwise we will not be able to find out processed items
+                                }
+                            } );
 
                             // set state to COMPLETED_SUCCESSFULLY
                             item.setState( JobState.DONE );
@@ -79,6 +87,15 @@ public class ImportDataflowDefinition
 
                         // update status in item
                         item.saveFieldsOnly();
+
+                    }
+                } ) )
+                .apply( "Log item", ParDo.of( new DoFn<String, Void>()
+                {
+                    @Override
+                    public void processElement( ProcessContext c ) throws Exception
+                    {
+                        log().info( "Processed item: " + c.element() );
                     }
                 } ) );
 

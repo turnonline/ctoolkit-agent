@@ -159,8 +159,9 @@ public interface ChangeSetService
      * Process import data change set
      *
      * @param changeSet {@link ChangeSet} to process
+     * @param callback callback to notify caller about changes
      */
-    void importChangeSet( ChangeSet changeSet );
+    void importChangeSet( ChangeSet changeSet, CounterCallback callback );
 
     /**
      * Process change data change set

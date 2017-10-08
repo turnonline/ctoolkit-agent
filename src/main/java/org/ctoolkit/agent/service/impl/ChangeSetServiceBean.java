@@ -20,6 +20,8 @@ package org.ctoolkit.agent.service.impl;
 
 import com.google.api.services.dataflow.Dataflow;
 import com.google.api.services.dataflow.model.Job;
+import com.google.api.services.dataflow.model.JobMetrics;
+import com.google.api.services.dataflow.model.MetricUpdate;
 import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.Entity;
@@ -67,6 +69,7 @@ import org.ctoolkit.agent.resource.ImportJob;
 import org.ctoolkit.agent.resource.MigrationJob;
 import org.ctoolkit.agent.resource.MigrationSetKindOperation;
 import org.ctoolkit.agent.service.ChangeSetService;
+import org.ctoolkit.agent.service.CounterCallback;
 import org.ctoolkit.agent.service.RestContext;
 import org.ctoolkit.agent.service.impl.dataflow.ImportDataflowDefinition;
 import org.ctoolkit.agent.service.impl.dataflow.MigrationDataflowDefinition;
@@ -83,6 +86,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -353,25 +357,47 @@ public class ChangeSetServiceBean
     @SuppressWarnings( "unchecked" )
     public <JI extends JobInfo, M extends BaseMetadata> JI getJobInfo( M metadata )
     {
+        String jobId = metadata.getJobId();
+
         JI jobInfo = ( JI ) jobInfoProviders.get( metadata.getClass() ).get();
         jobInfo.setId( metadata.getId() );
-        jobInfo.setJobId( metadata.getJobId() );
+        jobInfo.setJobId( jobId );
         jobInfo.setJobUrl( metadata.getJobUrl() );
-        jobInfo.setProcessedItems( metadata.getProcessedOkItems() );
-        jobInfo.setProcessedErrorItems( metadata.getProcessedErrorItems() );
-        jobInfo.setTotalItems( metadata.getItemsCount() );
+        jobInfo.setProcessedItems( 0 );
 
-        if ( metadata.getJobId() != null )
+        if ( jobId != null )
         {
+            // get job status
             try
             {
-                Job job = dataflow.projects().jobs().get( projectId, metadata.getJobId() ).execute();
+                Job job = dataflow.projects().jobs().get( projectId, jobId ).execute();
                 jobInfo.setState( JobState.valueOf( job.getCurrentState().replace( "JOB_STATE_", "" ) ) );
             }
             catch ( Exception e )
             {
                 log.error( "Error occur during getting job info", e );
                 jobInfo.setState( JobState.UNKNOWN );
+            }
+
+            // get processed items
+            try
+            {
+                JobMetrics jobMetrics = dataflow.projects().jobs().getMetrics( projectId, jobId ).execute();
+                log.warn( jobMetrics.toString() );
+
+                for ( MetricUpdate update : jobMetrics.getMetrics() )
+                {
+
+                    if ( update.getName().getContext().get( "original_name" ).equals( metadata.metricsSelector() ) )
+                    {
+                        jobInfo.setProcessedItems( ( ( BigDecimal ) update.getScalar() ).intValue() );
+                        break;
+                    }
+                }
+            }
+            catch ( Exception e )
+            {
+                log.error( "Error occur during getting job metrics", e );
             }
         }
 
@@ -407,7 +433,7 @@ public class ChangeSetServiceBean
     // ------------------------------------------
 
     @Override
-    public void importChangeSet( ChangeSet changeSet )
+    public void importChangeSet( ChangeSet changeSet, CounterCallback callback )
     {
         pool.flush();
 
@@ -437,6 +463,7 @@ public class ChangeSetServiceBean
                                 while ( results.hasNext() )
                                 {
                                     pool.delete( results.next() );
+                                    callback.onCallback(); // notify callback
                                     items++;
                                 }
 
@@ -466,6 +493,7 @@ public class ChangeSetServiceBean
             {
                 Entity entity = mapper.map( csEntity, Entity.Builder.class ).build();
                 pool.put( entity );
+                callback.onCallback(); // notify callback
             }
         }
 
