@@ -19,9 +19,9 @@
 package org.ctoolkit.agent.config;
 
 import com.google.api.services.dataflow.Dataflow;
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
+import com.google.cloud.dataflow.sdk.options.DataflowPipelineWorkerPoolOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.runners.DataflowPipelineRunner;
@@ -94,6 +94,13 @@ public class AgentModule
         extends AbstractModule
 {
     public static final String CONFIG_JSON_CREDENTIALS = "ctoolkit.agent.jsonCredentials";
+
+    public static final String DATAFLOW_CONFIGURATION = "dataflow.configuration";
+    public static final String DATAFLOW_CONFIG__NUM_WORKERS = "dataflow.config.numWorkers";
+    public static final String DATAFLOW_CONFIG__MAX_NUM_WORKERS = "dataflow.config.maxNumWorkers";
+    public static final String DATAFLOW_CONFIG__AUTOSCALING_ALGORITHM = "dataflow.config.autoscalingAlgorithm";
+    public static final String DATAFLOW_CONFIG__WORKER_MACHINE_TYPE = "dataflow.config.workerMachineType";
+    public static final String DATAFLOW_CONFIG__ZONE = "dataflow.config.zone";
 
     @Override
     protected void configure()
@@ -212,19 +219,69 @@ public class AgentModule
     }
 
     @Provides
-    public PipelineOptions providePipelineOptions( @ProjectId String projectId, @StagingLocation String stagingLocation )
+    public PipelineOptions providePipelineOptions( @ProjectId final String projectId,
+                                                   @StagingLocation String stagingLocation,
+                                                   DataflowOptionsConfigurator optionsConfigurator )
     {
-        if ( SystemProperty.environment.value() == SystemProperty.Environment.Value.Production || true)
+        if ( System.getProperty( DATAFLOW_CONFIGURATION ) == null || "DEPLOYMENT".equals( System.getProperty( DATAFLOW_CONFIGURATION ) ) )
         {
             // The app is running on App Engine...
-            DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );
+            final DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );
             options.setRunner( DataflowPipelineRunner.class );
             options.setProject( projectId );
             options.setStagingLocation( stagingLocation );
 
-//            options.setNumWorkers( 64 );
-//            options.setAutoscalingAlgorithm( DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType.BASIC  );
-//            options.setWorkerMachineType( "n1-highcpu-64" );
+            // -- configurable options
+
+            // number of workers
+            optionsConfigurator.configure( DATAFLOW_CONFIG__NUM_WORKERS, new DataflowOptionsConfigurator.Configurator()
+            {
+                @Override
+                public void configure( String property )
+                {
+                    options.setNumWorkers( Integer.valueOf( property ) );
+                }
+            } );
+
+            // max number of workers (related to auto-scaling algorithm option when set to THROUGHPUT_BASED)
+            optionsConfigurator.configure( DATAFLOW_CONFIG__MAX_NUM_WORKERS, new DataflowOptionsConfigurator.Configurator()
+            {
+                @Override
+                public void configure( String property )
+                {
+                    options.setMaxNumWorkers( Integer.valueOf( property ) );
+                }
+            } );
+
+            // auto-scaling algorithm - NONE (to disable auto-scaling), THROUGHPUT_BASED (to enable auto-scaling)
+            optionsConfigurator.configure( DATAFLOW_CONFIG__AUTOSCALING_ALGORITHM, new DataflowOptionsConfigurator.Configurator()
+            {
+                @Override
+                public void configure( String property )
+                {
+                    options.setAutoscalingAlgorithm( DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType.valueOf( property ) );
+                }
+            } );
+
+            // machine type - https://cloud.google.com/compute/docs/machine-types
+            optionsConfigurator.configure( DATAFLOW_CONFIG__WORKER_MACHINE_TYPE, new DataflowOptionsConfigurator.Configurator()
+            {
+                @Override
+                public void configure( String property )
+                {
+                    options.setWorkerMachineType( property );
+                }
+            } );
+
+            // zone - see https://developers.google.com/compute/docs/zones
+            optionsConfigurator.configure( DATAFLOW_CONFIG__ZONE, new DataflowOptionsConfigurator.Configurator()
+            {
+                @Override
+                public void configure( String property )
+                {
+                    options.setZone( property );
+                }
+            } );
 
             return options;
         }
