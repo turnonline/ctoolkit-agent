@@ -20,6 +20,8 @@ package org.ctoolkit.agent.model;
 
 import org.ctoolkit.agent.annotation.EntityMarker;
 
+import java.util.Date;
+
 /**
  * @author <a href="mailto:jozef.pohorelec@ctoolkit.org">Jozef Pohorelec</a>
  */
@@ -108,5 +110,8 @@ public class MetadataAudit
         this.ownerId = entity.getString( "ownerId" );
         this.userPhotoUrl = entity.getString( "userPhotoUrl" );
         this.userDisplayName = entity.getString( "userDisplayName" );
+
+        this.setCreateDate( new Date( entity.getTimestamp( "createDate" ).toSqlTimestamp().getTime() ) );
+        this.setCreatedBy( entity.getString( "createdBy" ) );
     }
 }
