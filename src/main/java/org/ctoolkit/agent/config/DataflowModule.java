@@ -56,9 +56,7 @@ public class DataflowModule
     @BucketName
     public String provideBucketName()
     {
-        return "ctoolkit-agent-morty.appspot.com";
-        // TODO: resolve
-//        return ServiceOptions.getDefaultProjectId(); // same as default project id
+        return ServiceOptions.getDefaultProjectId() + ".appspot.com";
     }
 
     @Provides
