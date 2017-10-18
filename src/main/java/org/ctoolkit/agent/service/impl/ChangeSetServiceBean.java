@@ -387,8 +387,9 @@ public class ChangeSetServiceBean
 
                 for ( MetricUpdate update : jobMetrics.getMetrics() )
                 {
+                    String originalName = update.getName().getContext().get( "original_name" );
 
-                    if ( update.getName().getContext().get( "original_name" ).equals( metadata.metricsSelector() ) )
+                    if ( metadata.metricsSelector().equals( originalName ) )
                     {
                         jobInfo.setProcessedItems( ( ( BigDecimal ) update.getScalar() ).intValue() );
                         break;

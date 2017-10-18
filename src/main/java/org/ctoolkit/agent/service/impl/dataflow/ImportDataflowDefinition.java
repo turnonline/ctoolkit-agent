@@ -1,12 +1,12 @@
 package org.ctoolkit.agent.service.impl.dataflow;
 
-import com.google.cloud.dataflow.sdk.Pipeline;
-import com.google.cloud.dataflow.sdk.PipelineResult;
-import com.google.cloud.dataflow.sdk.runners.DataflowPipelineJob;
-import com.google.cloud.dataflow.sdk.transforms.DoFn;
-import com.google.cloud.dataflow.sdk.transforms.ParDo;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyValue;
+import org.apache.beam.runners.dataflow.DataflowPipelineJob;
+import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.PipelineResult;
+import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.ParDo;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.model.ImportMetadata;
 import org.ctoolkit.agent.model.ImportMetadataItem;
@@ -56,7 +56,7 @@ public class ImportDataflowDefinition
                 .apply( new LoadItems<>( key, clazz, datastore ) )
                 .apply( "Process item", ParDo.of( new DoFn<KeyValue, String>()
                 {
-                    @Override
+                    @ProcessElement
                     public void processElement( final ProcessContext c ) throws Exception
                     {
                         ChangeSetService changeSetService = injector().getInstance( ChangeSetService.class );
@@ -92,7 +92,7 @@ public class ImportDataflowDefinition
                 } ) )
                 .apply( "Log item", ParDo.of( new DoFn<String, Void>()
                 {
-                    @Override
+                    @ProcessElement
                     public void processElement( ProcessContext c ) throws Exception
                     {
                         log().info( "Processed item: " + c.element() );

@@ -1,13 +1,14 @@
 package org.ctoolkit.agent.service.impl.dataflow.shared;
 
-import com.google.cloud.dataflow.sdk.transforms.Create;
-import com.google.cloud.dataflow.sdk.transforms.PTransform;
-import com.google.cloud.dataflow.sdk.values.PBegin;
-import com.google.cloud.dataflow.sdk.values.PCollection;
+
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyValue;
+import org.apache.beam.sdk.transforms.Create;
+import org.apache.beam.sdk.transforms.PTransform;
+import org.apache.beam.sdk.values.PBegin;
+import org.apache.beam.sdk.values.PCollection;
 import org.ctoolkit.agent.model.BaseMetadata;
 import org.ctoolkit.agent.model.ModelConverter;
 
@@ -33,7 +34,7 @@ public class LoadItems<M extends BaseMetadata<?>>
     }
 
     @Override
-    public PCollection<KeyValue> apply( PBegin input )
+    public PCollection<KeyValue> expand( PBegin input )
     {
         Entity entity = datastore.get( key );
         M metadata = ModelConverter.convert( clazz, entity );

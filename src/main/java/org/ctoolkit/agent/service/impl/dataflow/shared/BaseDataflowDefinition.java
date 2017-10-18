@@ -1,10 +1,10 @@
 package org.ctoolkit.agent.service.impl.dataflow.shared;
 
-import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.Key;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.apache.beam.sdk.options.PipelineOptions;
 import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.config.DataflowModule;
 import org.ctoolkit.agent.model.BaseMetadata;

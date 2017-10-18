@@ -1,16 +1,5 @@
 package org.ctoolkit.agent.service.impl.dataflow;
 
-import com.google.cloud.dataflow.sdk.Pipeline;
-import com.google.cloud.dataflow.sdk.PipelineResult;
-import com.google.cloud.dataflow.sdk.io.datastore.CustomReadFn;
-import com.google.cloud.dataflow.sdk.io.datastore.CustomSplitQuery;
-import com.google.cloud.dataflow.sdk.runners.DataflowPipelineJob;
-import com.google.cloud.dataflow.sdk.transforms.DoFn;
-import com.google.cloud.dataflow.sdk.transforms.Flatten;
-import com.google.cloud.dataflow.sdk.transforms.GroupByKey;
-import com.google.cloud.dataflow.sdk.transforms.ParDo;
-import com.google.cloud.dataflow.sdk.transforms.Values;
-import com.google.cloud.dataflow.sdk.values.KV;
 import com.google.cloud.datastore.Blob;
 import com.google.cloud.datastore.BlobValue;
 import com.google.cloud.datastore.Key;
@@ -19,6 +8,17 @@ import com.google.cloud.datastore.ListValue;
 import com.google.common.base.Charsets;
 import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.Query;
+import org.apache.beam.runners.dataflow.DataflowPipelineJob;
+import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.PipelineResult;
+import org.apache.beam.sdk.io.gcp.datastore.CustomReadFn;
+import org.apache.beam.sdk.io.gcp.datastore.CustomSplitQuery;
+import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.Flatten;
+import org.apache.beam.sdk.transforms.GroupByKey;
+import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.Values;
+import org.apache.beam.sdk.values.KV;
 import org.ctoolkit.agent.annotation.EntityMarker;
 import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.model.MetadataItemKey;
@@ -74,7 +74,7 @@ public class MigrationDataflowDefinition
                 .apply( "Load migration items", new LoadItems<>( key, clazz, datastore ) )
                 .apply( "Prepare operations", ParDo.of( new DoFn<KeyValue, KV<String, MigrationSetKindOperation>>()
                 {
-                    @Override
+                    @ProcessElement
                     public void processElement( ProcessContext c ) throws Exception
                     {
                         ChangeSetService changeSetService = injector().getInstance( ChangeSetService.class );
@@ -92,7 +92,7 @@ public class MigrationDataflowDefinition
                 .apply( "Group operations", GroupByKey.<String, MigrationSetKindOperation>create() )
                 .apply( "Prepare kind queries", ParDo.of( new DoFn<KV<String, Iterable<MigrationSetKindOperation>>, Query>()
                 {
-                    @Override
+                    @ProcessElement
                     public void processElement( ProcessContext c ) throws Exception
                     {
                         String kind = c.element().getKey();
@@ -127,7 +127,7 @@ public class MigrationDataflowDefinition
                 .apply( "Read entities from split queries", ParDo.of( new CustomReadFn( projectId ) ) )
                 .apply( "Migrate entity", ParDo.of( new DoFn<Iterable<Entity>, Void>()
                 {
-                    @Override
+                    @ProcessElement
                     public void processElement( ProcessContext c ) throws Exception
                     {
                         ChangeSetService changeSetService = injector().getInstance( ChangeSetService.class );

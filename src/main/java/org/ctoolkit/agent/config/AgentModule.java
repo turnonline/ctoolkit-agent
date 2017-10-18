@@ -20,11 +20,6 @@ package org.ctoolkit.agent.config;
 
 import com.google.api.services.dataflow.Dataflow;
 import com.google.cloud.ServiceOptions;
-import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
-import com.google.cloud.dataflow.sdk.options.DataflowPipelineWorkerPoolOptions;
-import com.google.cloud.dataflow.sdk.options.PipelineOptions;
-import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
-import com.google.cloud.dataflow.sdk.runners.DataflowPipelineRunner;
 import com.google.cloud.datastore.Entity;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -40,6 +35,11 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.TypeFactory;
 import net.oauth.jsontoken.Checker;
+import org.apache.beam.runners.dataflow.DataflowRunner;
+import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions;
+import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions;
+import org.apache.beam.sdk.options.PipelineOptions;
+import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.ctoolkit.agent.annotation.BucketName;
 import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.annotation.StagingLocation;
@@ -225,7 +225,7 @@ public class AgentModule
         {
             // The app is running on App Engine...
             final DataflowPipelineOptions options = PipelineOptionsFactory.create().as( DataflowPipelineOptions.class );
-            options.setRunner( DataflowPipelineRunner.class );
+            options.setRunner( DataflowRunner.class );
             options.setProject( projectId );
             options.setStagingLocation( stagingLocation );
 

@@ -1,6 +1,5 @@
-package com.google.cloud.dataflow.sdk.io.datastore;
+package org.apache.beam.sdk.io.gcp.datastore;
 
-import com.google.cloud.dataflow.sdk.transforms.DoFn;
 import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.EntityResult;
 import com.google.datastore.v1.Query;
@@ -9,6 +8,7 @@ import com.google.datastore.v1.RunQueryRequest;
 import com.google.datastore.v1.RunQueryResponse;
 import com.google.datastore.v1.client.Datastore;
 import com.google.protobuf.Int32Value;
+import org.apache.beam.sdk.transforms.DoFn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +17,14 @@ import static com.google.common.base.Verify.verify;
 import static com.google.datastore.v1.QueryResultBatch.MoreResultsType.NOT_FINISHED;
 
 /**
- * Custom read function - Inspired by {@link com.google.cloud.dataflow.sdk.io.datastore.DatastoreV1.Read.ReadFn}
+ * Custom read function - Inspired by {@link org.apache.beam.sdk.io.gcp.datastore.DatastoreV1.Read.ReadFn}
  *
  * @author <a href="mailto:pohorelec@comvai.com">Jozef Pohorelec</a>
  */
 public class CustomReadFn
         extends DoFn<Query, Iterable<Entity>>
 {
-//    static final int QUERY_BATCH_LIMIT = 500; TODO: revert???
+    //    static final int QUERY_BATCH_LIMIT = 500; TODO: revert???
     static final int QUERY_BATCH_LIMIT = 1;
 
     private transient Datastore datastore;
@@ -36,7 +36,8 @@ public class CustomReadFn
         this.projectId = projectId;
     }
 
-    public void startBundle( Context c ) throws Exception
+    @StartBundle
+    public void startBundle( DoFn<Query, Iterable<Entity>>.StartBundleContext c ) throws Exception
     {
         datastore = new DatastoreV1.V1DatastoreFactory().getDatastore( c.getPipelineOptions(), projectId );
     }
@@ -44,7 +45,7 @@ public class CustomReadFn
     /**
      * Read and output list of entities for the given query.
      */
-    @Override
+    @ProcessElement
     public void processElement( ProcessContext context ) throws Exception
     {
         Query query = context.element();
