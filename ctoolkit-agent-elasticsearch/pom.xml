@@ -9,9 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ctoolkit-agent-sql</artifactId>
-    <name>CtoolkiT Agent web [sql]</name>
-    <description>Cloud Toolkit Migration Agent web [sql]</description>
+    <artifactId>ctoolkit-agent-elasticsearch</artifactId>
+    <name>CtoolkiT Agent web [elasticsearch]</name>
+    <description>Cloud Toolkit Migration Agent web [elasticsearch]</description>
 
     <dependencies>
         <dependency>
