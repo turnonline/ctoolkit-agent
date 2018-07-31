@@ -31,6 +31,7 @@
     <modules>
         <module>ctoolkit-agent-core</module>
         <module>ctoolkit-agent-sql</module>
+        <module>ctoolkit-agent-elasticsearch</module>
     </modules>
 
     <groupId>org.ctoolkit.agent</groupId>
