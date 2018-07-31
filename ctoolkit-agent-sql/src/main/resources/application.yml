@@ -1,0 +1,11 @@
+micronaut:
+  application:
+    name: ctoolkit-agent-sql
+  server:
+    port: 8080
+
+endpoints:
+  routes:
+    enabled: true
+  beans:
+    enabled: true
