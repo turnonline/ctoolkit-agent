@@ -1,4 +1,4 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.model.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +14,7 @@ import java.util.Objects;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
 public class MigrationSetPropertyRuleSet   {
   
-  private String operation = null;
+  private String operation = "and";
   private List<MigrationSetPropertyRule> rules = new ArrayList<MigrationSetPropertyRule>();
 
   /**

@@ -92,6 +92,22 @@
             </dependency>
 
             <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-sdks-java-core</artifactId>
+                <version>${apache-beam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-runners-direct-java</artifactId>
+                <version>${apache-beam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-runners-flink_2.11</artifactId>
+                <version>${apache-beam.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
@@ -112,6 +128,7 @@
         <jdk.version>1.8</jdk.version>
 
         <micronaut.version>1.0.0.M3</micronaut.version>
+        <apache-beam.version>2.5.0</apache-beam.version>
         <swagger-annotations.version>1.5.20</swagger-annotations.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>

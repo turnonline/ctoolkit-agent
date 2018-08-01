@@ -1,4 +1,4 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.model.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
@@ -179,7 +179,7 @@ public class ImportSet   {
   }
 
   
-  @ApiModelProperty(value = "Parent primary id. If you do not know in advance parent id (for instance in case of migration), you can specify lookup by witch parent property will be loaded as follows:  parentId=\"[lookup=parentPropertyName]1\"")
+  @ApiModelProperty(value = "Parent primary id. If you do not know in advance parent id (for instance in case of migration), you can specify lookup by witch parent property will be loaded as follows:  parentId=\"[lookup:parentPropertyName]1\"")
   @JsonProperty("parentId")
   public String getParentId() {
     return parentId;
@@ -197,7 +197,7 @@ public class ImportSet   {
   }
 
   
-  @ApiModelProperty(value = "Value of sync id - used to identify record when updating existing record. By default sync property will be created with name '__syncId'. If you want to change name to something else write syncId as follows:  syncId=\"[mySyncId]1\"")
+  @ApiModelProperty(value = "Value of sync id - used to identify record when updating existing record. By default sync property will be created with name '__syncId'. If you want to change name to something else write syncId as follows:  syncId=\"[name:mySyncId]1\"")
   @JsonProperty("syncId")
   public String getSyncId() {
     return syncId;

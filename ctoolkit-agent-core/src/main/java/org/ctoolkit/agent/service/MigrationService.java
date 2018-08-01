@@ -1,9 +1,9 @@
 package org.ctoolkit.agent.service;
 
-import org.ctoolkit.agent.model.ImportBatch;
-import org.ctoolkit.agent.model.ImportJob;
-import org.ctoolkit.agent.model.MigrationBatch;
-import org.ctoolkit.agent.model.MigrationJob;
+import org.ctoolkit.agent.model.api.ImportBatch;
+import org.ctoolkit.agent.model.api.ImportJob;
+import org.ctoolkit.agent.model.api.MigrationBatch;
+import org.ctoolkit.agent.model.api.MigrationJob;
 
 /**
  * Public migration service API
