@@ -1,4 +1,4 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.model.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,15 +9,16 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
-public class MigrationJob   {
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-01T10:56:39.411Z")
+public class ImportJob   {
   
   private String id = null;
+  private String state = null;
 
   /**
    * Job id
    **/
-  public MigrationJob id(String id) {
+  public ImportJob id(String id) {
     this.id = id;
     return this;
   }
@@ -32,6 +33,24 @@ public class MigrationJob   {
     this.id = id;
   }
 
+  /**
+   * Job state
+   **/
+  public ImportJob state(String state) {
+    this.state = state;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Job state")
+  @JsonProperty("state")
+  public String getState() {
+    return state;
+  }
+  public void setState(String state) {
+    this.state = state;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -41,21 +60,23 @@ public class MigrationJob   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MigrationJob migrationJob = (MigrationJob) o;
-    return Objects.equals(id, migrationJob.id);
+    ImportJob importJob = (ImportJob) o;
+    return Objects.equals(id, importJob.id) &&
+        Objects.equals(state, importJob.state);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(id, state);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MigrationJob {\n");
+    sb.append("class ImportJob {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();
   }

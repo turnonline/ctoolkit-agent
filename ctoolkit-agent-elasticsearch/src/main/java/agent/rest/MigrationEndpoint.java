@@ -3,10 +3,10 @@ package agent.rest;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
 import io.reactivex.Single;
-import org.ctoolkit.agent.model.ImportBatch;
-import org.ctoolkit.agent.model.ImportJob;
-import org.ctoolkit.agent.model.MigrationBatch;
-import org.ctoolkit.agent.model.MigrationJob;
+import org.ctoolkit.agent.model.api.ImportBatch;
+import org.ctoolkit.agent.model.api.ImportJob;
+import org.ctoolkit.agent.model.api.MigrationBatch;
+import org.ctoolkit.agent.model.api.MigrationJob;
 import org.ctoolkit.agent.service.MigrationService;
 
 import javax.inject.Inject;

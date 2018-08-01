@@ -1,4 +1,4 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.model.api;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
