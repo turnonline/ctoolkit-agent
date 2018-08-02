@@ -25,5 +25,10 @@ public interface MigrationPipelineOptions
     boolean getTargetAgentUrl();
     void setTargetAgentUrl( boolean targetAgentUrl );
 
+    @Validation.Required
+    @Description( "Number of rows per split. How many rows should be contained in one query split." )
+    @Default.Integer(100)
+    int getRowsPerSplit();
+    void setRowsPerSplit( int rowsPerSplit );
 
 }

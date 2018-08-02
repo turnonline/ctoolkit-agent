@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface WorkerService
 {
-    List<String> splitQueries( MigrationSet migrationSet );
+    List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit );
 
     List<EntityMetaData> retrieveEntityMetaDataList( String sql );
 
