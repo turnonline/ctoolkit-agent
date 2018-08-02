@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>org.ctoolkit.agent</groupId>
-            <artifactId>ctoolkit-agent-web</artifactId>
+            <artifactId>ctoolkit-agent-core</artifactId>
         </dependency>
 
         <dependency>
