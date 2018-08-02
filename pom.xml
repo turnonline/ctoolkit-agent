@@ -124,14 +124,32 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <properties>
         <jdk.version>1.8</jdk.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
         <micronaut.version>1.0.0.M3</micronaut.version>
         <apache-beam.version>2.5.0</apache-beam.version>
         <swagger-annotations.version>1.5.20</swagger-annotations.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
+
+        <exec.mainClass>org.ctoolkit.agent.Application</exec.mainClass>
     </properties>
 
 

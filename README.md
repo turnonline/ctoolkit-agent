@@ -51,3 +51,6 @@ You can also visit following link to see if service was deployed successfully:
 > Do not forget to kill agent instances when you finish your work with agent, otherwise you will be charged by standard billing. 
 (agent is running on flexible environment which does not serve with free quota as opposite to standard environment). You can stop
 instances here: https://console.cloud.google.com/appengine/instances?project=<project-name>
+
+## MYSQL setup 
+-DjdbcUrl=jdbc:mysql://localhost:3306 -DjdbcUsername=root -DjdbcPassword=admin123 -DjdbcDriver=com.mysql.cj.jdbc.Driver
