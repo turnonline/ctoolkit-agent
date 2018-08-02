@@ -20,7 +20,7 @@ public class SplitQueriesDoFn
     {
         MigrationPipelineOptions pipelineOptions = c.getPipelineOptions().as( MigrationPipelineOptions.class );
         WorkerServiceBean service = new WorkerServiceBean( pipelineOptions );
-        List<String> queries = service.splitQueries( c.element() );
+        List<String> queries = service.splitQueries( c.element(), pipelineOptions.getRowsPerSplit() );
 
         for (String query : queries)
         {

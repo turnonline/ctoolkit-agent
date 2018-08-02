@@ -2,8 +2,17 @@ package org.ctoolkit.agent.service;
 
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.core.util.CollectionUtils;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectVisitorAdapter;
+import net.sf.jsqlparser.util.SelectUtils;
 import org.ctoolkit.agent.beam.MigrationPipelineOptions;
+import org.ctoolkit.agent.model.CountColumn;
 import org.ctoolkit.agent.model.EntityMetaData;
+import org.ctoolkit.agent.model.VendorIndependentLimit;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,13 +20,13 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,38 +56,89 @@ public class WorkerServiceBean
         ctx.inject( this );
     }
 
-    @Override
-    public List<String> splitQueries( MigrationSet migrationSet )
+    public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
         List<String> queries = new ArrayList<>();
+        String query = migrationSet.getQuery();
+        Select rootSelect;
+        Select rootCountSelect;
 
-        if ( migrationSet.getQuery() == null )
+        // create select as 'select * from sourceNamespace.sourceKind'
+        if ( query == null )
         {
-            // TODO: implement split query
-            String rootQuery = MessageFormat.format( "select * from {0}.{1}", migrationSet.getSourceNamespace(), migrationSet.getSourceKind() );
-            queries.add( rootQuery );
+            Table table = new Table( migrationSet.getSourceNamespace(), migrationSet.getSourceKind() );
+            rootSelect = SelectUtils.buildSelectFromTable( table );
+            rootCountSelect = SelectUtils.buildSelectFromTable( table );
         }
+        // create select as provided by query in MigrationSet
         else
         {
-            // TODO: implement split query
-            String rootQuery = migrationSet.getQuery();
+            try
+            {
+                rootSelect = ( Select ) CCJSqlParserUtil.parse( query );
+                rootCountSelect = ( Select ) CCJSqlParserUtil.parse( query );
+            }
+            catch ( JSQLParserException e )
+            {
+                log.error( "Unable to parse root query: " + query, e );
+                throw new RuntimeException( "Unable to parse root query: " + query, e );
+            }
         }
+
+        // replace select items with 'select count(*) ...'
+        rootCountSelect.getSelectBody().accept( new SelectVisitorAdapter()
+        {
+            @Override
+            public void visit( PlainSelect plainSelect )
+            {
+                plainSelect.setSelectItems( Collections.singletonList( new CountColumn() ) );
+            }
+        } );
+
+        // get split numbers
+        String rootCountQuery = rootCountSelect.toString();
+        PreparedStatementExecutor executor = new PreparedStatementExecutor( dataSource, rootCountQuery )
+        {
+            @Override
+            public void process( ResultSet resultSet ) throws SQLException
+            {
+                while ( resultSet.next() )
+                {
+                    int count = resultSet.getInt( 1 );
+                    // wee ned to split query into multiple offset + limit queries
+                    if ( count > rowsPerSplit )
+                    {
+                        BigDecimal splits = BigDecimal.valueOf( count ).divide( BigDecimal.valueOf( rowsPerSplit ), RoundingMode.UP );
+
+                        for ( int offset = 0; offset < splits.doubleValue(); offset++ )
+                        {
+                            // create offset + limit per split
+                            rootSelect.getSelectBody().accept( new VendorIndependentLimit( offset, rowsPerSplit ) );
+                            queries.add( rootSelect.toString() );
+                        }
+                    }
+                    // noo need to split query, because there is less rows then ROWS_PER_SPLIT
+                    else
+                    {
+                        queries.add( rootSelect.toString() );
+                    }
+                }
+            }
+        };
+        executor.execute();
 
         return queries;
     }
 
-    @Override
     public List<EntityMetaData> retrieveEntityMetaDataList( String sql )
     {
         List<EntityMetaData> entityMetaDataList = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection())
+        PreparedStatementExecutor executor = new PreparedStatementExecutor( dataSource, sql )
         {
-            PreparedStatement statement = connection.prepareStatement( sql );
-            boolean executed = statement.execute();
-            if ( executed )
+            @Override
+            public void process( ResultSet resultSet ) throws SQLException
             {
-                ResultSet resultSet = statement.getResultSet();
                 ResultSetMetaData metaData = resultSet.getMetaData();
 
                 while ( resultSet.next() )
@@ -97,20 +157,12 @@ public class WorkerServiceBean
                     }
                 }
             }
-            else
-            {
-                log.error( "Unable to execute sql: " + sql );
-            }
-        }
-        catch ( SQLException e )
-        {
-            log.error( "Error occur during creating database connection", e );
-        }
+        };
+        executor.execute();
 
         return entityMetaDataList;
     }
 
-    @Override
     public void migrate( MigrationSet migrationSet, List<EntityMetaData> entityMetaDataList )
     {
         for ( EntityMetaData entityMetaData : entityMetaDataList )

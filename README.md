@@ -53,4 +53,7 @@ You can also visit following link to see if service was deployed successfully:
 instances here: https://console.cloud.google.com/appengine/instances?project=<project-name>
 
 ## MYSQL setup 
--DjdbcUrl=jdbc:mysql://localhost:3306 -DjdbcUsername=root -DjdbcPassword=admin123 -DjdbcDriver=com.mysql.cj.jdbc.Driver
+-DjdbcUrl=jdbc:mysql://localhost:3306?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
+-DjdbcUsername=root
+-DjdbcPassword=admin123
+-DjdbcDriver=com.mysql.cj.jdbc.Driver
