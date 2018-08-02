@@ -8,6 +8,6 @@ import org.apache.beam.sdk.options.PipelineOptions;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public interface ImportPipelineOptions
-        extends PipelineOptions
+        extends PipelineOptions, JdbcPipelineOptions
 {
 }

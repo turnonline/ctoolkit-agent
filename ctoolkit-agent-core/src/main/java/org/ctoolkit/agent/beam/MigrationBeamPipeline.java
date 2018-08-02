@@ -2,15 +2,15 @@ package org.ctoolkit.agent.beam;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.transforms.Create;
-import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 import org.ctoolkit.agent.model.api.MigrationBatch;
+import org.ctoolkit.agent.model.api.MigrationSet;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
 
 /**
  * Migration beam pipeline
@@ -21,28 +21,25 @@ import java.util.Arrays;
 public class MigrationBeamPipeline
         extends BeamPipeline<MigrationBatch, MigrationPipelineOptions>
 {
+    @Inject
+    private DoFnFactory doFnFactory;
+
     @Override
-    public Pipeline create( MigrationBatch batch, MigrationPipelineOptions options )
+    public Pipeline create( final MigrationBatch batch, MigrationPipelineOptions options )
     {
         Pipeline pipeline = Pipeline.create( options );
-        // TODO: implement
         pipeline
-                .apply( new PTransform<PBegin, PCollection<String>>()
+                .apply( "Split migration sets", new PTransform<PBegin, PCollection<MigrationSet>>()
                 {
                     @Override
-                    public PCollection<String> expand( PBegin input )
+                    public PCollection<MigrationSet> expand( PBegin input )
                     {
-                        return input.apply( Create.of( Arrays.asList( "john", "foo", "man", "dick" ) ) );
+                        return input.apply( Create.of( batch.getMigrationSets() ) );
                     }
                 } )
-                .apply( ParDo.of( new DoFn<String, Void>()
-                {
-                    @ProcessElement
-                    public void processElement( ProcessContext c ) throws Exception
-                    {
-                        log().error( "Name: " + c.element() );
-                    }
-                } ) );
+                .apply( "Split queries", ParDo.of( doFnFactory.createSplitQueriesDoFn() ) )
+                .apply( "Retrieve entity metadata list", ParDo.of( doFnFactory.createRetrieveEntityMetadataListDoFn() ) )
+                .apply( "Migrate", ParDo.of( doFnFactory.createMigrateDoFn() ) );
 
         return pipeline;
     }

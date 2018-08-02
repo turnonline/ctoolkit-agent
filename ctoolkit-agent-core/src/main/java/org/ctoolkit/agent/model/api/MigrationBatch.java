@@ -13,28 +13,9 @@ import java.util.Objects;
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
 public class MigrationBatch   {
-  
-  private String targetAgentUrl = null;
+
   private List<PipelineOption> pipelineOptions = new ArrayList<PipelineOption>();
   private List<MigrationSet> migrationSets = new ArrayList<MigrationSet>();
-
-  /**
-   * Target agent url
-   **/
-  public MigrationBatch targetAgentUrl(String targetAgentUrl) {
-    this.targetAgentUrl = targetAgentUrl;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "Target agent url")
-  @JsonProperty("targetAgentUrl")
-  public String getTargetAgentUrl() {
-    return targetAgentUrl;
-  }
-  public void setTargetAgentUrl(String targetAgentUrl) {
-    this.targetAgentUrl = targetAgentUrl;
-  }
 
   /**
    * Array of pipeline options
@@ -82,22 +63,20 @@ public class MigrationBatch   {
       return false;
     }
     MigrationBatch migrationBatch = (MigrationBatch) o;
-    return Objects.equals(targetAgentUrl, migrationBatch.targetAgentUrl) &&
-        Objects.equals(pipelineOptions, migrationBatch.pipelineOptions) &&
+    return Objects.equals(pipelineOptions, migrationBatch.pipelineOptions) &&
         Objects.equals(migrationSets, migrationBatch.migrationSets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(targetAgentUrl, pipelineOptions, migrationSets);
+    return Objects.hash(pipelineOptions, migrationSets);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MigrationBatch {\n");
-    
-    sb.append("    targetAgentUrl: ").append(toIndentedString(targetAgentUrl)).append("\n");
+
     sb.append("    pipelineOptions: ").append(toIndentedString(pipelineOptions)).append("\n");
     sb.append("    migrationSets: ").append(toIndentedString(migrationSets)).append("\n");
     sb.append("}");

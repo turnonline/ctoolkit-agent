@@ -5,6 +5,7 @@ import org.apache.beam.sdk.PipelineResult;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.ctoolkit.agent.beam.ImportBeamPipeline;
 import org.ctoolkit.agent.beam.ImportPipelineOptions;
+import org.ctoolkit.agent.beam.JdbcPipelineOptions;
 import org.ctoolkit.agent.beam.MigrationBeamPipeline;
 import org.ctoolkit.agent.beam.MigrationPipelineOptions;
 import org.ctoolkit.agent.model.api.ImportBatch;
@@ -38,8 +39,9 @@ public class MigrationServiceBean
         MigrationPipelineOptions options = PipelineOptionsFactory
                 .fromArgs( toArgs( batch.getPipelineOptions() ) )
                 .as( MigrationPipelineOptions.class );
+        setupJdbcPipelineOptions( options );
 
-        Pipeline pipeline = migrationPipeline.create( options );
+        Pipeline pipeline = migrationPipeline.create( batch, options );
         PipelineResult result = pipeline.run();
 
         MigrationJob job = new MigrationJob();
@@ -53,8 +55,9 @@ public class MigrationServiceBean
         ImportPipelineOptions options = PipelineOptionsFactory
                 .fromArgs( toArgs( batch.getPipelineOptions() ) )
                 .as( ImportPipelineOptions.class );
+        setupJdbcPipelineOptions( options );
 
-        Pipeline pipeline = importPipeline.create( options );
+        Pipeline pipeline = importPipeline.create( batch, options );
         PipelineResult result = pipeline.run();
 
         ImportJob job = new ImportJob();
@@ -63,6 +66,31 @@ public class MigrationServiceBean
     }
 
     // -- private helpers
+
+    private void setupJdbcPipelineOptions( JdbcPipelineOptions options )
+    {
+        String jdbcUrl = System.getProperty( "jdbcUrl" );
+        String jdbcUsername = System.getProperty( "jdbcUsername" );
+        String jdbcPassword = System.getProperty( "jdbcPassword" );
+        String jdbcDriver = System.getProperty( "jdbcDriver" );
+
+        if ( jdbcUrl != null )
+        {
+            options.setJdbcUrl( jdbcUrl );
+        }
+        if ( jdbcUsername != null )
+        {
+            options.setJdbcUsername( jdbcUsername );
+        }
+        if ( jdbcPassword != null )
+        {
+            options.setJdbcPassword( jdbcPassword );
+        }
+        if ( jdbcDriver != null )
+        {
+            options.setJdbcDriver( jdbcDriver );
+        }
+    }
 
     private String[] toArgs( List<PipelineOption> options )
     {
