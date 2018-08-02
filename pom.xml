@@ -72,11 +72,6 @@
                 <artifactId>ctoolkit-agent-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.ctoolkit.agent</groupId>
-                <artifactId>ctoolkit-agent-web</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>junit</groupId>
