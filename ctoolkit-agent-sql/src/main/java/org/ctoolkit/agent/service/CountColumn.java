@@ -1,4 +1,4 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.service;
 
 import net.sf.jsqlparser.statement.select.AllColumns;
 
@@ -12,6 +12,6 @@ public class CountColumn extends AllColumns
     @Override
     public String toString()
     {
-        return "count(1)";
+        return "count(0)";
     }
 }

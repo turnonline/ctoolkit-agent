@@ -4,6 +4,7 @@ import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.Validation;
+import org.ctoolkit.agent.model.Agent;
 
 /**
  * Migration pipeline options
@@ -21,14 +22,18 @@ public interface MigrationPipelineOptions
     void setDryRun( boolean dryRun );
 
     @Validation.Required
-    @Description( "Target agent url (for instance http://localhost:666/api/v1/" )
-    boolean getTargetAgentUrl();
-    void setTargetAgentUrl( boolean targetAgentUrl );
+    @Description( "Target agent url (for instance http://localhost:8080/api/v1/" )
+    String getTargetAgentUrl();
+    void setTargetAgentUrl( String targetAgentUrl );
+
+    @Validation.Required
+    @Description( "Target agent type." )
+    Agent getTargetAgent();
+    void setTargetAgent( Agent targetAgent );
 
     @Validation.Required
     @Description( "Number of rows per split. How many rows should be contained in one query split." )
     @Default.Integer(100)
     int getRowsPerSplit();
     void setRowsPerSplit( int rowsPerSplit );
-
 }

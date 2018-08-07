@@ -18,5 +18,5 @@ public interface DoFnFactory
 
     DoFn<KV<MigrationSet, String>, KV<MigrationSet, List<EntityMetaData>>> createRetrieveEntityMetadataListDoFn();
 
-    DoFn<KV<MigrationSet, List<EntityMetaData>>, Void> createMigrateDoFn();
+    DoFn<KV<MigrationSet, List<EntityMetaData>>, Void> createTransformAndImportDoFn();
 }
