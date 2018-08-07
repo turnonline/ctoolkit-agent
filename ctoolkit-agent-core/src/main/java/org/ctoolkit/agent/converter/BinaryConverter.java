@@ -4,7 +4,6 @@ import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyTransformer;
-import org.ctoolkit.agent.transformer.BlobTransformerProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +25,6 @@ public class BinaryConverter
         if ( !hasBlobTransformer( property ) )
         {
             MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-            transformer.setType( BlobTransformerProcessor.TYPE );
             transformer.setEncodeToBase64( true );
             property.getTransformers().add( 0, transformer );
         }

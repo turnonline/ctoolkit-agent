@@ -16,8 +16,6 @@ import java.util.Date;
 public class DateTransformerProcessor
         implements TransformerProcessor<MigrationSetPropertyDateTransformer>
 {
-    public static final String TYPE = "date";
-
     public static final String CONST_EPOCH = "epoch";
 
     private static Logger log = LoggerFactory.getLogger( DateTransformerProcessor.class );

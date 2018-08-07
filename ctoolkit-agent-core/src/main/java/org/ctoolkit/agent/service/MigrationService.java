@@ -1,6 +1,6 @@
 package org.ctoolkit.agent.service;
 
-import org.ctoolkit.agent.model.EntityMetaData;
+import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
 import org.ctoolkit.agent.model.api.ImportSet;
@@ -34,18 +34,18 @@ public interface MigrationService
     ImportJob importBatch( ImportBatch batch );
 
     /**
-     * Transform list of entities to {@link ImportBatch} using {@link MigrationSet} rules
+     * Transform list of entities to list of {@link ImportSet} using {@link MigrationSet} rules
      *
      * @param migrationSet       {@link MigrationSet}
-     * @param entityMetaDataList list of {@link EntityMetaData}
+     * @param entityExportDataList list of {@link EntityExportData}
      * @return {@link ImportSet}
      */
-    ImportBatch transform( MigrationSet migrationSet, List<EntityMetaData> entityMetaDataList );
+    List<ImportSet> transform( MigrationSet migrationSet, List<EntityExportData> entityExportDataList );
 
     /**
-     * Import {@link ImportBatch} to target agent
+     * Import list {@link ImportSet} to target agent
      *
-     * @param batch          {@link ImportBatch}
+     * @param importSets {@link ImportSet}
      */
-    void importToTargetAgent( ImportBatch batch );
+    void importToTargetAgent( List<ImportSet> importSets );
 }

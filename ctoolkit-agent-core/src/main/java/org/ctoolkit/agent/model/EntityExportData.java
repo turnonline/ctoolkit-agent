@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Entity metadata holds information about entity
+ * Entity export data holds information about exported entity
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class EntityMetaData
+public class EntityExportData
         implements Serializable
 {
     private Map<String, Property> properties = new HashMap<>();

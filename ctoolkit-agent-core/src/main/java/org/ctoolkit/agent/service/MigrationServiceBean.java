@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.service;
 
+import com.google.gson.Gson;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
@@ -10,17 +11,23 @@ import org.ctoolkit.agent.beam.MigrationBeamPipeline;
 import org.ctoolkit.agent.beam.MigrationPipelineOptions;
 import org.ctoolkit.agent.converter.ConverterRegistrat;
 import org.ctoolkit.agent.model.Agent;
-import org.ctoolkit.agent.model.EntityMetaData;
+import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
+import org.ctoolkit.agent.model.api.ImportSet;
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationBatch;
 import org.ctoolkit.agent.model.api.MigrationJob;
 import org.ctoolkit.agent.model.api.MigrationSet;
+import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.PipelineOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +40,8 @@ import java.util.Map;
 public class MigrationServiceBean
         implements MigrationService
 {
+    private static final Logger log = LoggerFactory.getLogger( MigrationServiceBean.class );
+
     @Inject
     private MigrationBeamPipeline migrationPipeline;
 
@@ -79,7 +88,7 @@ public class MigrationServiceBean
     }
 
     @Override
-    public ImportBatch transform( MigrationSet migrationSet, List<EntityMetaData> entityMetaDataList )
+    public List<ImportSet> transform( MigrationSet migrationSet, List<EntityExportData> entityExportDataList )
     {
         if ( migrationPipelineOptions == null )
         {
@@ -87,21 +96,65 @@ public class MigrationServiceBean
         }
 
         ConverterRegistrat registrat = registrats.get( migrationPipelineOptions.getTargetAgent() );
-        ImportBatch importBatch = new ImportBatch();
-        for ( EntityMetaData entityMetaData : entityMetaDataList )
-        {
-            // TODO: implement
+        List<ImportSet> importSets = new ArrayList<>();
 
+        for ( EntityExportData entityExportData : entityExportDataList )
+        {
+            ImportSet importSet = new ImportSet();
+            importSets.add( importSet );
+
+            importSet.setAuthor( migrationSet.getAuthor() );
+            importSet.setComment( "Migration import of " + migrationSet.getTargetNamespace() + "." + migrationSet.getTargetKind() );
+            importSet.setClean( migrationSet.getClean() );
+            importSet.setNamespace( migrationSet.getTargetNamespace() );
+            importSet.setKind( migrationSet.getTargetKind() );
+
+            // TODO: implement rules
+            // TODO: implement parent
+
+            for ( MigrationSetProperty migrationSetProperty : migrationSet.getProperties() )
+            {
+                EntityExportData.Property source = entityExportData.getProperties().get( migrationSetProperty.getSourceProperty() );
+                if ( source != null )
+                {
+                    ImportSetProperty importSetProperty = registrat.convert( source.getValue(), migrationSetProperty );
+                    if ( importSetProperty != null )
+                    {
+                        importSet.getProperties().add( importSetProperty );
+
+                        EntityExportData.Property syncIdProperty = entityExportData.getProperties().get( migrationSet.getSourceSyncIdPropertyName() );
+                        if ( syncIdProperty != null )
+                        {
+                            importSet.setSyncId( syncIdProperty.getValue().toString() );
+                        }
+                    }
+                }
+            }
         }
 
-        return importBatch;
+        return importSets;
     }
 
     @Override
-    public void importToTargetAgent( ImportBatch batch )
+    public void importToTargetAgent( List<ImportSet> importSets )
     {
+        if ( migrationPipelineOptions == null )
+        {
+            throw new NullPointerException( "Migration pipeline options cannot be null. Provide MigrationPipelineOptions via factory to hide this error." );
+        }
 
-        // TODO: implement (create ctoolkit-agent-client)
+        ImportBatch importBatch = new ImportBatch();
+        importBatch.setImportSets( importSets );
+
+        if ( migrationPipelineOptions.isDryRun() )
+        {
+            log.info( new Gson().toJson( importBatch ) );
+        }
+        else
+        {
+            // TODO: implement (create ctoolkit-agent-client)
+            // TODO: call ctoolkit-agent-client importBatch method
+        }
     }
 
     // -- private helpers
@@ -113,19 +166,19 @@ public class MigrationServiceBean
         String jdbcPassword = System.getProperty( "jdbcPassword" );
         String jdbcDriver = System.getProperty( "jdbcDriver" );
 
-        if ( options.getJdbcUrl() == null && jdbcUrl != null )
+        if ( options.getJdbcUrl() == null )
         {
             options.setJdbcUrl( jdbcUrl );
         }
-        if ( options.getJdbcUsername() == null && jdbcUsername != null )
+        if ( options.getJdbcUsername() == null )
         {
             options.setJdbcUsername( jdbcUsername );
         }
-        if ( options.getJdbcPassword() == null && jdbcPassword != null )
+        if ( options.getJdbcPassword() == null )
         {
             options.setJdbcPassword( jdbcPassword );
         }
-        if ( options.getJdbcDriver() == null && jdbcDriver != null )
+        if ( options.getJdbcDriver() == null )
         {
             options.setJdbcDriver( jdbcDriver );
         }

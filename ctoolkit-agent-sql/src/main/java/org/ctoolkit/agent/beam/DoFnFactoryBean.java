@@ -4,7 +4,7 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
-import org.ctoolkit.agent.model.EntityMetaData;
+import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.MigrationSet;
 
 import java.io.Serializable;
@@ -28,14 +28,14 @@ public class DoFnFactoryBean
 
     @Bean
     @Override
-    public DoFn<KV<MigrationSet, String>, KV<MigrationSet, List<EntityMetaData>>> createRetrieveEntityMetadataListDoFn()
+    public DoFn<KV<MigrationSet, String>, KV<MigrationSet, List<EntityExportData>>> createRetrieveEntityMetadataListDoFn()
     {
         return new RetrieveEntityMetaDataDoFn();
     }
 
     @Bean
     @Override
-    public DoFn<KV<MigrationSet, List<EntityMetaData>>, Void> createTransformAndImportDoFn()
+    public DoFn<KV<MigrationSet, List<EntityExportData>>, Void> createTransformAndImportDoFn()
     {
         return new TransformAndImportDoFn();
     }

@@ -5,7 +5,6 @@ import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyDateTransformer;
-import org.ctoolkit.agent.transformer.BlobTransformerProcessor;
 import org.ctoolkit.agent.transformer.DateTransformerProcessor;
 import org.junit.Test;
 
@@ -120,7 +119,6 @@ public class ElasticsearchConverterRegistratTest
     public void test_ByteArray_Text()
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-        transformer.setType( BlobTransformerProcessor.TYPE );
 
         MigrationSetProperty property = mockText( TYPE_TEXT );
         property.getTransformers().add( transformer );
@@ -135,7 +133,6 @@ public class ElasticsearchConverterRegistratTest
     public void test_Clob_Text() throws SQLException
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-        transformer.setType( BlobTransformerProcessor.TYPE );
 
         Clob clob = mock( Clob.class );
         when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
@@ -152,7 +149,6 @@ public class ElasticsearchConverterRegistratTest
     public void test_Blob_Text() throws SQLException
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-        transformer.setType( BlobTransformerProcessor.TYPE );
 
         Blob blob = mock( Blob.class );
         when( blob.getBinaryStream() ).thenReturn( new ByteArrayInputStream( new byte[]{'J', 'o', 'h', 'n'} ) );
@@ -173,7 +169,6 @@ public class ElasticsearchConverterRegistratTest
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setType( DateTransformerProcessor.TYPE );
         transformer.setFormat( "yyyy-MM-dd" );
 
         MigrationSetProperty property = mockText( TYPE_TEXT );
@@ -268,7 +263,6 @@ public class ElasticsearchConverterRegistratTest
     public void test_ByteArray_Keyword()
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-        transformer.setType( BlobTransformerProcessor.TYPE );
 
         MigrationSetProperty property = mockText( TYPE_KEYWORD );
         property.getTransformers().add( transformer );
@@ -283,7 +277,6 @@ public class ElasticsearchConverterRegistratTest
     public void test_Clob_Keyword() throws SQLException
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-        transformer.setType( BlobTransformerProcessor.TYPE );
 
         Clob clob = mock( Clob.class );
         when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
@@ -300,7 +293,6 @@ public class ElasticsearchConverterRegistratTest
     public void test_Blob_Keyword() throws SQLException
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-        transformer.setType( BlobTransformerProcessor.TYPE );
 
         Blob blob = mock( Blob.class );
         when( blob.getBinaryStream() ).thenReturn( new ByteArrayInputStream( new byte[]{'J', 'o', 'h', 'n'} ) );
@@ -321,7 +313,6 @@ public class ElasticsearchConverterRegistratTest
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setType( DateTransformerProcessor.TYPE );
         transformer.setFormat( "yyyy-MM-dd" );
 
         MigrationSetProperty property = mockText( TYPE_KEYWORD );
@@ -376,7 +367,6 @@ public class ElasticsearchConverterRegistratTest
         calendar.set( Calendar.MILLISECOND, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setType( DateTransformerProcessor.TYPE );
         transformer.setFormat( DateTransformerProcessor.CONST_EPOCH );
 
         MigrationSetProperty property = mockText( TYPE_LONG );
@@ -464,7 +454,6 @@ public class ElasticsearchConverterRegistratTest
         calendar.set( Calendar.MILLISECOND, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setType( DateTransformerProcessor.TYPE );
         transformer.setFormat( DateTransformerProcessor.CONST_EPOCH );
 
         MigrationSetProperty property = mockText( TYPE_DOUBLE );
@@ -482,7 +471,6 @@ public class ElasticsearchConverterRegistratTest
     public void test_String_Date()
     {
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setType( "date" );
         transformer.setFormat( "yyyy-MM-dd" );
 
         MigrationSetProperty property = mockText( TYPE_DATE );
