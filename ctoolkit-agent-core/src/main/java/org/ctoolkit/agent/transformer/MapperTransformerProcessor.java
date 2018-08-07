@@ -11,8 +11,6 @@ import org.ctoolkit.agent.model.api.MigrationSetPropertyMapperTransformerMapping
 public class MapperTransformerProcessor
         implements TransformerProcessor<MigrationSetPropertyMapperTransformer>
 {
-    public static final String TYPE = "mapper";
-
     @Override
     public Object transform( Object value, MigrationSetPropertyMapperTransformer transformer )
     {

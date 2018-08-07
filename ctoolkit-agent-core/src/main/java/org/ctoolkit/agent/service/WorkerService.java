@@ -1,6 +1,6 @@
 package org.ctoolkit.agent.service;
 
-import org.ctoolkit.agent.model.EntityMetaData;
+import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.MigrationSet;
 
 import java.util.List;
@@ -22,9 +22,9 @@ public interface WorkerService
     List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit );
 
     /**
-     * Retrieve list of {@link EntityMetaData} for specified sql query
+     * Retrieve list of {@link EntityExportData} for specified sql query
      * @param sql query
-     * @return list of {@link EntityMetaData}
+     * @return list of {@link EntityExportData}
      */
-    List<EntityMetaData> retrieveEntityMetaDataList( String sql );
+    List<EntityExportData> retrieveEntityMetaDataList( String sql );
 }

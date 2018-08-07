@@ -7,7 +7,7 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectVisitorAdapter;
 import net.sf.jsqlparser.util.SelectUtils;
-import org.ctoolkit.agent.model.EntityMetaData;
+import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,9 +112,9 @@ public class WorkerServiceBean
         return queries;
     }
 
-    public List<EntityMetaData> retrieveEntityMetaDataList( String sql )
+    public List<EntityExportData> retrieveEntityMetaDataList( String sql )
     {
-        List<EntityMetaData> entityMetaDataList = new ArrayList<>();
+        List<EntityExportData> entityExportDataList = new ArrayList<>();
 
         PreparedStatementExecutor executor = new PreparedStatementExecutor( dataSource, sql )
         {
@@ -125,23 +125,23 @@ public class WorkerServiceBean
 
                 while ( resultSet.next() )
                 {
-                    EntityMetaData entityMetaData = new EntityMetaData();
-                    entityMetaDataList.add( entityMetaData );
+                    EntityExportData entityExportData = new EntityExportData();
+                    entityExportDataList.add( entityExportData );
 
                     for ( int i = 1; i <= metaData.getColumnCount(); i++ )
                     {
-                        EntityMetaData.Property property = new EntityMetaData.Property();
+                        EntityExportData.Property property = new EntityExportData.Property();
                         property.setValue( resultSet.getObject( i ) );
                         property.setClassName( metaData.getColumnClassName( i ) );
                         property.setTypeName( metaData.getColumnTypeName( i ) );
 
-                        entityMetaData.getProperties().put( metaData.getColumnName( i ), property );
+                        entityExportData.getProperties().put( metaData.getColumnName( i ), property );
                     }
                 }
             }
         };
         executor.execute();
 
-        return entityMetaDataList;
+        return entityExportDataList;
     }
 }

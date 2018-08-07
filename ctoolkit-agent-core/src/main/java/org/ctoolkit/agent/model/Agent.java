@@ -7,6 +7,6 @@ package org.ctoolkit.agent.model;
  */
 public enum Agent
 {
-    MYSQL,
+    SQL,
     ELASTICSEARCH
 }

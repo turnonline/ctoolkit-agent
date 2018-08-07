@@ -23,8 +23,6 @@ import java.sql.SQLException;
 public class BlobTransformerProcessor
         implements TransformerProcessor<MigrationSetPropertyBlobTransformer>
 {
-    public static final String TYPE = "blob";
-
     private static Logger log = LoggerFactory.getLogger( BlobTransformerProcessor.class );
 
     @Override
