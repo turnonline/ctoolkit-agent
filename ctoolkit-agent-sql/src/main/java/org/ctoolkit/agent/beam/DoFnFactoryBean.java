@@ -35,8 +35,8 @@ public class DoFnFactoryBean
 
     @Bean
     @Override
-    public DoFn<KV<MigrationSet, List<EntityMetaData>>, Void> createMigrateDoFn()
+    public DoFn<KV<MigrationSet, List<EntityMetaData>>, Void> createTransformAndImportDoFn()
     {
-        return new MigrateDoFn();
+        return new TransformAndImportDoFn();
     }
 }

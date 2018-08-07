@@ -1,9 +1,11 @@
 package org.ctoolkit.agent.beam;
 
+import io.micronaut.context.ApplicationContext;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
 import org.ctoolkit.agent.model.api.MigrationSet;
-import org.ctoolkit.agent.service.WorkerServiceBean;
+import org.ctoolkit.agent.service.ApplicationContextFactory;
+import org.ctoolkit.agent.service.WorkerService;
 
 import java.util.List;
 
@@ -19,7 +21,8 @@ public class SplitQueriesDoFn
     public void processElement( ProcessContext c )
     {
         MigrationPipelineOptions pipelineOptions = c.getPipelineOptions().as( MigrationPipelineOptions.class );
-        WorkerServiceBean service = new WorkerServiceBean( pipelineOptions );
+        ApplicationContext ctx = ApplicationContextFactory.create( pipelineOptions );
+        WorkerService service = ctx.getBean( WorkerService.class );
         List<String> queries = service.splitQueries( c.element(), pipelineOptions.getRowsPerSplit() );
 
         for (String query : queries)

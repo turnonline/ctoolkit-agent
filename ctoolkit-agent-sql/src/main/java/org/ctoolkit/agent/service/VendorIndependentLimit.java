@@ -1,4 +1,4 @@
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.service;
 
 import net.sf.jsqlparser.statement.select.Limit;
 import net.sf.jsqlparser.statement.select.PlainSelect;
@@ -26,7 +26,6 @@ public class VendorIndependentLimit
     @Override
     public void visit( PlainSelect plainSelect )
     {
-
         Limit limit = new Limit();
         limit.setOffset( offset * rows );
         limit.setRowCount( rows );

@@ -39,7 +39,7 @@ public class MigrationBeamPipeline
                 } )
                 .apply( "Split queries", ParDo.of( doFnFactory.createSplitQueriesDoFn() ) )
                 .apply( "Retrieve entity metadata list", ParDo.of( doFnFactory.createRetrieveEntityMetadataListDoFn() ) )
-                .apply( "Migrate", ParDo.of( doFnFactory.createMigrateDoFn() ) );
+                .apply( "Transform to import", ParDo.of( doFnFactory.createTransformAndImportDoFn() ) );
 
         return pipeline;
     }

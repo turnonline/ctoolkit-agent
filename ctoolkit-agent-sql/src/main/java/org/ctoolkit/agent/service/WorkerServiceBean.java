@@ -1,7 +1,5 @@
 package org.ctoolkit.agent.service;
 
-import io.micronaut.context.ApplicationContext;
-import io.micronaut.core.util.CollectionUtils;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Table;
@@ -9,10 +7,7 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectVisitorAdapter;
 import net.sf.jsqlparser.util.SelectUtils;
-import org.ctoolkit.agent.beam.MigrationPipelineOptions;
-import org.ctoolkit.agent.model.CountColumn;
 import org.ctoolkit.agent.model.EntityMetaData;
-import org.ctoolkit.agent.model.VendorIndependentLimit;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,23 +33,10 @@ import java.util.List;
 public class WorkerServiceBean
         implements WorkerService
 {
-    @Inject
-    private DataSource dataSource;
-
     private static final Logger log = LoggerFactory.getLogger( WorkerServiceBean.class );
 
-    @SuppressWarnings( "unchecked" )
-    public WorkerServiceBean( MigrationPipelineOptions pipelineOptions )
-    {
-        ApplicationContext ctx = ApplicationContext.run( CollectionUtils.mapOf(
-                "datasources.default.url", pipelineOptions.getJdbcUrl(),
-                "datasources.default.username", pipelineOptions.getJdbcUsername(),
-                "datasources.default.password", pipelineOptions.getJdbcPassword(),
-                "datasources.default.driver", pipelineOptions.getJdbcDriver()
-        ) );
-
-        ctx.inject( this );
-    }
+    @Inject
+    private DataSource dataSource;
 
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
@@ -161,15 +143,5 @@ public class WorkerServiceBean
         executor.execute();
 
         return entityMetaDataList;
-    }
-
-    public void migrate( MigrationSet migrationSet, List<EntityMetaData> entityMetaDataList )
-    {
-        for ( EntityMetaData entityMetaData : entityMetaDataList )
-        {
-            log.info( "Migrate: " + entityMetaData );
-        }
-
-        // TODO: implement
     }
 }
