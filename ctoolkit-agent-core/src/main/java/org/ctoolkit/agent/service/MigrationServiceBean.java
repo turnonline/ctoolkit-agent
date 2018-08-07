@@ -12,6 +12,7 @@ import org.ctoolkit.agent.beam.MigrationPipelineOptions;
 import org.ctoolkit.agent.converter.ConverterRegistrat;
 import org.ctoolkit.agent.model.Agent;
 import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.ValueWithLabels;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
 import org.ctoolkit.agent.model.api.ImportSet;
@@ -110,22 +111,37 @@ public class MigrationServiceBean
             importSet.setKind( migrationSet.getTargetKind() );
 
             // TODO: implement rules
-            // TODO: implement parent
+
+            // retrieve parent
+            if (migrationSet.getTargetParentKind() != null)
+            {
+                EntityExportData.Property property = entityExportData.getProperties().get( migrationSet.getSourceParentForeignIdPropertyName() );
+                importSet.setParentNamespace( migrationSet.getTargetNamespace() );
+                importSet.setParentKind( migrationSet.getTargetParentKind() );
+                importSet.setParentId( new ValueWithLabels(property.getValue())
+                        .addLabel( "name", migrationSet.getTargetParentId() )
+                        .addLabel( "lookup", migrationSet.getTargetParentLookupPropertyName() )
+                        .toString() );
+            }
 
             for ( MigrationSetProperty migrationSetProperty : migrationSet.getProperties() )
             {
                 EntityExportData.Property source = entityExportData.getProperties().get( migrationSetProperty.getSourceProperty() );
                 if ( source != null )
                 {
+                    // convert value to ImportSetProperty
                     ImportSetProperty importSetProperty = registrat.convert( source.getValue(), migrationSetProperty );
                     if ( importSetProperty != null )
                     {
                         importSet.getProperties().add( importSetProperty );
 
+                        // retrieve sync id property
                         EntityExportData.Property syncIdProperty = entityExportData.getProperties().get( migrationSet.getSourceSyncIdPropertyName() );
                         if ( syncIdProperty != null )
                         {
-                            importSet.setSyncId( syncIdProperty.getValue().toString() );
+                            importSet.setSyncId( new ValueWithLabels( syncIdProperty.getValue())
+                                    .addLabel( "name", migrationSet.getTargetSyncIdPropertyName() )
+                                    .toString() );
                         }
                     }
                 }
