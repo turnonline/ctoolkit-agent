@@ -1,8 +1,7 @@
-package org.ctoolkit.agent.converter;
+package org.ctoolkit.agent.transformer;
 
 import org.ctoolkit.agent.model.api.MigrationSetPropertyMapperTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyMapperTransformerMappings;
-import org.ctoolkit.agent.transformer.MapperTransformerProcessor;
 import org.junit.Test;
 
 import java.util.ArrayList;

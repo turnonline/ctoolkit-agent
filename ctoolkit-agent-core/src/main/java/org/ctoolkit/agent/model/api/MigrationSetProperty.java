@@ -20,7 +20,6 @@ public class MigrationSetProperty implements Serializable {
   private String targetProperty = null;
   private String targetValue = null;
   private String targetMultiplicity = null;
-  private MigrationSetPropertyRuleSet ruleSet = null;
   private List<MigrationSetPropertyTransformer> transformers = new ArrayList<MigrationSetPropertyTransformer>();
 
   /**
@@ -114,23 +113,7 @@ public class MigrationSetProperty implements Serializable {
   }
 
   /**
-   **/
-  public MigrationSetProperty ruleSet(MigrationSetPropertyRuleSet ruleSet) {
-    this.ruleSet = ruleSet;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "")
-  @JsonProperty("ruleSet")
-  public MigrationSetPropertyRuleSet getRuleSet() {
-    return ruleSet;
-  }
-  public void setRuleSet(MigrationSetPropertyRuleSet ruleSet) {
-    this.ruleSet = ruleSet;
-  }
-
-  /**
+   * Array of transformers used to transform source value
    **/
   public MigrationSetProperty transformers(List<MigrationSetPropertyTransformer> transformers) {
     this.transformers = transformers;
@@ -138,7 +121,7 @@ public class MigrationSetProperty implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Array of transformers used to transform source value")
   @JsonProperty("transformers")
   public List<MigrationSetPropertyTransformer> getTransformers() {
     return transformers;
@@ -162,13 +145,12 @@ public class MigrationSetProperty implements Serializable {
         Objects.equals(targetProperty, migrationSetProperty.targetProperty) &&
         Objects.equals(targetValue, migrationSetProperty.targetValue) &&
         Objects.equals(targetMultiplicity, migrationSetProperty.targetMultiplicity) &&
-        Objects.equals(ruleSet, migrationSetProperty.ruleSet) &&
         Objects.equals(transformers, migrationSetProperty.transformers);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceProperty, targetType, targetProperty, targetValue, targetMultiplicity, ruleSet, transformers);
+    return Objects.hash(sourceProperty, targetType, targetProperty, targetValue, targetMultiplicity, transformers);
   }
 
   @Override
@@ -181,7 +163,6 @@ public class MigrationSetProperty implements Serializable {
     sb.append("    targetProperty: ").append(toIndentedString(targetProperty)).append("\n");
     sb.append("    targetValue: ").append(toIndentedString(targetValue)).append("\n");
     sb.append("    targetMultiplicity: ").append(toIndentedString(targetMultiplicity)).append("\n");
-    sb.append("    ruleSet: ").append(toIndentedString(ruleSet)).append("\n");
     sb.append("    transformers: ").append(toIndentedString(transformers)).append("\n");
     sb.append("}");
     return sb.toString();

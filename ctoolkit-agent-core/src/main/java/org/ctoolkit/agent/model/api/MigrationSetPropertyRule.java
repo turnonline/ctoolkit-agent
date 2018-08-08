@@ -16,6 +16,7 @@ public class MigrationSetPropertyRule implements Serializable {
   private String property = null;
   private String operation = null;
   private String value = null;
+  private MigrationSetPropertyRuleSet ruleSet = null;
 
   /**
    * Property name
@@ -71,6 +72,24 @@ public class MigrationSetPropertyRule implements Serializable {
     this.value = value;
   }
 
+  /**
+   * Recursive rule set to create complex logical rules. For instance:  name=‘John’ AND (surname=‘Foo’ OR surname=‘Bar’)
+   **/
+  public MigrationSetPropertyRule ruleSet(MigrationSetPropertyRuleSet ruleSet) {
+    this.ruleSet = ruleSet;
+    return this;
+  }
+
+
+  @ApiModelProperty(value = "Recursive rule set to create complex logical rules. For instance:  name=‘John’ AND (surname=‘Foo’ OR surname=‘Bar’)")
+  @JsonProperty("ruleSet")
+  public MigrationSetPropertyRuleSet getRuleSet() {
+    return ruleSet;
+  }
+  public void setRuleSet(MigrationSetPropertyRuleSet ruleSet) {
+    this.ruleSet = ruleSet;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -83,12 +102,13 @@ public class MigrationSetPropertyRule implements Serializable {
     MigrationSetPropertyRule migrationSetPropertyRule = (MigrationSetPropertyRule) o;
     return Objects.equals(property, migrationSetPropertyRule.property) &&
         Objects.equals(operation, migrationSetPropertyRule.operation) &&
-        Objects.equals(value, migrationSetPropertyRule.value);
+        Objects.equals(value, migrationSetPropertyRule.value) &&
+        Objects.equals(ruleSet, migrationSetPropertyRule.ruleSet);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(property, operation, value);
+    return Objects.hash(property, operation, value, ruleSet);
   }
 
   @Override
@@ -99,6 +119,7 @@ public class MigrationSetPropertyRule implements Serializable {
     sb.append("    property: ").append(toIndentedString(property)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
+    sb.append("    ruleSet: ").append(toIndentedString(ruleSet)).append("\n");
     sb.append("}");
     return sb.toString();
   }

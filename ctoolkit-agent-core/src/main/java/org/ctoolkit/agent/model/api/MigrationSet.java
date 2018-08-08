@@ -31,6 +31,7 @@ public class MigrationSet implements Serializable {
   private String query = null;
   private Boolean clean = false;
   private List<MigrationSetProperty> properties = new ArrayList<MigrationSetProperty>();
+  private MigrationSetPropertyRuleSet ruleSet = null;
 
   /**
    * Migration set author
@@ -320,6 +321,24 @@ public class MigrationSet implements Serializable {
     this.properties = properties;
   }
 
+  /**
+   * Rule set is set of logical  (and, or) and mathematical (eq, lt, regexp) rules used to filter certain rows from migration
+   **/
+  public MigrationSet ruleSet(MigrationSetPropertyRuleSet ruleSet) {
+    this.ruleSet = ruleSet;
+    return this;
+  }
+
+
+  @ApiModelProperty(value = "Rule set is set of logical  (and, or) and mathematical (eq, lt, regexp) rules used to filter certain rows from migration")
+  @JsonProperty("ruleSet")
+  public MigrationSetPropertyRuleSet getRuleSet() {
+    return ruleSet;
+  }
+  public void setRuleSet(MigrationSetPropertyRuleSet ruleSet) {
+    this.ruleSet = ruleSet;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -345,12 +364,13 @@ public class MigrationSet implements Serializable {
         Objects.equals(targetParentLookupPropertyName, migrationSet.targetParentLookupPropertyName) &&
         Objects.equals(query, migrationSet.query) &&
         Objects.equals(clean, migrationSet.clean) &&
-        Objects.equals(properties, migrationSet.properties);
+        Objects.equals(properties, migrationSet.properties) &&
+        Objects.equals(ruleSet, migrationSet.ruleSet);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, comment, sourceNamespace, sourceParentNamespace, sourceKind, sourceSyncIdPropertyName, sourceParentForeignIdPropertyName, targetNamespace, targetKind, targetParentKind, targetParentId, targetSyncIdPropertyName, targetParentLookupPropertyName, query, clean, properties);
+    return Objects.hash(author, comment, sourceNamespace, sourceParentNamespace, sourceKind, sourceSyncIdPropertyName, sourceParentForeignIdPropertyName, targetNamespace, targetKind, targetParentKind, targetParentId, targetSyncIdPropertyName, targetParentLookupPropertyName, query, clean, properties, ruleSet);
   }
 
   @Override
@@ -374,6 +394,7 @@ public class MigrationSet implements Serializable {
     sb.append("    query: ").append(toIndentedString(query)).append("\n");
     sb.append("    clean: ").append(toIndentedString(clean)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
+    sb.append("    ruleSet: ").append(toIndentedString(ruleSet)).append("\n");
     sb.append("}");
     return sb.toString();
   }

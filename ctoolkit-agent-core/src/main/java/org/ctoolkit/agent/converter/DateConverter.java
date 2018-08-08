@@ -39,6 +39,7 @@ public class DateConverter
         {
             log.info( "Unable to create date from value: '" + source + "'", e );
         }
+
         ImportSetProperty importSetProperty = newImportSetProperty( property );
         importSetProperty.setValue( target != null ? Long.valueOf( target.getTime() ).toString() : null );
 
