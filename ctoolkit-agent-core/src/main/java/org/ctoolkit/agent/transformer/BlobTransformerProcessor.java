@@ -20,6 +20,7 @@ import java.sql.SQLException;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
+// TODO: write unit test
 public class BlobTransformerProcessor
         implements TransformerProcessor<MigrationSetPropertyBlobTransformer>
 {

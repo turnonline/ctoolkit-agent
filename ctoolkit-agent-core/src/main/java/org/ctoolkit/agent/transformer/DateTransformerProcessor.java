@@ -13,6 +13,7 @@ import java.util.Date;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
+// TODO: write unit test
 public class DateTransformerProcessor
         implements TransformerProcessor<MigrationSetPropertyDateTransformer>
 {
