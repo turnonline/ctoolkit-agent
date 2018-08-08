@@ -10,7 +10,7 @@ import java.util.Arrays;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public interface RuleSetStrategy
+public interface RuleStrategy
 {
     enum Operation
     {

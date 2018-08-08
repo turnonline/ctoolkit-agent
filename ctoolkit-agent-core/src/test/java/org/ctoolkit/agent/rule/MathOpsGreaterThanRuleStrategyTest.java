@@ -13,13 +13,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Unit test for {@link MathematicalOperationsRuleSetStrategy}
+ * Unit test for {@link MathOpsRuleStrategy}
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
+public class MathOpsGreaterThanRuleStrategyTest
 {
-    private RuleSetStrategy strategy = MathematicalOperationsRuleSetStrategy.INSTANCE_LT;
+    private RuleStrategy strategy = MathOpsRuleStrategy.INSTANCE_GT;
 
     @Test
     public void apply_PropertyNotFound()
@@ -40,7 +40,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertTrue( strategy.apply( rule, exportData( "name", "Joh" ) ) );
+        assertFalse( strategy.apply( rule, exportData( "name", "Joh" ) ) );
     }
 
     @Test
@@ -60,7 +60,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertFalse( strategy.apply( rule, exportData( "name", "Johny" ) ) );
+        assertTrue( strategy.apply( rule, exportData( "name", "Johny" ) ) );
     }
 
     // -- Integer
@@ -72,7 +72,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 29 ) ) );
+        assertFalse( strategy.apply( rule, exportData( "age", 29 ) ) );
     }
 
     @Test
@@ -92,7 +92,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 31 ) ) );
+        assertTrue( strategy.apply( rule, exportData( "age", 31 ) ) );
     }
 
     // -- Long
@@ -104,7 +104,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 29L ) ) );
+        assertFalse( strategy.apply( rule, exportData( "age", 29L ) ) );
     }
 
     @Test
@@ -124,7 +124,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 31L ) ) );
+        assertTrue( strategy.apply( rule, exportData( "age", 31L ) ) );
     }
 
     // -- Float
@@ -136,7 +136,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 29F ) ) );
+        assertFalse( strategy.apply( rule, exportData( "age", 29F ) ) );
     }
 
     @Test
@@ -156,7 +156,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 31F ) ) );
+        assertTrue( strategy.apply( rule, exportData( "age", 31F ) ) );
     }
 
     // -- Double
@@ -168,7 +168,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 29D ) ) );
+        assertFalse( strategy.apply( rule, exportData( "age", 29D ) ) );
     }
 
     @Test
@@ -188,7 +188,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 31D ) ) );
+        assertTrue( strategy.apply( rule, exportData( "age", 31D ) ) );
     }
 
     // -- BigDecimal
@@ -200,7 +200,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", BigDecimal.valueOf( 29 ) ) ) );
+        assertFalse( strategy.apply( rule, exportData( "age", BigDecimal.valueOf( 29 ) ) ) );
     }
 
     @Test
@@ -220,7 +220,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", BigDecimal.valueOf( 31 ) ) ) );
+        assertTrue( strategy.apply( rule, exportData( "age", BigDecimal.valueOf( 31 ) ) ) );
     }
 
     // -- Boolean
@@ -232,7 +232,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
-        assertTrue( strategy.apply( rule, exportData( "active", false ) ) );
+        assertFalse( strategy.apply( rule, exportData( "active", false ) ) );
     }
 
     @Test
@@ -258,7 +258,7 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertTrue( strategy.apply( rule, exportData( "createDate", calendar.getTime() ) ) );
+        assertFalse( strategy.apply( rule, exportData( "createDate", calendar.getTime() ) ) );
     }
 
     @Test
@@ -286,6 +286,6 @@ public class MathematicalOperationsLowerThanEqualsRuleSetStrategyTest
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertFalse( strategy.apply( rule, exportData( "createDate", calendar.getTime() ) ) );
+        assertTrue( strategy.apply( rule, exportData( "createDate", calendar.getTime() ) ) );
     }
 }

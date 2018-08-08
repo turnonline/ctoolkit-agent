@@ -9,13 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Unit test for {@link RuleSetStrategy}
+ * Unit test for {@link RuleStrategy}
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class RegexRuleSetStrategyTest
+public class RegexRuleStrategyTest
 {
-    private RuleSetStrategy strategy = RegexRuleSetStrategy.INSTANCE;
+    private RuleStrategy strategy = RegexRuleStrategy.INSTANCE;
 
     @Test
     public void apply_NotString()
