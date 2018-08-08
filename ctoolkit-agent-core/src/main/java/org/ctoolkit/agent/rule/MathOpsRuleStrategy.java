@@ -12,18 +12,18 @@ import java.util.Date;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class MathematicalOperationsRuleSetStrategy
-        implements RuleSetStrategy
+public class MathOpsRuleStrategy
+        implements RuleStrategy
 {
-    public static final RuleSetStrategy INSTANCE_EQ = new MathematicalOperationsRuleSetStrategy( Operation.EQ );
-    public static final RuleSetStrategy INSTANCE_LT = new MathematicalOperationsRuleSetStrategy( Operation.LT );
-    public static final RuleSetStrategy INSTANCE_LTE = new MathematicalOperationsRuleSetStrategy( Operation.LTE );
-    public static final RuleSetStrategy INSTANCE_GT = new MathematicalOperationsRuleSetStrategy( Operation.GT );
-    public static final RuleSetStrategy INSTANCE_GTE = new MathematicalOperationsRuleSetStrategy( Operation.GTE );
+    public static final RuleStrategy INSTANCE_EQ = new MathOpsRuleStrategy( Operation.EQ );
+    public static final RuleStrategy INSTANCE_LT = new MathOpsRuleStrategy( Operation.LT );
+    public static final RuleStrategy INSTANCE_LTE = new MathOpsRuleStrategy( Operation.LTE );
+    public static final RuleStrategy INSTANCE_GT = new MathOpsRuleStrategy( Operation.GT );
+    public static final RuleStrategy INSTANCE_GTE = new MathOpsRuleStrategy( Operation.GTE );
 
     private Operation operation;
 
-    public MathematicalOperationsRuleSetStrategy( Operation operation )
+    public MathOpsRuleStrategy( Operation operation )
     {
         this.operation = operation;
     }

@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class RegexRuleSetStrategy
-        implements RuleSetStrategy
+public class RegexRuleStrategy
+        implements RuleStrategy
 {
-    public static final RuleSetStrategy INSTANCE = new RegexRuleSetStrategy();
+    public static final RuleStrategy INSTANCE = new RegexRuleStrategy();
 
     @Override
     @SuppressWarnings( "unchecked" )
