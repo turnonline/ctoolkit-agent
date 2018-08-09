@@ -3,6 +3,7 @@ package org.ctoolkit.agent.beam;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
 import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.MigrationSet;
 
 import java.util.List;
@@ -14,6 +15,11 @@ import java.util.List;
  */
 public interface DoFnFactory
 {
+    // -- import
+    DoFn<ImportSet, Void> createImportDoFn();
+
+    // -- migration
+
     DoFn<MigrationSet, KV<MigrationSet, String>> createSplitQueriesDoFn();
 
     DoFn<KV<MigrationSet, String>, KV<MigrationSet, List<EntityExportData>>> createRetrieveEntityMetadataListDoFn();

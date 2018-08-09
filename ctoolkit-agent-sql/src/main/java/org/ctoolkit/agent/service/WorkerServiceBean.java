@@ -8,6 +8,7 @@ import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectVisitorAdapter;
 import net.sf.jsqlparser.util.SelectUtils;
 import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,5 +144,11 @@ public class WorkerServiceBean
         executor.execute();
 
         return entityExportDataList;
+    }
+
+    @Override
+    public void importData( ImportSet importSet )
+    {
+        // TODO: implement
     }
 }

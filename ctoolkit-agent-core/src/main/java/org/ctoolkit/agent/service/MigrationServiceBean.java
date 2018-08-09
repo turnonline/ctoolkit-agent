@@ -3,12 +3,11 @@ package org.ctoolkit.agent.service;
 import com.google.gson.Gson;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
-import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.ctoolkit.agent.beam.ImportBeamPipeline;
 import org.ctoolkit.agent.beam.ImportPipelineOptions;
-import org.ctoolkit.agent.beam.JdbcPipelineOptions;
 import org.ctoolkit.agent.beam.MigrationBeamPipeline;
 import org.ctoolkit.agent.beam.MigrationPipelineOptions;
+import org.ctoolkit.agent.beam.PipelineOptionsFactory;
 import org.ctoolkit.agent.converter.ConverterRegistrat;
 import org.ctoolkit.agent.model.Agent;
 import org.ctoolkit.agent.model.EntityExportData;
@@ -21,7 +20,6 @@ import org.ctoolkit.agent.model.api.MigrationBatch;
 import org.ctoolkit.agent.model.api.MigrationJob;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
-import org.ctoolkit.agent.model.api.PipelineOption;
 import org.ctoolkit.agent.rule.RuleSetResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +43,9 @@ public class MigrationServiceBean
     private static final Logger log = LoggerFactory.getLogger( MigrationServiceBean.class );
 
     @Inject
+    private PipelineOptionsFactory pipelineOptionsFactory;
+
+    @Inject
     private MigrationBeamPipeline migrationPipeline;
 
     @Inject
@@ -63,11 +64,7 @@ public class MigrationServiceBean
     @Override
     public MigrationJob migrateBatch( MigrationBatch batch )
     {
-        MigrationPipelineOptions options = PipelineOptionsFactory
-                .fromArgs( toArgs( batch.getPipelineOptions() ) )
-                .as( MigrationPipelineOptions.class );
-        setupJdbcPipelineOptions( options );
-
+        MigrationPipelineOptions options = pipelineOptionsFactory.createMigrationPipelineOptions( batch );
         Pipeline pipeline = migrationPipeline.create( batch, options );
         PipelineResult result = pipeline.run();
 
@@ -79,11 +76,7 @@ public class MigrationServiceBean
     @Override
     public ImportJob importBatch( ImportBatch batch )
     {
-        ImportPipelineOptions options = PipelineOptionsFactory
-                .fromArgs( toArgs( batch.getPipelineOptions() ) )
-                .as( ImportPipelineOptions.class );
-        setupJdbcPipelineOptions( options );
-
+        ImportPipelineOptions options = pipelineOptionsFactory.createImportPipelineOptions( batch );
         Pipeline pipeline = importPipeline.create( batch, options );
         PipelineResult result = pipeline.run();
 
@@ -181,44 +174,5 @@ public class MigrationServiceBean
             // TODO: implement (create ctoolkit-agent-client)
             // TODO: call ctoolkit-agent-client importBatch method
         }
-    }
-
-    // -- private helpers
-
-    private void setupJdbcPipelineOptions( JdbcPipelineOptions options )
-    {
-        String jdbcUrl = System.getProperty( "jdbcUrl" );
-        String jdbcUsername = System.getProperty( "jdbcUsername" );
-        String jdbcPassword = System.getProperty( "jdbcPassword" );
-        String jdbcDriver = System.getProperty( "jdbcDriver" );
-
-        if ( options.getJdbcUrl() == null )
-        {
-            options.setJdbcUrl( jdbcUrl );
-        }
-        if ( options.getJdbcUsername() == null )
-        {
-            options.setJdbcUsername( jdbcUsername );
-        }
-        if ( options.getJdbcPassword() == null )
-        {
-            options.setJdbcPassword( jdbcPassword );
-        }
-        if ( options.getJdbcDriver() == null )
-        {
-            options.setJdbcDriver( jdbcDriver );
-        }
-    }
-
-    private String[] toArgs( List<PipelineOption> options )
-    {
-        String[] args = new String[options.size()];
-        for ( int i = 0; i < options.size(); i++ )
-        {
-            PipelineOption option = options.get( i );
-            args[i] = "--" + option.getName() + "=" + option.getValue();
-        }
-
-        return args;
     }
 }
