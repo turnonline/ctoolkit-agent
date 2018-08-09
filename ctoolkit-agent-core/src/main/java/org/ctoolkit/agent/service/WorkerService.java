@@ -1,6 +1,7 @@
 package org.ctoolkit.agent.service;
 
 import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.MigrationSet;
 
 import java.util.List;
@@ -23,8 +24,16 @@ public interface WorkerService
 
     /**
      * Retrieve list of {@link EntityExportData} for specified sql query
+     *
      * @param sql query
      * @return list of {@link EntityExportData}
      */
     List<EntityExportData> retrieveEntityMetaDataList( String sql );
+
+    /**
+     * Import data to agent data source
+     *
+     * @param importSet {@link ImportSet}
+     */
+    void importData( ImportSet importSet );
 }

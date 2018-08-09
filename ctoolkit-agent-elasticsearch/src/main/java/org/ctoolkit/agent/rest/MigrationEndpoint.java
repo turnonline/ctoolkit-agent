@@ -1,4 +1,4 @@
-package agent.rest;
+package org.ctoolkit.agent.rest;
 
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;

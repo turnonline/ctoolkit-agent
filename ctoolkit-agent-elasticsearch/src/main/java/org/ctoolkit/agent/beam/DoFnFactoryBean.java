@@ -24,27 +24,27 @@ public class DoFnFactoryBean
     @Override
     public DoFn<ImportSet, Void> createImportDoFn()
     {
-        throw new RuntimeException( "Not implemented yet" );
+        return new ImportDoFn();
     }
 
     @Bean
     @Override
     public DoFn<MigrationSet, KV<MigrationSet, String>> createSplitQueriesDoFn()
     {
-        return new SplitQueriesDoFn();
+        throw new RuntimeException( "Not implemented yet" );
     }
 
     @Bean
     @Override
     public DoFn<KV<MigrationSet, String>, KV<MigrationSet, List<EntityExportData>>> createRetrieveEntityMetadataListDoFn()
     {
-        return new RetrieveEntityMetaDataDoFn();
+        throw new RuntimeException( "Not implemented yet" );
     }
 
     @Bean
     @Override
     public DoFn<KV<MigrationSet, List<EntityExportData>>, Void> createTransformAndImportDoFn()
     {
-        return new TransformAndImportDoFn();
+        throw new RuntimeException( "Not implemented yet" );
     }
 }

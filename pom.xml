@@ -143,8 +143,9 @@
         <swagger-annotations.version>1.5.20</swagger-annotations.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
+        <elasticsearch.version>6.3.2</elasticsearch.version>
 
-        <exec.mainClass>org.ctoolkit.agent.Application</exec.mainClass>
+        <exec.mainClass>org.ctoolkit.Application</exec.mainClass>
     </properties>
 
 

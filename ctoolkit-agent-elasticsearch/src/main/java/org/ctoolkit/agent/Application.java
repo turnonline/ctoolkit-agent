@@ -1,4 +1,4 @@
-package agent;
+package org.ctoolkit.agent;
 
 import io.micronaut.runtime.Micronaut;
 
