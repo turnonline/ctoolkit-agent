@@ -38,7 +38,7 @@ public interface RuleStrategy
                 }
             }
 
-            return null;
+            throw new IllegalArgumentException( "Operation '" + value + "' not supported. Supported operations are: '=', 'eq', '<', 'lt', '<=', 'lte', '>', 'gt', '>=', 'gte', 'regexp'." );
         }
     }
 

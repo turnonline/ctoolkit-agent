@@ -33,6 +33,15 @@ public class EntityExportData
 
         private String className;
 
+        public Property()
+        {
+        }
+
+        public Property( Object value )
+        {
+            this.value = value;
+        }
+
         public Object getValue()
         {
             return value;
