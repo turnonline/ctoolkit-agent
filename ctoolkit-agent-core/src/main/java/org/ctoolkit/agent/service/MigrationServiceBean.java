@@ -22,6 +22,7 @@ import org.ctoolkit.agent.model.api.MigrationJob;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.PipelineOption;
+import org.ctoolkit.agent.rule.RuleSetResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,9 @@ public class MigrationServiceBean
 
     @Inject
     private Map<Agent, ConverterRegistrat> registrats;
+
+    @Inject
+    private RuleSetResolver ruleSetResolver;
 
     @Override
     public MigrationJob migrateBatch( MigrationBatch batch )
@@ -101,6 +105,13 @@ public class MigrationServiceBean
 
         for ( EntityExportData entityExportData : entityExportDataList )
         {
+            // skip entity migration if rules return apply = 'false'
+            if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), entityExportData ) )
+            {
+                continue;
+            }
+
+            // set header values
             ImportSet importSet = new ImportSet();
             importSets.add( importSet );
 
@@ -110,20 +121,19 @@ public class MigrationServiceBean
             importSet.setNamespace( migrationSet.getTargetNamespace() );
             importSet.setKind( migrationSet.getTargetKind() );
 
-            // TODO: implement rules
-
             // retrieve parent
-            if (migrationSet.getTargetParentKind() != null)
+            if ( migrationSet.getTargetParentKind() != null )
             {
                 EntityExportData.Property property = entityExportData.getProperties().get( migrationSet.getSourceParentForeignIdPropertyName() );
                 importSet.setParentNamespace( migrationSet.getTargetNamespace() );
                 importSet.setParentKind( migrationSet.getTargetParentKind() );
-                importSet.setParentId( new ValueWithLabels(property.getValue())
+                importSet.setParentId( new ValueWithLabels( property.getValue() )
                         .addLabel( "name", migrationSet.getTargetParentId() )
                         .addLabel( "lookup", migrationSet.getTargetParentLookupPropertyName() )
                         .toString() );
             }
 
+            // migrate properties
             for ( MigrationSetProperty migrationSetProperty : migrationSet.getProperties() )
             {
                 EntityExportData.Property source = entityExportData.getProperties().get( migrationSetProperty.getSourceProperty() );
@@ -139,7 +149,7 @@ public class MigrationServiceBean
                         EntityExportData.Property syncIdProperty = entityExportData.getProperties().get( migrationSet.getSourceSyncIdPropertyName() );
                         if ( syncIdProperty != null )
                         {
-                            importSet.setSyncId( new ValueWithLabels( syncIdProperty.getValue())
+                            importSet.setSyncId( new ValueWithLabels( syncIdProperty.getValue() )
                                     .addLabel( "name", migrationSet.getTargetSyncIdPropertyName() )
                                     .toString() );
                         }

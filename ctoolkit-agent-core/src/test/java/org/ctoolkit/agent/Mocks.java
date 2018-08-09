@@ -12,11 +12,8 @@ public class Mocks
 {
     public static EntityExportData exportData( String name, Object value )
     {
-        EntityExportData.Property property = new EntityExportData.Property();
-        property.setValue( value );
-
         EntityExportData exportData = new EntityExportData();
-        exportData.getProperties().put( name, property );
+        exportData.getProperties().put( name, new EntityExportData.Property( value ) );
 
         return exportData;
     }
