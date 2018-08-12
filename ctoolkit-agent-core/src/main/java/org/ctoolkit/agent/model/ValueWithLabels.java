@@ -2,6 +2,8 @@ package org.ctoolkit.agent.model;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Value with labels adds prefixed labelled values to value.
@@ -11,6 +13,10 @@ import java.util.TreeMap;
  */
 public class ValueWithLabels
 {
+    private static final String REGEX_GROUP_LABEL = "\\[(\\w+):(\\w+)]";
+
+    private static final String REGEX_GROUP_VALUE = ".*](\\w+)";
+
     private Map<String, String> labels = new TreeMap<>();
 
     private Object value;
@@ -20,10 +26,41 @@ public class ValueWithLabels
         this.value = value;
     }
 
+    public static ValueWithLabels of( String value )
+    {
+        ValueWithLabels valueWithLabels = new ValueWithLabels( value );
+
+        // retrieve value
+        Matcher matcherValue = Pattern.compile( REGEX_GROUP_VALUE ).matcher( value );
+        while ( matcherValue.find() )
+        {
+            valueWithLabels = new ValueWithLabels( matcherValue.group( 1 ) );
+
+            // retrieve label
+            Matcher matcherLabel = Pattern.compile( REGEX_GROUP_LABEL ).matcher( value );
+            while ( matcherLabel.find() )
+            {
+                valueWithLabels.addLabel( matcherLabel.group( 1 ), matcherLabel.group( 2 ) );
+            }
+        }
+
+        return valueWithLabels;
+    }
+
     public ValueWithLabels addLabel( String key, String value )
     {
         labels.put( key, value );
         return this;
+    }
+
+    public Map<String, String> getLabels()
+    {
+        return labels;
+    }
+
+    public Object getValue()
+    {
+        return value;
     }
 
     @Override
