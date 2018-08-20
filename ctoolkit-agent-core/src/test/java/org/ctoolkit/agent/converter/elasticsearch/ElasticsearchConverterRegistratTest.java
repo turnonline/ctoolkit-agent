@@ -5,7 +5,6 @@ import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyDateTransformer;
-import org.ctoolkit.agent.transformer.DateTransformerProcessor;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -167,7 +166,7 @@ public class ElasticsearchConverterRegistratTest
     @Test
     public void test_Date_Text()
     {
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "CET" ) );
+        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
@@ -311,7 +310,7 @@ public class ElasticsearchConverterRegistratTest
     @Test
     public void test_Date_Keyword()
     {
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "CET" ) );
+        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
@@ -364,12 +363,12 @@ public class ElasticsearchConverterRegistratTest
     @Test
     public void test_Date_Long()
     {
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "CET" ) );
+        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setFormat( DateTransformerProcessor.CONST_EPOCH );
+        transformer.setEpoch( true );
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_LONG );
         property.getTransformers().add( transformer );
@@ -377,7 +376,7 @@ public class ElasticsearchConverterRegistratTest
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "long", importSetProperty.getType() );
-        assertEquals( "1514847600000", importSetProperty.getValue() );
+        assertEquals( "1514851200000", importSetProperty.getValue() );
     }
 
     // -- type double
@@ -451,12 +450,12 @@ public class ElasticsearchConverterRegistratTest
     @Test
     public void test_Date_Double()
     {
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "CET" ) );
+        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setFormat( DateTransformerProcessor.CONST_EPOCH );
+        transformer.setEpoch( true );
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
         property.getTransformers().add( transformer );
@@ -464,7 +463,7 @@ public class ElasticsearchConverterRegistratTest
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
-        assertEquals( "1.5148476E12", importSetProperty.getValue() );
+        assertEquals( "1.5148512E12", importSetProperty.getValue() );
     }
 
     // -- type date
@@ -481,13 +480,13 @@ public class ElasticsearchConverterRegistratTest
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "date", importSetProperty.getType() );
-        assertEquals( "1514761200000", importSetProperty.getValue() );
+        assertEquals( "1514764800000", importSetProperty.getValue() );
     }
 
     @Test
     public void test_Long_Date()
     {
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "CET" ) );
+        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
@@ -502,7 +501,7 @@ public class ElasticsearchConverterRegistratTest
     @Test
     public void test_Date_Date()
     {
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "CET" ) );
+        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
@@ -511,7 +510,7 @@ public class ElasticsearchConverterRegistratTest
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "date", importSetProperty.getType() );
-        assertEquals( "1514847600000", importSetProperty.getValue() );
+        assertEquals( "1514851200000", importSetProperty.getValue() );
     }
 
     // -- type boolean
