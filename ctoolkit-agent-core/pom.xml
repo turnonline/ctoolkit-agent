@@ -16,12 +16,14 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>inject</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>runtime</artifactId>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut</groupId>
+            <artifactId>http-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>
