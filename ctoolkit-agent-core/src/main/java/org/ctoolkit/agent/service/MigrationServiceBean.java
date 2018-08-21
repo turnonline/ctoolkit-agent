@@ -1,6 +1,10 @@
 package org.ctoolkit.agent.service;
 
 import com.google.gson.Gson;
+import io.micronaut.http.HttpRequest;
+import io.micronaut.http.MutableHttpRequest;
+import io.micronaut.http.client.DefaultHttpClient;
+import io.micronaut.http.client.RxHttpClient;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.ctoolkit.agent.beam.ImportBeamPipeline;
@@ -27,6 +31,10 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -171,8 +179,16 @@ public class MigrationServiceBean
         }
         else
         {
-            // TODO: implement (create ctoolkit-agent-client)
-            // TODO: call ctoolkit-agent-client importBatch method
+            try
+            {
+                RxHttpClient httpClient = new DefaultHttpClient( new URL( migrationPipelineOptions.getTargetAgentUrl() ) );
+                MutableHttpRequest<ImportBatch> post = HttpRequest.POST( new URI( "/api/v1/imports" ), importBatch );
+                httpClient.retrieve( post ).blockingFirst();
+            }
+            catch ( MalformedURLException | URISyntaxException e )
+            {
+                log.error( "Unable to construct migration client", e );
+            }
         }
     }
 }
