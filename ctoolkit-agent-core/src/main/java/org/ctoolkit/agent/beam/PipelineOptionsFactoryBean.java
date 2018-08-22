@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.beam;
 
+import org.ctoolkit.agent.model.Agent;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.MigrationBatch;
 import org.ctoolkit.agent.model.api.PipelineOption;
@@ -36,6 +37,7 @@ public class PipelineOptionsFactoryBean
                 .fromArgs( toArgs( batch.getPipelineOptions() ) )
                 .as( MigrationPipelineOptions.class );
 
+        setupMigrationPipelineOptions( options );
         setupJdbcPipelineOptions( options );
         setupElasticsearchPipelineOptions( options );
 
@@ -43,6 +45,22 @@ public class PipelineOptionsFactoryBean
     }
 
     // -- private helpers
+
+    private void setupMigrationPipelineOptions( MigrationPipelineOptions options )
+    {
+        String migrationTargetAgent = System.getProperty( "migrationTargetAgent" );
+        String migrationTargetAgentUrl = System.getProperty( "migrationTargetAgentUrl" );
+
+        if ( options.getTargetAgent() == null )
+        {
+            options.setTargetAgent( migrationTargetAgent != null ? Agent.valueOf( migrationTargetAgent ) : null);
+        }
+
+        if ( options.getTargetAgentUrl() == null )
+        {
+            options.setTargetAgentUrl( migrationTargetAgentUrl );
+        }
+    }
 
     private void setupJdbcPipelineOptions( JdbcPipelineOptions options )
     {
@@ -75,7 +93,7 @@ public class PipelineOptionsFactoryBean
 
         if ( options.getElasticsearchHosts() == null )
         {
-            options.setElasticsearchHosts( elasticHosts != null ? elasticHosts.split( "," ) : null);
+            options.setElasticsearchHosts( elasticHosts != null ? elasticHosts.split( "," ) : null );
         }
     }
 
