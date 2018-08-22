@@ -58,3 +58,5 @@ instances here: https://console.cloud.google.com/appengine/instances?project=<pr
 -DjdbcPassword=admin123
 -DjdbcDriver=com.mysql.cj.jdbc.Driver
 -DelasticsearchHosts=http://localhost:9200
+-DmigrationTargetAgent=ELASTICSEARCH
+-DmigrationTargetAgentUrl=http://localhost:8081
