@@ -1,0 +1,15 @@
+version: "3.3"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.0
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      # published only for kibana
+      - 9200:9200
+    networks:
+      - migration
+
+networks:
+  migration:
+    external: true
