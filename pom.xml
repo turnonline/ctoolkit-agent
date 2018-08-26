@@ -145,7 +145,7 @@
         <junit.version>4.12</junit.version>
         <elasticsearch.version>6.3.2</elasticsearch.version>
 
-        <exec.mainClass>org.ctoolkit.Application</exec.mainClass>
+        <exec.mainClass>org.ctoolkit.agent.Application</exec.mainClass>
     </properties>
 
 

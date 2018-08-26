@@ -3,6 +3,9 @@ micronaut:
     name: ctoolkit-agent-sql
   server:
     port: 8080
+  http:
+    client:
+      read-timeout: 60s
 
 endpoints:
   routes:

@@ -1,0 +1,16 @@
+version: "3.3"
+services:
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+    ports:
+      # published only for MySQL Workbench
+      - 3306:3306
+    networks:
+      - migration
+
+networks:
+  migration:
+    external: true
