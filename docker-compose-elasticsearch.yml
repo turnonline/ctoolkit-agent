@@ -1,3 +1,4 @@
+# Run this command in your docker machine - 'sudo sysctl -w vm.max_map_count=262144' - before elasticsearch deploy
 version: "3.3"
 services:
   elasticsearch:

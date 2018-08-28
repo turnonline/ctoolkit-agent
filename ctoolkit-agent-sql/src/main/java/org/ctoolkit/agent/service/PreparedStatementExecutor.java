@@ -28,9 +28,14 @@ public abstract class PreparedStatementExecutor
 
     public void execute()
     {
-        try (Connection connection = dataSource.getConnection())
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try
         {
-            PreparedStatement statement = connection.prepareStatement( sql );
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement( sql );
+
             boolean executed = statement.execute();
             if ( executed )
             {
@@ -45,6 +50,31 @@ public abstract class PreparedStatementExecutor
         catch ( SQLException e )
         {
             log.error( "Error occur during creating database connection", e );
+        }
+        finally
+        {
+            if ( statement != null )
+            {
+                try
+                {
+                    statement.close();
+                }
+                catch ( SQLException e )
+                {
+                    log.error( "Unable to close statement", e );
+                }
+            }
+            if ( connection != null )
+            {
+                try
+                {
+                    connection.close();
+                }
+                catch ( SQLException e )
+                {
+                    log.error( "Unable to close connection", e );
+                }
+            }
         }
     }
 
