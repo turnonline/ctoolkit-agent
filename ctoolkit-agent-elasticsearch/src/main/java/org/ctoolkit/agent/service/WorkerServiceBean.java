@@ -38,6 +38,8 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 public class WorkerServiceBean
         implements WorkerService
 {
+    public static final String PROPERTY__SYNC_ID = "__syncId";
+
     private static final Logger log = LoggerFactory.getLogger( WorkerServiceBean.class );
 
     @Inject
@@ -103,6 +105,12 @@ public class WorkerServiceBean
                 jsonMap.put( property.getName(), property.getValue() );
             }
 
+            // add __syncId property
+            ValueWithLabels value = ValueWithLabels.of( importSet.getSyncId() );
+            String syncPropertyName = value.getLabels().getOrDefault( "name", PROPERTY__SYNC_ID );
+            Object syncPropertyValue = value.getValue();
+            jsonMap.put( syncPropertyName, syncPropertyValue );
+
             IndexRequest indexRequest = new IndexRequest( importSet.getNamespace(), importSet.getKind(), importSet.getId() );
             indexRequest.source( jsonMap );
             IndexResponse indexResponse = elasticClient.index( indexRequest );
@@ -121,7 +129,7 @@ public class WorkerServiceBean
     private SearchResponse searchDocument( ImportSet importSet )
     {
         ValueWithLabels value = ValueWithLabels.of( importSet.getSyncId() );
-        String syncPropertyName = value.getLabels().getOrDefault( "name", "_syncId" );
+        String syncPropertyName = value.getLabels().getOrDefault( "name", PROPERTY__SYNC_ID );
         Object syncPropertyValue = value.getValue();
 
         SearchRequest searchRequest = new SearchRequest();

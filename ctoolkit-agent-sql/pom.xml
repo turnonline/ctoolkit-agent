@@ -55,14 +55,28 @@
         </dependency>
         <dependency>
             <groupId>io.micronaut.configuration</groupId>
-            <artifactId>jdbc-hikari</artifactId>
+            <artifactId>jdbc-tomcat</artifactId>
         </dependency>
 
+        <!--jdbc drivers-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.11</version>
         </dependency>
+        <dependency>
+            <groupId>com.impossibl.pgjdbc-ng</groupId>
+            <artifactId>pgjdbc-ng</artifactId>
+            <version>0.7.1</version>
+            <!--exclude io.netty - already provided by micronaut (causing class loading conflicts)-->
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <dependency>
             <groupId>com.github.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>

@@ -19,7 +19,7 @@ public class ApplicationContextFactory
                 "datasources.default.url", pipelineOptions.getJdbcUrl(),
                 "datasources.default.username", pipelineOptions.getJdbcUsername(),
                 "datasources.default.password", pipelineOptions.getJdbcPassword(),
-                "datasources.default.driver", pipelineOptions.getJdbcDriver()
+                "datasources.default.driverClassName", pipelineOptions.getJdbcDriver()
         ) );
 
         ctx.registerSingleton( pipelineOptions, true );
@@ -34,7 +34,7 @@ public class ApplicationContextFactory
                 "datasources.default.url", pipelineOptions.getJdbcUrl(),
                 "datasources.default.username", pipelineOptions.getJdbcUsername(),
                 "datasources.default.password", pipelineOptions.getJdbcPassword(),
-                "datasources.default.driver", pipelineOptions.getJdbcDriver()
+                "datasources.default.driverClassName", pipelineOptions.getJdbcDriver()
         ) );
 
         ctx.registerSingleton( pipelineOptions, true );

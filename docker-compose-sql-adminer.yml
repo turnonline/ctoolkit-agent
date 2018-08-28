@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+  sql-adminer:
+    image: adminer
+    ports:
+      - 8180:8080
+    networks:
+      - migration
+
+networks:
+  migration:
+    external: true
