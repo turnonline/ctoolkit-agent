@@ -9,7 +9,7 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-01T10:56:39.411Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
 public class MigrationJob   {
   
   private String id = null;
@@ -24,7 +24,7 @@ public class MigrationJob   {
   }
 
   
-  @ApiModelProperty(value = "Job id")
+  @ApiModelProperty(required = true, value = "Job id")
   @JsonProperty("id")
   public String getId() {
     return id;

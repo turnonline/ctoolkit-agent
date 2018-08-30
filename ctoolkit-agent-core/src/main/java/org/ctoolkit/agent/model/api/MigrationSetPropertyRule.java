@@ -10,7 +10,7 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
 public class MigrationSetPropertyRule implements Serializable {
   
   private String property = null;
@@ -27,7 +27,7 @@ public class MigrationSetPropertyRule implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Property name")
+  @ApiModelProperty(required = true, value = "Property name")
   @JsonProperty("property")
   public String getProperty() {
     return property;
@@ -45,7 +45,7 @@ public class MigrationSetPropertyRule implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Operation expression")
+  @ApiModelProperty(required = true, value = "Operation expression")
   @JsonProperty("operation")
   public String getOperation() {
     return operation;
@@ -63,7 +63,7 @@ public class MigrationSetPropertyRule implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Property value")
+  @ApiModelProperty(required = true, value = "Property value")
   @JsonProperty("value")
   public String getValue() {
     return value;
@@ -80,7 +80,7 @@ public class MigrationSetPropertyRule implements Serializable {
     return this;
   }
 
-
+  
   @ApiModelProperty(value = "Recursive rule set to create complex logical rules. For instance:  name=‘John’ AND (surname=‘Foo’ OR surname=‘Bar’)")
   @JsonProperty("ruleSet")
   public MigrationSetPropertyRuleSet getRuleSet() {

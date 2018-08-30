@@ -1,7 +1,6 @@
 package org.ctoolkit.agent.transformer;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.BaseEncoding;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
@@ -14,6 +13,7 @@ import java.io.Reader;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Transformer transforms blob values (byte array, clob, blob) into string
@@ -26,7 +26,7 @@ public class BlobTransformerProcessor
     private static Logger log = LoggerFactory.getLogger( BlobTransformerProcessor.class );
 
     @Override
-    public Object transform( Object value, MigrationSetPropertyBlobTransformer transformer )
+    public Object transform( Object value, MigrationSetPropertyBlobTransformer transformer, Map<Object, Object> ctx )
     {
         if ( value instanceof byte[] )
         {
@@ -58,11 +58,6 @@ public class BlobTransformerProcessor
             {
                 log.info( "Unable to read Clob data", e );
             }
-        }
-
-        if ( transformer.getEncodeToBase64() && value instanceof String )
-        {
-            value = BaseEncoding.base64().encode( ( ( String ) value ).getBytes( Charsets.UTF_8 ) );
         }
 
         return value;

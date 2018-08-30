@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @Singleton
 public class ElasticsearchConverterRegistrat
-        extends ConverterRegistrat
+        extends BaseConverterRegistrat
 {
     public static final String TYPE_TEXT = "text";
 

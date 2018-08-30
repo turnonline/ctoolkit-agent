@@ -3,15 +3,14 @@ package org.ctoolkit.agent.model.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
-public class MigrationSetPropertyMapperTransformerMappings implements Serializable {
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
+public class MigrationSetPropertyMapperTransformerMappings extends MigrationSetPropertyTransformer {
   
   private String source = null;
   private String target = null;
@@ -25,7 +24,7 @@ public class MigrationSetPropertyMapperTransformerMappings implements Serializab
   }
 
   
-  @ApiModelProperty(value = "Source map value")
+  @ApiModelProperty(required = true, value = "Source map value")
   @JsonProperty("source")
   public String getSource() {
     return source;
@@ -43,7 +42,7 @@ public class MigrationSetPropertyMapperTransformerMappings implements Serializab
   }
 
   
-  @ApiModelProperty(value = "Target map value")
+  @ApiModelProperty(required = true, value = "Target map value")
   @JsonProperty("target")
   public String getTarget() {
     return target;

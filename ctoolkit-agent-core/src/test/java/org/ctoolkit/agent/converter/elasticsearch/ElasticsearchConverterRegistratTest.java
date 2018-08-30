@@ -1,10 +1,12 @@
 package org.ctoolkit.agent.converter.elasticsearch;
 
+import org.ctoolkit.agent.converter.ConverterExecutor;
 import org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyDateTransformer;
+import org.ctoolkit.agent.transformer.TransformerExecutor;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -37,13 +39,15 @@ public class ElasticsearchConverterRegistratTest
 {
     private ElasticsearchConverterRegistrat registrat = new ElasticsearchConverterRegistrat();
 
+    private ConverterExecutor executor = new ConverterExecutor(new TransformerExecutor(), registrat);
+    
     // -- target text
 
     @Test
     public void test_String_Text()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
-        ImportSetProperty importSetProperty = registrat.convert( "Boston", property );
+        ImportSetProperty importSetProperty = executor.convertProperty( "Boston", property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -54,7 +58,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Integer_Text()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
-        ImportSetProperty importSetProperty = registrat.convert( 1, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -65,7 +69,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Long_Text()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
-        ImportSetProperty importSetProperty = registrat.convert( 1L, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1L, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -76,7 +80,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Float_Text()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
-        ImportSetProperty importSetProperty = registrat.convert( 1F, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1F, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -87,7 +91,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Double_Text()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
-        ImportSetProperty importSetProperty = registrat.convert( 1D, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1D, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -98,7 +102,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_BigDecimal_Text()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
-        ImportSetProperty importSetProperty = registrat.convert( BigDecimal.valueOf( 1 ), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( BigDecimal.valueOf( 1 ), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -109,7 +113,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Boolean_Text()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
-        ImportSetProperty importSetProperty = registrat.convert( true, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( true, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -123,7 +127,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( new byte[]{'J', 'o', 'h', 'n'}, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( new byte[]{'J', 'o', 'h', 'n'}, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -139,7 +143,7 @@ public class ElasticsearchConverterRegistratTest
         when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( clob, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( clob, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -156,7 +160,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( blob, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( blob, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -174,7 +178,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_TEXT );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( calendar.getTime(), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( calendar.getTime(), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "text", importSetProperty.getType() );
@@ -187,7 +191,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_String_Keyword()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = registrat.convert( "Boston", property );
+        ImportSetProperty importSetProperty = executor.convertProperty( "Boston", property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -198,7 +202,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Integer_Keyword()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = registrat.convert( 1, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -209,7 +213,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Long_Keyword()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = registrat.convert( 1L, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1L, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -220,7 +224,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Float_Keyword()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = registrat.convert( 1F, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1F, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -231,7 +235,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Double_Keyword()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = registrat.convert( 1D, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1D, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -242,7 +246,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_BigDecimal_Keyword()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = registrat.convert( BigDecimal.valueOf( 1 ), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( BigDecimal.valueOf( 1 ), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -253,7 +257,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Boolean_Keyword()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = registrat.convert( true, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( true, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -267,7 +271,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( new byte[]{'J', 'o', 'h', 'n'}, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( new byte[]{'J', 'o', 'h', 'n'}, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -283,7 +287,7 @@ public class ElasticsearchConverterRegistratTest
         when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( clob, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( clob, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -300,7 +304,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( blob, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( blob, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -318,7 +322,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_KEYWORD );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( calendar.getTime(), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( calendar.getTime(), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "keyword", importSetProperty.getType() );
@@ -331,7 +335,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_String_Long()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_LONG );
-        ImportSetProperty importSetProperty = registrat.convert( "1", property );
+        ImportSetProperty importSetProperty = executor.convertProperty( "1", property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "long", importSetProperty.getType() );
@@ -342,7 +346,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Integer_Long()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_LONG );
-        ImportSetProperty importSetProperty = registrat.convert( 1, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "long", importSetProperty.getType() );
@@ -353,7 +357,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Long_Long()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_LONG );
-        ImportSetProperty importSetProperty = registrat.convert( 1L, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1L, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "long", importSetProperty.getType() );
@@ -372,7 +376,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_LONG );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( calendar.getTime(), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( calendar.getTime(), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "long", importSetProperty.getType() );
@@ -385,7 +389,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_String_Double()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
-        ImportSetProperty importSetProperty = registrat.convert( "1", property );
+        ImportSetProperty importSetProperty = executor.convertProperty( "1", property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
@@ -396,7 +400,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Integer_Double()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
-        ImportSetProperty importSetProperty = registrat.convert( 1, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
@@ -407,7 +411,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Long_Double()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
-        ImportSetProperty importSetProperty = registrat.convert( 1L, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1L, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
@@ -418,7 +422,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Float_Double()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
-        ImportSetProperty importSetProperty = registrat.convert( 1F, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1F, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
@@ -429,7 +433,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Double_Double()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
-        ImportSetProperty importSetProperty = registrat.convert( 1D, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1D, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
@@ -440,7 +444,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_BigDecimal_Double()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
-        ImportSetProperty importSetProperty = registrat.convert( BigDecimal.valueOf( 1 ), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( BigDecimal.valueOf( 1 ), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
@@ -459,7 +463,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DOUBLE );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( calendar.getTime(), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( calendar.getTime(), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "double", importSetProperty.getType() );
@@ -476,7 +480,7 @@ public class ElasticsearchConverterRegistratTest
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DATE );
         property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = registrat.convert( "2018-01-01", property );
+        ImportSetProperty importSetProperty = executor.convertProperty( "2018-01-01", property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "date", importSetProperty.getType() );
@@ -491,7 +495,7 @@ public class ElasticsearchConverterRegistratTest
         calendar.set( Calendar.MILLISECOND, 0 );
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DATE );
-        ImportSetProperty importSetProperty = registrat.convert( 1514847600000L, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( 1514847600000L, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "date", importSetProperty.getType() );
@@ -506,7 +510,7 @@ public class ElasticsearchConverterRegistratTest
         calendar.set( Calendar.MILLISECOND, 0 );
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_DATE );
-        ImportSetProperty importSetProperty = registrat.convert( calendar.getTime(), property );
+        ImportSetProperty importSetProperty = executor.convertProperty( calendar.getTime(), property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "date", importSetProperty.getType() );
@@ -519,7 +523,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_String_Boolean()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_BOOLEAN );
-        ImportSetProperty importSetProperty = registrat.convert( "true", property );
+        ImportSetProperty importSetProperty = executor.convertProperty( "true", property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "boolean", importSetProperty.getType() );
@@ -530,7 +534,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_Boolean_Boolean()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_BOOLEAN );
-        ImportSetProperty importSetProperty = registrat.convert( true, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( true, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "boolean", importSetProperty.getType() );
@@ -543,7 +547,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_String_Binary()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_BINARY );
-        ImportSetProperty importSetProperty = registrat.convert( "John", property );
+        ImportSetProperty importSetProperty = executor.convertProperty( "John", property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "binary", importSetProperty.getType() );
@@ -554,7 +558,7 @@ public class ElasticsearchConverterRegistratTest
     public void test_ByteArray_Binary()
     {
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_BINARY );
-        ImportSetProperty importSetProperty = registrat.convert( new byte[]{'J', 'o', 'h', 'n'}, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( new byte[]{'J', 'o', 'h', 'n'}, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "binary", importSetProperty.getType() );
@@ -567,7 +571,7 @@ public class ElasticsearchConverterRegistratTest
         Clob clob = mock( Clob.class );
         when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_BINARY );
-        ImportSetProperty importSetProperty = registrat.convert( clob, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( clob, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "binary", importSetProperty.getType() );
@@ -581,7 +585,7 @@ public class ElasticsearchConverterRegistratTest
         when( blob.getBinaryStream() ).thenReturn( new ByteArrayInputStream( new byte[]{'J', 'o', 'h', 'n'} ) );
 
         MigrationSetProperty property = mockMigrationSetPropery( TYPE_BINARY );
-        ImportSetProperty importSetProperty = registrat.convert( blob, property );
+        ImportSetProperty importSetProperty = executor.convertProperty( blob, property );
 
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "binary", importSetProperty.getType() );

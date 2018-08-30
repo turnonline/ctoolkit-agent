@@ -7,15 +7,12 @@ import io.micronaut.http.client.DefaultHttpClient;
 import io.micronaut.http.client.RxHttpClient;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
-import org.ctoolkit.agent.beam.ImportBeamPipeline;
 import org.ctoolkit.agent.beam.ImportPipelineOptions;
-import org.ctoolkit.agent.beam.MigrationBeamPipeline;
 import org.ctoolkit.agent.beam.MigrationPipelineOptions;
-import org.ctoolkit.agent.beam.PipelineOptionsFactory;
-import org.ctoolkit.agent.converter.ConverterRegistrat;
+import org.ctoolkit.agent.converter.BaseConverterRegistrat;
+import org.ctoolkit.agent.converter.ConverterExecutor;
 import org.ctoolkit.agent.model.Agent;
 import org.ctoolkit.agent.model.EntityExportData;
-import org.ctoolkit.agent.model.ValueWithLabels;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
 import org.ctoolkit.agent.model.api.ImportSet;
@@ -25,10 +22,10 @@ import org.ctoolkit.agent.model.api.MigrationJob;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.rule.RuleSetResolver;
+import org.ctoolkit.agent.transformer.TransformerExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.MalformedURLException;
@@ -51,29 +48,22 @@ public class MigrationServiceBean
     private static final Logger log = LoggerFactory.getLogger( MigrationServiceBean.class );
 
     @Inject
-    private PipelineOptionsFactory pipelineOptionsFactory;
+    private PipelineFacade pipelineFacade;
 
     @Inject
-    private MigrationBeamPipeline migrationPipeline;
-
-    @Inject
-    private ImportBeamPipeline importPipeline;
-
-    @Inject
-    @Nullable
-    private MigrationPipelineOptions migrationPipelineOptions;
-
-    @Inject
-    private Map<Agent, ConverterRegistrat> registrats;
+    private Map<Agent, BaseConverterRegistrat> registrats;
 
     @Inject
     private RuleSetResolver ruleSetResolver;
 
+    @Inject
+    private TransformerExecutor transformerExecutor;
+
     @Override
     public MigrationJob migrateBatch( MigrationBatch batch )
     {
-        MigrationPipelineOptions options = pipelineOptionsFactory.createMigrationPipelineOptions( batch );
-        Pipeline pipeline = migrationPipeline.create( batch, options );
+        MigrationPipelineOptions options = pipelineFacade.pipelineOptionsFactory().createMigrationPipelineOptions( batch );
+        Pipeline pipeline = pipelineFacade.migrationPipeline().create( batch, options );
         PipelineResult result = pipeline.run();
 
         MigrationJob job = new MigrationJob();
@@ -84,8 +74,8 @@ public class MigrationServiceBean
     @Override
     public ImportJob importBatch( ImportBatch batch )
     {
-        ImportPipelineOptions options = pipelineOptionsFactory.createImportPipelineOptions( batch );
-        Pipeline pipeline = importPipeline.create( batch, options );
+        ImportPipelineOptions options = pipelineFacade.pipelineOptionsFactory().createImportPipelineOptions( batch );
+        Pipeline pipeline = pipelineFacade.importPipeline().create( batch, options );
         PipelineResult result = pipeline.run();
 
         ImportJob job = new ImportJob();
@@ -96,12 +86,15 @@ public class MigrationServiceBean
     @Override
     public List<ImportSet> transform( MigrationSet migrationSet, List<EntityExportData> entityExportDataList )
     {
-        if ( migrationPipelineOptions == null )
+        if ( pipelineFacade.migrationPipelineOptions() == null )
         {
             throw new NullPointerException( "Migration pipeline options cannot be null. Provide MigrationPipelineOptions via factory to hide this error." );
         }
 
-        ConverterRegistrat registrat = registrats.get( migrationPipelineOptions.getTargetAgent() );
+        BaseConverterRegistrat registrat = registrats.get( pipelineFacade.migrationPipelineOptions().getTargetAgent() );
+        ConverterExecutor converterExecutor = new ConverterExecutor( transformerExecutor, registrat );
+        converterExecutor.putToContext( MigrationSet.class, migrationSet );
+
         List<ImportSet> importSets = new ArrayList<>();
 
         for ( EntityExportData entityExportData : entityExportDataList )
@@ -117,22 +110,10 @@ public class MigrationServiceBean
             importSets.add( importSet );
 
             importSet.setAuthor( migrationSet.getAuthor() );
-            importSet.setComment( "Migration import of " + migrationSet.getTargetNamespace() + "." + migrationSet.getTargetKind() );
-            importSet.setClean( migrationSet.getClean() );
-            importSet.setNamespace( migrationSet.getTargetNamespace() );
-            importSet.setKind( migrationSet.getTargetKind() );
-
-            // retrieve parent
-            if ( migrationSet.getTargetParentKind() != null )
-            {
-                EntityExportData.Property property = entityExportData.getProperties().get( migrationSet.getSourceParentForeignIdPropertyName() );
-                importSet.setParentNamespace( migrationSet.getTargetNamespace() );
-                importSet.setParentKind( migrationSet.getTargetParentKind() );
-                importSet.setParentId( new ValueWithLabels( property.getValue() )
-                        .addLabel( "name", migrationSet.getTargetParentId() )
-                        .addLabel( "lookup", migrationSet.getTargetParentLookupPropertyName() )
-                        .toString() );
-            }
+            importSet.setComment( "Migration import of " + migrationSet.getTarget().getNamespace() + "." + migrationSet.getTarget().getKind() );
+            importSet.setNamespace( migrationSet.getTarget().getNamespace() );
+            importSet.setKind( migrationSet.getTarget().getKind() );
+            importSet.setId( converterExecutor.convertId( migrationSet, entityExportData ) );
 
             // migrate properties
             for ( MigrationSetProperty migrationSetProperty : migrationSet.getProperties() )
@@ -141,19 +122,10 @@ public class MigrationServiceBean
                 if ( source != null )
                 {
                     // convert value to ImportSetProperty
-                    ImportSetProperty importSetProperty = registrat.convert( source.getValue(), migrationSetProperty );
+                    ImportSetProperty importSetProperty = converterExecutor.convertProperty( source.getValue(), migrationSetProperty );
                     if ( importSetProperty != null )
                     {
                         importSet.getProperties().add( importSetProperty );
-
-                        // retrieve sync id property
-                        EntityExportData.Property syncIdProperty = entityExportData.getProperties().get( migrationSet.getSourceSyncIdPropertyName() );
-                        if ( syncIdProperty != null )
-                        {
-                            importSet.setSyncId( new ValueWithLabels( syncIdProperty.getValue() )
-                                    .addLabel( "name", migrationSet.getTargetSyncIdPropertyName() )
-                                    .toString() );
-                        }
                     }
                 }
             }
@@ -165,7 +137,8 @@ public class MigrationServiceBean
     @Override
     public void importToTargetAgent( List<ImportSet> importSets )
     {
-        if ( migrationPipelineOptions == null )
+        MigrationPipelineOptions options = pipelineFacade.migrationPipelineOptions();
+        if ( options == null )
         {
             throw new NullPointerException( "Migration pipeline options cannot be null. Provide MigrationPipelineOptions via factory to hide this error." );
         }
@@ -173,7 +146,7 @@ public class MigrationServiceBean
         ImportBatch importBatch = new ImportBatch();
         importBatch.setImportSets( importSets );
 
-        if ( migrationPipelineOptions.isDryRun() )
+        if ( options.isDryRun() )
         {
             log.info( new Gson().toJson( importBatch ) );
         }
@@ -181,7 +154,7 @@ public class MigrationServiceBean
         {
             try
             {
-                RxHttpClient httpClient = new DefaultHttpClient( new URL( migrationPipelineOptions.getTargetAgentUrl() ) );
+                RxHttpClient httpClient = new DefaultHttpClient( new URL( options.getTargetAgentUrl() ) );
                 MutableHttpRequest<ImportBatch> post = HttpRequest.POST( new URI( "/api/v1/imports" ), importBatch );
                 httpClient.retrieve( post ).blockingFirst();
             }

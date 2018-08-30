@@ -2,7 +2,7 @@ package org.ctoolkit.agent.service;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import org.ctoolkit.agent.converter.ConverterRegistrat;
+import org.ctoolkit.agent.converter.BaseConverterRegistrat;
 import org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat;
 import org.ctoolkit.agent.model.Agent;
 
@@ -18,9 +18,9 @@ public class RegistratFactory
 {
     @Bean
     @Singleton
-    public Map<Agent, ConverterRegistrat> provideRegistrats(ElasticsearchConverterRegistrat elasticsearchConverterRegistrat)
+    public Map<Agent, BaseConverterRegistrat> provideRegistrats( ElasticsearchConverterRegistrat elasticsearchConverterRegistrat)
     {
-        Map<Agent, ConverterRegistrat> registrats = new HashMap<>(  );
+        Map<Agent, BaseConverterRegistrat> registrats = new HashMap<>(  );
         registrats.put( Agent.ELASTICSEARCH, elasticsearchConverterRegistrat );
         return registrats;
     }

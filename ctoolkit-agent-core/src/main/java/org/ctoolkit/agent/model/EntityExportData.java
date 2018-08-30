@@ -12,7 +12,19 @@ import java.util.Map;
 public class EntityExportData
         implements Serializable
 {
+    private String id;
+
     private Map<String, Property> properties = new HashMap<>();
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
+    }
 
     public Map<String, Property> getProperties()
     {
@@ -28,10 +40,6 @@ public class EntityExportData
             implements Serializable
     {
         private Object value;
-
-        private String typeName;
-
-        private String className;
 
         public Property()
         {
@@ -52,33 +60,11 @@ public class EntityExportData
             this.value = value;
         }
 
-        public String getTypeName()
-        {
-            return typeName;
-        }
-
-        public void setTypeName( String typeName )
-        {
-            this.typeName = typeName;
-        }
-
-        public String getClassName()
-        {
-            return className;
-        }
-
-        public void setClassName( String className )
-        {
-            this.className = className;
-        }
-
         @Override
         public String toString()
         {
             return "Property{" +
                     "value=" + value +
-                    ", typeName='" + typeName + '\'' +
-                    ", className='" + className + '\'' +
                     '}';
         }
     }
