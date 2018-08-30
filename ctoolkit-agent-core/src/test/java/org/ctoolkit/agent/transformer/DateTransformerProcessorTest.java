@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +29,7 @@ public class DateTransformerProcessorTest
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertEquals( "01-01-2018", processor.transform( calendar.getTime(), transformer ) );
+        assertEquals( "01-01-2018", processor.transform( calendar.getTime(), transformer, new HashMap<>() ) );
     }
 
     @Test
@@ -41,7 +42,7 @@ public class DateTransformerProcessorTest
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertEquals( 1514764800000L, processor.transform( calendar.getTime(), transformer ) );
+        assertEquals( 1514764800000L, processor.transform( calendar.getTime(), transformer, new HashMap<>() ) );
     }
 
     @Test
@@ -50,7 +51,7 @@ public class DateTransformerProcessorTest
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
         transformer.setFormat( "dd-MM-yyyy" );
 
-        Object date = processor.transform( "1fd", transformer );
+        Object date = processor.transform( "1fd", transformer, new HashMap<>() );
         assertEquals( "1fd", date );
     }
 
@@ -60,7 +61,7 @@ public class DateTransformerProcessorTest
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
         transformer.setFormat( "dd-MM-yyyy" );
 
-        Date date = ( Date ) processor.transform( "01-01-2018", transformer );
+        Date date = ( Date ) processor.transform( "01-01-2018", transformer, new HashMap<>() );
         assertEquals( 1514764800000L, date.getTime() );
     }
 
@@ -71,6 +72,6 @@ public class DateTransformerProcessorTest
         transformer.setFormat( "dd-MM-yyyy" );
         transformer.setEpoch( true );
 
-        assertEquals( 1514764800000L, processor.transform( "01-01-2018", transformer ) );
+        assertEquals( 1514764800000L, processor.transform( "01-01-2018", transformer, new HashMap<>() ) );
     }
 }

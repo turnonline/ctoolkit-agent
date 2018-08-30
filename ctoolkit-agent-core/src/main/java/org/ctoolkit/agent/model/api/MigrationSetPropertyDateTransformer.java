@@ -9,7 +9,7 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-06T05:00:11.129Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
 public class MigrationSetPropertyDateTransformer extends MigrationSetPropertyTransformer {
   
   private String format = null;
@@ -25,7 +25,7 @@ public class MigrationSetPropertyDateTransformer extends MigrationSetPropertyTra
   }
 
   
-  @ApiModelProperty(value = "Date format which will be used to transfer Date value into formatted String or formatted String to Date - https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html.")
+  @ApiModelProperty(required = true, value = "Date format which will be used to transfer Date value into formatted String or formatted String to Date - https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html.")
   @JsonProperty("format")
   public String getFormat() {
     return format;
@@ -61,7 +61,7 @@ public class MigrationSetPropertyDateTransformer extends MigrationSetPropertyTra
   }
 
   
-  @ApiModelProperty(value = "Time zone used in simple date formatter. Default is 'GMT'")
+  @ApiModelProperty(required = true, value = "Time zone used in simple date formatter. Default is 'GMT'")
   @JsonProperty("timeZone")
   public String getTimeZone() {
     return timeZone;

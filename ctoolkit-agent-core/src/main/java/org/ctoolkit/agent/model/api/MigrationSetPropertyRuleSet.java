@@ -12,7 +12,7 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
 public class MigrationSetPropertyRuleSet implements Serializable {
   
   private String operation = "and";
@@ -27,7 +27,7 @@ public class MigrationSetPropertyRuleSet implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Rule logical operation")
+  @ApiModelProperty(required = true, value = "Rule logical operation")
   @JsonProperty("operation")
   public String getOperation() {
     return operation;
@@ -45,7 +45,7 @@ public class MigrationSetPropertyRuleSet implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Array of rules")
+  @ApiModelProperty(required = true, value = "Array of rules")
   @JsonProperty("rules")
   public List<MigrationSetPropertyRule> getRules() {
     return rules;

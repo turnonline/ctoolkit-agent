@@ -12,7 +12,7 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-30T05:34:23.887Z")
 public class MigrationSetProperty implements Serializable {
   
   private String sourceProperty = null;
@@ -31,7 +31,7 @@ public class MigrationSetProperty implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Source property name")
+  @ApiModelProperty(required = true, value = "Source property name")
   @JsonProperty("sourceProperty")
   public String getSourceProperty() {
     return sourceProperty;
@@ -49,7 +49,7 @@ public class MigrationSetProperty implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Data type name in target agent (for instance 'varchar' in sql database or 'text' in elasticsearch)")
+  @ApiModelProperty(required = true, value = "Data type name in target agent (for instance 'varchar' in sql database or 'text' in elasticsearch)")
   @JsonProperty("targetType")
   public String getTargetType() {
     return targetType;
@@ -67,7 +67,7 @@ public class MigrationSetProperty implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Target property name")
+  @ApiModelProperty(required = true, value = "Target property name")
   @JsonProperty("targetProperty")
   public String getTargetProperty() {
     return targetProperty;

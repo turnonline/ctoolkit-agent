@@ -1,11 +1,12 @@
 package org.ctoolkit.agent.converter;
 
-import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
-import org.ctoolkit.agent.model.api.MigrationSetPropertyTransformer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ctoolkit.agent.model.api.MigrationSetPropertyEncodingTransformer;
+import org.ctoolkit.agent.transformer.BlobTransformerProcessor;
+import org.ctoolkit.agent.transformer.EncodingTransformerProcessor;
+
+import java.util.HashMap;
 
 /**
  * Binary converter
@@ -13,40 +14,26 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public class BinaryConverter
-        extends BaseConverter
+        implements Converter
 {
-    private static final Logger log = LoggerFactory.getLogger( BinaryConverter.class );
-
     public static BinaryConverter INSTANCE = new BinaryConverter();
 
     @Override
-    public ImportSetProperty convert( Object source, MigrationSetProperty property )
+    public String convert( Object source, MigrationSetProperty property )
     {
-        if ( !hasBlobTransformer( property ) )
-        {
-            MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-            transformer.setEncodeToBase64( true );
-            property.getTransformers().add( 0, transformer );
-        }
+        MigrationSetPropertyEncodingTransformer encodingTransformer = new MigrationSetPropertyEncodingTransformer();
+        encodingTransformer.setEncodingType( "base64" );
+        EncodingTransformerProcessor encodingProcessor = new EncodingTransformerProcessor();
 
-        Object transformedValue = transform( source, property.getTransformers() );
-        String target = transformedValue.toString();
-        ImportSetProperty importSetProperty = newImportSetProperty( property );
-        importSetProperty.setValue( target );
+        MigrationSetPropertyBlobTransformer blobTransformer = new MigrationSetPropertyBlobTransformer();
+        BlobTransformerProcessor blobProcessor = new BlobTransformerProcessor();
 
-        return importSetProperty;
-    }
+        // convert blob to String
+        Object target = blobProcessor.transform( source, blobTransformer, new HashMap<>(  ) );
 
-    private boolean hasBlobTransformer( MigrationSetProperty property )
-    {
-        for ( MigrationSetPropertyTransformer transformer : property.getTransformers() )
-        {
-            if ( transformer instanceof MigrationSetPropertyBlobTransformer )
-            {
-                return true;
-            }
-        }
+        // convert String to base64 string
+        target = encodingProcessor.transform( target, encodingTransformer, new HashMap<>(  ) );
 
-        return false;
+        return target.toString();
     }
 }

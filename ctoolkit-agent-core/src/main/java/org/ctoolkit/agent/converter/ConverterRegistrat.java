@@ -1,57 +1,27 @@
 package org.ctoolkit.agent.converter;
 
-import org.ctoolkit.agent.model.api.ImportSetProperty;
-import org.ctoolkit.agent.model.api.MigrationSetProperty;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Converter registrat base class
+ * Converter registrat API
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public abstract class ConverterRegistrat
+public interface ConverterRegistrat
 {
-    private Map<Converter.Key, Converter> converters = new HashMap<>();
+    /**
+     * Register converter
+     *
+     * @param source source class
+     * @param target target value
+     * @param converter converter to use
+     */
+    void register( Class source, String target, Converter converter );
 
-    public ConverterRegistrat()
-    {
-        initialize();
-    }
-
-    public abstract void initialize();
-
-    public void register( Class source, String target, Converter converter )
-    {
-        converters.put( converter.key( source, target ), converter );
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public Converter get( Object sourceValue, String targetTypeName )
-    {
-        for ( Map.Entry<Converter.Key, Converter> entry : converters.entrySet() )
-        {
-            Class sourceClassName = entry.getKey().getSourceClassName();
-            String targetType = entry.getKey().getTargetTypeName();
-
-            if ( sourceClassName.isAssignableFrom( sourceValue.getClass() ) && targetTypeName.equals( targetType ) )
-            {
-                return entry.getValue();
-            }
-        }
-
-        return null;
-    }
-
-    public ImportSetProperty convert( Object source, MigrationSetProperty property )
-    {
-        Converter converter = get( source, property.getTargetType() );
-        if ( converter != null )
-        {
-            return converter.convert( source, property );
-        }
-
-        return null;
-    }
+    /**
+     * Get converter by source value ant target type name
+     *
+     * @param sourceValue source value
+     * @param targetTypeName target type name (i.e. text)
+     * @return converter or <code>null</code> if converter could not be found for sourceValue/targetTypeName combination
+     */
+    Converter get( Object sourceValue, String targetTypeName );
 }

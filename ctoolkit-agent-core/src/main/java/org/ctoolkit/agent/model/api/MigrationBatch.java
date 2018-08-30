@@ -11,9 +11,9 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-07-31T19:00:18.485Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
 public class MigrationBatch   {
-
+  
   private List<PipelineOption> pipelineOptions = new ArrayList<PipelineOption>();
   private List<MigrationSet> migrationSets = new ArrayList<MigrationSet>();
 
@@ -76,7 +76,7 @@ public class MigrationBatch   {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MigrationBatch {\n");
-
+    
     sb.append("    pipelineOptions: ").append(toIndentedString(pipelineOptions)).append("\n");
     sb.append("    migrationSets: ").append(toIndentedString(migrationSets)).append("\n");
     sb.append("}");

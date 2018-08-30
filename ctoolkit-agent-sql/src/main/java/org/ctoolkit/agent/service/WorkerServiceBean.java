@@ -49,7 +49,7 @@ public class WorkerServiceBean
         // create select as 'select * from sourceNamespace.sourceKind'
         if ( query == null )
         {
-            Table table = new Table( migrationSet.getSourceNamespace(), migrationSet.getSourceKind() );
+            Table table = new Table( migrationSet.getSource().getNamespace(), migrationSet.getSource().getKind() );
             rootSelect = SelectUtils.buildSelectFromTable( table );
             rootCountSelect = SelectUtils.buildSelectFromTable( table );
         }
@@ -133,8 +133,6 @@ public class WorkerServiceBean
                     {
                         EntityExportData.Property property = new EntityExportData.Property();
                         property.setValue( resultSet.getObject( i ) );
-                        property.setClassName( metaData.getColumnClassName( i ) );
-                        property.setTypeName( metaData.getColumnTypeName( i ) );
 
                         entityExportData.getProperties().put( metaData.getColumnName( i ), property );
                     }

@@ -1,6 +1,5 @@
 package org.ctoolkit.agent.converter;
 
-import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,26 +12,25 @@ import java.util.Date;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public class DateConverter
-        extends BaseConverter
+        implements Converter
 {
     private static final Logger log = LoggerFactory.getLogger( DateConverter.class );
 
     public static DateConverter INSTANCE = new DateConverter();
 
     @Override
-    public ImportSetProperty convert( Object source, MigrationSetProperty property )
+    public String convert( Object source, MigrationSetProperty property )
     {
-        Object transformedValue = transform( source, property.getTransformers() );
         Date target = null;
         try
         {
-            if ( transformedValue instanceof Date )
+            if ( source instanceof Date )
             {
-                target = ( Date ) transformedValue;
+                target = ( Date ) source;
             }
             else
             {
-                target = new Date( Long.valueOf( transformedValue.toString() ) );
+                target = new Date( Long.valueOf( source.toString() ) );
             }
         }
         catch ( NumberFormatException e )
@@ -40,9 +38,6 @@ public class DateConverter
             log.info( "Unable to create date from value: '" + source + "'", e );
         }
 
-        ImportSetProperty importSetProperty = newImportSetProperty( property );
-        importSetProperty.setValue( target != null ? Long.valueOf( target.getTime() ).toString() : null );
-
-        return importSetProperty;
+        return target != null ? Long.valueOf( target.getTime() ).toString() : null;
     }
 }

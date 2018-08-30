@@ -5,6 +5,7 @@ import org.ctoolkit.agent.model.api.MigrationSetPropertyMapperTransformerMapping
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,19 +21,19 @@ public class MapperTransformerProcessorTest
     @Test
     public void transformMale()
     {
-        assertEquals( "MALE", processor.transform( "M", mockTransformer() ) );
+        assertEquals( "MALE", processor.transform( "M", mockTransformer(), new HashMap<>() ) );
     }
 
     @Test
     public void transformFemale()
     {
-        assertEquals( "FEMALE", processor.transform( "F", mockTransformer() ) );
+        assertEquals( "FEMALE", processor.transform( "F", mockTransformer(), new HashMap<>() ) );
     }
 
     @Test
     public void transformUnknown()
     {
-        assertEquals( "X", processor.transform( "X", mockTransformer() ) );
+        assertEquals( "X", processor.transform( "X", mockTransformer(), new HashMap<>() ) );
     }
 
     private MigrationSetPropertyMapperTransformer mockTransformer()

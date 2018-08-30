@@ -1,6 +1,5 @@
 package org.ctoolkit.agent.converter;
 
-import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,28 +10,25 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public class DoubleConverter
-        extends BaseConverter
+        implements Converter
 {
     private static final Logger log = LoggerFactory.getLogger( DoubleConverter.class );
 
     public static DoubleConverter INSTANCE = new DoubleConverter();
 
     @Override
-    public ImportSetProperty convert( Object source, MigrationSetProperty property )
+    public String convert( Object source, MigrationSetProperty property )
     {
-        Object transformedValue = transform( source, property.getTransformers() );
         Double target = null;
         try
         {
-            target = new Double( transformedValue.toString() );
+            target = new Double( source.toString() );
         }
         catch ( NumberFormatException e )
         {
             log.info( "Unable to create double from value: '" + source + "'", e );
         }
-        ImportSetProperty importSetProperty = newImportSetProperty( property );
-        importSetProperty.setValue( String.valueOf( target ) );
 
-        return importSetProperty;
+        return String.valueOf( target );
     }
 }

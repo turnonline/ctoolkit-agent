@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -20,7 +21,7 @@ public class DateTransformerProcessor
     private static Logger log = LoggerFactory.getLogger( DateTransformerProcessor.class );
 
     @Override
-    public Object transform( Object value, MigrationSetPropertyDateTransformer transformer )
+    public Object transform( Object value, MigrationSetPropertyDateTransformer transformer, Map<Object, Object> ctx )
     {
         Date date = null;
 
