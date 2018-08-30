@@ -52,6 +52,15 @@
         <url>https://github.com/turnonline/ctoolkit-agent/issues</url>
     </issueManagement>
 
+    <distributionManagement>
+        <repository>
+            <id>turnonline</id>
+            <uniqueVersion>false</uniqueVersion>
+            <layout>legacy</layout>
+            <url>https://index.docker.io/v1/</url>
+        </repository>
+    </distributionManagement>
+
     <developers>
         <developer>
             <name>Aurel Medvegy</name>
