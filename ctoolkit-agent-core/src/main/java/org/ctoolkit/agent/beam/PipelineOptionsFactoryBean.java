@@ -53,7 +53,7 @@ public class PipelineOptionsFactoryBean
 
         if ( options.getTargetAgent() == null )
         {
-            options.setTargetAgent( migrationTargetAgent != null ? Agent.valueOf( migrationTargetAgent ) : null);
+            options.setTargetAgent( migrationTargetAgent != null ? Agent.valueOf( migrationTargetAgent ) : null );
         }
 
         if ( options.getTargetAgentUrl() == null )
@@ -99,6 +99,17 @@ public class PipelineOptionsFactoryBean
 
     private String[] toArgs( List<PipelineOption> options )
     {
+        // setup runner
+        boolean containsRunner = options.stream().anyMatch( pipelineOption -> "runner".equals( pipelineOption.getName() ) );
+        String runner = System.getProperty( "runner" );
+        if ( !containsRunner && runner != null )
+        {
+            PipelineOption pipelineOption = new PipelineOption();
+            pipelineOption.setName( "runner" );
+            pipelineOption.setValue( runner );
+            options.add( pipelineOption );
+        }
+
         String[] args = new String[options.size()];
         for ( int i = 0; i < options.size(); i++ )
         {
