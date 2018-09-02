@@ -47,3 +47,17 @@ Recommended way of running agents is via docker. To setup docker follow these st
 ## Elasticsearch setup
 - DelasticsearchHosts=http://morty:9200
 - Dmicronaut.server.port=8081
+
+## Build
+To run agents locally you need to build it with special maven profile. Each
+agent has its own profile:
+```shell
+# mvn clean install -P sql
+# mvn clean install -P elasticsearch
+``` 
+
+## Docker deploy
+To build docker image and deploy it to docker hub run following command:
+```shell
+# mvn clean install -P sql,build-docker
+```
