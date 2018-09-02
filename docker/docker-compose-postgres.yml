@@ -5,6 +5,11 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: admin123
+    command: -c 'max_connections=2000'
+    configs:
+      # initialize database
+      - source: init-db
+        target: /docker-entrypoint-initdb.d/init-db.sql
     ports:
       # published only for SQL Adminer
       - 5432:5432
@@ -14,3 +19,7 @@ services:
 networks:
   migration:
     external: true
+
+configs:
+  init-db:
+    file: ./config/init-db.sql

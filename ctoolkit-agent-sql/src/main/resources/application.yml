@@ -8,8 +8,5 @@ micronaut:
       read-timeout: 60s
 
 endpoints:
-  routes:
-    enabled: true
-    sensitive: false
   health:
     details-visible: ANONYMOUS
