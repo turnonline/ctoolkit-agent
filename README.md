@@ -5,6 +5,9 @@ Cloud Toolkit Migration Agent REST API (Micro) Service is tool which motivation 
 any to any data source. For every datasource there is written specific agent which knows how to import and export data
 from it.
 
+# How it works
+![how-it-works](https://github.com/turnonline/ctoolkit-agent/blob/feature/multiple-agents/etc/how-it-works.png)
+
 ## Project structure
 * ctoolkit-agent-core - shared core for migration agents. It handles core busines logic like transformations, conversions, rule sets, beam creation and so on
 * ctoolkit-agent-elasticsearch - concrete agent implementation for elasticsearch data source
