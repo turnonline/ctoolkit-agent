@@ -38,6 +38,22 @@ Recommended way of running agents is via docker. To setup docker follow these st
 # docker stack deploy -c docker-compose-sql-adminer.yml migration
 # docker stack deploy -c docker-compose-kibana.yml migration
 ```
+* To setup apache flink processor engine run following command
+```shell
+# docker stack deploy -c docker-compose-flink.yml migration
+```
+
+### Exposed docker ports
+| Port | Service name                 | Service type |
+|------|------------------------------|--------------|
+| 8080 | ctoolkit-agent-sql           |[agent]       |
+| 8081 | ctoolkit-agent-elasticsearch |[agent]       | 
+| 5432 | postgres database            |[datasource]  |
+| 3306 | mysql database               |[datasource]  |
+| 9200 | elasticsearch database       |[datasource]  |
+| 8180 | sql adminer UI               |[UI]          |
+| 8181 | kibana UI                    |[UI]          |
+| 8191 | flink web dashboard UI       |[UI]          |
 
 ## SQL setup (postgress)
 - DjdbcUrl=jdbc:postgresql://morty:5432/root
