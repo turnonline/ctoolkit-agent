@@ -3,9 +3,6 @@ CtoolkiT Agent
 
 Cloud Toolkit Migration Agent REST API - Google AppEngine (Micro) Service
 
-# How it works
-![how-it-works](https://github.com/turnonline/ctoolkit-agent/blob/feature/multiple-agents/etc/how-it-works.png)
-
 # Development
 > Important: To use authenticator for endpoint in local jetty you need to set system property to fake that server is 
 running in app engine. Otherwise com.google.api.server.spi.request.Auth#authenticateAppEngineUser() skips the authentication process:
