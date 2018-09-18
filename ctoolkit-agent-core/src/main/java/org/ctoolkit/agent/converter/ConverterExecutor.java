@@ -1,7 +1,7 @@
 package org.ctoolkit.agent.converter;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.BaseEncoding;
+import org.apache.beam.repackaged.beam_runners_core_java.com.google.common.base.Charsets;
+import org.apache.beam.repackaged.beam_runners_core_java.com.google.common.io.BaseEncoding;
 import org.apache.commons.text.StringSubstitutor;
 import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.ImportSetProperty;

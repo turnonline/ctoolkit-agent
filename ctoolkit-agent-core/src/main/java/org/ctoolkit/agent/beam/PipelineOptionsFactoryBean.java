@@ -27,6 +27,8 @@ public class PipelineOptionsFactoryBean
         setupJdbcPipelineOptions( options );
         setupElasticsearchPipelineOptions( options );
 
+        options.setAppName( "Data import" );
+
         return options;
     }
 
@@ -40,6 +42,8 @@ public class PipelineOptionsFactoryBean
         setupMigrationPipelineOptions( options );
         setupJdbcPipelineOptions( options );
         setupElasticsearchPipelineOptions( options );
+
+        options.setAppName( "Data migration" );
 
         return options;
     }

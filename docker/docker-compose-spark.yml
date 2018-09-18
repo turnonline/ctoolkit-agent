@@ -1,0 +1,45 @@
+version: "3.3"
+services:
+  spark-master:
+    image: gettyimages/spark
+    command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
+    hostname: spark-master
+    networks:
+      - migration
+    environment:
+      MASTER: spark://spark-master:7077
+      SPARK_CONF_DIR: /conf
+      SPARK_PUBLIC_DNS: spark-master
+      SPARK_MASTER_WEBUI_PORT: 8191
+    ports:
+      - 6066:6066
+      - 7077:7077
+      - 8191:8191
+      - 5004:5004
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  spark-worker:
+    image: gettyimages/spark
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    hostname: spark-worker
+    networks:
+      - migration
+    environment:
+      SPARK_CONF_DIR: /conf
+      SPARK_WORKER_CORES: 4
+      SPARK_WORKER_MEMORY: 1g
+      SPARK_WORKER_PORT: 8881
+      SPARK_WORKER_WEBUI_PORT: 8192
+      SPARK_PUBLIC_DNS: spark-master
+    ports:
+      - 8192:8192
+      - 5005:5005
+    deploy:
+      mode: replicated
+      replicas: 1
+
+networks:
+  migration:
+    external: true
