@@ -38,9 +38,9 @@ Recommended way of running agents is via docker. To setup docker follow these st
 # docker stack deploy -c docker-compose-sql-adminer.yml migration
 # docker stack deploy -c docker-compose-kibana.yml migration
 ```
-* To setup apache flink processor engine run following command
+* To setup apache spark processor engine run following command
 ```shell
-# docker stack deploy -c docker-compose-flink.yml migration
+# docker stack deploy -c docker-compose-spark.yml migration
 ```
 
 ### Exposed docker ports
@@ -53,7 +53,9 @@ Recommended way of running agents is via docker. To setup docker follow these st
 | 9200 | elasticsearch database       |[datasource]  |
 | 8180 | sql adminer UI               |[UI]          |
 | 8181 | kibana UI                    |[UI]          |
-| 8191 | flink web dashboard UI       |[UI]          |
+| 8191 | spark dashboard UI master    |[UI]          |
+| 8192 | spark dashboard UI worker    |[UI]          |
+| 4040 | spark dashboard UI app       |[UI]          |
 
 ## SQL setup (postgress)
 - DjdbcUrl=jdbc:postgresql://morty:5432/root
@@ -61,7 +63,7 @@ Recommended way of running agents is via docker. To setup docker follow these st
 - DjdbcPassword=admin123
 - DjdbcDriver=org.postgresql.Driver
 - DmigrationTargetAgent=ELASTICSEARCH
-- DmigrationTargetAgentUrl=http://localhost:8081
+- DmigrationTargetAgentUrl=http://morty:8081
 
 ## Elasticsearch setup
 - DelasticsearchHosts=http://morty:9200
@@ -76,7 +78,7 @@ agent has its own profile:
 ``` 
 
 ## Docker deploy
-To build docker image and deploy it to docker hub run following command:
+To build docker images and deploy them to docker hub run following command:
 ```shell
-# mvn clean install -P sql,build-docker
+# mvn clean install -P sql,elasticsearch,build-docker
 ```

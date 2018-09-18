@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.beam;
 
+import org.apache.beam.sdk.options.ApplicationNameOptions;
 import org.apache.beam.sdk.options.PipelineOptions;
 
 /**
@@ -8,6 +9,6 @@ import org.apache.beam.sdk.options.PipelineOptions;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public interface ImportPipelineOptions
-        extends PipelineOptions, JdbcPipelineOptions, ElasticsearchPipelineOptions
+        extends PipelineOptions, ApplicationNameOptions, JdbcPipelineOptions, ElasticsearchPipelineOptions
 {
 }

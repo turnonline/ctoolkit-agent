@@ -1,7 +1,7 @@
 package org.ctoolkit.agent.transformer;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.BaseEncoding;
+import org.apache.beam.repackaged.beam_runners_core_java.com.google.common.base.Charsets;
+import org.apache.beam.repackaged.beam_runners_core_java.com.google.common.io.BaseEncoding;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyEncodingTransformer;
 
 import java.util.Map;

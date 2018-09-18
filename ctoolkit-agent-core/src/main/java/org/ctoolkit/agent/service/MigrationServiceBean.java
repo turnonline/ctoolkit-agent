@@ -35,6 +35,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Implementation of {@link MigrationService}
@@ -66,6 +68,10 @@ public class MigrationServiceBean
         Pipeline pipeline = pipelineFacade.migrationPipeline().create( batch, options );
         PipelineResult result = pipeline.run();
 
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit( ( Runnable ) result::waitUntilFinish );
+        executorService.shutdown();
+
         MigrationJob job = new MigrationJob();
         job.setState( result.getState().name() );
         return job;
@@ -77,6 +83,10 @@ public class MigrationServiceBean
         ImportPipelineOptions options = pipelineFacade.pipelineOptionsFactory().createImportPipelineOptions( batch );
         Pipeline pipeline = pipelineFacade.importPipeline().create( batch, options );
         PipelineResult result = pipeline.run();
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit( ( Runnable ) result::waitUntilFinish );
+        executorService.shutdown();
 
         ImportJob job = new ImportJob();
         job.setState( result.getState().name() );
