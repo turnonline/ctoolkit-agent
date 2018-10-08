@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +31,6 @@ import java.util.Map;
 public class WorkerServiceBean
         implements WorkerService
 {
-    public static final String PROPERTY__SYNC_ID = "__syncId";
-
     private static final Logger log = LoggerFactory.getLogger( WorkerServiceBean.class );
 
     @Inject
@@ -58,7 +58,7 @@ public class WorkerServiceBean
         }
 
         // import if namespace, kind and id is specified
-        if ( importSet.getNamespace() != null && importSet.getKind() != null  && importSet.getId() != null )
+        if ( importSet.getNamespace() != null && importSet.getKind() != null && importSet.getId() != null )
         {
             createIndex( importSet );
         }
@@ -73,7 +73,7 @@ public class WorkerServiceBean
             Map<String, Object> jsonMap = new HashMap<>();
             for ( ImportSetProperty property : importSet.getProperties() )
             {
-                jsonMap.put( property.getName(), property.getValue() );
+                addProperty( property.getName(), property.getValue(), jsonMap );
             }
 
             IndexRequest indexRequest = new IndexRequest( importSet.getNamespace(), importSet.getKind(), importSet.getId() );
@@ -88,6 +88,39 @@ public class WorkerServiceBean
         catch ( IOException e )
         {
             log.error( "Unable to create index: " + importSet.getNamespace() + ":" + importSet.getKind(), e );
+        }
+    }
+
+    @SuppressWarnings( "unchecked" )
+    private void addProperty( String name, Object value, Map<String, Object> jsonMap )
+    {
+        LinkedList<String> subNames = new LinkedList<>( Arrays.asList( name.split( "\\." ) ) );
+        if ( subNames.size() > 1 )
+        {
+            String nestedName = subNames.removeFirst();
+            Map<String, Object> nestedMap = ( HashMap<String, Object> ) jsonMap.get( nestedName );
+            if ( nestedMap == null )
+            {
+                nestedMap = new HashMap<>();
+                jsonMap.put( nestedName, nestedMap );
+            }
+
+            // construct new name
+            StringBuilder newName = new StringBuilder();
+            subNames.forEach( s -> {
+                if ( newName.length() > 0 )
+                {
+                    newName.append( "." );
+                }
+                newName.append( s );
+            } );
+
+            // recursive call to sub name
+            addProperty( newName.toString(), value, nestedMap );
+        }
+        else
+        {
+            jsonMap.put( name, value );
         }
     }
 
