@@ -18,11 +18,16 @@ import java.util.Map;
  */
 public class ConverterExecutor
 {
-    private final TransformerExecutor transformerExecutor;
+    private TransformerExecutor transformerExecutor;
 
     private final ConverterRegistrat registrat;
 
     private final Map<Object, Object> ctx = new HashMap<>();
+
+    public ConverterExecutor(  ConverterRegistrat registrat )
+    {
+        this.registrat = registrat;
+    }
 
     public ConverterExecutor( TransformerExecutor transformerExecutor, ConverterRegistrat registrat )
     {
@@ -48,6 +53,17 @@ public class ConverterExecutor
             importSetProperty.setValue( target );
 
             return importSetProperty;
+        }
+
+        return null;
+    }
+
+    public Object convertProperty( ImportSetProperty importSetProperty )
+    {
+        Converter converter = registrat.get( importSetProperty.getType() );
+        if ( converter != null )
+        {
+            return converter.convert( importSetProperty );
         }
 
         return null;

@@ -1,6 +1,7 @@
 package org.ctoolkit.agent;
 
 import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
 import org.ctoolkit.agent.model.api.MigrationSetTarget;
@@ -20,7 +21,7 @@ public class Mocks
         return exportData;
     }
 
-    public static MigrationSetSource migrationSetSource(String namespace, String kind)
+    public static MigrationSetSource migrationSetSource( String namespace, String kind )
     {
         MigrationSetSource source = new MigrationSetSource();
         source.setNamespace( namespace );
@@ -29,7 +30,7 @@ public class Mocks
         return source;
     }
 
-    public static MigrationSetTarget migrationSetTarget( String namespace, String kind)
+    public static MigrationSetTarget migrationSetTarget( String namespace, String kind )
     {
         MigrationSetTarget target = new MigrationSetTarget();
         target.setNamespace( namespace );
@@ -38,11 +39,19 @@ public class Mocks
         return target;
     }
 
-    public static MigrationSetProperty mockMigrationSetPropery( String type )
+    public static MigrationSetProperty mockMigrationSetProperty( String type )
     {
         MigrationSetProperty property = new MigrationSetProperty();
         property.setTargetType( type );
         property.setTargetProperty( "name" );
+        return property;
+    }
+
+    public static ImportSetProperty mockImportSetProperty( String type, String value )
+    {
+        ImportSetProperty property = new ImportSetProperty();
+        property.setType( type );
+        property.setValue( value );
         return property;
     }
 }

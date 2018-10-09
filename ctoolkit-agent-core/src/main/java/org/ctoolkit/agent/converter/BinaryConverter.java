@@ -1,5 +1,7 @@
 package org.ctoolkit.agent.converter;
 
+import org.apache.beam.repackaged.beam_runners_core_java.com.google.common.io.BaseEncoding;
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyEncodingTransformer;
@@ -35,5 +37,11 @@ public class BinaryConverter
         target = encodingProcessor.transform( target, encodingTransformer, new HashMap<>(  ) );
 
         return target.toString();
+    }
+
+    @Override
+    public byte[] convert( ImportSetProperty property )
+    {
+        return BaseEncoding.base64().decode( property.getValue() );
     }
 }

@@ -1,5 +1,7 @@
 package org.ctoolkit.agent.service;
 
+import org.ctoolkit.agent.converter.ConverterExecutor;
+import org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat;
 import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
@@ -35,6 +37,10 @@ public class WorkerServiceBean
 
     @Inject
     private RestHighLevelClient elasticClient;
+
+    // TODO: unable to provide by ElasticsearchConfig
+    @Inject
+    private ConverterExecutor converterExecutor = new ConverterExecutor( new ElasticsearchConverterRegistrat() );
 
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
@@ -73,7 +79,7 @@ public class WorkerServiceBean
             Map<String, Object> jsonMap = new HashMap<>();
             for ( ImportSetProperty property : importSet.getProperties() )
             {
-                addProperty( property.getName(), property.getValue(), jsonMap );
+                addProperty( property.getName(), property, jsonMap );
             }
 
             IndexRequest indexRequest = new IndexRequest( importSet.getNamespace(), importSet.getKind(), importSet.getId() );
@@ -92,8 +98,9 @@ public class WorkerServiceBean
     }
 
     @SuppressWarnings( "unchecked" )
-    private void addProperty( String name, Object value, Map<String, Object> jsonMap )
+    private void addProperty( String name, ImportSetProperty importSetProperty, Map<String, Object> jsonMap )
     {
+        // check if property is nested (i.e. identification.simple.value)
         LinkedList<String> subNames = new LinkedList<>( Arrays.asList( name.split( "\\." ) ) );
         if ( subNames.size() > 1 )
         {
@@ -116,11 +123,12 @@ public class WorkerServiceBean
             } );
 
             // recursive call to sub name
-            addProperty( newName.toString(), value, nestedMap );
+            addProperty( newName.toString(), importSetProperty, nestedMap );
         }
         else
         {
-            jsonMap.put( name, value );
+            Object convertedValue = converterExecutor.convertProperty( importSetProperty );
+            jsonMap.put( name, convertedValue );
         }
     }
 

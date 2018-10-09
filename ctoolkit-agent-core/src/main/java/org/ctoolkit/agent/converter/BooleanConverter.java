@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.converter;
 
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 
 /**
@@ -16,5 +17,11 @@ public class BooleanConverter
     public String convert( Object source, MigrationSetProperty property )
     {
         return Boolean.valueOf( source.toString() ).toString();
+    }
+
+    @Override
+    public Object convert( ImportSetProperty property )
+    {
+        return Boolean.valueOf( property.getValue() );
     }
 }
