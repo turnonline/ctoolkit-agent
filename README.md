@@ -29,14 +29,25 @@ Recommended way of running agents is via docker. To setup docker follow these st
 ```shell
 # docker network create --scope swarm —driver overlay migration
 ```
-* add docker testing stacks - go to 'docker' directory and run following command:
+* add docker testing stacks - go to 'docker' directory and run one of the following commands (depending of migrating stack):
+
+> SQL (postgres) to elasticsearch migration stack:
+
 ```shell
 # docker stack deploy -c docker-compose-postgres.yml -c docker-compose-elasticsearch.yml -c docker-compose-agent-sql.yml -c docker-compose-agent-elasticsearch.yml migration 
+
 ```
+> SQL (postgres) to mongo migration stack:
+
+```shell
+# docker stack deploy -c docker-compose-postgres.yml -c docker-compose-mongo.yml -c docker-compose-agent-sql.yml -c docker-compose-agent-mongo-express.yml migration 
+```
+
 * optionally you can run UIs for datasources
 ```shell
 # docker stack deploy -c docker-compose-sql-adminer.yml migration
 # docker stack deploy -c docker-compose-kibana.yml migration
+# docker stack deploy -c docker-compose-mongo-express.yml migration
 ```
 * To setup apache spark processor engine run following command
 ```shell
@@ -44,18 +55,21 @@ Recommended way of running agents is via docker. To setup docker follow these st
 ```
 
 ### Exposed docker ports
-| Port | Service name                 | Service type |
-|------|------------------------------|--------------|
-| 8080 | ctoolkit-agent-sql           |[agent]       |
-| 8081 | ctoolkit-agent-elasticsearch |[agent]       | 
-| 5432 | postgres database            |[datasource]  |
-| 3306 | mysql database               |[datasource]  |
-| 9200 | elasticsearch database       |[datasource]  |
-| 8180 | sql adminer UI               |[UI]          |
-| 8181 | kibana UI                    |[UI]          |
-| 8191 | spark dashboard UI master    |[UI]          |
-| 8192 | spark dashboard UI worker    |[UI]          |
-| 4040 | spark dashboard UI app       |[UI]          |
+| Port  | Service name                 | Service type |
+|-------|------------------------------|--------------|
+| 8080  | ctoolkit-agent-sql           |[agent]       |
+| 8081  | ctoolkit-agent-elasticsearch |[agent]       |
+| 8082  | ctoolkit-agent-mongo         |[agent]       | 
+| 5432  | postgres database            |[datasource]  |
+| 3306  | mysql database               |[datasource]  |
+| 9200  | elasticsearch database       |[datasource]  |
+| 27017 | mongo database               |[datasource]  |
+| 8180  | sql adminer UI               |[UI]          |
+| 8181  | kibana UI                    |[UI]          |
+| 8182  | mongo express UI             |[UI]          |
+| 8191  | spark dashboard UI master    |[UI]          |
+| 8192  | spark dashboard UI worker    |[UI]          |
+| 4040  | spark dashboard UI app       |[UI]          |
 
 ## SQL setup (postgress)
 - DjdbcUrl=jdbc:postgresql://morty:5432/root
@@ -69,16 +83,27 @@ Recommended way of running agents is via docker. To setup docker follow these st
 - DelasticsearchHosts=http://morty:9200
 - Dmicronaut.server.port=8081
 
-## Build
+## Mongo setup
+- DmongoUri=mongodb://root:admin123@morty:27017
+- Dmicronaut.server.port=8082
+
+## Maven build
 To run agents locally you need to build it with special maven profile. Each
 agent has its own profile:
 ```shell
 # mvn clean install -P sql
 # mvn clean install -P elasticsearch
+# mvn clean install -P mongo
 ``` 
 
-## Docker deploy
-To build docker images and deploy them to docker hub run following command:
+## Docker build image
+To build docker images run following command:
 ```shell
-# mvn clean install -P sql,elasticsearch,build-docker
+# mvn clean install -P sql,elasticsearch,mongo,docker-build-image
+```
+
+## Docker push
+To push docker images into docker hub run following command:
+```shell
+# mvn clean install -P sql,elasticsearch,mongo,docker-push
 ```

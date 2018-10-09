@@ -1,22 +1,20 @@
 package org.ctoolkit.agent.service;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.ctoolkit.agent.converter.ConverterExecutor;
 import org.ctoolkit.agent.model.EntityExportData;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSet;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.rest.RestStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -35,7 +33,7 @@ public class WorkerServiceBean
     private static final Logger log = LoggerFactory.getLogger( WorkerServiceBean.class );
 
     @Inject
-    private RestHighLevelClient elasticClient;
+    private MongoClient mongoClient;
 
     @Inject
     private ConverterExecutor converterExecutor;
@@ -55,10 +53,10 @@ public class WorkerServiceBean
     @Override
     public void importData( ImportSet importSet )
     {
-        // delete index if requested
+        // delete database if requested
         if ( importSet.getClean() )
         {
-            deleteIndex( importSet );
+            deleteCollection( importSet );
         }
 
         // import if namespace, kind and id is specified
@@ -72,26 +70,36 @@ public class WorkerServiceBean
 
     private void createIndex( ImportSet importSet )
     {
+        String collectionName = importSet.getKind();
+
         try
         {
-            Map<String, Object> jsonMap = new HashMap<>();
+            Document document = new Document();
+
+            // set id if provided
+            String id = importSet.getId();
+            if (id != null)
+            {
+                document.append( "_id", id );
+            }
+
             for ( ImportSetProperty property : importSet.getProperties() )
             {
-                addProperty( property.getName(), property, jsonMap );
+                addProperty( property.getName(), property, document );
             }
 
-            IndexRequest indexRequest = new IndexRequest( importSet.getNamespace(), importSet.getKind(), importSet.getId() );
-            indexRequest.source( jsonMap );
-            IndexResponse indexResponse = elasticClient.index( indexRequest );
+            // get database
+            MongoDatabase database = mongoClient.getDatabase( importSet.getNamespace() );
 
-            if ( indexResponse.status() != RestStatus.CREATED && indexResponse.status() != RestStatus.OK )
-            {
-                log.error( "Unexpected status. Expected: {},{} but was: {}", RestStatus.OK, RestStatus.CREATED, indexResponse.status() );
-            }
+            // get collection
+            MongoCollection<Document> collection = database.getCollection( collectionName );
+
+            // insert document
+            collection.insertOne( document );
         }
-        catch ( IOException e )
+        catch ( MongoException e )
         {
-            log.error( "Unable to create index: " + importSet.getNamespace() + ":" + importSet.getKind(), e );
+            log.error( "Unable to write document: " + importSet.getNamespace() + ":" + collectionName, e );
         }
     }
 
@@ -130,22 +138,8 @@ public class WorkerServiceBean
         }
     }
 
-    private void deleteIndex( ImportSet importSet )
+    private void deleteCollection( ImportSet importSet )
     {
-        try
-        {
-            elasticClient.indices().delete( new DeleteIndexRequest( importSet.getNamespace() ) );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Unable to delete index: " + importSet.getNamespace(), e );
-        }
-        catch ( ElasticsearchStatusException e )
-        {
-            if ( e.status() != RestStatus.NOT_FOUND )
-            {
-                log.error( "Unable to delete index.", e );
-            }
-        }
+        mongoClient.getDatabase( importSet.getNamespace() ).getCollection( importSet.getKind() ).drop();;
     }
 }

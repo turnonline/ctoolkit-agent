@@ -4,6 +4,8 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import org.apache.http.HttpHost;
 import org.ctoolkit.agent.beam.ElasticsearchPipelineOptions;
+import org.ctoolkit.agent.converter.ConverterExecutor;
+import org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
@@ -37,6 +39,13 @@ public class ElasticsearchConfig
         }
 
         return client = new RestHighLevelClient( RestClient.builder( httpHosts ) );
+    }
+
+    @Bean
+    @Singleton
+    public ConverterExecutor createConverterExecutor()
+    {
+        return new ConverterExecutor( new ElasticsearchConverterRegistrat() );
     }
 
     @PreDestroy

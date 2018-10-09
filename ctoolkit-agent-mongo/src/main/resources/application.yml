@@ -1,0 +1,9 @@
+micronaut:
+  application:
+    name: ctoolkit-agent-mongo
+  server:
+    port: 8080
+
+endpoints:
+  health:
+    details-visible: ANONYMOUS

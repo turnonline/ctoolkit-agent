@@ -1,0 +1,22 @@
+version: "3.3"
+services:
+  ctoolkit-agent-elasticsearch:
+    image: turnonline/ctoolkit-agent-mongo:0.3-SNAPSHOT
+    ports:
+      - 8081:8080
+    networks:
+      - migration
+    environment:
+      JAVA_OPTS: -DmongoUri=mongodb://root:admin123@morty:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 1024m
+        reservations:
+          memory: 1024m
+
+networks:
+  migration:
+    external: true
