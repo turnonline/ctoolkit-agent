@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.converter;
 
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,5 +31,21 @@ public class DoubleConverter
         }
 
         return String.valueOf( target );
+    }
+
+    @Override
+    public Double convert( ImportSetProperty property )
+    {
+        Double target = null;
+        try
+        {
+            target = new Double( property.getValue() );
+        }
+        catch ( NumberFormatException e )
+        {
+            log.info( "Unable to create double from value: '" + property.getValue() + "'", e );
+        }
+
+        return target;
     }
 }

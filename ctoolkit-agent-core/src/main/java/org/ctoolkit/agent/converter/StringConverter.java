@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.converter;
 
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 
 /**
@@ -16,5 +17,11 @@ public class StringConverter
     public String convert( Object source, MigrationSetProperty property )
     {
         return String.valueOf( source );
+    }
+
+    @Override
+    public Object convert( ImportSetProperty property )
+    {
+        return property.getValue();
     }
 }

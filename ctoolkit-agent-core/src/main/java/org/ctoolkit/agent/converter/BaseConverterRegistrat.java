@@ -43,4 +43,20 @@ public abstract class BaseConverterRegistrat
 
         return null;
     }
+
+    @Override
+    public Converter get( String targetTypeName )
+    {
+        for ( Map.Entry<Converter.Key, Converter> entry : converters.entrySet() )
+        {
+            String targetType = entry.getKey().getTargetTypeName();
+
+            if ( targetTypeName.equals( targetType ) )
+            {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
 }

@@ -1,5 +1,6 @@
 package org.ctoolkit.agent.converter;
 
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 
 import java.util.Objects;
@@ -19,6 +20,13 @@ public interface Converter
      * @return converted string value
      */
     String convert( Object source, MigrationSetProperty property );
+
+    /**
+     * Convert target value into object using {@link ImportSetProperty}
+     * @param property {@link ImportSetProperty}
+     * @return converted object value
+     */
+    Object convert( ImportSetProperty property);
 
     /**
      * Provide converter key used in {@link BaseConverterRegistrat#register(Class, String, Converter)} method

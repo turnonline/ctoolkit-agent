@@ -17,11 +17,19 @@ public interface ConverterRegistrat
     void register( Class source, String target, Converter converter );
 
     /**
-     * Get converter by source value ant target type name
+     * Get converter by source value and target type name
      *
      * @param sourceValue source value
      * @param targetTypeName target type name (i.e. text)
      * @return converter or <code>null</code> if converter could not be found for sourceValue/targetTypeName combination
      */
     Converter get( Object sourceValue, String targetTypeName );
+
+    /**
+     * Get converter by target type name
+     *
+     * @param targetTypeName target type name (i.e. text)
+     * @return converter or <code>null</code> if converter could not be found for targetTypeName
+     */
+    Converter get(String targetTypeName);
 }
