@@ -1,0 +1,21 @@
+version: "3.3"
+services:
+  mongodb:
+    image: bitnami/mongodb
+    hostname: mongodb
+    environment:
+      - MONGODB_ROOT_PASSWORD=admin123
+    ports:
+      - 27017:27017
+    networks:
+      - migration
+    volumes:
+      - mongodb_master_data:/bitnami
+
+networks:
+  migration:
+    external: true
+
+volumes:
+  mongodb_master_data:
+    driver: local

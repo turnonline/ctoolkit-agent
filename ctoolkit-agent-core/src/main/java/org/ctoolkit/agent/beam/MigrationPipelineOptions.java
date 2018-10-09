@@ -13,7 +13,7 @@ import org.ctoolkit.agent.model.Agent;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public interface MigrationPipelineOptions
-        extends PipelineOptions, ApplicationNameOptions, JdbcPipelineOptions, ElasticsearchPipelineOptions
+        extends PipelineOptions, ApplicationNameOptions, JdbcPipelineOptions, ElasticsearchPipelineOptions, MongoPipelineOptions
 {
     @Description( "Flag if migration should by executed in 'dry run' mode (import to target agent will not be performed and" +
             "instead will be written to console). By default value is set to 'false', which means migrated data will be send" +

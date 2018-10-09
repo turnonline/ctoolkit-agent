@@ -26,6 +26,7 @@ public class PipelineOptionsFactoryBean
 
         setupJdbcPipelineOptions( options );
         setupElasticsearchPipelineOptions( options );
+        setupMongoPipelineOptions( options );
 
         options.setAppName( "Data import" );
 
@@ -42,6 +43,7 @@ public class PipelineOptionsFactoryBean
         setupMigrationPipelineOptions( options );
         setupJdbcPipelineOptions( options );
         setupElasticsearchPipelineOptions( options );
+        setupMongoPipelineOptions( options );
 
         options.setAppName( "Data migration" );
 
@@ -98,6 +100,16 @@ public class PipelineOptionsFactoryBean
         if ( options.getElasticsearchHosts() == null )
         {
             options.setElasticsearchHosts( elasticHosts != null ? elasticHosts.split( "," ) : null );
+        }
+    }
+
+    private void setupMongoPipelineOptions( MongoPipelineOptions options )
+    {
+        String mongoUri = System.getProperty( "mongoUri" );
+
+        if ( options.getMongoUri() == null )
+        {
+            options.setMongoUri( mongoUri );
         }
     }
 

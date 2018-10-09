@@ -9,6 +9,6 @@ import org.apache.beam.sdk.options.PipelineOptions;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public interface ImportPipelineOptions
-        extends PipelineOptions, ApplicationNameOptions, JdbcPipelineOptions, ElasticsearchPipelineOptions
+        extends PipelineOptions, ApplicationNameOptions, JdbcPipelineOptions, ElasticsearchPipelineOptions, MongoPipelineOptions
 {
 }

@@ -20,11 +20,15 @@ public class ConverterExecutor
 {
     private TransformerExecutor transformerExecutor;
 
-    private final ConverterRegistrat registrat;
+    private ConverterRegistrat registrat;
 
     private final Map<Object, Object> ctx = new HashMap<>();
 
-    public ConverterExecutor(  ConverterRegistrat registrat )
+    public ConverterExecutor()
+    {
+    }
+
+    public ConverterExecutor( ConverterRegistrat registrat )
     {
         this.registrat = registrat;
     }
