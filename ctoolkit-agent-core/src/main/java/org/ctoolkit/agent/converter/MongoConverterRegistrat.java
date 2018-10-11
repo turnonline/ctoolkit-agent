@@ -12,7 +12,6 @@ import java.util.Date;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  * @see {@linkplain=https://docs.mongodb.com/manual/reference/bson-types/}
  */
-// TODO: unit tests - MongoConverterImportExecutorTest, MongoConverterMigrationExecutorTest
 @Singleton
 public class MongoConverterRegistrat
         extends BaseConverterRegistrat
