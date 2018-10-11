@@ -17,13 +17,12 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import static org.ctoolkit.agent.Mocks.mockMigrationSetProperty;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_BINARY;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_BOOLEAN;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_DATE;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_DOUBLE;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_KEYWORD;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_LONG;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_TEXT;
+import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_BIN_DATA;
+import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_BOOL;
+import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_DATE;
+import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_DOUBLE;
+import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_LONG;
+import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_STRING;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,138 +32,138 @@ import static org.mockito.Mockito.when;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class ElasticsearchConverterMigrationExecutorTest
+public class MongoConverterMigrationExecutorTest
 {
-    private ConverterExecutor executor = new ConverterExecutor(new TransformerExecutor(), new ElasticsearchConverterRegistrat());
+    private ConverterExecutor executor = new ConverterExecutor(new TransformerExecutor(), new MongoConverterRegistrat());
     
-    // -- target text
+    // -- target string
 
     @Test
-    public void test_String_Text()
+    public void test_String_String()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         ImportSetProperty importSetProperty = executor.convertProperty( "Boston", property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "Boston", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Integer_Text()
+    public void test_Integer_String()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         ImportSetProperty importSetProperty = executor.convertProperty( 1, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "1", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Long_Text()
+    public void test_Long_String()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         ImportSetProperty importSetProperty = executor.convertProperty( 1L, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "1", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Float_Text()
+    public void test_Float_String()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         ImportSetProperty importSetProperty = executor.convertProperty( 1F, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "1.0", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Double_Text()
+    public void test_Double_String()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         ImportSetProperty importSetProperty = executor.convertProperty( 1D, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "1.0", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_BigDecimal_Text()
+    public void test_BigDecimal_String()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         ImportSetProperty importSetProperty = executor.convertProperty( BigDecimal.valueOf( 1 ), property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "1", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Boolean_Text()
+    public void test_Boolean_String()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         ImportSetProperty importSetProperty = executor.convertProperty( true, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "true", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_ByteArray_Text()
+    public void test_ByteArray_String()
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
 
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         property.getTransformers().add( transformer );
         ImportSetProperty importSetProperty = executor.convertProperty( new byte[]{'J', 'o', 'h', 'n'}, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "John", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Clob_Text() throws SQLException
+    public void test_Clob_String() throws SQLException
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
 
         Clob clob = mock( Clob.class );
         when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         property.getTransformers().add( transformer );
         ImportSetProperty importSetProperty = executor.convertProperty( clob, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "John", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Blob_Text() throws SQLException
+    public void test_Blob_String() throws SQLException
     {
         MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
 
         Blob blob = mock( Blob.class );
         when( blob.getBinaryStream() ).thenReturn( new ByteArrayInputStream( new byte[]{'J', 'o', 'h', 'n'} ) );
 
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         property.getTransformers().add( transformer );
         ImportSetProperty importSetProperty = executor.convertProperty( blob, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "John", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Date_Text()
+    public void test_Date_String()
     {
         Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
@@ -172,156 +171,12 @@ public class ElasticsearchConverterMigrationExecutorTest
         MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
         transformer.setFormat( "yyyy-MM-dd" );
 
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_TEXT );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_STRING );
         property.getTransformers().add( transformer );
         ImportSetProperty importSetProperty = executor.convertProperty( calendar.getTime(), property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "text", importSetProperty.getType() );
-        assertEquals( "2018-01-02", importSetProperty.getValue() );
-    }
-
-    // -- target keyword
-
-    @Test
-    public void test_String_Keyword()
-    {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = executor.convertProperty( "Boston", property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "Boston", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Integer_Keyword()
-    {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = executor.convertProperty( 1, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "1", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Long_Keyword()
-    {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = executor.convertProperty( 1L, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "1", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Float_Keyword()
-    {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = executor.convertProperty( 1F, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "1.0", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Double_Keyword()
-    {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = executor.convertProperty( 1D, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "1.0", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_BigDecimal_Keyword()
-    {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = executor.convertProperty( BigDecimal.valueOf( 1 ), property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "1", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Boolean_Keyword()
-    {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        ImportSetProperty importSetProperty = executor.convertProperty( true, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "true", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_ByteArray_Keyword()
-    {
-        MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = executor.convertProperty( new byte[]{'J', 'o', 'h', 'n'}, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "John", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Clob_Keyword() throws SQLException
-    {
-        MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-
-        Clob clob = mock( Clob.class );
-        when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = executor.convertProperty( clob, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "John", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Blob_Keyword() throws SQLException
-    {
-        MigrationSetPropertyBlobTransformer transformer = new MigrationSetPropertyBlobTransformer();
-
-        Blob blob = mock( Blob.class );
-        when( blob.getBinaryStream() ).thenReturn( new ByteArrayInputStream( new byte[]{'J', 'o', 'h', 'n'} ) );
-
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = executor.convertProperty( blob, property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
-        assertEquals( "John", importSetProperty.getValue() );
-    }
-
-    @Test
-    public void test_Date_Keyword()
-    {
-        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
-        calendar.set( 2018, Calendar.JANUARY, 2, 0, 0, 0 );
-
-        MigrationSetPropertyDateTransformer transformer = new MigrationSetPropertyDateTransformer();
-        transformer.setFormat( "yyyy-MM-dd" );
-
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_KEYWORD );
-        property.getTransformers().add( transformer );
-        ImportSetProperty importSetProperty = executor.convertProperty( calendar.getTime(), property );
-
-        assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "keyword", importSetProperty.getType() );
+        assertEquals( "string", importSetProperty.getType() );
         assertEquals( "2018-01-02", importSetProperty.getValue() );
     }
 
@@ -516,75 +371,75 @@ public class ElasticsearchConverterMigrationExecutorTest
     // -- type boolean
 
     @Test
-    public void test_String_Boolean()
+    public void test_String_Bool()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BOOLEAN );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BOOL );
         ImportSetProperty importSetProperty = executor.convertProperty( "true", property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "boolean", importSetProperty.getType() );
+        assertEquals( "bool", importSetProperty.getType() );
         assertEquals( "true", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Boolean_Boolean()
+    public void test_Boolean_Bool()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BOOLEAN );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BOOL );
         ImportSetProperty importSetProperty = executor.convertProperty( true, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "boolean", importSetProperty.getType() );
+        assertEquals( "bool", importSetProperty.getType() );
         assertEquals( "true", importSetProperty.getValue() );
     }
 
     // -- type binary
 
     @Test
-    public void test_String_Binary()
+    public void test_String_BinData()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BINARY );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BIN_DATA );
         ImportSetProperty importSetProperty = executor.convertProperty( "John", property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "binary", importSetProperty.getType() );
+        assertEquals( "binData", importSetProperty.getType() );
         assertEquals( "Sm9obg==", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_ByteArray_Binary()
+    public void test_ByteArray_BinData()
     {
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BINARY );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BIN_DATA );
         ImportSetProperty importSetProperty = executor.convertProperty( new byte[]{'J', 'o', 'h', 'n'}, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "binary", importSetProperty.getType() );
+        assertEquals( "binData", importSetProperty.getType() );
         assertEquals( "Sm9obg==", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Clob_Binary() throws SQLException
+    public void test_Clob_BinData() throws SQLException
     {
         Clob clob = mock( Clob.class );
         when( clob.getCharacterStream() ).thenReturn( new StringReader( "John" ) );
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BINARY );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BIN_DATA );
         ImportSetProperty importSetProperty = executor.convertProperty( clob, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "binary", importSetProperty.getType() );
+        assertEquals( "binData", importSetProperty.getType() );
         assertEquals( "Sm9obg==", importSetProperty.getValue() );
     }
 
     @Test
-    public void test_Blob_Binary() throws SQLException
+    public void test_Blob_BinData() throws SQLException
     {
         Blob blob = mock( Blob.class );
         when( blob.getBinaryStream() ).thenReturn( new ByteArrayInputStream( new byte[]{'J', 'o', 'h', 'n'} ) );
 
-        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BINARY );
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_BIN_DATA );
         ImportSetProperty importSetProperty = executor.convertProperty( blob, property );
 
         assertEquals( "name", importSetProperty.getName() );
-        assertEquals( "binary", importSetProperty.getType() );
+        assertEquals( "binData", importSetProperty.getType() );
         assertEquals( "Sm9obg==", importSetProperty.getValue() );
     }
 }

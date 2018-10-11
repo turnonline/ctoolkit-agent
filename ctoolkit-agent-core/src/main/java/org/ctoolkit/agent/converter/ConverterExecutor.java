@@ -41,12 +41,15 @@ public class ConverterExecutor
 
     public ImportSetProperty convertProperty( Object source, MigrationSetProperty property )
     {
+        // apply transformers to source value
+        source = transformerExecutor.transform( source, property.getTransformers(), ctx, TransformerProcessor.Phase.PRE_CONVERT.value() );
+
+        // get converter for source/target type combination
         Converter converter = registrat.get( source, property.getTargetType() );
+
+        // if converter exists for source/target type combination apply conversion + post convert transformers
         if ( converter != null )
         {
-            // apply transformers to source value
-            source = transformerExecutor.transform( source, property.getTransformers(), ctx, TransformerProcessor.Phase.PRE_CONVERT.value() );
-
             // convert transformed source to target string value
             String target = converter.convert( source, property );
 
