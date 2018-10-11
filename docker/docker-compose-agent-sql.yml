@@ -9,9 +9,9 @@ services:
     networks:
       - migration
     environment:
-      JAVA_OPTS: -DjdbcUrl=jdbc:postgresql://postgres:5432/root -DjdbcUsername=root -DjdbcPassword=admin123 -DjdbcDriver=org.postgresql.Driver -DmigrationTargetAgent=ELASTICSEARCH -DmigrationTargetAgentUrl=http://ctoolkit-agent-elasticsearch:8080
+      # JAVA_OPTS: -DjdbcUrl=jdbc:postgresql://postgres:5432/root -DjdbcUsername=root -DjdbcPassword=admin123 -DjdbcDriver=org.postgresql.Driver -DmigrationTargetAgent=ELASTICSEARCH -DmigrationTargetAgentUrl=http://ctoolkit-agent-elasticsearch:8080
       # JAVA_OPTS: -DjdbcUrl=jdbc:mysql://mysql:3306 -DjdbcUsername=root -DjdbcPassword=admin123 -DjdbcDriver=com.mysql.cj.jdbc.Driver -DmigrationTargetAgent=ELASTICSEARCH -DmigrationTargetAgentUrl=http://ctoolkit-agent-elasticsearch:8080
-      # JAVA_OPTS: -DjdbcUrl=jdbc:postgresql://postgres:5432/root -DjdbcUsername=root -DjdbcPassword=admin123 -DjdbcDriver=org.postgresql.Driver -DmigrationTargetAgent=MONGO -DmigrationTargetAgentUrl=http://ctoolkit-agent-mongo:8080
+       JAVA_OPTS: -DjdbcUrl=jdbc:postgresql://postgres:5432/root -DjdbcUsername=root -DjdbcPassword=admin123 -DjdbcDriver=org.postgresql.Driver -DmigrationTargetAgent=MONGO -DmigrationTargetAgentUrl=http://ctoolkit-agent-mongo:8080
     deploy:
       mode: replicated
       replicas: 1
