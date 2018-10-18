@@ -40,7 +40,7 @@ Recommended way of running agents is via docker. To setup docker follow these st
 > SQL (postgres) to mongo migration stack:
 
 ```shell
-# docker stack deploy -c docker-compose-postgres.yml -c docker-compose-mongo.yml -c docker-compose-agent-sql.yml -c docker-compose-agent-mongo-express.yml migration 
+# docker stack deploy -c docker-compose-postgres.yml -c docker-compose-mongo.yml -c docker-compose-agent-sql.yml -c docker-compose-mongo-express.yml migration 
 ```
 
 * optionally you can run UIs for datasources
