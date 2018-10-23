@@ -11,6 +11,7 @@ from it.
 ## Project structure
 * ctoolkit-agent-core - shared core for migration agents. It handles core busines logic like transformations, conversions, rule sets, beam creation and so on
 * ctoolkit-agent-elasticsearch - concrete agent implementation for elasticsearch data source
+* ctoolkit-agent-mongo - concrete agent implementation for mongo data source
 * ctoolkit-agent-sql - concrete agent implememtation for sql data sources
 
 ## Docker swarm setup
@@ -40,7 +41,7 @@ Recommended way of running agents is via docker. To setup docker follow these st
 > SQL (postgres) to mongo migration stack:
 
 ```shell
-# docker stack deploy -c docker-compose-postgres.yml -c docker-compose-mongo.yml -c docker-compose-agent-sql.yml -c docker-compose-mongo-express.yml migration 
+# docker stack deploy -c docker-compose-postgres.yml -c docker-compose-mongo.yml -c docker-compose-agent-sql.yml -c docker-compose-agent-agent-mongo.yml migration 
 ```
 
 * optionally you can run UIs for datasources
@@ -107,3 +108,6 @@ To push docker images into docker hub run following command:
 ```shell
 # mvn clean install -P sql,elasticsearch,mongo,docker-push
 ```
+
+## Wiki
+To learn more about ctoolkit-agent visit [wiki](https://github.com/turnonline/ctoolkit-agent/wiki)
