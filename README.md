@@ -97,6 +97,13 @@ agent has its own profile:
 # mvn clean install -P mongo
 ``` 
 
+## Maven release
+To relase into maven central run following commands:
+```shell
+mvn release:prepare -P sql,elasticsearch,mongo -DskipTests
+mvn release:perform
+``` 
+
 ## Docker build image
 To build docker images run following command:
 ```shell
