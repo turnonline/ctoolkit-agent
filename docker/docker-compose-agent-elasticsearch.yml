@@ -18,7 +18,7 @@
 version: "3.3"
 services:
   ctoolkit-agent-elasticsearch:
-    image: turnonline/ctoolkit-agent-elasticsearch:0.3-SNAPSHOT
+    image: turnonline/ctoolkit-agent-elasticsearch
     ports:
       - 8081:8080
     networks:

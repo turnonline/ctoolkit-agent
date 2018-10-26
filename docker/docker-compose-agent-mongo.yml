@@ -18,7 +18,7 @@
 version: "3.3"
 services:
   ctoolkit-agent-mongo:
-    image: turnonline/ctoolkit-agent-mongo:0.3-SNAPSHOT
+    image: turnonline/ctoolkit-agent-mongo
     ports:
       - 8082:8080
     networks:
