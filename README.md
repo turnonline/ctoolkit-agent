@@ -101,7 +101,7 @@ agent has its own profile:
 To relase into maven central run following commands:
 ```shell
 mvn release:prepare -P sql,elasticsearch,mongo -DskipTests
-mvn release:perform
+mvn release:perform -P sql,elasticsearch,mongo -DskipTests -Darguments="-Dmaven.javadoc.skip=true"
 ``` 
 
 ## Docker build image
