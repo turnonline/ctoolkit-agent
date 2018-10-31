@@ -29,7 +29,7 @@ import org.ctoolkit.agent.service.WorkerService;
 import java.util.List;
 
 /**
- * Do function for splitting queries from {@link MigrationSet}. It will produce KV of MigrationsSet>sql query
+ * Do function for splitting queries from {@link MigrationSet}. It will produce KV of MigrationsSet:sql query
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */

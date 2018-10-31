@@ -39,7 +39,7 @@ public interface RuleSetResolver
     /**
      * Return <code>true</code> if exported entity should by migrated by provide rule set, <code>false</code> otherwise
      *
-     * @param ruleSet          {@link MigrationSetPropertyRule} containing logical operations (and, or) and mathematical operations ('=', '>', '<=', regexp, etc.)
+     * @param ruleSet          {@link MigrationSetPropertyRule} containing logical operations (and, or) and mathematical operations {@code ('=', '>', '>=', regexp, etc.)}
      * @param entityExportData {@link EntityExportData} contains values for rule decision logic
      * @return <code>true</code> if exported entity should be migrated
      */

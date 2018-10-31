@@ -41,7 +41,7 @@ public abstract class BeamPipeline<BATCH, OPTIONS extends PipelineOptions>
      *
      * @param batch   link batch type  - {@link MigrationBatch} or {@link ImportBatch}
      * @param options pipeline options - {@link MigrationPipelineOptions} or {@link ImportPipelineOptions}
-     * @return @link Pipeline
+     * @return {@link Pipeline}
      */
     public abstract Pipeline create( BATCH batch, OPTIONS options );
 

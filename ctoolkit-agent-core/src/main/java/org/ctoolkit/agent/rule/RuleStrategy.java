@@ -25,7 +25,7 @@ import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
 import java.util.Arrays;
 
 /**
- * API for algebraic strategies('=', '>', '>=', '<', '<='), regular expression, etc...
+ * API for algebraic strategies {@code ('=', '>', '>=', '<', '<=')}, regular expression, etc...
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
@@ -64,7 +64,7 @@ public interface RuleStrategy
     /**
      * Return <code>true</code> if exported entity should by migrated by provide rule, <code>false</code> otherwise
      *
-     * @param rule             {@link MigrationSetPropertyRule} containing rule set operation ('=', '>', '<=', regexp, etc.)
+     * @param rule             {@link MigrationSetPropertyRule} containing rule set operation {@code ('=', '>', '<=', regexp, etc.)}
      * @param entityExportData {@link EntityExportData} contains values for rule decision logic
      * @return <code>true</code> if exported entity should be migrated
      */

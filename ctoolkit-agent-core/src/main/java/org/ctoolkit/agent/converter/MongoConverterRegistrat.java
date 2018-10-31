@@ -29,7 +29,7 @@ import java.util.Date;
  * Converter registrat for mongo db
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
- * @see {@linkplain=https://docs.mongodb.com/manual/reference/bson-types/}
+ * @see <a href="https://docs.mongodb.com/manual/reference/bson-types/">https://docs.mongodb.com/manual/reference/bson-types/</a>
  */
 @Singleton
 public class MongoConverterRegistrat

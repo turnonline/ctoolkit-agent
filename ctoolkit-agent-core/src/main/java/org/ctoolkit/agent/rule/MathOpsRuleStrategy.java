@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * Rule set algebraic strategy for mathematical operations - '=','<','>','<=','>='
+ * Rule set algebraic strategy for mathematical operations - {@code '=','<','>','<=','>='}
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
