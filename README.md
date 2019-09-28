@@ -28,7 +28,7 @@ Recommended way of running agents is via docker. To setup docker follow these st
 ```
 * create network 'migration' in docker - to add network run following command:
 ```shell
-# docker network create --scope swarm —driver overlay migration
+# docker network create --scope swarm -d overlay migration
 ```
 * add docker testing stacks - go to 'docker' directory and run one of the following commands (depending of migrating stack):
 
