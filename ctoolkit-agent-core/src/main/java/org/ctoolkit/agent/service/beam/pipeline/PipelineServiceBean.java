@@ -121,6 +121,8 @@ public class PipelineServiceBean
         }
 
         BaseConverterRegistrat registrat = registrats.get( migrationPipelineOptions.getTargetAgent() );
+
+        // TODO: move to list bellow
         ConverterExecutor converterExecutor = new ConverterExecutor( transformerExecutor, registrat );
         converterExecutor.putToContext( MigrationSet.class, migrationSet );
 
@@ -128,6 +130,12 @@ public class PipelineServiceBean
 
         for ( MigrationContext migrationContext : migrationContextList )
         {
+            // TODO: remove putToContext from ConverterExecutor
+            // TODO: put MigrationSet to context
+            // TODO: put source to context
+            // TODO: put target to context
+            // TODO: put source to context
+
             // skip entity migration if rules return apply = 'false'
             if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), migrationContext ) )
             {

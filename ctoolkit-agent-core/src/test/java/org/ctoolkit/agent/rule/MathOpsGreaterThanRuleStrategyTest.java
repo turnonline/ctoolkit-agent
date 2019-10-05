@@ -29,7 +29,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import static org.ctoolkit.agent.Mocks.exportData;
+import static org.ctoolkit.agent.Mocks.migrationContext;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -61,7 +61,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertFalse( strategy.apply( rule, exportData( "name", "Joh" ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "name", "Joh" ) ) );
     }
 
     @Test
@@ -71,7 +71,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertFalse( strategy.apply( rule, exportData( "name", "John" ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "name", "John" ) ) );
     }
 
     @Test
@@ -81,7 +81,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertTrue( strategy.apply( rule, exportData( "name", "Johny" ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "name", "Johny" ) ) );
     }
 
     // -- Integer
@@ -93,7 +93,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 29 ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 29 ) ) );
     }
 
     @Test
@@ -103,7 +103,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 30 ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 30 ) ) );
     }
 
     @Test
@@ -113,7 +113,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 31 ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "age", 31 ) ) );
     }
 
     // -- Long
@@ -125,7 +125,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 29L ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 29L ) ) );
     }
 
     @Test
@@ -135,7 +135,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 30L ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 30L ) ) );
     }
 
     @Test
@@ -145,7 +145,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 31L ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "age", 31L ) ) );
     }
 
     // -- Float
@@ -157,7 +157,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 29F ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 29F ) ) );
     }
 
     @Test
@@ -167,7 +167,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 30F ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 30F ) ) );
     }
 
     @Test
@@ -177,7 +177,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 31F ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "age", 31F ) ) );
     }
 
     // -- Double
@@ -189,7 +189,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 29D ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 29D ) ) );
     }
 
     @Test
@@ -199,7 +199,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", 30D ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 30D ) ) );
     }
 
     @Test
@@ -209,7 +209,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", 31D ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "age", 31D ) ) );
     }
 
     // -- BigDecimal
@@ -221,7 +221,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", BigDecimal.valueOf( 29 ) ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", BigDecimal.valueOf( 29 ) ) ) );
     }
 
     @Test
@@ -231,7 +231,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, exportData( "age", BigDecimal.valueOf( 30 ) ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", BigDecimal.valueOf( 30 ) ) ) );
     }
 
     @Test
@@ -241,7 +241,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertTrue( strategy.apply( rule, exportData( "age", BigDecimal.valueOf( 31 ) ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "age", BigDecimal.valueOf( 31 ) ) ) );
     }
 
     // -- Boolean
@@ -253,7 +253,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
-        assertFalse( strategy.apply( rule, exportData( "active", false ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "active", false ) ) );
     }
 
     @Test
@@ -263,7 +263,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
-        assertFalse( strategy.apply( rule, exportData( "active", true ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "active", true ) ) );
     }
 
     // -- Date
@@ -279,7 +279,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertFalse( strategy.apply( rule, exportData( "createDate", calendar.getTime() ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "createDate", calendar.getTime() ) ) );
     }
 
     @Test
@@ -293,7 +293,7 @@ public class MathOpsGreaterThanRuleStrategyTest
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertFalse( strategy.apply( rule, exportData( "createDate", calendar.getTime() ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "createDate", calendar.getTime() ) ) );
     }
 
     @Test
@@ -307,6 +307,6 @@ public class MathOpsGreaterThanRuleStrategyTest
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertTrue( strategy.apply( rule, exportData( "createDate", calendar.getTime() ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "createDate", calendar.getTime() ) ) );
     }
 }

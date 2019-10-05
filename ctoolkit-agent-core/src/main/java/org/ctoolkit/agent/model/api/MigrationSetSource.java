@@ -36,7 +36,7 @@ public class MigrationSetSource implements Serializable {
   private String namespace = null;
   private String kind = null;
   private Date changeDate = null;
-  private String idSelector = "${target.namespace}:${target.kind}:${source.id}";
+  private String idSelector = null;
 
   /**
    * Source namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)

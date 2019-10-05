@@ -19,6 +19,9 @@
 
 package org.ctoolkit.agent.service.converter;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.BaseEncoding;
+import org.apache.commons.text.StringSubstitutor;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSet;
@@ -34,6 +37,8 @@ import java.util.Map;
  */
 public class ConverterExecutor
 {
+    private static final String ID_ENCODE_PREFIX = "encode:";
+
     private TransformerExecutor transformerExecutor;
 
     private ConverterRegistrat registrat;
@@ -94,30 +99,19 @@ public class ConverterExecutor
 
     public String convertId( MigrationSet migrationSet, MigrationContext migrationContext )
     {
-        Map<String, String> placeholders = new HashMap<>();
+        String idSelectorRaw = migrationSet.getSource().getIdSelector();
+        boolean encode = idSelectorRaw.startsWith( ID_ENCODE_PREFIX );
 
-        placeholders.put( "target.namespace", migrationSet.getTarget().getNamespace() );
-        placeholders.put( "target.kind", migrationSet.getTarget().getKind() );
+        StringSubstitutor substitution = new StringSubstitutor( migrationContext, "${", "}" );
+        String id = substitution.replace( idSelectorRaw.replaceAll( ID_ENCODE_PREFIX, "" ) );
 
-//        for ( Map.Entry<String, MigrationContext.Property> entry : migrationContext.getProperties().entrySet() )
-//        {
-//            Object value = entry.getValue().getValue();
-//            if ( value != null )
-//            {
-//                placeholders.put( "source." + entry.getKey(), value.toString() );
-//            }
-//        }
 
-//        StringSubstitutor substitution = new StringSubstitutor( placeholders, "{", "}" );
-//        String id = substitution.replace( migrationSet.getSource().getIdPattern() );
-//
-//        if ( migrationSet.getSource().getEncodeId() )
-//        {
-//            id = BaseEncoding.base64().encode( id.getBytes( Charsets.UTF_8 ) );
-//        }
+        if ( encode )
+        {
+            id = BaseEncoding.base64().encode( id.getBytes( Charsets.UTF_8 ) );
+        }
 
-//        return id;
-        return null;
+        return id;
     }
 
     public void putToContext( Object key, Object value )

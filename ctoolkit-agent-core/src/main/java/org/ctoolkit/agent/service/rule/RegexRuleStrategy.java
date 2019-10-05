@@ -22,6 +22,9 @@ package org.ctoolkit.agent.service.rule;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Rule set strategy for regular expression
  *
@@ -36,15 +39,15 @@ public class RegexRuleStrategy
     @SuppressWarnings( "unchecked" )
     public boolean apply( MigrationSetPropertyRule rule, MigrationContext migrationContext )
     {
-//        MigrationContext.Property property = migrationContext.getProperties().get( rule.getProperty() );
-//        String ruleValue = rule.getValue();
-//
-//        if ( property != null && property.getValue() instanceof String )
-//        {
-//            Pattern pattern = Pattern.compile( ruleValue );
-//            Matcher matcher = pattern.matcher( ( String ) property.getValue() );
-//            return matcher.matches();
-//        }
+        Object property = migrationContext.get( rule.getProperty() );
+        String ruleValue = rule.getValue();
+
+        if ( property instanceof String )
+        {
+            Pattern pattern = Pattern.compile( ruleValue );
+            Matcher matcher = pattern.matcher( ( String ) property );
+            return matcher.matches();
+        }
 
         // return true if property was not found - it means that we do not want to filter row if property is not found
         return true;

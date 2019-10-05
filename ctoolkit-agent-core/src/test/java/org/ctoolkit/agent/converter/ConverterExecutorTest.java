@@ -43,7 +43,7 @@ public class ConverterExecutorTest
     @Mock
     private ConverterRegistrat registrat;
 
-    private ConverterExecutor executor = new ConverterExecutor(new TransformerExecutor(), registrat);
+    private ConverterExecutor executor = new ConverterExecutor( new TransformerExecutor(), registrat );
 
     // -- convert id
 
@@ -51,12 +51,13 @@ public class ConverterExecutorTest
     public void testConvertId_Plain()
     {
         MigrationSetSource source = new MigrationSetSource();
+        source.setIdSelector( "${target.namespace}:${target.kind}:${id}" );
 
         MigrationSet migrationSet = new MigrationSet();
         migrationSet.setSource( source );
         migrationSet.setTarget( Mocks.migrationSetTarget( "client-person", "person" ) );
 
-        String converted = executor.convertId( migrationSet, Mocks.exportData( "id", 1L ) );
+        String converted = executor.convertId( migrationSet, Mocks.migrationContext( "id", 1L ) );
         assertEquals( "client-person:person:1", converted );
     }
 
@@ -64,12 +65,13 @@ public class ConverterExecutorTest
     public void testConvertId_EncodeBase64()
     {
         MigrationSetSource source = new MigrationSetSource();
+        source.setIdSelector( "encode:${target.namespace}:${target.kind}:${id}" );
 
         MigrationSet migrationSet = new MigrationSet();
         migrationSet.setSource( source );
         migrationSet.setTarget( Mocks.migrationSetTarget( "client-person", "person" ) );
 
-        String converted = executor.convertId( migrationSet, Mocks.exportData( "id", 1L ) );
+        String converted = executor.convertId( migrationSet, Mocks.migrationContext( "id", 1L ) );
         assertEquals( "Y2xpZW50LXBlcnNvbjpwZXJzb246MQ==", converted );
     }
 }

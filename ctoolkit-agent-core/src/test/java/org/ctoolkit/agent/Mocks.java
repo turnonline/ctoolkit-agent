@@ -32,9 +32,12 @@ import org.ctoolkit.agent.model.api.MigrationSetTarget;
  */
 public class Mocks
 {
-    public static MigrationContext exportData( String name, Object value )
+    public static MigrationContext migrationContext( String name, Object value )
     {
         MigrationContext exportData = new MigrationContext();
+        exportData.put( "target.namespace", "client-person" );
+        exportData.put( "target.kind", "person" );
+        exportData.put( name, value );
 
         return exportData;
     }

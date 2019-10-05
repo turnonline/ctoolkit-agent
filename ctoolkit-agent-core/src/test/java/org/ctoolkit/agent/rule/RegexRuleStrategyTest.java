@@ -25,7 +25,7 @@ import org.ctoolkit.agent.service.rule.RegexRuleStrategy;
 import org.ctoolkit.agent.service.rule.RuleStrategy;
 import org.junit.Test;
 
-import static org.ctoolkit.agent.Mocks.exportData;
+import static org.ctoolkit.agent.Mocks.migrationContext;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +55,7 @@ public class RegexRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "\\d{2}" );
 
-        assertFalse( strategy.apply( rule, exportData( "name", "John" ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "name", "John" ) ) );
     }
 
     @Test
@@ -65,6 +65,6 @@ public class RegexRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "\\d{2}" );
 
-        assertTrue( strategy.apply( rule, exportData( "name", "34" ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "name", "34" ) ) );
     }
 }
