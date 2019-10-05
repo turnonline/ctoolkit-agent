@@ -20,6 +20,7 @@
 package org.ctoolkit.agent.model.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
@@ -34,6 +35,7 @@ public class ImportSetProperty implements Serializable {
   
   private String name = null;
   private String type = null;
+  @JsonDeserialize(using = ImportSetPropertyValueJsonDeserializer.class)
   private Object value = null;
 
   /**
