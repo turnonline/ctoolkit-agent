@@ -25,8 +25,8 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-30T12:17:03.356Z")
-public class MigrationSetPropertyBlobTransformer extends MigrationSetPropertyTransformer  {
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-05T08:46:04.321Z")
+public class MigrationSetPropertyBlobTransformer extends MigrationSetPropertyTransformer {
   
 
 

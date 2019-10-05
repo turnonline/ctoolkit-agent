@@ -20,8 +20,13 @@
 package org.ctoolkit.agent.model.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -29,21 +34,31 @@ import java.util.Objects;
 
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-05T08:46:04.321Z")
-public class PipelineOption   {
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = MigrationSetDatabaseSelectEnricher.class, name = "database"),
+        @JsonSubTypes.Type(value = MigrationSetRestEnricher.class, name = "rest"),
+        @JsonSubTypes.Type(value = MigrationSetGroovyEnricher.class, name = "groovy")
+})
+public class MigrationSetEnricher implements Serializable
+{
   
   private String name = null;
-  private String value = null;
+  private List<MigrationSetEnricherGroup> enrichers = new ArrayList<MigrationSetEnricherGroup>();
 
   /**
-   * Pipeline option name
+   * Name of enricher. Will be used as prefix when adding enricher values into context
    **/
-  public PipelineOption name(String name) {
+  public MigrationSetEnricher name(String name) {
     this.name = name;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Pipeline option name")
+  @ApiModelProperty(value = "Name of enricher. Will be used as prefix when adding enricher values into context")
   @JsonProperty("name")
   public String getName() {
     return name;
@@ -53,21 +68,21 @@ public class PipelineOption   {
   }
 
   /**
-   * Pipeline option value
+   * Array of enrichers groups
    **/
-  public PipelineOption value(String value) {
-    this.value = value;
+  public MigrationSetEnricher enrichers(List<MigrationSetEnricherGroup> enrichers) {
+    this.enrichers = enrichers;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Pipeline option value")
-  @JsonProperty("value")
-  public String getValue() {
-    return value;
+  @ApiModelProperty(value = "Array of enrichers groups")
+  @JsonProperty("enrichers")
+  public List<MigrationSetEnricherGroup> getEnrichers() {
+    return enrichers;
   }
-  public void setValue(String value) {
-    this.value = value;
+  public void setEnrichers(List<MigrationSetEnricherGroup> enrichers) {
+    this.enrichers = enrichers;
   }
 
 
@@ -79,23 +94,23 @@ public class PipelineOption   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PipelineOption pipelineOption = (PipelineOption) o;
-    return Objects.equals(name, pipelineOption.name) &&
-        Objects.equals(value, pipelineOption.value);
+    MigrationSetEnricher migrationSetEnricher = (MigrationSetEnricher) o;
+    return Objects.equals(name, migrationSetEnricher.name) &&
+        Objects.equals(enrichers, migrationSetEnricher.enrichers);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, value);
+    return Objects.hash(name, enrichers);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class PipelineOption {\n");
+    sb.append("class MigrationSetEnricher {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    value: ").append(toIndentedString(value)).append("\n");
+    sb.append("    enrichers: ").append(toIndentedString(enrichers)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -40,6 +40,9 @@ public class ImportSet implements Serializable {
   private String namespace = null;
   private String kind = null;
   private String id = null;
+  private String changeDate = null;
+  private String syncDateProperty = "syncDate";
+  private String idSelector = null;
   private List<ImportSetProperty> properties = new ArrayList<ImportSetProperty>();
 
   /**
@@ -150,6 +153,59 @@ public class ImportSet implements Serializable {
     this.id = id;
   }
 
+  /**
+   * Date of change in source system. Used with conjunction with syncDateProperty and queryIdentifier
+   **/
+  public ImportSet changeDate(String changeDate) {
+    this.changeDate = changeDate;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Date of change in source system. Used with conjunction with syncDateProperty and queryIdentifier")
+  @JsonProperty("changeDate")
+  public String getChangeDate() {
+    return changeDate;
+  }
+  public void setChangeDate(String changeDate) {
+    this.changeDate = changeDate;
+  }
+
+  /**
+   * Name of sync date property which will be used to determine if import is required or not.  Must be type of 'date'
+   **/
+  public ImportSet syncDateProperty(String syncDateProperty) {
+    this.syncDateProperty = syncDateProperty;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Name of sync date property which will be used to determine if import is required or not.  Must be type of 'date'")
+  @JsonProperty("syncDateProperty")
+  public String getSyncDateProperty() {
+    return syncDateProperty;
+  }
+  public void setSyncDateProperty(String syncDateProperty) {
+    this.syncDateProperty = syncDateProperty;
+  }
+
+  /**
+   * Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'  It is used in conjunction with syncDateProperty with following logic:  - if record does not exists, syncDate will be ignored and new record will be created - if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated - if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped
+   **/
+  public ImportSet idSelector(String idSelector) {
+    this.idSelector = idSelector;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'  It is used in conjunction with syncDateProperty with following logic:  - if record does not exists, syncDate will be ignored and new record will be created - if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated - if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped")
+  @JsonProperty("idSelector")
+  public String getIdSelector() {
+    return idSelector;
+  }
+  public void setIdSelector(String idSelector) {
+    this.idSelector = idSelector;
+  }
 
   /**
    * Array of import set properties
@@ -185,12 +241,15 @@ public class ImportSet implements Serializable {
         Objects.equals(namespace, importSet.namespace) &&
         Objects.equals(kind, importSet.kind) &&
         Objects.equals(id, importSet.id) &&
+        Objects.equals(changeDate, importSet.changeDate) &&
+        Objects.equals(syncDateProperty, importSet.syncDateProperty) &&
+        Objects.equals(idSelector, importSet.idSelector) &&
         Objects.equals(properties, importSet.properties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, comment, clean, namespace, kind, id, properties);
+    return Objects.hash(author, comment, clean, namespace, kind, id, changeDate, syncDateProperty, idSelector, properties);
   }
 
   @Override
@@ -204,6 +263,9 @@ public class ImportSet implements Serializable {
     sb.append("    namespace: ").append(toIndentedString(namespace)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    changeDate: ").append(toIndentedString(changeDate)).append("\n");
+    sb.append("    syncDateProperty: ").append(toIndentedString(syncDateProperty)).append("\n");
+    sb.append("    idSelector: ").append(toIndentedString(idSelector)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -61,6 +61,6 @@ public class BinaryConverter
     @Override
     public byte[] convert( ImportSetProperty property )
     {
-        return BaseEncoding.base64().decode( property.getValue() );
+        return property.getValue() != null ? BaseEncoding.base64().decode( property.getValue().toString() ) : null;
     }
 }

@@ -92,7 +92,6 @@ public class MigrationSetPropertyRule implements Serializable {
   }
 
   /**
-   * Recursive rule set to create complex logical rules. For instance:  name=‘John’ AND (surname=‘Foo’ OR surname=‘Bar’)
    **/
   public MigrationSetPropertyRule ruleSet(MigrationSetPropertyRuleSet ruleSet) {
     this.ruleSet = ruleSet;
@@ -100,7 +99,7 @@ public class MigrationSetPropertyRule implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Recursive rule set to create complex logical rules. For instance:  name=‘John’ AND (surname=‘Foo’ OR surname=‘Bar’)")
+  @ApiModelProperty(value = "")
   @JsonProperty("ruleSet")
   public MigrationSetPropertyRuleSet getRuleSet() {
     return ruleSet;

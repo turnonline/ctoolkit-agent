@@ -51,7 +51,6 @@ public class ConverterExecutorTest
     public void testConvertId_Plain()
     {
         MigrationSetSource source = new MigrationSetSource();
-        source.setEncodeId( false );
 
         MigrationSet migrationSet = new MigrationSet();
         migrationSet.setSource( source );

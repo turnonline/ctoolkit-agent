@@ -41,6 +41,6 @@ public class BooleanConverter
     @Override
     public Object convert( ImportSetProperty property )
     {
-        return Boolean.valueOf( property.getValue() );
+        return property.getValue() != null && Boolean.valueOf( property.getValue().toString() );
     }
 }

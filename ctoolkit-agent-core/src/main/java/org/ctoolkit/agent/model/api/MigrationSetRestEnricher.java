@@ -29,45 +29,27 @@ import java.util.Objects;
 
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-05T08:46:04.321Z")
-public class ImportJob   {
+public class MigrationSetRestEnricher  extends MigrationSetEnricher
+{
   
-  private String id = null;
-  private String state = null;
+  private String url = null;
 
   /**
-   * Job id
+   * Url of remote call. Only GET is supported. Result properties of rest call will be passed to context with enricher name prefix, for instance if enrichers name is 'getPersonByEmail' and one of result is plain text with value 'name' the resulted context key will be 'getPersonByEmail.name'.  If response is json it will be flatted into context values prefixed with enricher name
    **/
-  public ImportJob id(String id) {
-    this.id = id;
+  public MigrationSetRestEnricher url(String url) {
+    this.url = url;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Job id")
-  @JsonProperty("id")
-  public String getId() {
-    return id;
+  @ApiModelProperty(value = "Url of remote call. Only GET is supported. Result properties of rest call will be passed to context with enricher name prefix, for instance if enrichers name is 'getPersonByEmail' and one of result is plain text with value 'name' the resulted context key will be 'getPersonByEmail.name'.  If response is json it will be flatted into context values prefixed with enricher name")
+  @JsonProperty("url")
+  public String getUrl() {
+    return url;
   }
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  /**
-   * Job state
-   **/
-  public ImportJob state(String state) {
-    this.state = state;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "Job state")
-  @JsonProperty("state")
-  public String getState() {
-    return state;
-  }
-  public void setState(String state) {
-    this.state = state;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
 
@@ -79,23 +61,21 @@ public class ImportJob   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ImportJob importJob = (ImportJob) o;
-    return Objects.equals(id, importJob.id) &&
-        Objects.equals(state, importJob.state);
+    MigrationSetRestEnricher migrationSetRestEnricher = (MigrationSetRestEnricher) o;
+    return Objects.equals(url, migrationSetRestEnricher.url);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, state);
+    return Objects.hash(url);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ImportJob {\n");
+    sb.append("class MigrationSetRestEnricher {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("    url: ").append(toIndentedString(url)).append("\n");
     sb.append("}");
     return sb.toString();
   }

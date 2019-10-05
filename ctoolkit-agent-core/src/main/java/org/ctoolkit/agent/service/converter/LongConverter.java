@@ -58,7 +58,7 @@ public class LongConverter
         Long target = null;
         try
         {
-            target = new Long( property.getValue() );
+            target = property.getValue() != null ? new Long( property.getValue().toString() ) : null;
         }
         catch ( NumberFormatException e )
         {

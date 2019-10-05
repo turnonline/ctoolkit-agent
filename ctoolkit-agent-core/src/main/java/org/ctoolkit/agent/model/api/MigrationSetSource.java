@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 
@@ -34,8 +35,8 @@ public class MigrationSetSource implements Serializable {
   
   private String namespace = null;
   private String kind = null;
-  private String idPattern = "{target.namespace}:{target.kind}:{source.id}";
-  private Boolean encodeId = true;
+  private Date changeDate = null;
+  private String idSelector = "${target.namespace}:${target.kind}:${source.id}";
 
   /**
    * Source namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)
@@ -74,39 +75,39 @@ public class MigrationSetSource implements Serializable {
   }
 
   /**
-   * Pattern used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.
+   * Date of change in source system. Used with conjunction with MigrationSetTarget.syncDateProperty and MigrationSetTarget.queryIdentifier
    **/
-  public MigrationSetSource idPattern(String idPattern) {
-    this.idPattern = idPattern;
+  public MigrationSetSource changeDate(Date changeDate) {
+    this.changeDate = changeDate;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "Pattern used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.")
-  @JsonProperty("idPattern")
-  public String getIdPattern() {
-    return idPattern;
+  @ApiModelProperty(required = true, value = "Date of change in source system. Used with conjunction with MigrationSetTarget.syncDateProperty and MigrationSetTarget.queryIdentifier")
+  @JsonProperty("changeDate")
+  public Date getChangeDate() {
+    return changeDate;
   }
-  public void setIdPattern(String idPattern) {
-    this.idPattern = idPattern;
+  public void setChangeDate(Date changeDate) {
+    this.changeDate = changeDate;
   }
 
   /**
-   * Flag if id should be encoded into base64 string
+   * Selector used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.  If omitted id will be generated
    **/
-  public MigrationSetSource encodeId(Boolean encodeId) {
-    this.encodeId = encodeId;
+  public MigrationSetSource idSelector(String idSelector) {
+    this.idSelector = idSelector;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Flag if id should be encoded into base64 string")
-  @JsonProperty("encodeId")
-  public Boolean getEncodeId() {
-    return encodeId;
+  @ApiModelProperty(value = "Selector used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.  If omitted id will be generated")
+  @JsonProperty("idSelector")
+  public String getIdSelector() {
+    return idSelector;
   }
-  public void setEncodeId(Boolean encodeId) {
-    this.encodeId = encodeId;
+  public void setIdSelector(String idSelector) {
+    this.idSelector = idSelector;
   }
 
 
@@ -121,13 +122,13 @@ public class MigrationSetSource implements Serializable {
     MigrationSetSource migrationSetSource = (MigrationSetSource) o;
     return Objects.equals(namespace, migrationSetSource.namespace) &&
         Objects.equals(kind, migrationSetSource.kind) &&
-        Objects.equals(idPattern, migrationSetSource.idPattern) &&
-        Objects.equals(encodeId, migrationSetSource.encodeId);
+        Objects.equals(changeDate, migrationSetSource.changeDate) &&
+        Objects.equals(idSelector, migrationSetSource.idSelector);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(namespace, kind, idPattern, encodeId);
+    return Objects.hash(namespace, kind, changeDate, idSelector);
   }
 
   @Override
@@ -137,8 +138,8 @@ public class MigrationSetSource implements Serializable {
     
     sb.append("    namespace: ").append(toIndentedString(namespace)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
-    sb.append("    idPattern: ").append(toIndentedString(idPattern)).append("\n");
-    sb.append("    encodeId: ").append(toIndentedString(encodeId)).append("\n");
+    sb.append("    changeDate: ").append(toIndentedString(changeDate)).append("\n");
+    sb.append("    idSelector: ").append(toIndentedString(idSelector)).append("\n");
     sb.append("}");
     return sb.toString();
   }

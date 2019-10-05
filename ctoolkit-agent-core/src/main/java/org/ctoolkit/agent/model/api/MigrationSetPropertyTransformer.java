@@ -56,7 +56,7 @@ public class MigrationSetPropertyTransformer implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Phase in which transformer should be applied")
+  @ApiModelProperty(required = true, value = "Phase in which transformer should be applied")
   @JsonProperty("phase")
   public String getPhase() {
     return phase;

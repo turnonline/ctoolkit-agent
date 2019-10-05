@@ -19,9 +19,6 @@
 
 package org.ctoolkit.agent.service.converter;
 
-import org.apache.beam.repackaged.beam_runners_core_java.com.google.common.base.Charsets;
-import org.apache.beam.repackaged.beam_runners_core_java.com.google.common.io.BaseEncoding;
-import org.apache.commons.text.StringSubstitutor;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSet;
@@ -111,15 +108,16 @@ public class ConverterExecutor
 //            }
 //        }
 
-        StringSubstitutor substitution = new StringSubstitutor( placeholders, "{", "}" );
-        String id = substitution.replace( migrationSet.getSource().getIdPattern() );
+//        StringSubstitutor substitution = new StringSubstitutor( placeholders, "{", "}" );
+//        String id = substitution.replace( migrationSet.getSource().getIdPattern() );
+//
+//        if ( migrationSet.getSource().getEncodeId() )
+//        {
+//            id = BaseEncoding.base64().encode( id.getBytes( Charsets.UTF_8 ) );
+//        }
 
-        if ( migrationSet.getSource().getEncodeId() )
-        {
-            id = BaseEncoding.base64().encode( id.getBytes( Charsets.UTF_8 ) );
-        }
-
-        return id;
+//        return id;
+        return null;
     }
 
     public void putToContext( Object key, Object value )

@@ -67,7 +67,7 @@ public class DateConverter
         Date target = null;
         try
         {
-            target = new Date( Long.valueOf( property.getValue() ) );
+            target = property.getValue() != null ? new Date( Long.valueOf( property.getValue().toString() ) ) : null;
         }
         catch ( NumberFormatException e )
         {

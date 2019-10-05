@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -30,45 +32,46 @@ import java.util.Objects;
 
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-05T08:46:04.321Z")
-public class MigrationSetPropertyMapperTransformerMappings implements Serializable {
+public class MigrationSetEnricherGroup  implements Serializable
+{
   
-  private String source = null;
-  private String target = null;
+  private List<MigrationSetEnricher> enrichers = new ArrayList<MigrationSetEnricher>();
+  private String execution = "sequence";
 
   /**
-   * Source map value
+   * Array of enrichers inside group
    **/
-  public MigrationSetPropertyMapperTransformerMappings source(String source) {
-    this.source = source;
+  public MigrationSetEnricherGroup enrichers(List<MigrationSetEnricher> enrichers) {
+    this.enrichers = enrichers;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "Source map value")
-  @JsonProperty("source")
-  public String getSource() {
-    return source;
+  @ApiModelProperty(required = true, value = "Array of enrichers inside group")
+  @JsonProperty("enrichers")
+  public List<MigrationSetEnricher> getEnrichers() {
+    return enrichers;
   }
-  public void setSource(String source) {
-    this.source = source;
+  public void setEnrichers(List<MigrationSetEnricher> enrichers) {
+    this.enrichers = enrichers;
   }
 
   /**
-   * Target map value
+   * How enrichers in group should be executed. Two possible values:  - sequence - enrichers will be executed step by step - parallel - enrichers will be executed simultaneously
    **/
-  public MigrationSetPropertyMapperTransformerMappings target(String target) {
-    this.target = target;
+  public MigrationSetEnricherGroup execution(String execution) {
+    this.execution = execution;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "Target map value")
-  @JsonProperty("target")
-  public String getTarget() {
-    return target;
+  @ApiModelProperty(required = true, value = "How enrichers in group should be executed. Two possible values:  - sequence - enrichers will be executed step by step - parallel - enrichers will be executed simultaneously")
+  @JsonProperty("execution")
+  public String getExecution() {
+    return execution;
   }
-  public void setTarget(String target) {
-    this.target = target;
+  public void setExecution(String execution) {
+    this.execution = execution;
   }
 
 
@@ -80,23 +83,23 @@ public class MigrationSetPropertyMapperTransformerMappings implements Serializab
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MigrationSetPropertyMapperTransformerMappings migrationSetPropertyMapperTransformerMappings = (MigrationSetPropertyMapperTransformerMappings) o;
-    return Objects.equals(source, migrationSetPropertyMapperTransformerMappings.source) &&
-        Objects.equals(target, migrationSetPropertyMapperTransformerMappings.target);
+    MigrationSetEnricherGroup migrationSetEnricherGroup = (MigrationSetEnricherGroup) o;
+    return Objects.equals(enrichers, migrationSetEnricherGroup.enrichers) &&
+        Objects.equals(execution, migrationSetEnricherGroup.execution);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(source, target);
+    return Objects.hash(enrichers, execution);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MigrationSetPropertyMapperTransformerMappings {\n");
+    sb.append("class MigrationSetEnricherGroup {\n");
     
-    sb.append("    source: ").append(toIndentedString(source)).append("\n");
-    sb.append("    target: ").append(toIndentedString(target)).append("\n");
+    sb.append("    enrichers: ").append(toIndentedString(enrichers)).append("\n");
+    sb.append("    execution: ").append(toIndentedString(execution)).append("\n");
     sb.append("}");
     return sb.toString();
   }

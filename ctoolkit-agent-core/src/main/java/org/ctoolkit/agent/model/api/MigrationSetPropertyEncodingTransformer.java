@@ -28,7 +28,7 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-30T12:17:03.356Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-05T08:46:04.321Z")
 public class MigrationSetPropertyEncodingTransformer extends MigrationSetPropertyTransformer {
   
   private String operation = "encode";
@@ -43,7 +43,7 @@ public class MigrationSetPropertyEncodingTransformer extends MigrationSetPropert
   }
 
   
-  @ApiModelProperty(value = "Operation - encode/decode")
+  @ApiModelProperty(required = true, value = "Operation - encode/decode")
   @JsonProperty("operation")
   public String getOperation() {
     return operation;
@@ -55,18 +55,18 @@ public class MigrationSetPropertyEncodingTransformer extends MigrationSetPropert
   /**
    * Encoding type
    **/
-  public MigrationSetPropertyEncodingTransformer type(String type) {
-    this.encodingType = type;
+  public MigrationSetPropertyEncodingTransformer encodingType(String encodingType) {
+    this.encodingType = encodingType;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Encoding type")
+  @ApiModelProperty(required = true, value = "Encoding type")
   @JsonProperty("encodingType")
   public String getEncodingType() {
     return encodingType;
   }
-  public void setEncodingType( String encodingType ) {
+  public void setEncodingType(String encodingType) {
     this.encodingType = encodingType;
   }
 
@@ -81,12 +81,12 @@ public class MigrationSetPropertyEncodingTransformer extends MigrationSetPropert
     }
     MigrationSetPropertyEncodingTransformer migrationSetPropertyEncodingTransformer = (MigrationSetPropertyEncodingTransformer) o;
     return Objects.equals(operation, migrationSetPropertyEncodingTransformer.operation) &&
-        Objects.equals( encodingType, migrationSetPropertyEncodingTransformer.encodingType );
+        Objects.equals(encodingType, migrationSetPropertyEncodingTransformer.encodingType);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operation, encodingType );
+    return Objects.hash(operation, encodingType);
   }
 
   @Override
@@ -95,7 +95,7 @@ public class MigrationSetPropertyEncodingTransformer extends MigrationSetPropert
     sb.append("class MigrationSetPropertyEncodingTransformer {\n");
     
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
-    sb.append("    encodingType: ").append(toIndentedString( encodingType )).append("\n");
+    sb.append("    encodingType: ").append(toIndentedString(encodingType)).append("\n");
     sb.append("}");
     return sb.toString();
   }

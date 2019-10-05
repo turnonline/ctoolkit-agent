@@ -41,6 +41,7 @@ public class MigrationSet implements Serializable {
   private MigrationSetTarget target = null;
   private List<MigrationSetProperty> properties = new ArrayList<MigrationSetProperty>();
   private MigrationSetPropertyRuleSet ruleSet = null;
+  private List<MigrationSetEnricherGroup> enrichers = new ArrayList<MigrationSetEnricherGroup>();
 
   /**
    * Migration set author
@@ -97,7 +98,6 @@ public class MigrationSet implements Serializable {
   }
 
   /**
-   * Source metadata definition
    **/
   public MigrationSet source(MigrationSetSource source) {
     this.source = source;
@@ -105,7 +105,7 @@ public class MigrationSet implements Serializable {
   }
 
   
-  @ApiModelProperty(required = true, value = "Source metadata definition")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty("source")
   public MigrationSetSource getSource() {
     return source;
@@ -115,7 +115,6 @@ public class MigrationSet implements Serializable {
   }
 
   /**
-   * Target metadata definition
    **/
   public MigrationSet target(MigrationSetTarget target) {
     this.target = target;
@@ -123,7 +122,7 @@ public class MigrationSet implements Serializable {
   }
 
   
-  @ApiModelProperty(required = true, value = "Target metadata definition")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty("target")
   public MigrationSetTarget getTarget() {
     return target;
@@ -151,7 +150,6 @@ public class MigrationSet implements Serializable {
   }
 
   /**
-   * Rule set is set of logical  (and, or) and mathematical (eq, lt, regexp) rules used to filter certain rows from migration
    **/
   public MigrationSet ruleSet(MigrationSetPropertyRuleSet ruleSet) {
     this.ruleSet = ruleSet;
@@ -159,13 +157,31 @@ public class MigrationSet implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Rule set is set of logical  (and, or) and mathematical (eq, lt, regexp) rules used to filter certain rows from migration")
+  @ApiModelProperty(value = "")
   @JsonProperty("ruleSet")
   public MigrationSetPropertyRuleSet getRuleSet() {
     return ruleSet;
   }
   public void setRuleSet(MigrationSetPropertyRuleSet ruleSet) {
     this.ruleSet = ruleSet;
+  }
+
+  /**
+   * Array of enricher groups
+   **/
+  public MigrationSet enrichers(List<MigrationSetEnricherGroup> enrichers) {
+    this.enrichers = enrichers;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Array of enricher groups")
+  @JsonProperty("enrichers")
+  public List<MigrationSetEnricherGroup> getEnrichers() {
+    return enrichers;
+  }
+  public void setEnrichers(List<MigrationSetEnricherGroup> enrichers) {
+    this.enrichers = enrichers;
   }
 
 
@@ -184,12 +200,13 @@ public class MigrationSet implements Serializable {
         Objects.equals(source, migrationSet.source) &&
         Objects.equals(target, migrationSet.target) &&
         Objects.equals(properties, migrationSet.properties) &&
-        Objects.equals(ruleSet, migrationSet.ruleSet);
+        Objects.equals(ruleSet, migrationSet.ruleSet) &&
+        Objects.equals(enrichers, migrationSet.enrichers);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, comment, query, source, target, properties, ruleSet);
+    return Objects.hash(author, comment, query, source, target, properties, ruleSet, enrichers);
   }
 
   @Override
@@ -204,6 +221,7 @@ public class MigrationSet implements Serializable {
     sb.append("    target: ").append(toIndentedString(target)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("    ruleSet: ").append(toIndentedString(ruleSet)).append("\n");
+    sb.append("    enrichers: ").append(toIndentedString(enrichers)).append("\n");
     sb.append("}");
     return sb.toString();
   }

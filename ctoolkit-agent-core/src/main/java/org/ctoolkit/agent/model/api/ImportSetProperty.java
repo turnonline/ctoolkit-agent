@@ -34,8 +34,7 @@ public class ImportSetProperty implements Serializable {
   
   private String name = null;
   private String type = null;
-  private String value = null;
-  private String multiplicity = null;
+  private Object value = null;
 
   /**
    * Property name
@@ -46,7 +45,7 @@ public class ImportSetProperty implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Property name")
+  @ApiModelProperty(required = true, value = "Property name")
   @JsonProperty("name")
   public String getName() {
     return name;
@@ -56,7 +55,7 @@ public class ImportSetProperty implements Serializable {
   }
 
   /**
-   * Property type
+   * Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:  - list - if you want to create list of values (simple or complex) - object - if you want to create embedded object
    **/
   public ImportSetProperty type(String type) {
     this.type = type;
@@ -64,7 +63,7 @@ public class ImportSetProperty implements Serializable {
   }
 
   
-  @ApiModelProperty(value = "Property type")
+  @ApiModelProperty(value = "Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:  - list - if you want to create list of values (simple or complex) - object - if you want to create embedded object")
   @JsonProperty("type")
   public String getType() {
     return type;
@@ -74,39 +73,21 @@ public class ImportSetProperty implements Serializable {
   }
 
   /**
-   * Property value
+   * Property value. It can be simple string or list of ImportSetProperty which can create complex structures
    **/
-  public ImportSetProperty value(String value) {
+  public Object value(Object value) {
     this.value = value;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Property value")
+  @ApiModelProperty(required = true, value = "Property value. It can be simple string or list of ImportSetProperty which can create complex structures")
   @JsonProperty("value")
-  public String getValue() {
+  public Object getValue() {
     return value;
   }
-  public void setValue(String value) {
+  public void setValue(Object value) {
     this.value = value;
-  }
-
-  /**
-   * Property multiplicity
-   **/
-  public ImportSetProperty multiplicity(String multiplicity) {
-    this.multiplicity = multiplicity;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "Property multiplicity")
-  @JsonProperty("multiplicity")
-  public String getMultiplicity() {
-    return multiplicity;
-  }
-  public void setMultiplicity(String multiplicity) {
-    this.multiplicity = multiplicity;
   }
 
 
@@ -121,13 +102,12 @@ public class ImportSetProperty implements Serializable {
     ImportSetProperty importSetProperty = (ImportSetProperty) o;
     return Objects.equals(name, importSetProperty.name) &&
         Objects.equals(type, importSetProperty.type) &&
-        Objects.equals(value, importSetProperty.value) &&
-        Objects.equals(multiplicity, importSetProperty.multiplicity);
+        Objects.equals(value, importSetProperty.value);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, type, value, multiplicity);
+    return Objects.hash(name, type, value);
   }
 
   @Override
@@ -138,7 +118,6 @@ public class ImportSetProperty implements Serializable {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
-    sb.append("    multiplicity: ").append(toIndentedString(multiplicity)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -34,6 +34,8 @@ public class MigrationSetTarget implements Serializable {
   
   private String namespace = null;
   private String kind = null;
+  private String syncDateProperty = "syncDate";
+  private String idSelector = null;
 
   /**
    * Target namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)
@@ -71,6 +73,42 @@ public class MigrationSetTarget implements Serializable {
     this.kind = kind;
   }
 
+  /**
+   * Name of sync date property which will be used to determine if import is required or not.   Must be type of 'date'
+   **/
+  public MigrationSetTarget syncDateProperty(String syncDateProperty) {
+    this.syncDateProperty = syncDateProperty;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Name of sync date property which will be used to determine if import is required or not.   Must be type of 'date'")
+  @JsonProperty("syncDateProperty")
+  public String getSyncDateProperty() {
+    return syncDateProperty;
+  }
+  public void setSyncDateProperty(String syncDateProperty) {
+    this.syncDateProperty = syncDateProperty;
+  }
+
+  /**
+   * Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'  It is used in conjunction with syncDateProperty with following logic:  - if record does not exists, syncDate will be ignored and new record will be created - if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated - if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped
+   **/
+  public MigrationSetTarget idSelector(String idSelector) {
+    this.idSelector = idSelector;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'  It is used in conjunction with syncDateProperty with following logic:  - if record does not exists, syncDate will be ignored and new record will be created - if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated - if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped")
+  @JsonProperty("idSelector")
+  public String getIdSelector() {
+    return idSelector;
+  }
+  public void setIdSelector(String idSelector) {
+    this.idSelector = idSelector;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -82,12 +120,14 @@ public class MigrationSetTarget implements Serializable {
     }
     MigrationSetTarget migrationSetTarget = (MigrationSetTarget) o;
     return Objects.equals(namespace, migrationSetTarget.namespace) &&
-        Objects.equals(kind, migrationSetTarget.kind);
+        Objects.equals(kind, migrationSetTarget.kind) &&
+        Objects.equals(syncDateProperty, migrationSetTarget.syncDateProperty) &&
+        Objects.equals(idSelector, migrationSetTarget.idSelector);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(namespace, kind);
+    return Objects.hash(namespace, kind, syncDateProperty, idSelector);
   }
 
   @Override
@@ -97,6 +137,8 @@ public class MigrationSetTarget implements Serializable {
     
     sb.append("    namespace: ").append(toIndentedString(namespace)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
+    sb.append("    syncDateProperty: ").append(toIndentedString(syncDateProperty)).append("\n");
+    sb.append("    idSelector: ").append(toIndentedString(idSelector)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -58,7 +58,7 @@ public class DoubleConverter
         Double target = null;
         try
         {
-            target = new Double( property.getValue() );
+            target = property.getValue() != null ? new Double( property.getValue().toString() ) : null;
         }
         catch ( NumberFormatException e )
         {

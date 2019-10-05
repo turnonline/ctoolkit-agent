@@ -37,8 +37,8 @@ public class MigrationSetProperty implements Serializable {
   private String sourceProperty = null;
   private String targetType = null;
   private String targetProperty = null;
-  private String targetValue = null;
-  private String targetMultiplicity = null;
+  private Object targetValue = null;
+  private Long index = null;
   private List<MigrationSetPropertyTransformer> transformers = new ArrayList<MigrationSetPropertyTransformer>();
 
   /**
@@ -60,7 +60,7 @@ public class MigrationSetProperty implements Serializable {
   }
 
   /**
-   * Data type name in target agent (for instance 'varchar' in sql database or 'text' in elasticsearch)
+   * Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:  - list - if you want to create list of values (simple or complex) - object - if you want to create embedded object
    **/
   public MigrationSetProperty targetType(String targetType) {
     this.targetType = targetType;
@@ -68,7 +68,7 @@ public class MigrationSetProperty implements Serializable {
   }
 
   
-  @ApiModelProperty(required = true, value = "Data type name in target agent (for instance 'varchar' in sql database or 'text' in elasticsearch)")
+  @ApiModelProperty(required = true, value = "Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:  - list - if you want to create list of values (simple or complex) - object - if you want to create embedded object")
   @JsonProperty("targetType")
   public String getTargetType() {
     return targetType;
@@ -96,39 +96,39 @@ public class MigrationSetProperty implements Serializable {
   }
 
   /**
-   * Target value (set if you want to override value taken from source agent)
+   * Property value. It can be simple string or list of MigrationSetProperty which can create complex structure
    **/
-  public MigrationSetProperty targetValue(String targetValue) {
+  public MigrationSetProperty targetValue(Object targetValue) {
     this.targetValue = targetValue;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Target value (set if you want to override value taken from source agent)")
+  @ApiModelProperty(required = true, value = "Property value. It can be simple string or list of MigrationSetProperty which can create complex structure")
   @JsonProperty("targetValue")
-  public String getTargetValue() {
+  public Object getTargetValue() {
     return targetValue;
   }
-  public void setTargetValue(String targetValue) {
+  public void setTargetValue(Object targetValue) {
     this.targetValue = targetValue;
   }
 
   /**
-   * Property multiplicity (default is single)
+   * Position in list if property represents list of object
    **/
-  public MigrationSetProperty targetMultiplicity(String targetMultiplicity) {
-    this.targetMultiplicity = targetMultiplicity;
+  public MigrationSetProperty index(Long index) {
+    this.index = index;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Property multiplicity (default is single)")
-  @JsonProperty("targetMultiplicity")
-  public String getTargetMultiplicity() {
-    return targetMultiplicity;
+  @ApiModelProperty(value = "Position in list if property represents list of object")
+  @JsonProperty("index")
+  public Long getIndex() {
+    return index;
   }
-  public void setTargetMultiplicity(String targetMultiplicity) {
-    this.targetMultiplicity = targetMultiplicity;
+  public void setIndex(Long index) {
+    this.index = index;
   }
 
   /**
@@ -163,13 +163,13 @@ public class MigrationSetProperty implements Serializable {
         Objects.equals(targetType, migrationSetProperty.targetType) &&
         Objects.equals(targetProperty, migrationSetProperty.targetProperty) &&
         Objects.equals(targetValue, migrationSetProperty.targetValue) &&
-        Objects.equals(targetMultiplicity, migrationSetProperty.targetMultiplicity) &&
+        Objects.equals(index, migrationSetProperty.index) &&
         Objects.equals(transformers, migrationSetProperty.transformers);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceProperty, targetType, targetProperty, targetValue, targetMultiplicity, transformers);
+    return Objects.hash(sourceProperty, targetType, targetProperty, targetValue, index, transformers);
   }
 
   @Override
@@ -181,7 +181,7 @@ public class MigrationSetProperty implements Serializable {
     sb.append("    targetType: ").append(toIndentedString(targetType)).append("\n");
     sb.append("    targetProperty: ").append(toIndentedString(targetProperty)).append("\n");
     sb.append("    targetValue: ").append(toIndentedString(targetValue)).append("\n");
-    sb.append("    targetMultiplicity: ").append(toIndentedString(targetMultiplicity)).append("\n");
+    sb.append("    index: ").append(toIndentedString(index)).append("\n");
     sb.append("    transformers: ").append(toIndentedString(transformers)).append("\n");
     sb.append("}");
     return sb.toString();
