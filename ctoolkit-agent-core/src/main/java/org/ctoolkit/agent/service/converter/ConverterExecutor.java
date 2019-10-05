@@ -62,6 +62,15 @@ public class ConverterExecutor
 
     public ImportSetProperty convertProperty( Object source, MigrationSetProperty property )
     {
+        // value is hardcoded
+        if ( property.getTargetValue() != null )
+        {
+            ImportSetProperty importSetProperty = newImportSetProperty( property );
+            importSetProperty.setValue( property.getTargetValue() );
+
+            return importSetProperty;
+        }
+
         // apply transformers to source value
         source = transformerExecutor.transform( source, property.getTransformers(), ctx, TransformerProcessor.Phase.PRE_CONVERT.value() );
 
@@ -100,6 +109,11 @@ public class ConverterExecutor
     public String convertId( MigrationSet migrationSet, MigrationContext migrationContext )
     {
         String idSelectorRaw = migrationSet.getSource().getIdSelector();
+        if ( idSelectorRaw == null )
+        {
+            return null;
+        }
+
         boolean encode = idSelectorRaw.startsWith( ID_ENCODE_PREFIX );
 
         StringSubstitutor substitution = new StringSubstitutor( migrationContext, "${", "}" );
@@ -114,9 +128,20 @@ public class ConverterExecutor
         return id;
     }
 
-    public void putToContext( Object key, Object value )
+    public void putToContext( MigrationContext migrationContext )
     {
-        ctx.put( key, value );
+        ctx.putAll( migrationContext );
+    }
+
+    public void putToContext( MigrationSet migrationSet )
+    {
+        ctx.put( MigrationSet.class, migrationSet );
+
+        ctx.put( "source.namespace", migrationSet.getSource().getNamespace() );
+        ctx.put( "source.kind", migrationSet.getSource().getKind() );
+
+        ctx.put( "target.namespace", migrationSet.getTarget().getNamespace() );
+        ctx.put( "target.kind", migrationSet.getTarget().getKind() );
     }
 
     private ImportSetProperty newImportSetProperty( MigrationSetProperty property )

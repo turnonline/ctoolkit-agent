@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Unit test for {@link ConverterExecutor}
@@ -46,6 +47,20 @@ public class ConverterExecutorTest
     private ConverterExecutor executor = new ConverterExecutor( new TransformerExecutor(), registrat );
 
     // -- convert id
+
+    @Test
+    public void testConvertId_IdSelectorNull()
+    {
+        MigrationSetSource source = new MigrationSetSource();
+        source.setIdSelector( null );
+
+        MigrationSet migrationSet = new MigrationSet();
+        migrationSet.setSource( source );
+        migrationSet.setTarget( Mocks.migrationSetTarget( "client-person", "person" ) );
+
+        String converted = executor.convertId( migrationSet, Mocks.migrationContext( "id", 1L ) );
+        assertNull( converted );
+    }
 
     @Test
     public void testConvertId_Plain()

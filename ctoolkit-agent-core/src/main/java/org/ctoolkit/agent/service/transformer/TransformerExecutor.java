@@ -53,18 +53,22 @@ public class TransformerExecutor
     @SuppressWarnings( "unchecked" )
     public <T> T transform( Object value, List<MigrationSetPropertyTransformer> transformers, Map<Object, Object> ctx, String phase )
     {
-        for ( MigrationSetPropertyTransformer transformer : transformers )
+        if ( transformers != null )
         {
-            if ( transformer.getPhase().equals( phase ) )
+
+            for ( MigrationSetPropertyTransformer transformer : transformers )
             {
-                TransformerProcessor processor = transformerProcessors.get( transformer.getClass() );
-                if ( processor != null )
+                if ( transformer.getPhase().equals( phase ) )
                 {
-                    value = processor.transform( value, transformer, ctx );
+                    TransformerProcessor processor = transformerProcessors.get( transformer.getClass() );
+                    if ( processor != null )
+                    {
+                        value = processor.transform( value, transformer, ctx );
+                    }
                 }
             }
         }
 
-        return (T) value;
+        return ( T ) value;
     }
 }

@@ -31,9 +31,13 @@ import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
 import org.ctoolkit.agent.model.api.ImportSet;
+import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationBatch;
 import org.ctoolkit.agent.model.api.MigrationJob;
 import org.ctoolkit.agent.model.api.MigrationSet;
+import org.ctoolkit.agent.model.api.MigrationSetProperty;
+import org.ctoolkit.agent.model.api.MigrationSetSource;
+import org.ctoolkit.agent.model.api.MigrationSetTarget;
 import org.ctoolkit.agent.service.beam.options.MigrationPipelineOptions;
 import org.ctoolkit.agent.service.converter.BaseConverterRegistrat;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
@@ -50,10 +54,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link PipelineService}
@@ -115,57 +121,66 @@ public class PipelineServiceBean
     @Override
     public List<ImportSet> transform( MigrationSet migrationSet, List<MigrationContext> migrationContextList )
     {
-        if ( migrationPipelineOptions == null)
+        if ( migrationPipelineOptions == null )
         {
-            throw new NullPointerException( "Migration pipeline options cannot be null. Provide MigrationPipelineOptions via ApplicationContextFactory to hide this error." );
+            throw new NullPointerException( "Migration pipeline options cannot be null. Call ApplicationContextFactory.create() in your DoFn class to hide this error." );
         }
 
         BaseConverterRegistrat registrat = registrats.get( migrationPipelineOptions.getTargetAgent() );
-
-        // TODO: move to list bellow
-        ConverterExecutor converterExecutor = new ConverterExecutor( transformerExecutor, registrat );
-        converterExecutor.putToContext( MigrationSet.class, migrationSet );
-
         List<ImportSet> importSets = new ArrayList<>();
 
         for ( MigrationContext migrationContext : migrationContextList )
         {
-            // TODO: remove putToContext from ConverterExecutor
-            // TODO: put MigrationSet to context
-            // TODO: put source to context
-            // TODO: put target to context
-            // TODO: put source to context
-
             // skip entity migration if rules return apply = 'false'
             if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), migrationContext ) )
             {
                 continue;
             }
 
+            // TODO: implement enrichers
+
+            ConverterExecutor converterExecutor = new ConverterExecutor( transformerExecutor, registrat );
+            converterExecutor.putToContext( migrationSet );
+            converterExecutor.putToContext( migrationContext );
+
             // set header values
+            MigrationSetTarget target = migrationSet.getTarget();
+            MigrationSetSource source = migrationSet.getSource();
+
             ImportSet importSet = new ImportSet();
             importSets.add( importSet );
-
             importSet.setAuthor( migrationSet.getAuthor() );
-            importSet.setComment( "Migration import of " + migrationSet.getTarget().getNamespace() + "." + migrationSet.getTarget().getKind() );
-            importSet.setNamespace( migrationSet.getTarget().getNamespace() );
-            importSet.setKind( migrationSet.getTarget().getKind() );
+            importSet.setComment( "Migration import of " + target.getNamespace() + "." + target.getKind() );
+            importSet.setNamespace( target.getNamespace() );
+            importSet.setKind( target.getKind() );
+
             importSet.setId( converterExecutor.convertId( migrationSet, migrationContext ) );
+            importSet.setChangeDate( source.getChangeDate() );
+            importSet.setIdSelector( target.getIdSelector() );
+            importSet.setSyncDateProperty( target.getSyncDateProperty() );
 
             // migrate properties
-//            for ( MigrationSetProperty migrationSetProperty : migrationSet.getProperties() )
-//            {
-//                MigrationContext.Property source = migrationContext.getProperties().get( migrationSetProperty.getSourceProperty() );
-//                if ( source != null )
-//                {
-//                    // convert value to ImportSetProperty
-//                    ImportSetProperty importSetProperty = converterExecutor.convertProperty( source.getValue(), migrationSetProperty );
-//                    if ( importSetProperty != null )
-//                    {
-//                        importSet.getProperties().add( importSetProperty );
-//                    }
-//                }
-//            }
+            for ( MigrationSetProperty migrationSetProperty : migrationSet.getProperties() )
+            {
+                addImportSetProperty( ( currentMigrationSetProperty, index ) -> {
+                            String sourcePropertyNameRaw = currentMigrationSetProperty.getSourceProperty();
+                            String sourcePropertyName = sourcePropertyNameRaw != null ? sourcePropertyNameRaw.replaceAll( "\\*", String.valueOf( index ) ) : null;
+
+                            Object sourceProperty = migrationContext.get( sourcePropertyName );
+                            Object targetProperty = currentMigrationSetProperty.getTargetValue();
+
+                            if ( sourceProperty == null && targetProperty == null)
+                            {
+                                return null;
+                            }
+
+                            return converterExecutor.convertProperty( sourceProperty, currentMigrationSetProperty );
+                        },
+                        Collections.singletonList( migrationSetProperty ),
+                        importSet.getProperties(),
+                        0 );
+
+            }
         }
 
         return importSets;
@@ -176,7 +191,7 @@ public class PipelineServiceBean
     {
         if ( migrationPipelineOptions == null )
         {
-            throw new NullPointerException( "Migration pipeline options cannot be null. Provide MigrationPipelineOptions via ApplicationContextFactory to hide this error." );
+            throw new NullPointerException( "Migration pipeline options cannot be null. Call ApplicationContextFactory.create() in your DoFn class to hide this error." );
         }
 
         ImportBatch importBatch = new ImportBatch();
@@ -199,5 +214,106 @@ public class PipelineServiceBean
                 log.error( "Unable to construct migration client", e );
             }
         }
+    }
+
+    // -- private helpers
+
+    @SuppressWarnings( "unchecked" )
+    private Object addImportSetProperty( ImportSetPropertySupplier importSetPropertySupplier,
+                                         List<MigrationSetProperty> migrationSetProperties,
+                                         List<ImportSetProperty> importSetProperties,
+                                         int index )
+    {
+        for ( MigrationSetProperty migrationSetProperty : migrationSetProperties )
+        {
+            String targetType = migrationSetProperty.getTargetType();
+
+            switch ( targetType )
+            {
+                case "list":
+                {
+                    ImportSetProperty importSetProperty = new ImportSetProperty();
+                    importSetProperty.setName( migrationSetProperty.getTargetProperty() );
+                    importSetProperty.setType( migrationSetProperty.getTargetType() );
+                    importSetProperty.setValue( new ArrayList<>() );
+
+                    initializeImportSetProperties(
+                            importSetProperties,
+                            migrationSetProperty,
+                            importSetProperty
+                    );
+
+                    int previousSize = 0;
+                    int currentSize = 0;
+
+                    while ( previousSize != currentSize || currentSize == 0 )
+                    {
+                        List<ImportSetProperty> currentListProperties = ( List<ImportSetProperty> ) importSetProperty.getValue();
+                        previousSize = currentListProperties.size();
+
+                        addImportSetProperty(
+                                importSetPropertySupplier,
+                                ( List<MigrationSetProperty> ) migrationSetProperty.getTargetValue(),
+                                currentListProperties,
+                                index
+                        );
+
+                        currentSize = currentListProperties.size();
+
+                        index++;
+                    }
+
+                    break;
+                }
+                case "object":
+                {
+                    ImportSetProperty importSetProperty = new ImportSetProperty();
+                    importSetProperty.setName( migrationSetProperty.getTargetProperty() );
+                    importSetProperty.setType( migrationSetProperty.getTargetType() );
+
+                    List<ImportSetProperty> currentObjectProperties = initializeImportSetProperties(
+                            importSetProperties,
+                            migrationSetProperty,
+                            importSetProperty
+                    );
+
+                    importSetProperty.setValue( addImportSetProperty(
+                            importSetPropertySupplier,
+                            ( List<MigrationSetProperty> ) migrationSetProperty.getTargetValue(),
+                            currentObjectProperties,
+                            0
+                    ) );
+
+                    break;
+                }
+                default:
+                {
+                    ImportSetProperty importSetProperty = importSetPropertySupplier.get( migrationSetProperty, index );
+                    if ( importSetProperty != null )
+                    {
+                        importSetProperties.add( importSetProperty );
+                    }
+                }
+            }
+        }
+
+        return importSetProperties;
+    }
+
+    private List<ImportSetProperty> initializeImportSetProperties( List<ImportSetProperty> importSetProperties,
+                                                                   MigrationSetProperty migrationSetProperty,
+                                                                   ImportSetProperty importSetProperty )
+    {
+        List<ImportSetProperty> existingImportSetProperties = importSetProperties
+                .stream()
+                .filter( isp -> isp.getName().equals( migrationSetProperty.getTargetProperty() ) )
+                .collect( Collectors.toList() );
+
+        if ( existingImportSetProperties.isEmpty() )
+        {
+            importSetProperties.add( importSetProperty );
+        }
+
+        return existingImportSetProperties;
     }
 }

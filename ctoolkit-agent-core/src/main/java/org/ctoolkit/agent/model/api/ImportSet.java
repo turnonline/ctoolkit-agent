@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,7 +41,7 @@ public class ImportSet implements Serializable {
   private String namespace = null;
   private String kind = null;
   private String id = null;
-  private String changeDate = null;
+  private Date changeDate = null;
   private String syncDateProperty = "syncDate";
   private String idSelector = null;
   private List<ImportSetProperty> properties = new ArrayList<ImportSetProperty>();
@@ -156,7 +157,7 @@ public class ImportSet implements Serializable {
   /**
    * Date of change in source system. Used with conjunction with syncDateProperty and queryIdentifier
    **/
-  public ImportSet changeDate(String changeDate) {
+  public ImportSet changeDate(Date changeDate) {
     this.changeDate = changeDate;
     return this;
   }
@@ -164,10 +165,10 @@ public class ImportSet implements Serializable {
   
   @ApiModelProperty(value = "Date of change in source system. Used with conjunction with syncDateProperty and queryIdentifier")
   @JsonProperty("changeDate")
-  public String getChangeDate() {
+  public Date getChangeDate() {
     return changeDate;
   }
-  public void setChangeDate(String changeDate) {
+  public void setChangeDate(Date changeDate) {
     this.changeDate = changeDate;
   }
 

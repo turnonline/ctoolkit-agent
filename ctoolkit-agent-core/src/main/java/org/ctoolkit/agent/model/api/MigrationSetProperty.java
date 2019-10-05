@@ -34,14 +34,14 @@ import java.util.Objects;
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-30T05:34:23.887Z")
 public class MigrationSetProperty implements Serializable {
-  
+
   private String sourceProperty = null;
   private String targetType = null;
   private String targetProperty = null;
   @JsonDeserialize(using = MigrationSetPropertyValueJsonDeserializer.class)
   private Object targetValue = null;
   private Long index = null;
-  private List<MigrationSetPropertyTransformer> transformers = new ArrayList<MigrationSetPropertyTransformer>();
+  private List<MigrationSetPropertyTransformer> transformers;
 
   /**
    * Source property name
@@ -51,7 +51,7 @@ public class MigrationSetProperty implements Serializable {
     return this;
   }
 
-  
+
   @ApiModelProperty(required = true, value = "Source property name")
   @JsonProperty("sourceProperty")
   public String getSourceProperty() {
@@ -69,7 +69,7 @@ public class MigrationSetProperty implements Serializable {
     return this;
   }
 
-  
+
   @ApiModelProperty(required = true, value = "Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:  - list - if you want to create list of values (simple or complex) - object - if you want to create embedded object")
   @JsonProperty("targetType")
   public String getTargetType() {
@@ -87,7 +87,7 @@ public class MigrationSetProperty implements Serializable {
     return this;
   }
 
-  
+
   @ApiModelProperty(required = true, value = "Target property name")
   @JsonProperty("targetProperty")
   public String getTargetProperty() {
@@ -105,7 +105,7 @@ public class MigrationSetProperty implements Serializable {
     return this;
   }
 
-  
+
   @ApiModelProperty(required = true, value = "Property value. It can be simple string or list of MigrationSetProperty which can create complex structure")
   @JsonProperty("targetValue")
   public Object getTargetValue() {
@@ -123,7 +123,7 @@ public class MigrationSetProperty implements Serializable {
     return this;
   }
 
-  
+
   @ApiModelProperty(value = "Position in list if property represents list of object")
   @JsonProperty("index")
   public Long getIndex() {
@@ -141,10 +141,13 @@ public class MigrationSetProperty implements Serializable {
     return this;
   }
 
-  
+
   @ApiModelProperty(value = "Array of transformers used to transform source value")
   @JsonProperty("transformers")
   public List<MigrationSetPropertyTransformer> getTransformers() {
+      if ( transformers == null ) {
+          transformers = new ArrayList<>();
+      }
     return transformers;
   }
   public void setTransformers(List<MigrationSetPropertyTransformer> transformers) {
@@ -178,7 +181,7 @@ public class MigrationSetProperty implements Serializable {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MigrationSetProperty {\n");
-    
+
     sb.append("    sourceProperty: ").append(toIndentedString(sourceProperty)).append("\n");
     sb.append("    targetType: ").append(toIndentedString(targetType)).append("\n");
     sb.append("    targetProperty: ").append(toIndentedString(targetProperty)).append("\n");

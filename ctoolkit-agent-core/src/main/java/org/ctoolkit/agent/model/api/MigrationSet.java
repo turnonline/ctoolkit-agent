@@ -41,7 +41,7 @@ public class MigrationSet implements Serializable {
   private MigrationSetTarget target = null;
   private List<MigrationSetProperty> properties = new ArrayList<MigrationSetProperty>();
   private MigrationSetPropertyRuleSet ruleSet = null;
-  private List<MigrationSetEnricherGroup> enrichers = new ArrayList<MigrationSetEnricherGroup>();
+  private List<MigrationSetEnricherGroup> enrichers;
 
   /**
    * Migration set author
