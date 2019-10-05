@@ -40,7 +40,7 @@ public class DateTransformerProcessor
     private static Logger log = LoggerFactory.getLogger( DateTransformerProcessor.class );
 
     @Override
-    public Object transform( Object value, MigrationSetPropertyDateTransformer transformer, Map<Object, Object> ctx )
+    public Object transform( Object value, MigrationSetPropertyDateTransformer transformer, Map<String, Object> ctx )
     {
         Date date = null;
 

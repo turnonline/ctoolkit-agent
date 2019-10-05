@@ -61,5 +61,5 @@ public interface TransformerProcessor<TRANSFORMER extends MigrationSetPropertyTr
         }
     }
 
-    Object transform( Object value, TRANSFORMER transformer, Map<Object, Object> ctx );
+    Object transform( Object value, TRANSFORMER transformer, Map<String, Object> ctx );
 }

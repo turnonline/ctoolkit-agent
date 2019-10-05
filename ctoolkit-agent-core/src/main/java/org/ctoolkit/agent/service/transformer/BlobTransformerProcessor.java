@@ -45,7 +45,7 @@ public class BlobTransformerProcessor
     private static Logger log = LoggerFactory.getLogger( BlobTransformerProcessor.class );
 
     @Override
-    public Object transform( Object value, MigrationSetPropertyBlobTransformer transformer, Map<Object, Object> ctx )
+    public Object transform( Object value, MigrationSetPropertyBlobTransformer transformer, Map<String, Object> ctx )
     {
         if ( value instanceof byte[] )
         {

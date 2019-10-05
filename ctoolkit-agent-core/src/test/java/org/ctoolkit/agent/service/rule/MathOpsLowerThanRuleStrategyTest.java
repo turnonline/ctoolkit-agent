@@ -17,12 +17,10 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.rule;
+package org.ctoolkit.agent.service.rule;
 
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
-import org.ctoolkit.agent.service.rule.MathOpsRuleStrategy;
-import org.ctoolkit.agent.service.rule.RuleStrategy;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -38,9 +36,9 @@ import static org.junit.Assert.assertTrue;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class MathOpsEqualsRuleStrategyTest
+public class MathOpsLowerThanRuleStrategyTest
 {
-    private RuleStrategy strategy = MathOpsRuleStrategy.INSTANCE_EQ;
+    private RuleStrategy strategy = MathOpsRuleStrategy.INSTANCE_LTE;
 
     @Test
     public void apply_PropertyNotFound()
@@ -55,13 +53,13 @@ public class MathOpsEqualsRuleStrategyTest
     // -- String
 
     @Test
-    public void apply_StringNotEquals()
+    public void apply_StringLower()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertFalse( strategy.apply( rule, migrationContext( "name", "Jack" ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "name", "Joh" ) ) );
     }
 
     @Test
@@ -74,16 +72,26 @@ public class MathOpsEqualsRuleStrategyTest
         assertTrue( strategy.apply( rule, migrationContext( "name", "John" ) ) );
     }
 
+    @Test
+    public void apply_StringGreater()
+    {
+        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        rule.setProperty( "name" );
+        rule.setValue( "John" );
+
+        assertFalse( strategy.apply( rule, migrationContext( "name", "Johny" ) ) );
+    }
+
     // -- Integer
 
     @Test
-    public void apply_IntegerNotEquals()
+    public void apply_IntegerLower()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, migrationContext( "age", 31 ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "age", 29 ) ) );
     }
 
     @Test
@@ -96,16 +104,26 @@ public class MathOpsEqualsRuleStrategyTest
         assertTrue( strategy.apply( rule, migrationContext( "age", 30 ) ) );
     }
 
-    // -- Long
-
     @Test
-    public void apply_LongNotEquals()
+    public void apply_IntegerGreater()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, migrationContext( "age", 31L ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 31 ) ) );
+    }
+
+    // -- Long
+
+    @Test
+    public void apply_LongLower()
+    {
+        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        rule.setProperty( "age" );
+        rule.setValue( "30" );
+
+        assertTrue( strategy.apply( rule, migrationContext( "age", 29L ) ) );
     }
 
     @Test
@@ -118,16 +136,26 @@ public class MathOpsEqualsRuleStrategyTest
         assertTrue( strategy.apply( rule, migrationContext( "age", 30L ) ) );
     }
 
-    // -- Float
-
     @Test
-    public void apply_FloatNotEquals()
+    public void apply_LongGreater()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, migrationContext( "age", 31F ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 31L ) ) );
+    }
+
+    // -- Float
+
+    @Test
+    public void apply_FloatLower()
+    {
+        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        rule.setProperty( "age" );
+        rule.setValue( "30" );
+
+        assertTrue( strategy.apply( rule, migrationContext( "age", 29F ) ) );
     }
 
     @Test
@@ -140,16 +168,26 @@ public class MathOpsEqualsRuleStrategyTest
         assertTrue( strategy.apply( rule, migrationContext( "age", 30F ) ) );
     }
 
-    // -- Double
-
     @Test
-    public void apply_DoubleNotEquals()
+    public void apply_FloatGreater()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, migrationContext( "age", 31D ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 31F ) ) );
+    }
+
+    // -- Double
+
+    @Test
+    public void apply_DoubleLower()
+    {
+        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        rule.setProperty( "age" );
+        rule.setValue( "30" );
+
+        assertTrue( strategy.apply( rule, migrationContext( "age", 29D ) ) );
     }
 
     @Test
@@ -162,16 +200,26 @@ public class MathOpsEqualsRuleStrategyTest
         assertTrue( strategy.apply( rule, migrationContext( "age", 30D ) ) );
     }
 
-    // -- BigDecimal
-
     @Test
-    public void apply_BigDecimalNotEquals()
+    public void apply_DoubleGreater()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
-        assertFalse( strategy.apply( rule, migrationContext( "age", BigDecimal.valueOf( 31 ) ) ) );
+        assertFalse( strategy.apply( rule, migrationContext( "age", 31D ) ) );
+    }
+
+    // -- BigDecimal
+
+    @Test
+    public void apply_BigDecimalLower()
+    {
+        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        rule.setProperty( "age" );
+        rule.setValue( "30" );
+
+        assertTrue( strategy.apply( rule, migrationContext( "age", BigDecimal.valueOf( 29 ) ) ) );
     }
 
     @Test
@@ -184,16 +232,26 @@ public class MathOpsEqualsRuleStrategyTest
         assertTrue( strategy.apply( rule, migrationContext( "age", BigDecimal.valueOf( 30 ) ) ) );
     }
 
+    @Test
+    public void apply_BigDecimalGreater()
+    {
+        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        rule.setProperty( "age" );
+        rule.setValue( "30" );
+
+        assertFalse( strategy.apply( rule, migrationContext( "age", BigDecimal.valueOf( 31 ) ) ) );
+    }
+
     // -- Boolean
 
     @Test
-    public void apply_BooleanNotEquals()
+    public void apply_BooleanLower()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
-        assertFalse( strategy.apply( rule, migrationContext( "active", false ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "active", false ) ) );
     }
 
     @Test
@@ -206,42 +264,20 @@ public class MathOpsEqualsRuleStrategyTest
         assertTrue( strategy.apply( rule, migrationContext( "active", true ) ) );
     }
 
-    // -- Byte array
-
-    @Test
-    public void apply_ByteArrayNotEquals()
-    {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
-        rule.setProperty( "data" );
-        rule.setValue( "John" );
-
-        assertFalse( strategy.apply( rule, migrationContext( "data", new byte[]{'j'} ) ) );
-    }
-
-    @Test
-    public void apply_ByteArrayEquals()
-    {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
-        rule.setProperty( "active" );
-        rule.setValue( "John" );
-
-        assertTrue( strategy.apply( rule, migrationContext( "data", new byte[]{'J', 'o', 'h', 'n'} ) ) );
-    }
-
     // -- Date
 
     @Test
-    public void apply_DateNotEquals()
+    public void apply_DateLower()
     {
         MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
         rule.setProperty( "createDate" );
-        rule.setValue( "1" );
+        rule.setValue( "1514764900000" );
 
         Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
         calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
         calendar.set( Calendar.MILLISECOND, 0 );
 
-        assertFalse( strategy.apply( rule, migrationContext( "createDate", calendar.getTime() ) ) );
+        assertTrue( strategy.apply( rule, migrationContext( "createDate", calendar.getTime() ) ) );
     }
 
     @Test
@@ -256,5 +292,19 @@ public class MathOpsEqualsRuleStrategyTest
         calendar.set( Calendar.MILLISECOND, 0 );
 
         assertTrue( strategy.apply( rule, migrationContext( "createDate", calendar.getTime() ) ) );
+    }
+
+    @Test
+    public void apply_DateGreater()
+    {
+        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        rule.setProperty( "createDate" );
+        rule.setValue( "1514764600000" );
+
+        Calendar calendar = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+        calendar.set( 2018, Calendar.JANUARY, 1, 0, 0, 0 );
+        calendar.set( Calendar.MILLISECOND, 0 );
+
+        assertFalse( strategy.apply( rule, migrationContext( "createDate", calendar.getTime() ) ) );
     }
 }

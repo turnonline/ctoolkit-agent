@@ -22,6 +22,7 @@ package org.ctoolkit.agent.service.transformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyDateTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyEncodingTransformer;
+import org.ctoolkit.agent.model.api.MigrationSetPropertyGroovyTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyMapperTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyPatternTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyTransformer;
@@ -48,14 +49,14 @@ public class TransformerExecutor
         transformerProcessors.put( MigrationSetPropertyBlobTransformer.class, new BlobTransformerProcessor() );
         transformerProcessors.put( MigrationSetPropertyPatternTransformer.class, new PatternTransformerProcessor() );
         transformerProcessors.put( MigrationSetPropertyEncodingTransformer.class, new EncodingTransformerProcessor() );
+        transformerProcessors.put( MigrationSetPropertyGroovyTransformer.class, new GroovyTransformerProcessor() );
     }
 
     @SuppressWarnings( "unchecked" )
-    public <T> T transform( Object value, List<MigrationSetPropertyTransformer> transformers, Map<Object, Object> ctx, String phase )
+    public <T> T transform( Object value, List<MigrationSetPropertyTransformer> transformers, Map<String, Object> ctx, String phase )
     {
         if ( transformers != null )
         {
-
             for ( MigrationSetPropertyTransformer transformer : transformers )
             {
                 if ( transformer.getPhase().equals( phase ) )

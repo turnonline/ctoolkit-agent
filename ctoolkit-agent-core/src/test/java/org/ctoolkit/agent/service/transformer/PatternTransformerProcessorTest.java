@@ -17,12 +17,9 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.transformer;
+package org.ctoolkit.agent.service.transformer;
 
-import org.ctoolkit.agent.Mocks;
-import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyPatternTransformer;
-import org.ctoolkit.agent.service.transformer.PatternTransformerProcessor;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -44,12 +41,10 @@ public class PatternTransformerProcessorTest
         MigrationSetPropertyPatternTransformer transformer = new MigrationSetPropertyPatternTransformer();
         transformer.setPattern( "client-person:person:{target.value}" );
 
-        MigrationSet migrationSet = new MigrationSet();
-        migrationSet.setSource( Mocks.migrationSetSource( "global", "Person" ) );
-        migrationSet.setTarget( Mocks.migrationSetTarget( "client-person", "person" ) );
-
-        HashMap<Object, Object> ctx = new HashMap<>();
-        ctx.put( MigrationSet.class, migrationSet );
+        HashMap<String, Object> ctx = new HashMap<>();
+        ctx.put( "target.namespace", "client-person" );
+        ctx.put( "target.kind", "person" );
+        ctx.put( "target.value", "1" );
 
         assertEquals( "client-person:person:1", processor.transform( "1", transformer, ctx ) );
     }
@@ -60,12 +55,10 @@ public class PatternTransformerProcessorTest
         MigrationSetPropertyPatternTransformer transformer = new MigrationSetPropertyPatternTransformer();
         transformer.setPattern( "{target.namespace}:{target.kind}:{target.value}" );
 
-        MigrationSet migrationSet = new MigrationSet();
-        migrationSet.setSource( Mocks.migrationSetSource( "global", "Person" ) );
-        migrationSet.setTarget( Mocks.migrationSetTarget( "client-person", "person" ) );
-
-        HashMap<Object, Object> ctx = new HashMap<>();
-        ctx.put( MigrationSet.class, migrationSet );
+        HashMap<String, Object> ctx = new HashMap<>();
+        ctx.put( "target.namespace", "client-person" );
+        ctx.put( "target.kind", "person" );
+        ctx.put( "target.value", "1" );
 
         assertEquals( "client-person:person:1", processor.transform( "1", transformer, ctx ) );
     }

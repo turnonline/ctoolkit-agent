@@ -17,12 +17,10 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.rule;
+package org.ctoolkit.agent.service.rule;
 
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
-import org.ctoolkit.agent.service.rule.RegexRuleStrategy;
-import org.ctoolkit.agent.service.rule.RuleStrategy;
 import org.junit.Test;
 
 import static org.ctoolkit.agent.Mocks.migrationContext;

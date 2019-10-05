@@ -17,14 +17,12 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.converter;
+package org.ctoolkit.agent.service.converter;
 
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyDateTransformer;
-import org.ctoolkit.agent.service.converter.ConverterExecutor;
-import org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.junit.Test;
 

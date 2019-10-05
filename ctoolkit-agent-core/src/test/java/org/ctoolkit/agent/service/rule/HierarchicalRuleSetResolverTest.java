@@ -17,13 +17,12 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.rule;
+package org.ctoolkit.agent.service.rule;
 
 import com.google.gson.GsonBuilder;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRuleSet;
-import org.ctoolkit.agent.service.rule.HierarchicalRuleSetResolver;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

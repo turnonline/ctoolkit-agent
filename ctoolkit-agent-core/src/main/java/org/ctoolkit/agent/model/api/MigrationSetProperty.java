@@ -40,7 +40,6 @@ public class MigrationSetProperty implements Serializable {
   private String targetProperty = null;
   @JsonDeserialize(using = MigrationSetPropertyValueJsonDeserializer.class)
   private Object targetValue = null;
-  private Long index = null;
   private List<MigrationSetPropertyTransformer> transformers;
 
   /**
@@ -116,24 +115,6 @@ public class MigrationSetProperty implements Serializable {
   }
 
   /**
-   * Position in list if property represents list of object
-   **/
-  public MigrationSetProperty index(Long index) {
-    this.index = index;
-    return this;
-  }
-
-
-  @ApiModelProperty(value = "Position in list if property represents list of object")
-  @JsonProperty("index")
-  public Long getIndex() {
-    return index;
-  }
-  public void setIndex(Long index) {
-    this.index = index;
-  }
-
-  /**
    * Array of transformers used to transform source value
    **/
   public MigrationSetProperty transformers(List<MigrationSetPropertyTransformer> transformers) {
@@ -168,13 +149,12 @@ public class MigrationSetProperty implements Serializable {
         Objects.equals(targetType, migrationSetProperty.targetType) &&
         Objects.equals(targetProperty, migrationSetProperty.targetProperty) &&
         Objects.equals(targetValue, migrationSetProperty.targetValue) &&
-        Objects.equals(index, migrationSetProperty.index) &&
         Objects.equals(transformers, migrationSetProperty.transformers);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceProperty, targetType, targetProperty, targetValue, index, transformers);
+    return Objects.hash(sourceProperty, targetType, targetProperty, targetValue, transformers);
   }
 
   @Override
@@ -186,7 +166,6 @@ public class MigrationSetProperty implements Serializable {
     sb.append("    targetType: ").append(toIndentedString(targetType)).append("\n");
     sb.append("    targetProperty: ").append(toIndentedString(targetProperty)).append("\n");
     sb.append("    targetValue: ").append(toIndentedString(targetValue)).append("\n");
-    sb.append("    index: ").append(toIndentedString(index)).append("\n");
     sb.append("    transformers: ").append(toIndentedString(transformers)).append("\n");
     sb.append("}");
     return sb.toString();

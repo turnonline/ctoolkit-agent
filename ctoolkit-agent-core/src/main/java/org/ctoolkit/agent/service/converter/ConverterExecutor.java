@@ -25,11 +25,13 @@ import org.apache.commons.text.StringSubstitutor;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSet;
+import org.ctoolkit.agent.model.api.MigrationSetEnricherGroup;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.ctoolkit.agent.service.transformer.TransformerProcessor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +45,7 @@ public class ConverterExecutor
 
     private ConverterRegistrat registrat;
 
-    private final Map<Object, Object> ctx = new HashMap<>();
+    private final Map<String, Object> ctx = new HashMap<>();
 
     public ConverterExecutor()
     {
@@ -58,6 +60,11 @@ public class ConverterExecutor
     {
         this.transformerExecutor = transformerExecutor;
         this.registrat = registrat;
+    }
+
+    public void enrich( MigrationContext migrationContext, List<MigrationSetEnricherGroup> enrichers )
+    {
+        // TODO: implement
     }
 
     public ImportSetProperty convertProperty( Object source, MigrationSetProperty property )
@@ -135,7 +142,7 @@ public class ConverterExecutor
 
     public void putToContext( MigrationSet migrationSet )
     {
-        ctx.put( MigrationSet.class, migrationSet );
+        ctx.put( MigrationSet.class.getName(), migrationSet );
 
         ctx.put( "source.namespace", migrationSet.getSource().getNamespace() );
         ctx.put( "source.kind", migrationSet.getSource().getKind() );
@@ -143,6 +150,13 @@ public class ConverterExecutor
         ctx.put( "target.namespace", migrationSet.getTarget().getNamespace() );
         ctx.put( "target.kind", migrationSet.getTarget().getKind() );
     }
+
+    public void putToContext( String key, Object value )
+    {
+        ctx.put( key, value );
+    }
+
+    // -- private helpers
 
     private ImportSetProperty newImportSetProperty( MigrationSetProperty property )
     {

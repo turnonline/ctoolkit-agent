@@ -17,13 +17,11 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.converter;
+package org.ctoolkit.agent.service.converter;
 
 import org.ctoolkit.agent.Mocks;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
-import org.ctoolkit.agent.service.converter.ConverterExecutor;
-import org.ctoolkit.agent.service.converter.ConverterRegistrat;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;

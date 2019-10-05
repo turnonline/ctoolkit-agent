@@ -33,7 +33,7 @@ public class MapperTransformerProcessor
         implements TransformerProcessor<MigrationSetPropertyMapperTransformer>
 {
     @Override
-    public Object transform( Object value, MigrationSetPropertyMapperTransformer transformer, Map<Object, Object> ctx )
+    public Object transform( Object value, MigrationSetPropertyMapperTransformer transformer, Map<String, Object> ctx )
     {
         for ( MigrationSetPropertyMapperTransformerMappings mapping : transformer.getMappings() )
         {

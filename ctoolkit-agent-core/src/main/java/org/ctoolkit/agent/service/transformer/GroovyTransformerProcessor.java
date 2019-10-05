@@ -19,28 +19,29 @@
 
 package org.ctoolkit.agent.service.transformer;
 
-import org.apache.commons.text.StringSubstitutor;
-import org.ctoolkit.agent.model.api.MigrationSetPropertyPatternTransformer;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import org.ctoolkit.agent.model.api.MigrationSetPropertyGroovyTransformer;
 
 import java.util.Map;
 
 /**
- * Implementation of {@link MigrationSetPropertyPatternTransformer} transformer
+ * Implementation of {@link MigrationSetPropertyGroovyTransformer} transformer
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class PatternTransformerProcessor
-        implements TransformerProcessor<MigrationSetPropertyPatternTransformer>
+public class GroovyTransformerProcessor
+        implements TransformerProcessor<MigrationSetPropertyGroovyTransformer>
 {
     @Override
-    public Object transform( Object value, MigrationSetPropertyPatternTransformer transformer, Map<String, Object> ctx )
+    public Object transform( Object value, MigrationSetPropertyGroovyTransformer transformer, Map<String, Object> ctx )
     {
-        if ( value instanceof String )
-        {
-            StringSubstitutor substitution = new StringSubstitutor( ctx, "{", "}" );
-            value = substitution.replace( transformer.getPattern() );
-        }
+        Binding binding = new Binding( ctx );
+        binding.setVariable( "ctx", ctx );
+        binding.setVariable( "value", value );
 
-        return value;
+        GroovyShell shell = new GroovyShell( binding );
+
+        return shell.evaluate( transformer.getCommand() );
     }
 }

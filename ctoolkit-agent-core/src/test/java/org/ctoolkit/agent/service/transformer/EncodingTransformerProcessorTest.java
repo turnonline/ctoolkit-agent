@@ -17,10 +17,9 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.transformer;
+package org.ctoolkit.agent.service.transformer;
 
 import org.ctoolkit.agent.model.api.MigrationSetPropertyEncodingTransformer;
-import org.ctoolkit.agent.service.transformer.EncodingTransformerProcessor;
 import org.junit.Test;
 
 import java.util.HashMap;

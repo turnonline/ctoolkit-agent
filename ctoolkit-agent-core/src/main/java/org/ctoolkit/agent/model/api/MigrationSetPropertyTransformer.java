@@ -42,6 +42,7 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = MigrationSetPropertyBlobTransformer.class, name = "blob"),
         @JsonSubTypes.Type(value = MigrationSetPropertyPatternTransformer.class, name = "pattern"),
         @JsonSubTypes.Type(value = MigrationSetPropertyEncodingTransformer.class, name = "encoding"),
+        @JsonSubTypes.Type(value = MigrationSetPropertyGroovyTransformer.class, name = "groovy")
 })
 public class MigrationSetPropertyTransformer implements Serializable {
   

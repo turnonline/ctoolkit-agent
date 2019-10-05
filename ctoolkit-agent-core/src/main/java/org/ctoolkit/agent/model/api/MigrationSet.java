@@ -178,6 +178,9 @@ public class MigrationSet implements Serializable {
   @ApiModelProperty(value = "Array of enricher groups")
   @JsonProperty("enrichers")
   public List<MigrationSetEnricherGroup> getEnrichers() {
+    if (enrichers == null) {
+      this.enrichers = new ArrayList<>(  );
+    }
     return enrichers;
   }
   public void setEnrichers(List<MigrationSetEnricherGroup> enrichers) {

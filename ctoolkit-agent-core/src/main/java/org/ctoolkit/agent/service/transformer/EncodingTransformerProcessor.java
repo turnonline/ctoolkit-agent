@@ -34,7 +34,7 @@ public class EncodingTransformerProcessor
         implements TransformerProcessor<MigrationSetPropertyEncodingTransformer>
 {
     @Override
-    public Object transform( Object value, MigrationSetPropertyEncodingTransformer transformer, Map<Object, Object> ctx )
+    public Object transform( Object value, MigrationSetPropertyEncodingTransformer transformer, Map<String, Object> ctx )
     {
         BaseEncoding encoding = null;
 

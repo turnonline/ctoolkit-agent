@@ -137,11 +137,11 @@ public class PipelineServiceBean
                 continue;
             }
 
-            // TODO: implement enrichers
-
             ConverterExecutor converterExecutor = new ConverterExecutor( transformerExecutor, registrat );
             converterExecutor.putToContext( migrationSet );
             converterExecutor.putToContext( migrationContext );
+
+            converterExecutor.enrich( migrationContext, migrationSet.getEnrichers() );
 
             // set header values
             MigrationSetTarget target = migrationSet.getTarget();
@@ -173,6 +173,9 @@ public class PipelineServiceBean
                             {
                                 return null;
                             }
+
+                            converterExecutor.putToContext( "source.value", sourceProperty );
+                            converterExecutor.putToContext( "target.value", targetProperty );
 
                             return converterExecutor.convertProperty( sourceProperty, currentMigrationSetProperty );
                         },

@@ -17,10 +17,9 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.transformer;
+package org.ctoolkit.agent.service.transformer;
 
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
-import org.ctoolkit.agent.service.transformer.BlobTransformerProcessor;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
