@@ -22,6 +22,7 @@ package org.ctoolkit.agent.transformer;
 import org.ctoolkit.agent.Mocks;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyPatternTransformer;
+import org.ctoolkit.agent.service.transformer.PatternTransformerProcessor;
 import org.junit.Test;
 
 import java.util.HashMap;

@@ -1,0 +1,621 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "No description",
+    "version" : "1.0.0",
+    "title" : "Ctoolkit Agent"
+  },
+  "consumes" : [ "application/json" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/v1/migrations" : {
+      "post" : {
+        "tags" : [ "migration" ],
+        "summary" : "Migrate data",
+        "description" : "Migrate data from source agent to target agent",
+        "consumes" : [ ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/MigrationBatch"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Migration job info",
+            "schema" : {
+              "$ref" : "#/definitions/MigrationJob"
+            }
+          },
+          "400" : {
+            "description" : "The error indicates that client has made a request that server couldn’t understand. The client should not repeat the request without modifications.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "401" : {
+            "description" : "The error when the authentication credential fails.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "It’s a failure of the server. The client can repeat the request without modifications at any later time.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "503" : {
+            "description" : "The service is unavailable or the server has timed out processing of the request. The client may repeat the request without modifications at any later time.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/v1/imports" : {
+      "post" : {
+        "summary" : "Import data",
+        "description" : "Import data to agent",
+        "consumes" : [ ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ImportBatch"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "schema" : {
+              "$ref" : "#/definitions/ImportJob"
+            }
+          },
+          "400" : {
+            "description" : "The error indicates that client has made a request that server couldn’t understand. The client should not repeat the request without modifications.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "401" : {
+            "description" : "The error when the authentication credential fails.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "500" : {
+            "description" : "It’s a failure of the server. The client can repeat the request without modifications at any later time.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          },
+          "503" : {
+            "description" : "The service is unavailable or the server has timed out processing of the request. The client may repeat the request without modifications at any later time.",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "MigrationBatch" : {
+      "type" : "object",
+      "properties" : {
+        "pipelineOptions" : {
+          "type" : "array",
+          "description" : "Array of pipeline options",
+          "items" : {
+            "$ref" : "#/definitions/PipelineOption"
+          }
+        },
+        "migrationSets" : {
+          "type" : "array",
+          "description" : "Array of migration sets",
+          "items" : {
+            "$ref" : "#/definitions/MigrationSet"
+          }
+        }
+      }
+    },
+    "MigrationSet" : {
+      "type" : "object",
+      "required" : [ "properties", "source", "target" ],
+      "properties" : {
+        "author" : {
+          "type" : "string",
+          "description" : "Migration set author"
+        },
+        "comment" : {
+          "type" : "string",
+          "description" : "Optional comment for migration set"
+        },
+        "query" : {
+          "type" : "string",
+          "description" : "Query which will narrow source kind records (partial changes). Keep 'null' if all records should be processed (initial import)"
+        },
+        "source" : {
+          "$ref" : "#/definitions/MigrationSetSource"
+        },
+        "target" : {
+          "$ref" : "#/definitions/MigrationSetTarget"
+        },
+        "properties" : {
+          "type" : "array",
+          "description" : "Array of operations",
+          "items" : {
+            "$ref" : "#/definitions/MigrationSetProperty"
+          }
+        },
+        "ruleSet" : {
+          "$ref" : "#/definitions/MigrationSetPropertyRuleSet"
+        },
+        "enrichers" : {
+          "type" : "array",
+          "description" : "Array of enricher groups",
+          "items" : {
+            "$ref" : "#/definitions/MigrationSetEnricherGroup"
+          }
+        }
+      }
+    },
+    "MigrationSetEnricherGroup" : {
+      "type" : "object",
+      "required" : [ "enrichers", "execution" ],
+      "properties" : {
+        "enrichers" : {
+          "type" : "array",
+          "description" : "Array of enrichers inside group",
+          "items" : {
+            "$ref" : "#/definitions/MigrationSetEnricher"
+          }
+        },
+        "execution" : {
+          "type" : "string",
+          "description" : "How enrichers in group should be executed. Two possible values:\n\n- sequence - enrichers will be executed step by step\n- parallel - enrichers will be executed simultaneously",
+          "default" : "sequence",
+          "enum" : [ "sequence", "parallel" ]
+        }
+      }
+    },
+    "MigrationSetEnricher" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Name of enricher. Will be used as prefix when adding enricher values into context"
+        },
+        "context" : {
+          "type" : "array",
+          "description" : "Array of properties passed to enricher. Can be either static value like ‘23’ or value taken from context like ${source.name}",
+          "items" : {
+            "$ref" : "#/definitions/ContextProperty"
+          }
+        },
+        "enrichers" : {
+          "type" : "array",
+          "description" : "Array of enrichers groups",
+          "items" : {
+            "$ref" : "#/definitions/MigrationSetEnricherGroup"
+          }
+        }
+      }
+    },
+    "MigrationSetGroovyEnricher" : {
+      "type" : "object",
+      "properties" : {
+        "command" : {
+          "type" : "string",
+          "description" : "Groovy shell command. Context map ('ctx' property) will be passed into shell and can be used to write values into context."
+        }
+      }
+    },
+    "MigrationSetRestEnricher" : {
+      "type" : "object",
+      "properties" : {
+        "url" : {
+          "type" : "string",
+          "description" : "Url of remote call. Only GET is supported. Result properties of rest call will be passed to context with enricher name prefix, for instance if enrichers name is 'getPersonByEmail' and one of result is plain text with value 'name' the resulted context key will be 'getPersonByEmail.name'.\n\nIf response is json it will be flatted into context values prefixed with enricher name"
+        }
+      }
+    },
+    "MigrationSetDatabaseSelectEnricher" : {
+      "type" : "object",
+      "properties" : {
+        "query" : {
+          "type" : "string",
+          "description" : "Query which will be passed to database select. Result properties of query will be passed to context with enricher name prefix, for instance if enrichers name is 'getPersonByEmail' and one of result property is 'name' the resulted context key will be 'getPersonByEmail.name'."
+        },
+        "namedParameters" : {
+          "type" : "array",
+          "description" : "List of named parameters passed to query",
+          "items" : {
+            "$ref" : "#/definitions/NamedParameter"
+          }
+        }
+      }
+    },
+    "MigrationSetSource" : {
+      "type" : "object",
+      "required" : [ "changeDate", "kind", "namespace" ],
+      "properties" : {
+        "namespace" : {
+          "type" : "string",
+          "description" : "Source namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)"
+        },
+        "kind" : {
+          "type" : "string",
+          "description" : "Source kind name (for elasticsearch it is ‘document’, for sql it is ‘table’)"
+        },
+        "changeDate" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Date of change in source system. Used with conjunction with MigrationSetTarget.syncDateProperty and MigrationSetTarget.queryIdentifier"
+        },
+        "idSelector" : {
+          "type" : "string",
+          "description" : "Selector used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.\n\nIf omitted id will be generated",
+          "default" : "${target.namespace}:${target.kind}:${source.id}",
+          "example" : "${source.id}"
+        }
+      }
+    },
+    "MigrationSetTarget" : {
+      "type" : "object",
+      "required" : [ "kind", "namespace" ],
+      "properties" : {
+        "namespace" : {
+          "type" : "string",
+          "description" : "Target namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)"
+        },
+        "kind" : {
+          "type" : "string",
+          "description" : "Target kind name (for elasticsearch it is ‘document’, for sql it is ‘table’)"
+        },
+        "syncDateProperty" : {
+          "type" : "string",
+          "description" : "Name of sync date property which will be used to determine if import is required or not. \n\nMust be type of 'date'",
+          "default" : "syncDate"
+        },
+        "idSelector" : {
+          "type" : "string",
+          "description" : "Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'\n\nIt is used in conjunction with syncDateProperty with following logic:\n\n- if record does not exists, syncDate will be ignored and new record will be created\n- if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated\n- if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped"
+        }
+      }
+    },
+    "MigrationSetProperty" : {
+      "type" : "object",
+      "required" : [ "sourceProperty", "targetProperty", "targetType", "targetValue" ],
+      "properties" : {
+        "sourceProperty" : {
+          "type" : "string",
+          "description" : "Source property name"
+        },
+        "targetType" : {
+          "type" : "string",
+          "description" : "Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:\n\n- list - if you want to create list of values (simple or complex)\n- object - if you want to create embedded object"
+        },
+        "targetProperty" : {
+          "type" : "string",
+          "description" : "Target property name"
+        },
+        "targetValue" : {
+          "type" : "object",
+          "description" : "Property value. It can be simple string or list of MigrationSetProperty which can create complex structure"
+        },
+        "index" : {
+          "type" : "integer",
+          "description" : "Position in list if property represents list of object"
+        },
+        "transformers" : {
+          "type" : "array",
+          "description" : "Array of transformers used to transform source value",
+          "items" : {
+            "$ref" : "#/definitions/MigrationSetPropertyTransformer"
+          }
+        }
+      }
+    },
+    "MigrationSetPropertyRuleSet" : {
+      "type" : "object",
+      "required" : [ "operation", "rules" ],
+      "properties" : {
+        "operation" : {
+          "type" : "string",
+          "description" : "Rule logical operation",
+          "default" : "and",
+          "enum" : [ "and", "or" ]
+        },
+        "rules" : {
+          "type" : "array",
+          "description" : "Array of rules",
+          "items" : {
+            "$ref" : "#/definitions/MigrationSetPropertyRule"
+          }
+        }
+      }
+    },
+    "MigrationSetPropertyRule" : {
+      "type" : "object",
+      "required" : [ "operation", "property", "value" ],
+      "properties" : {
+        "property" : {
+          "type" : "string",
+          "description" : "Property name"
+        },
+        "operation" : {
+          "type" : "string",
+          "description" : "Operation expression",
+          "enum" : [ "eq", "lt", "lte", "gt", "gte", "regexp", "groovy" ]
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "Property value"
+        },
+        "ruleSet" : {
+          "$ref" : "#/definitions/MigrationSetPropertyRuleSet"
+        }
+      }
+    },
+    "MigrationSetPropertyTransformer" : {
+      "type" : "object",
+      "required" : [ "phase" ],
+      "properties" : {
+        "phase" : {
+          "type" : "string",
+          "description" : "Phase in which transformer should be applied",
+          "default" : "pre-convert",
+          "enum" : [ "pre-convert", "post-convert" ]
+        }
+      }
+    },
+    "MigrationSetPropertyMapperTransformer" : {
+      "type" : "object",
+      "required" : [ "mappings" ],
+      "properties" : {
+        "mappings" : {
+          "type" : "array",
+          "items" : {
+            "required" : [ "source", "target" ],
+            "type" : "object",
+            "properties" : {
+              "source" : {
+                "type" : "string",
+                "description" : "Source map value"
+              },
+              "target" : {
+                "type" : "string",
+                "description" : "Target map value"
+              }
+            }
+          }
+        }
+      }
+    },
+    "MigrationSetPropertyDateTransformer" : {
+      "type" : "object",
+      "required" : [ "format", "timeZone" ],
+      "properties" : {
+        "format" : {
+          "type" : "string",
+          "description" : "Date format which will be used to transfer Date value into formatted String or formatted String to Date - https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html."
+        },
+        "epoch" : {
+          "type" : "boolean",
+          "description" : "If you wan to transform into date into miliseconds since January 1, 1970, 00:00:00 GMT use ‘epoch’=true. Default is false.",
+          "default" : false
+        },
+        "timeZone" : {
+          "type" : "string",
+          "description" : "Time zone used in simple date formatter. Default is 'GMT'",
+          "default" : "GMT"
+        }
+      }
+    },
+    "MigrationSetPropertyBlobTransformer" : {
+      "type" : "object"
+    },
+    "MigrationSetPropertyPatternTransformer" : {
+      "type" : "object",
+      "required" : [ "pattern" ],
+      "properties" : {
+        "pattern" : {
+          "type" : "string",
+          "description" : "Pattern used to transform target value",
+          "example" : "client-person:address:${target.value}"
+        }
+      }
+    },
+    "MigrationSetPropertyEncodingTransformer" : {
+      "type" : "object",
+      "required" : [ "encodingType", "operation" ],
+      "properties" : {
+        "operation" : {
+          "type" : "string",
+          "description" : "Operation - encode/decode",
+          "default" : "encode",
+          "enum" : [ "encode", "decode" ]
+        },
+        "encodingType" : {
+          "type" : "string",
+          "description" : "Encoding type",
+          "default" : "base64",
+          "enum" : [ "base16", "base32", "base32Hex", "base64", "base64Url" ]
+        }
+      }
+    },
+    "MigrationJob" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Job id"
+        },
+        "state" : {
+          "type" : "string",
+          "description" : "Job state"
+        }
+      }
+    },
+    "ContextProperty" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Property name"
+        },
+        "value" : {
+          "type" : "object",
+          "description" : "Property value"
+        }
+      }
+    },
+    "ImportBatch" : {
+      "type" : "object",
+      "properties" : {
+        "pipelineOptions" : {
+          "type" : "array",
+          "description" : "Array of pipeline options",
+          "items" : {
+            "$ref" : "#/definitions/PipelineOption"
+          }
+        },
+        "importSets" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ImportSet"
+          }
+        }
+      }
+    },
+    "ImportSet" : {
+      "type" : "object",
+      "properties" : {
+        "author" : {
+          "type" : "string",
+          "description" : "Import set author"
+        },
+        "comment" : {
+          "type" : "string",
+          "description" : "Optional comment for import set"
+        },
+        "clean" : {
+          "type" : "boolean",
+          "description" : "Flag if all records for kind should be removed prior to data import",
+          "default" : false
+        },
+        "namespace" : {
+          "type" : "string",
+          "description" : "Namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)"
+        },
+        "kind" : {
+          "type" : "string",
+          "description" : "Kind name (for elasticsearch it is ‘document’, for sql it is ‘table’)"
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "Primary id"
+        },
+        "changeDate" : {
+          "type" : "string",
+          "description" : "Date of change in source system. Used with conjunction with syncDateProperty and queryIdentifier"
+        },
+        "syncDateProperty" : {
+          "type" : "string",
+          "description" : "Name of sync date property which will be used to determine if import is required or not.\n\nMust be type of 'date'",
+          "default" : "syncDate"
+        },
+        "idSelector" : {
+          "type" : "string",
+          "description" : "Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'\n\nIt is used in conjunction with syncDateProperty with following logic:\n\n- if record does not exists, syncDate will be ignored and new record will be created\n- if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated\n- if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped"
+        },
+        "properties" : {
+          "type" : "array",
+          "description" : "Array of import set properties",
+          "items" : {
+            "$ref" : "#/definitions/ImportSetProperty"
+          }
+        }
+      }
+    },
+    "ImportSetProperty" : {
+      "type" : "object",
+      "required" : [ "name", "value" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Property name"
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:\n\n- list - if you want to create list of values (simple or complex)\n- object - if you want to create embedded object"
+        },
+        "value" : {
+          "type" : "object",
+          "description" : "Property value. It can be simple string or list of ImportSetProperty which can create complex structures"
+        }
+      }
+    },
+    "ImportJob" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Job id"
+        },
+        "state" : {
+          "type" : "string",
+          "description" : "Job state"
+        }
+      }
+    },
+    "PipelineOption" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Pipeline option name"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "Pipeline option value"
+        }
+      }
+    },
+    "Error" : {
+      "type" : "object",
+      "required" : [ "code", "message" ],
+      "properties" : {
+        "code" : {
+          "type" : "integer",
+          "format" : "int32",
+          "description" : "The HTTP status code."
+        },
+        "message" : {
+          "type" : "string",
+          "description" : "The error message."
+        }
+      }
+    },
+    "NamedParameter" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Placeholder name of named parameter"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "Value of named parameter"
+        }
+      }
+    }
+  }
+}

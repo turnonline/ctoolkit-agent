@@ -20,9 +20,10 @@
 package org.ctoolkit.agent.rule;
 
 import com.google.gson.GsonBuilder;
-import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRuleSet;
+import org.ctoolkit.agent.service.rule.HierarchicalRuleSetResolver;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -216,11 +217,11 @@ public class HierarchicalRuleSetResolverTest
 
     // -- private helpers
 
-    public static EntityExportData exportData()
+    public static MigrationContext exportData()
     {
-        EntityExportData exportData = new EntityExportData();
-        exportData.getProperties().put( "name", new EntityExportData.Property( "John" ) );
-        exportData.getProperties().put( "surname", new EntityExportData.Property( "Foo" ) );
+        MigrationContext exportData = new MigrationContext();
+        exportData.put( "name", "John" );
+        exportData.put( "surname", "Foo" );
 
         return exportData;
     }

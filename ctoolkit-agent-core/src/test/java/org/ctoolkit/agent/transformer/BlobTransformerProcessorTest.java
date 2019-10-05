@@ -20,6 +20,7 @@
 package org.ctoolkit.agent.transformer;
 
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
+import org.ctoolkit.agent.service.transformer.BlobTransformerProcessor;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

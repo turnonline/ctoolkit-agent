@@ -26,7 +26,7 @@ import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
 import org.ctoolkit.agent.model.api.MigrationBatch;
 import org.ctoolkit.agent.model.api.MigrationJob;
-import org.ctoolkit.agent.service.MigrationService;
+import org.ctoolkit.agent.service.beam.pipeline.PipelineService;
 
 import javax.inject.Inject;
 
@@ -39,7 +39,7 @@ import javax.inject.Inject;
 public class MigrationEndpoint
 {
     @Inject
-    private MigrationService service;
+    private PipelineService service;
 
     @Post( "/migrations" )
     public Single<MigrationJob> migrateBatch( MigrationBatch batch )

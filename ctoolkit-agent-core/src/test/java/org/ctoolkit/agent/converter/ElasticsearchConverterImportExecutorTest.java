@@ -20,7 +20,9 @@
 package org.ctoolkit.agent.converter;
 
 import org.ctoolkit.agent.model.api.ImportSetProperty;
-import org.ctoolkit.agent.transformer.TransformerExecutor;
+import org.ctoolkit.agent.service.converter.ConverterExecutor;
+import org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat;
+import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -28,13 +30,13 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.ctoolkit.agent.Mocks.mockImportSetProperty;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_BINARY;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_BOOLEAN;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_DATE;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_DOUBLE;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_KEYWORD;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_LONG;
-import static org.ctoolkit.agent.converter.ElasticsearchConverterRegistrat.TYPE_TEXT;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_BINARY;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_BOOLEAN;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DATE;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DOUBLE;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_KEYWORD;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_LONG;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_TEXT;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

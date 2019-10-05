@@ -19,52 +19,32 @@
 
 package org.ctoolkit.agent.service;
 
-import org.ctoolkit.agent.model.EntityExportData;
-import org.ctoolkit.agent.model.api.ImportBatch;
-import org.ctoolkit.agent.model.api.ImportJob;
-import org.ctoolkit.agent.model.api.ImportSet;
-import org.ctoolkit.agent.model.api.MigrationBatch;
-import org.ctoolkit.agent.model.api.MigrationJob;
+import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSet;
 
 import java.util.List;
 
 /**
- * Public migration service API
+ * Migration service is used by concrete agent which supports data migration
  *
- * @author <a href="mailto:pohorelec@turnonline.biz">Jozef Pohorelec</a>
+ * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public interface MigrationService
 {
     /**
-     * Migrate batch of migration sets
+     * Split root query to offset queries.
      *
-     * @param batch {@link MigrationBatch}
-     * @return {@link MigrationJob}
+     * @param migrationSet used to retrieve root query
+     * @param rowsPerSplit number of rows per one query split
+     * @return list of split queries
      */
-    MigrationJob migrateBatch( MigrationBatch batch );
+    List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit );
 
     /**
-     * Import batch of import sets
+     * Retrieve list of {@link MigrationContext} for specified sql query
      *
-     * @param batch {@link ImportBatch}
-     * @return {@link ImportJob}
+     * @param sql query
+     * @return list of {@link MigrationContext}
      */
-    ImportJob importBatch( ImportBatch batch );
-
-    /**
-     * Transform list of entities to list of {@link ImportSet} using {@link MigrationSet} rules
-     *
-     * @param migrationSet       {@link MigrationSet}
-     * @param entityExportDataList list of {@link EntityExportData}
-     * @return {@link ImportSet}
-     */
-    List<ImportSet> transform( MigrationSet migrationSet, List<EntityExportData> entityExportDataList );
-
-    /**
-     * Import list {@link ImportSet} to target agent
-     *
-     * @param importSets {@link ImportSet}
-     */
-    void importToTargetAgent( List<ImportSet> importSets );
+    List<MigrationContext> retrieveMigrationContextList( String sql );
 }

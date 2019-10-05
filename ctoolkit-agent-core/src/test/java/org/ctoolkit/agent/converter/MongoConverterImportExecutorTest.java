@@ -20,7 +20,9 @@
 package org.ctoolkit.agent.converter;
 
 import org.ctoolkit.agent.model.api.ImportSetProperty;
-import org.ctoolkit.agent.transformer.TransformerExecutor;
+import org.ctoolkit.agent.service.converter.ConverterExecutor;
+import org.ctoolkit.agent.service.converter.MongoConverterRegistrat;
+import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -28,12 +30,12 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.ctoolkit.agent.Mocks.mockImportSetProperty;
-import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_BIN_DATA;
-import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_BOOL;
-import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_DATE;
-import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_DOUBLE;
-import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_LONG;
-import static org.ctoolkit.agent.converter.MongoConverterRegistrat.TYPE_STRING;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_BIN_DATA;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_BOOL;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_DATE;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_DOUBLE;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_LONG;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_STRING;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

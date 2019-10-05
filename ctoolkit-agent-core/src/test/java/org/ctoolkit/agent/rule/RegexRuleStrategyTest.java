@@ -19,8 +19,10 @@
 
 package org.ctoolkit.agent.rule;
 
-import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
+import org.ctoolkit.agent.service.rule.RegexRuleStrategy;
+import org.ctoolkit.agent.service.rule.RuleStrategy;
 import org.junit.Test;
 
 import static org.ctoolkit.agent.Mocks.exportData;
@@ -43,7 +45,7 @@ public class RegexRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "^\\d(2)$" );
 
-        assertTrue( strategy.apply( rule, new EntityExportData() ) );
+        assertTrue( strategy.apply( rule, new MigrationContext() ) );
     }
 
     @Test

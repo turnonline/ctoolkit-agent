@@ -20,6 +20,7 @@
 package org.ctoolkit.agent.transformer;
 
 import org.ctoolkit.agent.model.api.MigrationSetPropertyEncodingTransformer;
+import org.ctoolkit.agent.service.transformer.EncodingTransformerProcessor;
 import org.junit.Test;
 
 import java.util.HashMap;

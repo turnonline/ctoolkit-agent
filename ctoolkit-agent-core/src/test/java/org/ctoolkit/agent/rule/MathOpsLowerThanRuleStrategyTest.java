@@ -19,8 +19,10 @@
 
 package org.ctoolkit.agent.rule;
 
-import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
+import org.ctoolkit.agent.service.rule.MathOpsRuleStrategy;
+import org.ctoolkit.agent.service.rule.RuleStrategy;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -47,7 +49,7 @@ public class MathOpsLowerThanRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertTrue( strategy.apply( rule, new EntityExportData() ) );
+        assertTrue( strategy.apply( rule, new MigrationContext() ) );
     }
 
     // -- String

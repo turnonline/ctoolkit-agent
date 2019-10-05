@@ -19,7 +19,7 @@
 
 package org.ctoolkit.agent;
 
-import org.ctoolkit.agent.model.EntityExportData;
+import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
@@ -32,10 +32,9 @@ import org.ctoolkit.agent.model.api.MigrationSetTarget;
  */
 public class Mocks
 {
-    public static EntityExportData exportData( String name, Object value )
+    public static MigrationContext exportData( String name, Object value )
     {
-        EntityExportData exportData = new EntityExportData();
-        exportData.getProperties().put( name, new EntityExportData.Property( value ) );
+        MigrationContext exportData = new MigrationContext();
 
         return exportData;
     }
