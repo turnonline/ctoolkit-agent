@@ -3,30 +3,30 @@
   "info" : {
     "description" : "No description",
     "version" : "1.0.0",
-    "title" : "Ctoolkit Agent"
+    "title" : "Ctoolkit Agent",
+    "contact" : { }
   },
-  "consumes" : [ "application/json" ],
-  "produces" : [ "application/json" ],
   "paths" : {
-    "/v1/migrations" : {
+    "/v1/imports" : {
       "post" : {
-        "tags" : [ "migration" ],
-        "summary" : "Migrate data",
-        "description" : "Migrate data from source agent to target agent",
-        "consumes" : [ ],
+        "summary" : "Import data",
+        "description" : "Import data to agent",
+        "operationId" : "postV1Imports",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "body",
           "in" : "body",
-          "required" : true,
+          "name" : "body",
+          "required" : false,
           "schema" : {
-            "$ref" : "#/definitions/MigrationBatch"
+            "$ref" : "#/definitions/ImportBatch"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Migration job info",
+            "description" : "Status 200",
             "schema" : {
-              "$ref" : "#/definitions/MigrationJob"
+              "$ref" : "#/definitions/ImportJob"
             }
           },
           "400" : {
@@ -56,24 +56,26 @@
         }
       }
     },
-    "/v1/imports" : {
+    "/v1/migrations" : {
       "post" : {
-        "summary" : "Import data",
-        "description" : "Import data to agent",
-        "consumes" : [ ],
+        "summary" : "Migrate data",
+        "description" : "Migrate data from source agent to target agent",
+        "operationId" : "postV1Migrations",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "body",
           "in" : "body",
-          "required" : true,
+          "name" : "body",
+          "required" : false,
           "schema" : {
-            "$ref" : "#/definitions/ImportBatch"
+            "$ref" : "#/definitions/MigrationBatch"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "Status 200",
+            "description" : "Migration job info",
             "schema" : {
-              "$ref" : "#/definitions/ImportJob"
+              "$ref" : "#/definitions/MigrationJob"
             }
           },
           "400" : {
@@ -179,8 +181,7 @@
         "execution" : {
           "type" : "string",
           "description" : "How enrichers in group should be executed. Two possible values:\n\n- sequence - enrichers will be executed step by step\n- parallel - enrichers will be executed simultaneously",
-          "default" : "sequence",
-          "enum" : [ "sequence", "parallel" ]
+          "default" : "sequence"
         }
       }
     },
@@ -190,13 +191,6 @@
         "name" : {
           "type" : "string",
           "description" : "Name of enricher. Will be used as prefix when adding enricher values into context"
-        },
-        "context" : {
-          "type" : "array",
-          "description" : "Array of properties passed to enricher. Can be either static value like ‘23’ or value taken from context like ${source.name}",
-          "items" : {
-            "$ref" : "#/definitions/ContextProperty"
-          }
         },
         "enrichers" : {
           "type" : "array",
@@ -222,6 +216,13 @@
         "url" : {
           "type" : "string",
           "description" : "Url of remote call. Only GET is supported. Result properties of rest call will be passed to context with enricher name prefix, for instance if enrichers name is 'getPersonByEmail' and one of result is plain text with value 'name' the resulted context key will be 'getPersonByEmail.name'.\n\nIf response is json it will be flatted into context values prefixed with enricher name"
+        },
+        "queryParameters" : {
+          "type" : "array",
+          "description" : "List of query parameters",
+          "items" : {
+            "$ref" : "#/definitions/QueryParameter"
+          }
         }
       }
     },
@@ -260,9 +261,7 @@
         },
         "idSelector" : {
           "type" : "string",
-          "description" : "Selector used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.\n\nIf omitted id will be generated",
-          "default" : "${target.namespace}:${target.kind}:${source.id}",
-          "example" : "${source.id}"
+          "description" : "Selector used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.\n\nIf omitted id will be generated"
         }
       }
     },
@@ -306,12 +305,8 @@
           "description" : "Target property name"
         },
         "targetValue" : {
-          "type" : "object",
-          "description" : "Property value. It can be simple string or list of MigrationSetProperty which can create complex structure"
-        },
-        "index" : {
-          "type" : "integer",
-          "description" : "Position in list if property represents list of object"
+          "description" : "Property value. It can be simple string or list of MigrationSetProperty which can create complex structure",
+          "$ref" : "#/definitions/MigrationSetProperty_TargetValue"
         },
         "transformers" : {
           "type" : "array",
@@ -329,8 +324,7 @@
         "operation" : {
           "type" : "string",
           "description" : "Rule logical operation",
-          "default" : "and",
-          "enum" : [ "and", "or" ]
+          "default" : "and"
         },
         "rules" : {
           "type" : "array",
@@ -351,8 +345,7 @@
         },
         "operation" : {
           "type" : "string",
-          "description" : "Operation expression",
-          "enum" : [ "eq", "lt", "lte", "gt", "gte", "regexp", "groovy" ]
+          "description" : "Operation expression"
         },
         "value" : {
           "type" : "string",
@@ -370,8 +363,7 @@
         "phase" : {
           "type" : "string",
           "description" : "Phase in which transformer should be applied",
-          "default" : "pre-convert",
-          "enum" : [ "pre-convert", "post-convert" ]
+          "default" : "pre-convert"
         }
       }
     },
@@ -382,18 +374,7 @@
         "mappings" : {
           "type" : "array",
           "items" : {
-            "required" : [ "source", "target" ],
-            "type" : "object",
-            "properties" : {
-              "source" : {
-                "type" : "string",
-                "description" : "Source map value"
-              },
-              "target" : {
-                "type" : "string",
-                "description" : "Target map value"
-              }
-            }
+            "$ref" : "#/definitions/MigrationSetPropertyMapperTransformer_Mappings"
           }
         }
       }
@@ -427,8 +408,7 @@
       "properties" : {
         "pattern" : {
           "type" : "string",
-          "description" : "Pattern used to transform target value",
-          "example" : "client-person:address:${target.value}"
+          "description" : "Pattern used to transform target value"
         }
       }
     },
@@ -439,14 +419,22 @@
         "operation" : {
           "type" : "string",
           "description" : "Operation - encode/decode",
-          "default" : "encode",
-          "enum" : [ "encode", "decode" ]
+          "default" : "encode"
         },
         "encodingType" : {
           "type" : "string",
           "description" : "Encoding type",
-          "default" : "base64",
-          "enum" : [ "base16", "base32", "base32Hex", "base64", "base64Url" ]
+          "default" : "base64"
+        }
+      }
+    },
+    "MigrationSetPropertyGroovyTransformer" : {
+      "type" : "object",
+      "required" : [ "command" ],
+      "properties" : {
+        "command" : {
+          "type" : "string",
+          "description" : "Groovy shell command. Context will be passed into shell and can be used to read/modify context data"
         }
       }
     },
@@ -461,19 +449,6 @@
         "state" : {
           "type" : "string",
           "description" : "Job state"
-        }
-      }
-    },
-    "ContextProperty" : {
-      "type" : "object",
-      "properties" : {
-        "name" : {
-          "type" : "string",
-          "description" : "Property name"
-        },
-        "value" : {
-          "type" : "object",
-          "description" : "Property value"
         }
       }
     },
@@ -525,6 +500,7 @@
         },
         "changeDate" : {
           "type" : "string",
+          "format" : "date-time",
           "description" : "Date of change in source system. Used with conjunction with syncDateProperty and queryIdentifier"
         },
         "syncDateProperty" : {
@@ -558,8 +534,8 @@
           "description" : "Property type - specified for every agent (for instance string, int, date). Also there are these reserved names:\n\n- list - if you want to create list of values (simple or complex)\n- object - if you want to create embedded object"
         },
         "value" : {
-          "type" : "object",
-          "description" : "Property value. It can be simple string or list of ImportSetProperty which can create complex structures"
+          "description" : "Property value. It can be simple string or list of ImportSetProperty which can create complex structures",
+          "$ref" : "#/definitions/ImportSetProperty_Value"
         }
       }
     },
@@ -616,6 +592,44 @@
           "description" : "Value of named parameter"
         }
       }
+    },
+    "QueryParameter" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Query parameter name"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "Query parameter value"
+        },
+        "converter" : {
+          "type" : "string",
+          "description" : "Query parameter converter",
+          "default" : "string"
+        }
+      }
+    },
+    "MigrationSetProperty_TargetValue" : {
+      "type" : "object"
+    },
+    "MigrationSetPropertyMapperTransformer_Mappings" : {
+      "type" : "object",
+      "required" : [ "source", "target" ],
+      "properties" : {
+        "source" : {
+          "type" : "string",
+          "description" : "Source map value"
+        },
+        "target" : {
+          "type" : "string",
+          "description" : "Target map value"
+        }
+      }
+    },
+    "ImportSetProperty_Value" : {
+      "type" : "object"
     }
   }
 }

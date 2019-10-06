@@ -17,34 +17,18 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.service;
+package org.ctoolkit.agent.service.enricher;
 
-import org.ctoolkit.agent.model.MigrationContext;
-import org.ctoolkit.agent.model.api.MigrationSet;
+import org.ctoolkit.agent.model.api.MigrationSetEnricher;
 
-import java.util.List;
+import java.util.Map;
 
 /**
- * Migration service is used by concrete agent which supports data migration
+ * Enricher processor is used to implement {@link org.ctoolkit.agent.model.api.MigrationSetEnricher} enricher logic
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public interface MigrationService
+public interface EnricherProcessor<ENRICHER extends MigrationSetEnricher>
 {
-    /**
-     * Split root query to offset queries.
-     *
-     * @param migrationSet used to retrieve root query
-     * @param rowsPerSplit number of rows per one query split
-     * @return list of split queries
-     */
-    List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit );
-
-    /**
-     * Retrieve list of {@link MigrationContext} for specified sql query
-     *
-     * @param sql query
-     * @return list of {@link MigrationContext}
-     */
-    List<MigrationContext> retrieveMigrationContextList( String sql );
+    void enrich( ENRICHER enricher, Map<String, Object> ctx );
 }

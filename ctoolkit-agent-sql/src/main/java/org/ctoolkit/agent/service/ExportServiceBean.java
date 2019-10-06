@@ -29,40 +29,40 @@ import net.sf.jsqlparser.util.SelectUtils;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.service.sql.CountColumn;
-import org.ctoolkit.agent.service.sql.PreparedStatementExecutor;
 import org.ctoolkit.agent.service.sql.VendorIndependentLimit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Implementation of {@link MigrationService}
+ * Implementation of {@link ExportService}
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 @Singleton
-public class MigrationServiceBean
-        implements MigrationService
+public class ExportServiceBean
+        implements ExportService
 {
-    private static final Logger log = LoggerFactory.getLogger( MigrationServiceBean.class );
+    private static final Logger log = LoggerFactory.getLogger( ExportServiceBean.class );
 
     @Inject
-    private DataSource dataSource;
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
-        List<String> queries = new ArrayList<>();
+        List<String> splitQueries = new ArrayList<>();
+
         String query = migrationSet.getQuery();
         Select rootSelect;
         Select rootCountSelect;
@@ -101,66 +101,56 @@ public class MigrationServiceBean
 
         // get split numbers
         String rootCountQuery = rootCountSelect.toString();
-        PreparedStatementExecutor executor = new PreparedStatementExecutor( dataSource, rootCountQuery )
-        {
-            @Override
-            public void process( ResultSet resultSet ) throws SQLException
-            {
-                while ( resultSet.next() )
-                {
-                    int count = resultSet.getInt( 1 );
-                    // wee ned to split query into multiple offset + limit queries
-                    if ( count > rowsPerSplit )
-                    {
-                        BigDecimal splits = BigDecimal.valueOf( count ).divide( BigDecimal.valueOf( rowsPerSplit ), RoundingMode.UP );
 
-                        for ( int offset = 0; offset < splits.doubleValue(); offset++ )
-                        {
-                            // create offset + limit per split
-                            rootSelect.getSelectBody().accept( new VendorIndependentLimit( offset, rowsPerSplit ) );
-                            queries.add( rootSelect.toString() );
-                        }
-                    }
-                    // noo need to split query, because there is less rows then ROWS_PER_SPLIT
-                    else
-                    {
-                        queries.add( rootSelect.toString() );
-                    }
+        jdbcTemplate.query( rootCountQuery, resultSet -> {
+
+            int count = resultSet.getInt( 1 );
+
+            // wee ned to split query into multiple offset + limit splitQueries
+            if ( count > rowsPerSplit )
+            {
+                BigDecimal splits = BigDecimal.valueOf( count ).divide( BigDecimal.valueOf( rowsPerSplit ), RoundingMode.UP );
+
+                for ( int offset = 0; offset < splits.doubleValue(); offset++ )
+                {
+                    // create offset + limit per split
+                    rootSelect.getSelectBody().accept( new VendorIndependentLimit( offset, rowsPerSplit ) );
+                    splitQueries.add( rootSelect.toString() );
                 }
             }
-        };
-        executor.execute();
+            // noo need to split query, because there is less rows then rowsPerSplit
+            else
+            {
+                splitQueries.add( rootSelect.toString() );
+            }
 
-        return queries;
+            return null;
+        } );
+
+        return splitQueries;
     }
 
-    public List<MigrationContext> retrieveMigrationContextList( String sql )
+    public List<MigrationContext> executeQuery( String sql, Map<String, Object> namedParameters )
     {
         List<MigrationContext> migrationContextList = new ArrayList<>();
 
-        PreparedStatementExecutor executor = new PreparedStatementExecutor( dataSource, sql )
-        {
-            @Override
-            public void process( ResultSet resultSet ) throws SQLException
+        MapSqlParameterSource sqlNamedParameters = new MapSqlParameterSource();
+        namedParameters.forEach( sqlNamedParameters::addValue );
+
+        jdbcTemplate.queryForObject( sql, sqlNamedParameters, ( resultSet, rowNum ) -> {
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            MigrationContext migrationContext = new MigrationContext();
+            migrationContextList.add( migrationContext );
+
+            for ( int i = 1; i <= metaData.getColumnCount(); i++ )
             {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-
-                while ( resultSet.next() )
-                {
-                    MigrationContext migrationContext = new MigrationContext();
-                    migrationContextList.add( migrationContext );
-
-                    for ( int i = 1; i <= metaData.getColumnCount(); i++ )
-                    {
-//                        MigrationContext.Property property = new MigrationContext.Property();
-//                        property.setValue( resultSet.getObject( i ) );
-//
-//                        migrationContext.getProperties().put( metaData.getColumnName( i ), property );
-                    }
-                }
+                migrationContext.put( metaData.getColumnName( i ), resultSet.getObject( i ) );
             }
-        };
-        executor.execute();
+
+            return null;
+        } );
 
         return migrationContextList;
     }

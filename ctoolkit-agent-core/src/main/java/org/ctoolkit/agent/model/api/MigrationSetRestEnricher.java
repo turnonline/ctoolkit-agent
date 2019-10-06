@@ -22,6 +22,8 @@ package org.ctoolkit.agent.model.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -33,6 +35,7 @@ public class MigrationSetRestEnricher  extends MigrationSetEnricher
 {
   
   private String url = null;
+  private List<QueryParameter> queryParameters = new ArrayList<QueryParameter>();
 
   /**
    * Url of remote call. Only GET is supported. Result properties of rest call will be passed to context with enricher name prefix, for instance if enrichers name is 'getPersonByEmail' and one of result is plain text with value 'name' the resulted context key will be 'getPersonByEmail.name'.  If response is json it will be flatted into context values prefixed with enricher name
@@ -52,6 +55,24 @@ public class MigrationSetRestEnricher  extends MigrationSetEnricher
     this.url = url;
   }
 
+  /**
+   * List of query parameters
+   **/
+  public MigrationSetRestEnricher queryParameters(List<QueryParameter> queryParameters) {
+    this.queryParameters = queryParameters;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "List of query parameters")
+  @JsonProperty("queryParameters")
+  public List<QueryParameter> getQueryParameters() {
+    return queryParameters;
+  }
+  public void setQueryParameters(List<QueryParameter> queryParameters) {
+    this.queryParameters = queryParameters;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -62,12 +83,13 @@ public class MigrationSetRestEnricher  extends MigrationSetEnricher
       return false;
     }
     MigrationSetRestEnricher migrationSetRestEnricher = (MigrationSetRestEnricher) o;
-    return Objects.equals(url, migrationSetRestEnricher.url);
+    return Objects.equals(url, migrationSetRestEnricher.url) &&
+        Objects.equals(queryParameters, migrationSetRestEnricher.queryParameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(url);
+    return Objects.hash(url, queryParameters);
   }
 
   @Override
@@ -76,6 +98,7 @@ public class MigrationSetRestEnricher  extends MigrationSetEnricher
     sb.append("class MigrationSetRestEnricher {\n");
     
     sb.append("    url: ").append(toIndentedString(url)).append("\n");
+    sb.append("    queryParameters: ").append(toIndentedString(queryParameters)).append("\n");
     sb.append("}");
     return sb.toString();
   }

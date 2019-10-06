@@ -17,30 +17,36 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.service.transformer;
+package org.ctoolkit.agent.service;
 
-import org.apache.commons.text.StringSubstitutor;
-import org.ctoolkit.agent.model.api.MigrationSetPropertyPatternTransformer;
+import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.api.MigrationSet;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of {@link MigrationSetPropertyPatternTransformer} transformer
+ * Export service is used by concrete agent which supports data export
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class PatternTransformerProcessor
-        implements TransformerProcessor<MigrationSetPropertyPatternTransformer>
+public interface ExportService
 {
-    @Override
-    public Object transform( Object value, MigrationSetPropertyPatternTransformer transformer, Map<String, Object> ctx )
-    {
-        if ( value instanceof String )
-        {
-            StringSubstitutor substitution = new StringSubstitutor( ctx, "${", "}" );
-            value = substitution.replace( transformer.getPattern() );
-        }
+    /**
+     * Split root query to offset queries.
+     *
+     * @param migrationSet used to retrieve root query
+     * @param rowsPerSplit number of rows per one query split
+     * @return list of split queries
+     */
+    List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit );
 
-        return value;
-    }
+    /**
+     * Retrieve list of {@link MigrationContext} for specified sql query
+     *
+     * @param sql             query
+     * @param namedParameters named parameters used to replace parameters in query
+     * @return list of {@link MigrationContext}
+     */
+    List<MigrationContext> executeQuery( String sql, Map<String, Object> namedParameters );
 }

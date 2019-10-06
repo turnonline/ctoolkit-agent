@@ -17,30 +17,33 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.service.transformer;
+package org.ctoolkit.agent.service.sql;
 
-import org.apache.commons.text.StringSubstitutor;
-import org.ctoolkit.agent.model.api.MigrationSetPropertyPatternTransformer;
 
-import java.util.Map;
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.Factory;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.sql.DataSource;
 
 /**
- * Implementation of {@link MigrationSetPropertyPatternTransformer} transformer
+ * Spring named jdbc template configuration
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class PatternTransformerProcessor
-        implements TransformerProcessor<MigrationSetPropertyPatternTransformer>
+@Factory
+public class JdbcTemplateFactory
 {
-    @Override
-    public Object transform( Object value, MigrationSetPropertyPatternTransformer transformer, Map<String, Object> ctx )
-    {
-        if ( value instanceof String )
-        {
-            StringSubstitutor substitution = new StringSubstitutor( ctx, "${", "}" );
-            value = substitution.replace( transformer.getPattern() );
-        }
 
-        return value;
+    @Inject
+    DataSource dataSource;
+
+    @Bean
+    @Singleton
+    NamedParameterJdbcTemplate namedParameterJdbcTemplate()
+    {
+        return new NamedParameterJdbcTemplate( dataSource );
     }
 }

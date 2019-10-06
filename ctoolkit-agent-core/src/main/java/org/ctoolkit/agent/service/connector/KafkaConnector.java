@@ -17,30 +17,32 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.service.transformer;
+package org.ctoolkit.agent.service.connector;
 
-import org.apache.commons.text.StringSubstitutor;
-import org.ctoolkit.agent.model.api.MigrationSetPropertyPatternTransformer;
+import org.apache.commons.lang.NotImplementedException;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Map;
 
 /**
- * Implementation of {@link MigrationSetPropertyPatternTransformer} transformer
+ * Kafka implementation of {@link Connector}
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class PatternTransformerProcessor
-        implements TransformerProcessor<MigrationSetPropertyPatternTransformer>
+@Singleton
+@Named("kafka")
+public class KafkaConnector implements Connector
 {
     @Override
-    public Object transform( Object value, MigrationSetPropertyPatternTransformer transformer, Map<String, Object> ctx )
+    public void push( String connectionString, Object payload )
     {
-        if ( value instanceof String )
-        {
-            StringSubstitutor substitution = new StringSubstitutor( ctx, "${", "}" );
-            value = substitution.replace( transformer.getPattern() );
-        }
+        throw new NotImplementedException( "Pushing to kafka is not supported yet." );
+    }
 
-        return value;
+    @Override
+    public Object pull( String connectionString, Map<String, String> queryParams )
+    {
+        throw new NotImplementedException( "Pulling from kafka is not supported yet." );
     }
 }

@@ -25,6 +25,11 @@ import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
 import org.ctoolkit.agent.model.api.MigrationSetTarget;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 /**
  * Mocks for unit tests
  *
@@ -74,5 +79,20 @@ public class Mocks
         property.setType( type );
         property.setValue( value );
         return property;
+    }
+
+    public static Date date( int day, int month, int year )
+    {
+        return Date.from( LocalDate.of( year, month, day )
+                .atStartOfDay()
+                .atZone( ZoneId.systemDefault() )
+                .toInstant() );
+    }
+
+    public static Date date( int day, int month, int year, int hour, int minute, int second )
+    {
+        return Date.from( LocalDateTime.of( year, month, day, hour, minute, second )
+                .atZone( ZoneId.systemDefault() )
+                .toInstant() );
     }
 }

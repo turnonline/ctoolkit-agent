@@ -20,6 +20,7 @@
 package org.ctoolkit.agent.service.converter;
 
 import org.ctoolkit.agent.model.api.ImportSetProperty;
+import org.ctoolkit.agent.service.enricher.EnricherExecutor;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.junit.Test;
 
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class MongoConverterImportExecutorTest
 {
-    private ConverterExecutor executor = new ConverterExecutor( new TransformerExecutor(), new MongoConverterRegistrat() );
+    private ConverterExecutor executor = new ConverterExecutor( new EnricherExecutor(), new TransformerExecutor(), new MongoConverterRegistrat() );
 
     @Test
     public void test_String()

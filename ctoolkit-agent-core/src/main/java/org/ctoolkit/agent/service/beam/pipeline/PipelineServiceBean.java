@@ -20,10 +20,6 @@
 package org.ctoolkit.agent.service.beam.pipeline;
 
 import com.google.gson.Gson;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.MutableHttpRequest;
-import io.micronaut.http.client.DefaultHttpClient;
-import io.micronaut.http.client.RxHttpClient;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.ctoolkit.agent.model.Agent;
@@ -39,8 +35,10 @@ import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
 import org.ctoolkit.agent.model.api.MigrationSetTarget;
 import org.ctoolkit.agent.service.beam.options.MigrationPipelineOptions;
+import org.ctoolkit.agent.service.connector.ConnectorFacade;
 import org.ctoolkit.agent.service.converter.BaseConverterRegistrat;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
+import org.ctoolkit.agent.service.enricher.EnricherExecutor;
 import org.ctoolkit.agent.service.rule.RuleSetResolver;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.slf4j.Logger;
@@ -49,10 +47,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,6 +67,9 @@ public class PipelineServiceBean
     private static final Logger log = LoggerFactory.getLogger( PipelineServiceBean.class );
 
     @Inject
+    private ConnectorFacade connectorFacade;
+
+    @Inject
     private PipelineFactory pipelineFactory;
 
     @Inject
@@ -83,6 +80,9 @@ public class PipelineServiceBean
 
     @Inject
     private TransformerExecutor transformerExecutor;
+
+    @Inject
+    private EnricherExecutor enricherExecutor;
 
     @Inject
     @Nullable
@@ -137,10 +137,11 @@ public class PipelineServiceBean
                 continue;
             }
 
-            ConverterExecutor converterExecutor = new ConverterExecutor( transformerExecutor, registrat );
+            ConverterExecutor converterExecutor = new ConverterExecutor( enricherExecutor, transformerExecutor, registrat );
             converterExecutor.putToContext( migrationSet );
             converterExecutor.putToContext( migrationContext );
 
+            // enrich migration context
             converterExecutor.enrich( migrationContext, migrationSet.getEnrichers() );
 
             // set header values
@@ -169,14 +170,16 @@ public class PipelineServiceBean
                             Object sourceProperty = migrationContext.get( sourcePropertyName );
                             Object targetProperty = currentMigrationSetProperty.getTargetValue();
 
-                            if ( sourceProperty == null && targetProperty == null)
+                            if ( sourceProperty == null && targetProperty == null )
                             {
                                 return null;
                             }
 
+                            // put source and target object into converter context
                             converterExecutor.putToContext( "source.value", sourceProperty );
                             converterExecutor.putToContext( "target.value", targetProperty );
 
+                            // convert property
                             return converterExecutor.convertProperty( sourceProperty, currentMigrationSetProperty );
                         },
                         Collections.singletonList( migrationSetProperty ),
@@ -206,16 +209,10 @@ public class PipelineServiceBean
         }
         else
         {
-            try
-            {
-                RxHttpClient httpClient = new DefaultHttpClient( new URL( migrationPipelineOptions.getTargetAgentUrl() ) );
-                MutableHttpRequest<ImportBatch> post = HttpRequest.POST( new URI( "/api/v1/imports" ), importBatch );
-                httpClient.retrieve( post ).blockingFirst();
-            }
-            catch ( MalformedURLException | URISyntaxException e )
-            {
-                log.error( "Unable to construct migration client", e );
-            }
+            String baseUrl = migrationPipelineOptions.getTargetAgentUrl();
+            String importsPath = "/api/v1/imports";
+
+            connectorFacade.push( baseUrl + importsPath, importBatch );
         }
     }
 

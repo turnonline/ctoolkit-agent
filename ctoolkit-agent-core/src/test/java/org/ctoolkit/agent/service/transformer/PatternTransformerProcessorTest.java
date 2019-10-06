@@ -39,7 +39,7 @@ public class PatternTransformerProcessorTest
     public void transform_WithPrefix()
     {
         MigrationSetPropertyPatternTransformer transformer = new MigrationSetPropertyPatternTransformer();
-        transformer.setPattern( "client-person:person:{target.value}" );
+        transformer.setPattern( "client-person:person:${target.value}" );
 
         HashMap<String, Object> ctx = new HashMap<>();
         ctx.put( "target.namespace", "client-person" );
@@ -53,7 +53,7 @@ public class PatternTransformerProcessorTest
     public void transform_WithContext()
     {
         MigrationSetPropertyPatternTransformer transformer = new MigrationSetPropertyPatternTransformer();
-        transformer.setPattern( "{target.namespace}:{target.kind}:{target.value}" );
+        transformer.setPattern( "${target.namespace}:${target.kind}:${target.value}" );
 
         HashMap<String, Object> ctx = new HashMap<>();
         ctx.put( "target.namespace", "client-person" );

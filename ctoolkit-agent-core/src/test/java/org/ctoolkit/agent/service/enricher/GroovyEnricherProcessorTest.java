@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.service.transformer;
+package org.ctoolkit.agent.service.enricher;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import org.ctoolkit.agent.model.api.MigrationSetPropertyGroovyTransformer;
+import org.ctoolkit.agent.model.api.MigrationSetGroovyEnricher;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -34,26 +34,25 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class GroovyTransformerProcessorTest
+public class GroovyEnricherProcessorTest
 {
-    private GroovyTransformerProcessor processor = new GroovyTransformerProcessor();
+    private GroovyEnricherProcessor processor = new GroovyEnricherProcessor();
 
     @Test
-    public void transform() throws Exception
+    public void enrich() throws Exception
     {
-        InputStream groovyStream = GroovyTransformerProcessorTest.class.getResourceAsStream( "/transformer.groovy" );
+        InputStream groovyStream = GroovyEnricherProcessorTest.class.getResourceAsStream( "/groovy-enricher.groovy" );
         String command = CharStreams.toString( new InputStreamReader( groovyStream, Charsets.UTF_8 ) );
 
-        MigrationSetPropertyGroovyTransformer transformer = new MigrationSetPropertyGroovyTransformer();
-        transformer.setCommand( command );
+        MigrationSetGroovyEnricher enricher = new MigrationSetGroovyEnricher();
+        enricher.setCommand( command );
 
         Map<String, Object> ctx = new HashMap<>();
         ctx.put( "rootNumber", 12345 );
         ctx.put( "sequenceNumber", 1 );
 
-        Object value = processor.transform( "Foo", transformer, ctx );
+        processor.enrich( enricher, ctx );
 
-        assertEquals( "Foo12346", value );
         assertEquals( 12346, ctx.get( "fullNumber" ) );
     }
 }

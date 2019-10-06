@@ -23,6 +23,7 @@ import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyDateTransformer;
+import org.ctoolkit.agent.service.enricher.EnricherExecutor;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.junit.Test;
 
@@ -54,7 +55,7 @@ import static org.mockito.Mockito.when;
  */
 public class ElasticsearchConverterMigrationExecutorTest
 {
-    private ConverterExecutor executor = new ConverterExecutor(new TransformerExecutor(), new ElasticsearchConverterRegistrat());
+    private ConverterExecutor executor = new ConverterExecutor(new EnricherExecutor(), new TransformerExecutor(), new ElasticsearchConverterRegistrat());
     
     // -- target text
 

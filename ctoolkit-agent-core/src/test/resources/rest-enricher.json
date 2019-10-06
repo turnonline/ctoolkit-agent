@@ -1,0 +1,19 @@
+{
+  "name": "John",
+  "surname": "Foo",
+  "address": {
+    "street": "Long street"
+  },
+  "codes": [
+    "KLO",
+    "BLI"
+  ],
+  "identifications": [
+    {
+      "identification": {
+        "type": "BIRTH_NUMBER",
+        "value": "1234567890"
+      }
+    }
+  ]
+}

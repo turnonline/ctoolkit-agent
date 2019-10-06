@@ -25,9 +25,10 @@ import org.apache.beam.sdk.values.KV;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.service.ApplicationContextFactory;
-import org.ctoolkit.agent.service.MigrationService;
+import org.ctoolkit.agent.service.ExportService;
 import org.ctoolkit.agent.service.beam.options.MigrationPipelineOptions;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,9 +44,9 @@ public class MigrationRetrieveContextList
     {
         MigrationPipelineOptions pipelineOptions = c.getPipelineOptions().as( MigrationPipelineOptions.class );
         ApplicationContext ctx = ApplicationContextFactory.create( pipelineOptions );
-        MigrationService service = ctx.getBean( MigrationService.class );
+        ExportService service = ctx.getBean( ExportService.class );
 
-        List<MigrationContext> migrationContextList = service.retrieveMigrationContextList( c.element().getValue() );
+        List<MigrationContext> migrationContextList = service.executeQuery( c.element().getValue(), new HashMap<>() );
         c.output( KV.of( c.element().getKey(), migrationContextList ) );
     }
 }

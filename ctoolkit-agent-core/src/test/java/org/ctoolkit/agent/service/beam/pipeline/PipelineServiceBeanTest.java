@@ -29,8 +29,10 @@ import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
 import org.ctoolkit.agent.model.api.MigrationSetTarget;
 import org.ctoolkit.agent.service.beam.options.MigrationPipelineOptions;
+import org.ctoolkit.agent.service.connector.ConnectorFacade;
 import org.ctoolkit.agent.service.converter.BaseConverterRegistrat;
 import org.ctoolkit.agent.service.converter.MongoConverterRegistrat;
+import org.ctoolkit.agent.service.enricher.EnricherExecutor;
 import org.ctoolkit.agent.service.rule.HierarchicalRuleSetResolver;
 import org.ctoolkit.agent.service.rule.RuleSetResolver;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
@@ -57,6 +59,9 @@ import static org.mockito.Mockito.when;
 public class PipelineServiceBeanTest
 {
     @Mock
+    private ConnectorFacade connectorFacade;
+
+    @Mock
     private PipelineFactory pipelineFactory;
 
     @Spy
@@ -64,6 +69,9 @@ public class PipelineServiceBeanTest
 
     @Spy
     private RuleSetResolver ruleSetResolver = new HierarchicalRuleSetResolver();
+
+    @Spy
+    private EnricherExecutor enricherExecutor = new EnricherExecutor();
 
     @Spy
     private TransformerExecutor transformerExecutor = new TransformerExecutor();

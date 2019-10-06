@@ -22,6 +22,7 @@ package org.ctoolkit.agent.service.converter;
 import org.ctoolkit.agent.Mocks;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
+import org.ctoolkit.agent.service.enricher.EnricherExecutor;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,7 @@ public class ConverterExecutorTest
     @Mock
     private ConverterRegistrat registrat;
 
-    private ConverterExecutor executor = new ConverterExecutor( new TransformerExecutor(), registrat );
+    private ConverterExecutor executor = new ConverterExecutor( new EnricherExecutor(), new TransformerExecutor(), registrat );
 
     // -- convert id
 

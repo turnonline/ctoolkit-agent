@@ -25,14 +25,17 @@ import org.apache.commons.text.StringSubstitutor;
 import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSet;
+import org.ctoolkit.agent.model.api.MigrationSetEnricher;
 import org.ctoolkit.agent.model.api.MigrationSetEnricherGroup;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
+import org.ctoolkit.agent.service.enricher.EnricherExecutor;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
 import org.ctoolkit.agent.service.transformer.TransformerProcessor;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
@@ -42,6 +45,8 @@ public class ConverterExecutor
     private static final String ID_ENCODE_PREFIX = "encode:";
 
     private TransformerExecutor transformerExecutor;
+
+    private EnricherExecutor enricherExecutor;
 
     private ConverterRegistrat registrat;
 
@@ -56,15 +61,35 @@ public class ConverterExecutor
         this.registrat = registrat;
     }
 
-    public ConverterExecutor( TransformerExecutor transformerExecutor, ConverterRegistrat registrat )
+    public ConverterExecutor( EnricherExecutor enricherExecutor, TransformerExecutor transformerExecutor, ConverterRegistrat registrat )
     {
+        this.enricherExecutor = enricherExecutor;
         this.transformerExecutor = transformerExecutor;
         this.registrat = registrat;
     }
 
-    public void enrich( MigrationContext migrationContext, List<MigrationSetEnricherGroup> enrichers )
+    public void enrich( MigrationContext migrationContext, List<MigrationSetEnricherGroup> groups )
     {
-        // TODO: implement
+        groups.forEach( group -> {
+            Stream<MigrationSetEnricher> stream;
+
+            if ( "parallel".equals( group.getExecution() ) )
+            {
+                stream = group.getEnrichers().parallelStream();
+            }
+            else
+            {
+                stream = group.getEnrichers().stream();
+            }
+
+            stream.forEach( enricher -> {
+                // enrich
+                enricherExecutor.enrich( enricher, migrationContext );
+
+                // recursive call for complex enricher structures
+                enrich( migrationContext, enricher.getEnrichers() );
+            } );
+        } );
     }
 
     public ImportSetProperty convertProperty( Object source, MigrationSetProperty property )
