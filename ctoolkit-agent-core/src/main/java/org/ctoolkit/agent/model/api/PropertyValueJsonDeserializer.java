@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class PropertyValueJsonDeserializer<T>
+public abstract class PropertyValueJsonDeserializer<T>
         extends JsonDeserializer<Object>
 {
     @Override
@@ -45,9 +45,7 @@ public class PropertyValueJsonDeserializer<T>
         }
         else if ( p.getCurrentToken() == JsonToken.START_ARRAY )
         {
-            return p.readValueAs( new TypeReference<List<T>>()
-            {
-            } );
+            return p.readValueAs( new TypeReference<List<T>>() {} );
         }
 
         return null;

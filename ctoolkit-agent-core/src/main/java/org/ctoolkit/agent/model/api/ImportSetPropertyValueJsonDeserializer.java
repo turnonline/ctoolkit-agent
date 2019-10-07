@@ -19,10 +19,35 @@
 
 package org.ctoolkit.agent.model.api;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+
+import java.io.IOException;
+import java.util.List;
+
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class ImportSetPropertyValueJsonDeserializer<T>
-        extends PropertyValueJsonDeserializer<ImportSetProperty>
+public class ImportSetPropertyValueJsonDeserializer
+        extends JsonDeserializer<Object>
 {
+    @Override
+    public Object deserialize( JsonParser p, DeserializationContext ctx )
+            throws IOException, JsonProcessingException
+    {
+        if ( p.getCurrentToken() == JsonToken.VALUE_STRING )
+        {
+            return p.getText();
+        }
+        else if ( p.getCurrentToken() == JsonToken.START_ARRAY )
+        {
+            return p.readValueAs( new TypeReference<List<ImportSetProperty>>() {} );
+        }
+
+        return null;
+    }
 }

@@ -27,15 +27,12 @@ import org.bson.Document;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
+import org.ctoolkit.agent.service.mapper.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Implementation of {@link ImportService}
@@ -54,6 +51,9 @@ public class ImportServiceBean
     @Inject
     private ConverterExecutor converterExecutor;
 
+    @Inject
+    private Mapper<ImportSetProperty, Object> mapper;
+
     @Override
     public void importData( ImportSet importSet )
     {
@@ -64,17 +64,18 @@ public class ImportServiceBean
         }
 
         // import if namespace, kind and id is specified
-        if ( importSet.getNamespace() != null && importSet.getKind() != null && importSet.getId() != null )
+        if ( importSet.getNamespace() != null && importSet.getKind() != null )
         {
-            createIndex( importSet );
+            insertRecord( importSet );
         }
     }
 
     // -- private helpers
 
-    private void createIndex( ImportSet importSet )
+    private void insertRecord( ImportSet importSet )
     {
-        String collectionName = importSet.getKind();
+        String kind = importSet.getKind();
+        String namespace = importSet.getNamespace();
 
         try
         {
@@ -82,68 +83,33 @@ public class ImportServiceBean
 
             // set id if provided
             String id = importSet.getId();
-            if (id != null)
+            if ( id != null )
             {
                 document.append( "_id", id );
             }
 
             for ( ImportSetProperty property : importSet.getProperties() )
             {
-                addProperty( property.getName(), property, document );
+                mapper.map( property, document );
             }
 
             // get database
-            MongoDatabase database = mongoClient.getDatabase( importSet.getNamespace() );
+            MongoDatabase database = mongoClient.getDatabase( namespace );
 
             // get collection
-            MongoCollection<Document> collection = database.getCollection( collectionName );
+            MongoCollection<Document> collection = database.getCollection( kind );
 
             // insert document
             collection.insertOne( document );
         }
         catch ( MongoException e )
         {
-            log.error( "Unable to write document: " + importSet.getNamespace() + ":" + collectionName, e );
-        }
-    }
-
-    @SuppressWarnings( "unchecked" )
-    private void addProperty( String name, ImportSetProperty importSetProperty, Map<String, Object> jsonMap )
-    {
-        // check if property is nested (i.e. identification.simple.value)
-        LinkedList<String> subNames = new LinkedList<>( Arrays.asList( name.split( "\\." ) ) );
-        if ( subNames.size() > 1 )
-        {
-            String nestedName = subNames.removeFirst();
-            Map<String, Object> nestedMap = ( HashMap<String, Object> ) jsonMap.get( nestedName );
-            if ( nestedMap == null )
-            {
-                nestedMap = new HashMap<>();
-                jsonMap.put( nestedName, nestedMap );
-            }
-
-            // construct new name
-            StringBuilder newName = new StringBuilder();
-            subNames.forEach( s -> {
-                if ( newName.length() > 0 )
-                {
-                    newName.append( "." );
-                }
-                newName.append( s );
-            } );
-
-            // recursive call to sub name
-            addProperty( newName.toString(), importSetProperty, nestedMap );
-        }
-        else
-        {
-            Object convertedValue = converterExecutor.convertProperty( importSetProperty );
-            jsonMap.put( name, convertedValue );
+            log.error( "Unable to write document: " + namespace + ":" + kind, e );
         }
     }
 
     private void deleteCollection( ImportSet importSet )
     {
-        mongoClient.getDatabase( importSet.getNamespace() ).getCollection( importSet.getKind() ).drop();;
+        mongoClient.getDatabase( importSet.getNamespace() ).getCollection( importSet.getKind() ).drop();
     }
 }

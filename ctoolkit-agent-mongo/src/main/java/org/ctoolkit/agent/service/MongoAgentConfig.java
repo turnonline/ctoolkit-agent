@@ -26,6 +26,7 @@ import io.micronaut.context.annotation.Factory;
 import org.ctoolkit.agent.service.beam.options.MongoPipelineOptions;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
 import org.ctoolkit.agent.service.converter.MongoConverterRegistrat;
+import org.ctoolkit.agent.service.mapper.ImportSetPropertyToNoSqlMapper;
 
 import javax.inject.Singleton;
 
@@ -50,5 +51,12 @@ public class MongoAgentConfig
     public ConverterExecutor createConverterExecutor()
     {
         return new ConverterExecutor( new MongoConverterRegistrat() );
+    }
+
+    @Bean
+    @Singleton
+    public ImportSetPropertyToNoSqlMapper createImportSetPropertyToNoSqlMapper( ConverterExecutor converterExecutor )
+    {
+        return new ImportSetPropertyToNoSqlMapper( converterExecutor );
     }
 }
