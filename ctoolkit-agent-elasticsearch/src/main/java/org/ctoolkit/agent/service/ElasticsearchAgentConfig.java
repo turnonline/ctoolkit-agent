@@ -25,6 +25,7 @@ import org.apache.http.HttpHost;
 import org.ctoolkit.agent.service.beam.options.ElasticsearchPipelineOptions;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
 import org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat;
+import org.ctoolkit.agent.service.mapper.ImportSetPropertyToNoSqlMapper;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
@@ -67,6 +68,13 @@ public class ElasticsearchAgentConfig
         return new ConverterExecutor( new ElasticsearchConverterRegistrat() );
     }
 
+    @Bean
+    @Singleton
+    public ImportSetPropertyToNoSqlMapper createImportSetPropertyToNoSqlMapper( ConverterExecutor converterExecutor )
+    {
+        return new ImportSetPropertyToNoSqlMapper( converterExecutor );
+    }
+
     @PreDestroy
     public void destroyClient()
     {
@@ -76,7 +84,7 @@ public class ElasticsearchAgentConfig
         }
         catch ( IOException e )
         {
-            log.error( "Unable to close elasticearch client", e );
+            log.error( "Unable to close elasticsearch client", e );
         }
     }
 }

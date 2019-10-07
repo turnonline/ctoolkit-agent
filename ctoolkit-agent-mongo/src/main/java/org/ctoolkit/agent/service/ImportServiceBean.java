@@ -26,7 +26,6 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
-import org.ctoolkit.agent.service.converter.ConverterExecutor;
 import org.ctoolkit.agent.service.mapper.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +46,6 @@ public class ImportServiceBean
 
     @Inject
     private MongoClient mongoClient;
-
-    @Inject
-    private ConverterExecutor converterExecutor;
 
     @Inject
     private Mapper<ImportSetProperty, Object> mapper;

@@ -21,7 +21,7 @@ package org.ctoolkit.agent.service;
 
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
-import org.ctoolkit.agent.service.converter.ConverterExecutor;
+import org.ctoolkit.agent.service.mapper.Mapper;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -34,9 +34,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -54,7 +52,7 @@ public class ImportServiceBean
     private RestHighLevelClient elasticClient;
 
     @Inject
-    private ConverterExecutor converterExecutor;
+    private Mapper<ImportSetProperty, Object> mapper;
 
     @Override
     public void importData( ImportSet importSet )
@@ -66,7 +64,7 @@ public class ImportServiceBean
         }
 
         // import if namespace, kind and id is specified
-        if ( importSet.getNamespace() != null && importSet.getKind() != null && importSet.getId() != null )
+        if ( importSet.getNamespace() != null && importSet.getKind() != null )
         {
             createIndex( importSet );
         }
@@ -81,7 +79,7 @@ public class ImportServiceBean
             Map<String, Object> jsonMap = new HashMap<>();
             for ( ImportSetProperty property : importSet.getProperties() )
             {
-                addProperty( property.getName(), property, jsonMap );
+                mapper.map( property, jsonMap );
             }
 
             IndexRequest indexRequest = new IndexRequest( importSet.getNamespace(), importSet.getKind(), importSet.getId() );
@@ -96,41 +94,6 @@ public class ImportServiceBean
         catch ( IOException e )
         {
             log.error( "Unable to create index: " + importSet.getNamespace() + ":" + importSet.getKind(), e );
-        }
-    }
-
-    @SuppressWarnings( "unchecked" )
-    private void addProperty( String name, ImportSetProperty importSetProperty, Map<String, Object> jsonMap )
-    {
-        // check if property is nested (i.e. identification.simple.value)
-        LinkedList<String> subNames = new LinkedList<>( Arrays.asList( name.split( "\\." ) ) );
-        if ( subNames.size() > 1 )
-        {
-            String nestedName = subNames.removeFirst();
-            Map<String, Object> nestedMap = ( HashMap<String, Object> ) jsonMap.get( nestedName );
-            if ( nestedMap == null )
-            {
-                nestedMap = new HashMap<>();
-                jsonMap.put( nestedName, nestedMap );
-            }
-
-            // construct new name
-            StringBuilder newName = new StringBuilder();
-            subNames.forEach( s -> {
-                if ( newName.length() > 0 )
-                {
-                    newName.append( "." );
-                }
-                newName.append( s );
-            } );
-
-            // recursive call to sub name
-            addProperty( newName.toString(), importSetProperty, nestedMap );
-        }
-        else
-        {
-            Object convertedValue = converterExecutor.convertProperty( importSetProperty );
-            jsonMap.put( name, convertedValue );
         }
     }
 
