@@ -20,11 +20,11 @@
 package org.ctoolkit.agent.service.rule;
 
 import com.google.common.base.Charsets;
-import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Rule set algebraic strategy for mathematical operations - {@code '=','<','>','<=','>='}
@@ -49,9 +49,9 @@ public class MathOpsRuleStrategy
 
     @Override
     @SuppressWarnings( "unchecked" )
-    public boolean apply( MigrationSetPropertyRule rule, MigrationContext migrationContext )
+    public boolean apply( MigrationSetPropertyRule rule, Map<String, Object> ctx )
     {
-        Object property = migrationContext.get( rule.getProperty() );
+        Object property = ctx.get( rule.getProperty() );
         if ( property != null )
         {
             Object convertedRuleValue = convertValue( rule.getValue(), property, rule );

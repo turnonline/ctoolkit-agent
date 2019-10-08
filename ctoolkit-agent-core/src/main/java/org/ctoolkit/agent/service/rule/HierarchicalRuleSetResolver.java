@@ -20,7 +20,6 @@
 package org.ctoolkit.agent.service.rule;
 
 import com.google.common.collect.Iterators;
-import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRuleSet;
 
 import javax.inject.Singleton;
@@ -50,9 +49,9 @@ public class HierarchicalRuleSetResolver
 
     @Override
     @SuppressWarnings( "ConstantConditions" )
-    public boolean apply( MigrationSetPropertyRuleSet ruleSet, MigrationContext migrationContext )
+    public boolean apply( MigrationSetPropertyRuleSet ruleSet, Map<String, Object> ctx )
     {
-        // by default allow entity export
+        // by default allow entity ctx
         boolean apply = true;
 
         if ( ruleSet != null )
@@ -64,12 +63,12 @@ public class HierarchicalRuleSetResolver
                     apply = Iterators.all( ruleSet.getRules().iterator(), input -> {
                         RuleStrategy.Operation operation = RuleStrategy.Operation.get( input.getOperation() );
                         RuleStrategy strategy = ruleStrategies.get( operation );
-                        boolean strategyApply = strategy.apply( input, migrationContext );
+                        boolean strategyApply = strategy.apply( input, ctx );
 
                         // recursive to support nested rules
                         if ( input.getRuleSet() != null )
                         {
-                            return apply( input.getRuleSet(), migrationContext ) && strategyApply;
+                            return apply( input.getRuleSet(), ctx ) && strategyApply;
                         }
 
                         return strategyApply;
@@ -81,12 +80,12 @@ public class HierarchicalRuleSetResolver
                     apply = Iterators.any( ruleSet.getRules().iterator(), input -> {
                         RuleStrategy.Operation operation = RuleStrategy.Operation.get( input.getOperation() );
                         RuleStrategy strategy = ruleStrategies.get( operation );
-                        boolean strategyApply = strategy.apply( input, migrationContext );
+                        boolean strategyApply = strategy.apply( input, ctx );
 
                         // recursive to support nested rules
                         if ( input.getRuleSet() != null )
                         {
-                            return apply( input.getRuleSet(), migrationContext ) || strategyApply;
+                            return apply( input.getRuleSet(), ctx ) || strategyApply;
                         }
 
                         return strategyApply;

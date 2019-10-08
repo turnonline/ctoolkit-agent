@@ -19,9 +19,9 @@
 
 package org.ctoolkit.agent.service.rule;
 
-import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,9 +37,9 @@ public class RegexRuleStrategy
 
     @Override
     @SuppressWarnings( "unchecked" )
-    public boolean apply( MigrationSetPropertyRule rule, MigrationContext migrationContext )
+    public boolean apply( MigrationSetPropertyRule rule, Map<String, Object> ctx )
     {
-        Object property = migrationContext.get( rule.getProperty() );
+        Object property = ctx.get( rule.getProperty() );
         String ruleValue = rule.getValue();
 
         if ( property instanceof String )

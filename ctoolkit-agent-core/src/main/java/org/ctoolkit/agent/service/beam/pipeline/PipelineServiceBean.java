@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.ctoolkit.agent.model.Agent;
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
 import org.ctoolkit.agent.model.api.ImportSet;
@@ -49,6 +49,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -119,7 +120,7 @@ public class PipelineServiceBean
     }
 
     @Override
-    public List<ImportSet> transform( MigrationSet migrationSet, List<MigrationContext> migrationContextList )
+    public List<ImportSet> transform( MigrationSet migrationSet, List<Export> exports )
     {
         if ( migrationPipelineOptions == null )
         {
@@ -129,20 +130,22 @@ public class PipelineServiceBean
         BaseConverterRegistrat registrat = registrats.get( migrationPipelineOptions.getTargetAgent() );
         List<ImportSet> importSets = new ArrayList<>();
 
-        for ( MigrationContext migrationContext : migrationContextList )
+        for ( Export export : exports )
         {
+            Map<String, Object> ctx = new HashMap<>( export );
+
             // skip entity migration if rules return apply = 'false'
-            if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), migrationContext ) )
+            if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), ctx ) )
             {
                 continue;
             }
 
             ConverterExecutor converterExecutor = new ConverterExecutor( enricherExecutor, transformerExecutor, registrat );
             converterExecutor.putToContext( migrationSet );
-            converterExecutor.putToContext( migrationContext );
+            converterExecutor.getCtx().putAll( ctx );
 
             // enrich migration context
-            converterExecutor.enrich( migrationContext, migrationSet.getEnrichers() );
+            converterExecutor.enrich( ctx, migrationSet.getEnricherGroups() );
 
             // set header values
             MigrationSetTarget target = migrationSet.getTarget();
@@ -155,7 +158,8 @@ public class PipelineServiceBean
             importSet.setNamespace( target.getNamespace() );
             importSet.setKind( target.getKind() );
 
-            importSet.setId( converterExecutor.convertId( migrationSet, migrationContext ) );
+            importSet.setClean( migrationSet.getTarget().getClean() );
+            importSet.setId( converterExecutor.convertId( migrationSet, ctx ) );
             importSet.setChangeDate( source.getChangeDate() );
             importSet.setIdSelector( target.getIdSelector() );
             importSet.setSyncDateProperty( target.getSyncDateProperty() );
@@ -167,7 +171,7 @@ public class PipelineServiceBean
                             String sourcePropertyNameRaw = currentMigrationSetProperty.getSourceProperty();
                             String sourcePropertyName = sourcePropertyNameRaw != null ? sourcePropertyNameRaw.replaceAll( "\\*", String.valueOf( index ) ) : null;
 
-                            Object sourceProperty = migrationContext.get( sourcePropertyName );
+                            Object sourceProperty = ctx.get( sourcePropertyName );
                             Object targetProperty = currentMigrationSetProperty.getTargetValue();
 
                             if ( sourceProperty == null && targetProperty == null )
@@ -176,8 +180,8 @@ public class PipelineServiceBean
                             }
 
                             // put source and target object into converter context
-                            converterExecutor.putToContext( "source.value", sourceProperty );
-                            converterExecutor.putToContext( "target.value", targetProperty );
+                            converterExecutor.getCtx().put( "source.value", sourceProperty );
+                            converterExecutor.getCtx().put( "target.value", targetProperty );
 
                             // convert property
                             return converterExecutor.convertProperty( sourceProperty, currentMigrationSetProperty );

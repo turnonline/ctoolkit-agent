@@ -19,7 +19,7 @@
 
 package org.ctoolkit.agent.service;
 
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSet;
 
 import java.util.List;
@@ -42,11 +42,11 @@ public interface ExportService
     List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit );
 
     /**
-     * Retrieve list of {@link MigrationContext} for specified sql query
+     * Retrieve list of {@link Export} for specified sql query
      *
      * @param sql             query
      * @param namedParameters named parameters used to replace parameters in query
-     * @return list of {@link MigrationContext}
+     * @return list of {@link Export}
      */
-    List<MigrationContext> executeQuery( String sql, Map<String, Object> namedParameters );
+    List<Export> executeQuery( String sql, Map<String, Object> namedParameters );
 }

@@ -28,6 +28,20 @@ services:
     networks:
       - migration
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.4.0
+    configs:
+      - source: kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+    ports:
+      - 8181:5601
+    networks:
+      - migration
+
 networks:
   migration:
     external: true
+
+configs:
+  kibana.yml:
+    file: ./config/kibana.yml

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -126,9 +125,6 @@ public class MigrationSetProperty implements Serializable {
   @ApiModelProperty(value = "Array of transformers used to transform source value")
   @JsonProperty("transformers")
   public List<MigrationSetPropertyTransformer> getTransformers() {
-      if ( transformers == null ) {
-          transformers = new ArrayList<>();
-      }
     return transformers;
   }
   public void setTransformers(List<MigrationSetPropertyTransformer> transformers) {

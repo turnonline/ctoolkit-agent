@@ -22,7 +22,7 @@ package org.ctoolkit.agent.service.beam.function;
 import io.micronaut.context.ApplicationContext;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.MigrationSet;
@@ -33,12 +33,12 @@ import org.ctoolkit.agent.service.beam.pipeline.PipelineService;
 import java.util.List;
 
 /**
- * Do function for transform list of {@link MigrationContext} to {@link ImportBatch} using {@link MigrationSet}
+ * Do function for transform list of {@link Export} to {@link ImportBatch} using {@link MigrationSet}
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public class MigrationTransformAndImportDoFn
-        extends DoFn<KV<MigrationSet, List<MigrationContext>>, Void>
+        extends DoFn<KV<MigrationSet, List<Export>>, Void>
 {
     @ProcessElement
     public void processElement( ProcessContext c )

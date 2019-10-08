@@ -22,7 +22,7 @@ package org.ctoolkit.agent.service.beam.pipeline;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.ctoolkit.agent.model.Agent;
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
@@ -99,9 +99,9 @@ public class PipelineServiceBeanTest
         migrationSet.getProperties().add( createEmbedded() );
         migrationSet.getProperties().add( createListOfEmbeddedObjects() );
 
-        List<MigrationContext> migrationContextList = createMigrationContext();
+        List<Export> exportList = createMigrationContext();
 
-        List<ImportSet> importSetList = service.transform( migrationSet, migrationContextList );
+        List<ImportSet> importSetList = service.transform( migrationSet, exportList );
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -212,19 +212,19 @@ public class PipelineServiceBeanTest
         return identifications;
     }
 
-    private List<MigrationContext> createMigrationContext()
+    private List<Export> createMigrationContext()
     {
-        List<MigrationContext> migrationContextList = new ArrayList<>();
+        List<Export> exportList = new ArrayList<>();
 
-        MigrationContext migrationContext = new MigrationContext();
-        migrationContext.put( "name", "John" );
-        migrationContext.put( "streetLine", "Long street 1" );
-        migrationContext.put( "town", "New York" );
-        migrationContext.put( "birthNo", "8103220987" );
-        migrationContext.put( "discount[0].code", "LKOF" );
-        migrationContext.put( "discount[1].code", "PPRE" );
-        migrationContextList.add( migrationContext );
+        Export export = new Export();
+        export.put( "name", "John" );
+        export.put( "streetLine", "Long street 1" );
+        export.put( "town", "New York" );
+        export.put( "birthNo", "8103220987" );
+        export.put( "discount[0].code", "LKOF" );
+        export.put( "discount[1].code", "PPRE" );
+        exportList.add( export );
 
-        return migrationContextList;
+        return exportList;
     }
 }

@@ -24,6 +24,7 @@ import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.client.DefaultHttpClient;
 import io.micronaut.http.client.RxHttpClient;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.net.MalformedURLException;
@@ -36,24 +37,19 @@ import java.util.Map;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 @Singleton
-@Named("rest")
+@Named( "rest" )
 public class RestConnector
         implements Connector
 {
+    @Inject
+    private RxHttpClient httpClient;
+
     @Override
     @SuppressWarnings( "unchecked" )
     public void push( String connectionString, Object payload )
     {
-        try
-        {
-            RxHttpClient httpClient = new DefaultHttpClient( new URL( connectionString ) );
-            MutableHttpRequest post = HttpRequest.POST( "", payload );
-            httpClient.retrieve( post ).blockingSubscribe();
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new IllegalArgumentException( "Unable to construct migration client", e );
-        }
+        MutableHttpRequest post = HttpRequest.POST( connectionString, payload );
+        httpClient.retrieve( post ).blockingSubscribe();
     }
 
     @Override

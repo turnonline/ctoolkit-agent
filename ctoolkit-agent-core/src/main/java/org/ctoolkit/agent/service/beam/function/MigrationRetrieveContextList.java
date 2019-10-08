@@ -22,7 +22,7 @@ package org.ctoolkit.agent.service.beam.function;
 import io.micronaut.context.ApplicationContext;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.service.ApplicationContextFactory;
 import org.ctoolkit.agent.service.ExportService;
@@ -32,12 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Do function for retrieving list of {@link MigrationContext} from split sql query
+ * Do function for retrieving list of {@link Export} from split sql query
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public class MigrationRetrieveContextList
-        extends DoFn<KV<MigrationSet, String>, KV<MigrationSet, List<MigrationContext>>>
+        extends DoFn<KV<MigrationSet, String>, KV<MigrationSet, List<Export>>>
 {
     @ProcessElement
     public void processElement( ProcessContext c )
@@ -46,7 +46,7 @@ public class MigrationRetrieveContextList
         ApplicationContext ctx = ApplicationContextFactory.create( pipelineOptions );
         ExportService service = ctx.getBean( ExportService.class );
 
-        List<MigrationContext> migrationContextList = service.executeQuery( c.element().getValue(), new HashMap<>() );
-        c.output( KV.of( c.element().getKey(), migrationContextList ) );
+        List<Export> exportList = service.executeQuery( c.element().getValue(), new HashMap<>() );
+        c.output( KV.of( c.element().getKey(), exportList ) );
     }
 }

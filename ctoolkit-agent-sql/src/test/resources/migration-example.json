@@ -1,0 +1,94 @@
+{
+  "pipelineOptions": [
+    {
+      "name": "dryRun",
+      "value": "false"
+    }
+  ],
+  "migrationSets": [
+    {
+      "comment": "Migration import of PersData table into PhysicalPerson structure",
+      "namespace": "partner",
+      "kind": "physicalPerson",
+      "syncDateProperty": "syncDate",
+      "source": {
+        "namespace": "global",
+        "kind": "PersData"
+      },
+      "target": {
+        "namespace": "partner",
+        "kind": "physicalPerson"
+      },
+      "enricherGroups": [
+        {
+          "enrichers": [
+            {
+              "type": "database",
+              "name": "address",
+              "query": "select * from global.AddrData where persid=:id",
+              "namedParameters": [
+                {
+                  "name": "id",
+                  "value": "${id}"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "properties": [
+        {
+          "sourceProperty": "name",
+          "targetType": "string",
+          "targetProperty": "firstName"
+        },
+        {
+          "sourceProperty": "surname",
+          "targetType": "string",
+          "targetProperty": "lastName"
+        },
+        {
+          "sourceProperty": "sextype",
+          "targetType": "string",
+          "targetProperty": "sex",
+          "transformers": [
+            {
+              "type": "mapper",
+              "mappings": [
+                {
+                  "source": "M",
+                  "target": "MALE"
+                },
+                {
+                  "source": "F",
+                  "target": "FEMALE"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "targetType": "object",
+          "targetProperty": "address",
+          "targetValue": [
+            {
+              "sourceProperty": "address.row[0].strt",
+              "targetType": "string",
+              "targetProperty": "street"
+            },
+            {
+              "sourceProperty": "address.row[0].strtnumber",
+              "targetType": "string",
+              "targetProperty": "streetNumber"
+            },
+            {
+              "sourceProperty": "address.row[0].town",
+              "targetType": "string",
+              "targetProperty": "city"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

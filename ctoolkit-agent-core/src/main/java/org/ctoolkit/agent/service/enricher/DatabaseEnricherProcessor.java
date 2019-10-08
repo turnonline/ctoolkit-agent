@@ -19,9 +19,10 @@
 
 package org.ctoolkit.agent.service.enricher;
 
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSetDatabaseSelectEnricher;
 import org.ctoolkit.agent.model.api.MigrationSetEnricher;
+import org.ctoolkit.agent.model.api.NamedParameter;
 import org.ctoolkit.agent.service.ExportService;
 
 import javax.inject.Inject;
@@ -47,16 +48,17 @@ public class DatabaseEnricherProcessor
     {
         Map<String, Object> namedParameters = new HashMap<>();
 
-        enricher.getNamedParameters().forEach( namedParameter
-                -> namedParameters.put( namedParameter.getName(), ctx.get( namedParameter.getValue() ) ) );
+        enricher.getNamedParameters().forEach( namedParameter ->
+                namedParameters.put( namedParameter.getName(), namedParameterValue( namedParameter, ctx ) )
+        );
 
-        List<MigrationContext> result = exportService.executeQuery( enricher.getQuery(), namedParameters );
+        List<Export> result = exportService.executeQuery( enricher.getQuery(), namedParameters );
 
         for ( int i = 0; i < result.size(); i++ )
         {
             final String index = String.valueOf( i );
-            MigrationContext migrationContext = result.get( i );
-            migrationContext.forEach( ( key, value )
+            Export export = result.get( i );
+            export.forEach( ( key, value )
                     -> ctx.put( prefix( enricher ) + "row[" + index + "]." + key, value )
             );
         }
@@ -72,5 +74,16 @@ public class DatabaseEnricherProcessor
         }
 
         return "";
+    }
+
+    private Object namedParameterValue( NamedParameter namedParameter, Map<String, Object> ctx )
+    {
+        String val = namedParameter.getValue();
+        if ( val.startsWith( "${" ) )
+        {
+            return ctx.get( val.replace( "${", "" ).replace( "}", "" ) );
+        }
+
+        return val;
     }
 }

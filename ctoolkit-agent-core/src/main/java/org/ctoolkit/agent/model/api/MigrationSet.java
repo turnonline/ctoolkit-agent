@@ -41,7 +41,7 @@ public class MigrationSet implements Serializable {
   private MigrationSetTarget target = null;
   private List<MigrationSetProperty> properties = new ArrayList<MigrationSetProperty>();
   private MigrationSetPropertyRuleSet ruleSet = null;
-  private List<MigrationSetEnricherGroup> enrichers;
+  private List<MigrationSetEnricherGroup> enricherGroups;
 
   /**
    * Migration set author
@@ -170,21 +170,18 @@ public class MigrationSet implements Serializable {
    * Array of enricher groups
    **/
   public MigrationSet enrichers(List<MigrationSetEnricherGroup> enrichers) {
-    this.enrichers = enrichers;
+    this.enricherGroups = enrichers;
     return this;
   }
 
   
   @ApiModelProperty(value = "Array of enricher groups")
-  @JsonProperty("enrichers")
-  public List<MigrationSetEnricherGroup> getEnrichers() {
-    if (enrichers == null) {
-      this.enrichers = new ArrayList<>(  );
-    }
-    return enrichers;
+  @JsonProperty("enricherGroups")
+  public List<MigrationSetEnricherGroup> getEnricherGroups() {
+    return enricherGroups;
   }
-  public void setEnrichers(List<MigrationSetEnricherGroup> enrichers) {
-    this.enrichers = enrichers;
+  public void setEnricherGroups( List<MigrationSetEnricherGroup> enricherGroups ) {
+    this.enricherGroups = enricherGroups;
   }
 
 
@@ -204,12 +201,12 @@ public class MigrationSet implements Serializable {
         Objects.equals(target, migrationSet.target) &&
         Objects.equals(properties, migrationSet.properties) &&
         Objects.equals(ruleSet, migrationSet.ruleSet) &&
-        Objects.equals(enrichers, migrationSet.enrichers);
+        Objects.equals( enricherGroups, migrationSet.enricherGroups );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, comment, query, source, target, properties, ruleSet, enrichers);
+    return Objects.hash(author, comment, query, source, target, properties, ruleSet, enricherGroups );
   }
 
   @Override
@@ -224,7 +221,7 @@ public class MigrationSet implements Serializable {
     sb.append("    target: ").append(toIndentedString(target)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("    ruleSet: ").append(toIndentedString(ruleSet)).append("\n");
-    sb.append("    enrichers: ").append(toIndentedString(enrichers)).append("\n");
+    sb.append("    enricherGroups: ").append(toIndentedString( enricherGroups )).append("\n");
     sb.append("}");
     return sb.toString();
   }

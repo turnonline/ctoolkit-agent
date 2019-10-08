@@ -21,7 +21,7 @@ package org.ctoolkit.agent.service;
 
 import io.micronaut.context.annotation.Requires;
 import org.apache.commons.lang.NotImplementedException;
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSet;
 
 import javax.inject.Singleton;
@@ -45,7 +45,7 @@ public class DefaultExportService implements ExportService
     }
 
     @Override
-    public List<MigrationContext> executeQuery( String sql, Map<String, Object> namedParameters )
+    public List<Export> executeQuery( String sql, Map<String, Object> namedParameters )
     {
         throw new NotImplementedException( "ExportService is not implemented for this agent" );
     }

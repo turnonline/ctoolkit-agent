@@ -19,7 +19,7 @@
 
 package org.ctoolkit.agent;
 
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
@@ -37,9 +37,9 @@ import java.util.Date;
  */
 public class Mocks
 {
-    public static MigrationContext migrationContext( String name, Object value )
+    public static Export migrationContext( String name, Object value )
     {
-        MigrationContext exportData = new MigrationContext();
+        Export exportData = new Export();
         exportData.put( "target.namespace", "client-person" );
         exportData.put( "target.kind", "person" );
         exportData.put( name, value );

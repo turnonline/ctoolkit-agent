@@ -17,16 +17,29 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.model;
+package org.ctoolkit.agent.service.sql;
 
-import java.util.HashMap;
+
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.Factory;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+import javax.annotation.Nullable;
+import javax.inject.Singleton;
+import javax.sql.DataSource;
 
 /**
- * Migration context holds information about current entity
+ * Spring named jdbc template configuration
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class MigrationContext
-        extends HashMap<String, Object>
+@Factory
+public class SqlAgentConfig
 {
+    @Bean
+    @Singleton
+    public NamedParameterJdbcTemplate namedParameterJdbcTemplate( @Nullable DataSource dataSource )
+    {
+        return new NamedParameterJdbcTemplate( dataSource );
+    }
 }

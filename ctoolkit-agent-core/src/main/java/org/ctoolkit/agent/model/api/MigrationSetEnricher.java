@@ -47,7 +47,7 @@ public class MigrationSetEnricher implements Serializable
 {
   
   private String name = null;
-  private List<MigrationSetEnricherGroup> enrichers = new ArrayList<MigrationSetEnricherGroup>();
+  private List<MigrationSetEnricherGroup> enricherGroups = new ArrayList<MigrationSetEnricherGroup>();
 
   /**
    * Name of enricher. Will be used as prefix when adding enricher values into context
@@ -68,21 +68,21 @@ public class MigrationSetEnricher implements Serializable
   }
 
   /**
-   * Array of enrichers groups
+   * Array of enricherGroups groups
    **/
   public MigrationSetEnricher enrichers(List<MigrationSetEnricherGroup> enrichers) {
-    this.enrichers = enrichers;
+    this.enricherGroups = enrichers;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Array of enrichers groups")
-  @JsonProperty("enrichers")
-  public List<MigrationSetEnricherGroup> getEnrichers() {
-    return enrichers;
+  @ApiModelProperty(value = "Array of enricherGroups groups")
+  @JsonProperty("enricherGroups")
+  public List<MigrationSetEnricherGroup> getEnricherGroups() {
+    return enricherGroups;
   }
-  public void setEnrichers(List<MigrationSetEnricherGroup> enrichers) {
-    this.enrichers = enrichers;
+  public void setEnricherGroups( List<MigrationSetEnricherGroup> enricherGroups ) {
+    this.enricherGroups = enricherGroups;
   }
 
 
@@ -96,12 +96,12 @@ public class MigrationSetEnricher implements Serializable
     }
     MigrationSetEnricher migrationSetEnricher = (MigrationSetEnricher) o;
     return Objects.equals(name, migrationSetEnricher.name) &&
-        Objects.equals(enrichers, migrationSetEnricher.enrichers);
+        Objects.equals( enricherGroups, migrationSetEnricher.enricherGroups );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, enrichers);
+    return Objects.hash(name, enricherGroups );
   }
 
   @Override
@@ -110,7 +110,7 @@ public class MigrationSetEnricher implements Serializable
     sb.append("class MigrationSetEnricher {\n");
     
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    enrichers: ").append(toIndentedString(enrichers)).append("\n");
+    sb.append("    enricherGroups: ").append(toIndentedString( enricherGroups )).append("\n");
     sb.append("}");
     return sb.toString();
   }

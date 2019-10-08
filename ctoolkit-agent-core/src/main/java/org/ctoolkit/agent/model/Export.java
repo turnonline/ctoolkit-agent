@@ -17,32 +17,16 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.service.rule;
+package org.ctoolkit.agent.model;
 
-import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
-import org.ctoolkit.agent.model.api.MigrationSetPropertyRuleSet;
-
-import java.util.Map;
+import java.util.HashMap;
 
 /**
- * API for rule set resolving
+ * Migration context holds information about current entity
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public interface RuleSetResolver
+public class Export
+        extends HashMap<String, Object>
 {
-    enum LogicalOperator
-    {
-        AND,
-        OR
-    }
-
-    /**
-     * Return <code>true</code> if exported entity should by migrated by provide rule set, <code>false</code> otherwise
-     *
-     * @param ruleSet          {@link MigrationSetPropertyRule} containing logical operations (and, or) and mathematical operations {@code ('=', '>', '>=', regexp, etc.)}
-     * @param ctx {@link Map} contains values for rule decision logic
-     * @return <code>true</code> if exported entity should be migrated
-     */
-    boolean apply( MigrationSetPropertyRuleSet ruleSet, Map<String, Object> ctx );
 }

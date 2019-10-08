@@ -19,7 +19,7 @@
 
 package org.ctoolkit.agent.service.beam.pipeline;
 
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
 import org.ctoolkit.agent.model.api.ImportSet;
@@ -56,10 +56,10 @@ public interface PipelineService
      * Transform list of entities to list of {@link ImportSet} using {@link MigrationSet} rules
      *
      * @param migrationSet       {@link MigrationSet}
-     * @param migrationContextList list of {@link MigrationContext}
+     * @param exportList list of {@link Export}
      * @return {@link ImportSet}
      */
-    List<ImportSet> transform( MigrationSet migrationSet, List<MigrationContext> migrationContextList );
+    List<ImportSet> transform( MigrationSet migrationSet, List<Export> exportList );
 
     /**
      * Import list {@link ImportSet} to target agent

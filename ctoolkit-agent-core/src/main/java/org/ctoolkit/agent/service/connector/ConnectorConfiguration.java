@@ -17,33 +17,25 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.service.sql;
-
+package org.ctoolkit.agent.service.connector;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import io.micronaut.http.client.DefaultHttpClient;
+import io.micronaut.http.client.RxHttpClient;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.sql.DataSource;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
- * Spring named jdbc template configuration
- *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 @Factory
-public class JdbcTemplateFactory
+public class ConnectorConfiguration
 {
-
-    @Inject
-    DataSource dataSource;
-
     @Bean
-    @Singleton
-    NamedParameterJdbcTemplate namedParameterJdbcTemplate()
+    public RxHttpClient provideRestClient() throws MalformedURLException
     {
-        return new NamedParameterJdbcTemplate( dataSource );
+        return new DefaultHttpClient( new URL( "http://localhost" ) );
     }
 }

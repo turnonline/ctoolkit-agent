@@ -26,7 +26,7 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectVisitorAdapter;
 import net.sf.jsqlparser.util.SelectUtils;
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.service.sql.CountColumn;
 import org.ctoolkit.agent.service.sql.VendorIndependentLimit;
@@ -36,6 +36,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -57,7 +58,7 @@ public class ExportServiceBean
     private static final Logger log = LoggerFactory.getLogger( ExportServiceBean.class );
 
     @Inject
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private Provider<NamedParameterJdbcTemplate> jdbcTemplate;
 
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
@@ -102,8 +103,7 @@ public class ExportServiceBean
         // get split numbers
         String rootCountQuery = rootCountSelect.toString();
 
-        jdbcTemplate.query( rootCountQuery, resultSet -> {
-
+        jdbcTemplate.get().query( rootCountQuery, resultSet -> {
             int count = resultSet.getInt( 1 );
 
             // wee ned to split query into multiple offset + limit splitQueries
@@ -123,35 +123,30 @@ public class ExportServiceBean
             {
                 splitQueries.add( rootSelect.toString() );
             }
-
-            return null;
         } );
 
         return splitQueries;
     }
 
-    public List<MigrationContext> executeQuery( String sql, Map<String, Object> namedParameters )
+    public List<Export> executeQuery( String sql, Map<String, Object> namedParameters )
     {
-        List<MigrationContext> migrationContextList = new ArrayList<>();
+        List<Export> exportList = new ArrayList<>();
 
         MapSqlParameterSource sqlNamedParameters = new MapSqlParameterSource();
         namedParameters.forEach( sqlNamedParameters::addValue );
 
-        jdbcTemplate.queryForObject( sql, sqlNamedParameters, ( resultSet, rowNum ) -> {
-
+        jdbcTemplate.get().query( sql, sqlNamedParameters, resultSet -> {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
-            MigrationContext migrationContext = new MigrationContext();
-            migrationContextList.add( migrationContext );
+            Export export = new Export();
+            exportList.add( export );
 
             for ( int i = 1; i <= metaData.getColumnCount(); i++ )
             {
-                migrationContext.put( metaData.getColumnName( i ), resultSet.getObject( i ) );
+                export.put( metaData.getColumnName( i ), resultSet.getObject( i ) );
             }
-
-            return null;
         } );
 
-        return migrationContextList;
+        return exportList;
     }
 }

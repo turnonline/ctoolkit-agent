@@ -22,7 +22,6 @@ package org.ctoolkit.agent.service.converter;
 import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
 import org.apache.commons.text.StringSubstitutor;
-import org.ctoolkit.agent.model.MigrationContext;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetEnricher;
@@ -68,8 +67,12 @@ public class ConverterExecutor
         this.registrat = registrat;
     }
 
-    public void enrich( MigrationContext migrationContext, List<MigrationSetEnricherGroup> groups )
+    public void enrich( Map<String, Object> ctx, List<MigrationSetEnricherGroup> groups )
     {
+        if (groups == null) {
+            return;
+        }
+
         groups.forEach( group -> {
             Stream<MigrationSetEnricher> stream;
 
@@ -84,10 +87,10 @@ public class ConverterExecutor
 
             stream.forEach( enricher -> {
                 // enrich
-                enricherExecutor.enrich( enricher, migrationContext );
+                enricherExecutor.enrich( enricher, ctx );
 
                 // recursive call for complex enricher structures
-                enrich( migrationContext, enricher.getEnrichers() );
+                enrich( ctx, enricher.getEnricherGroups() );
             } );
         } );
     }
@@ -138,7 +141,7 @@ public class ConverterExecutor
         return null;
     }
 
-    public String convertId( MigrationSet migrationSet, MigrationContext migrationContext )
+    public String convertId( MigrationSet migrationSet, Map<String, Object> ctx )
     {
         String idSelectorRaw = migrationSet.getSource().getIdSelector();
         if ( idSelectorRaw == null )
@@ -148,7 +151,7 @@ public class ConverterExecutor
 
         boolean encode = idSelectorRaw.startsWith( ID_ENCODE_PREFIX );
 
-        StringSubstitutor substitution = new StringSubstitutor( migrationContext, "${", "}" );
+        StringSubstitutor substitution = new StringSubstitutor( ctx, "${", "}" );
         String id = substitution.replace( idSelectorRaw.replaceAll( ID_ENCODE_PREFIX, "" ) );
 
 
@@ -158,11 +161,6 @@ public class ConverterExecutor
         }
 
         return id;
-    }
-
-    public void putToContext( MigrationContext migrationContext )
-    {
-        ctx.putAll( migrationContext );
     }
 
     public void putToContext( MigrationSet migrationSet )
@@ -176,9 +174,9 @@ public class ConverterExecutor
         ctx.put( "target.kind", migrationSet.getTarget().getKind() );
     }
 
-    public void putToContext( String key, Object value )
+    public Map<String, Object> getCtx()
     {
-        ctx.put( key, value );
+        return ctx;
     }
 
     // -- private helpers

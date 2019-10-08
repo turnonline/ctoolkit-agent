@@ -19,7 +19,7 @@
 
 package org.ctoolkit.agent.service.rule;
 
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyRule;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class MathOpsLowerThanRuleStrategyTest
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
-        assertTrue( strategy.apply( rule, new MigrationContext() ) );
+        assertTrue( strategy.apply( rule, new Export() ) );
     }
 
     // -- String

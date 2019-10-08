@@ -285,6 +285,11 @@
         "idSelector" : {
           "type" : "string",
           "description" : "Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'\n\nIt is used in conjunction with syncDateProperty with following logic:\n\n- if record does not exists, syncDate will be ignored and new record will be created\n- if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated\n- if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped"
+        },
+        "clean" : {
+          "type" : "boolean",
+          "description" : "Flag if all records for kind should be removed prior to data import",
+          "default" : false
         }
       }
     },

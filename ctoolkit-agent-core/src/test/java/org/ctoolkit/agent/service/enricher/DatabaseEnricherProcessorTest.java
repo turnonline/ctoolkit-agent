@@ -19,7 +19,7 @@
 
 package org.ctoolkit.agent.service.enricher;
 
-import org.ctoolkit.agent.model.MigrationContext;
+import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSetDatabaseSelectEnricher;
 import org.ctoolkit.agent.model.api.NamedParameter;
 import org.ctoolkit.agent.service.ExportService;
@@ -73,11 +73,11 @@ public class DatabaseEnricherProcessorTest
             assertEquals( "select * from person where person_id=:id", query );
             assertEquals( "109", namedParameters.get( "id" ) );
 
-            MigrationContext row1 = new MigrationContext();
+            Export row1 = new Export();
             row1.put( "name", "John" );
             row1.put( "surname", "Foo" );
 
-            MigrationContext row2 = new MigrationContext();
+            Export row2 = new Export();
             row2.put( "name", "Bill" );
             row2.put( "surname", "Bilbo" );
 
