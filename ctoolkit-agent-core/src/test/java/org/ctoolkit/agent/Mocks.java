@@ -28,6 +28,7 @@ import org.ctoolkit.agent.model.api.MigrationSetTarget;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -70,6 +71,7 @@ public class Mocks
         MigrationSetProperty property = new MigrationSetProperty();
         property.setTargetType( type );
         property.setTargetProperty( "name" );
+        property.setTransformers( new ArrayList<>(  ) );
         return property;
     }
 
@@ -85,14 +87,14 @@ public class Mocks
     {
         return Date.from( LocalDate.of( year, month, day )
                 .atStartOfDay()
-                .atZone( ZoneId.systemDefault() )
+                .atZone( ZoneId.of("CET") )
                 .toInstant() );
     }
 
     public static Date date( int day, int month, int year, int hour, int minute, int second )
     {
         return Date.from( LocalDateTime.of( year, month, day, hour, minute, second )
-                .atZone( ZoneId.systemDefault() )
+                .atZone( ZoneId.of("CET") )
                 .toInstant() );
     }
 }

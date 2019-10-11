@@ -1,0 +1,9 @@
+micronaut:
+  application:
+    name: ctoolkit-agent-gcp-datastore
+  server:
+    port: 8080
+
+endpoints:
+  health:
+    details-visible: ANONYMOUS

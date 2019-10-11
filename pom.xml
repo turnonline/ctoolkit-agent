@@ -32,6 +32,7 @@
         <module>ctoolkit-agent-sql</module>
         <module>ctoolkit-agent-elasticsearch</module>
         <module>ctoolkit-agent-mongo</module>
+        <module>ctoolkit-agent-datastore</module>
     </modules>
 
     <groupId>org.ctoolkit.agent</groupId>
@@ -159,6 +160,7 @@
         <junit.version>4.12</junit.version>
         <elasticsearch.version>6.3.2</elasticsearch.version>
         <mongo.version>3.8.2</mongo.version>
+        <datastore.version>1.96.0</datastore.version>
 
         <exec.mainClass>org.ctoolkit.agent.Application</exec.mainClass>
     </properties>

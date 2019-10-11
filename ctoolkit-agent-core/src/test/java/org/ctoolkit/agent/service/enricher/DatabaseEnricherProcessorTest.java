@@ -60,7 +60,7 @@ public class DatabaseEnricherProcessorTest
 
         NamedParameter namedParameter = new NamedParameter();
         namedParameter.setName( "id" );
-        namedParameter.setValue( "identifier" );
+        namedParameter.setValue( "${identifier}" );
         enricher.getNamedParameters().add( namedParameter );
 
         Map<String, Object> ctx = new HashMap<>();
