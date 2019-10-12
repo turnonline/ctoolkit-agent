@@ -28,5 +28,6 @@ public enum Agent
 {
     MYSQL,
     ELASTICSEARCH,
-    MONGO
+    MONGO,
+    DATASTORE
 }

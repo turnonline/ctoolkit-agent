@@ -41,6 +41,11 @@ public interface MigrationPipelineOptions
     boolean isDryRun();
     void setDryRun( boolean dryRun );
 
+    @Description( "Flag if logging of migrated data in 'dry mode' should be printed formatted or as single line." )
+    @Default.Boolean( true )
+    boolean isPrettyPrint();
+    void setPrettyPrint( boolean prettyPrint );
+
     @Validation.Required
     @Description( "Target agent url (for instance http://localhost:8080/api/v1/" )
     String getTargetAgentUrl();

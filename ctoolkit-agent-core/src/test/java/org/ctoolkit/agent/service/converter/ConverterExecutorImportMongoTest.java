@@ -29,40 +29,30 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.ctoolkit.agent.Mocks.mockImportSetProperty;
-import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_BINARY;
-import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_BOOLEAN;
-import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DATE;
-import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DOUBLE;
-import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_KEYWORD;
-import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_LONG;
-import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_TEXT;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_BIN_DATA;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_BOOL;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_DATE;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_DOUBLE;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_LONG;
+import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_STRING;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Unit test for {@link ConverterExecutor} - elasticsearch registrat - convert for import
+ * Unit test for {@link ConverterExecutor} - mongo registrat - convert for import
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class ElasticsearchConverterImportExecutorTest
+public class ConverterExecutorImportMongoTest
 {
-    private ConverterExecutor executor = new ConverterExecutor( new EnricherExecutor(), new TransformerExecutor(), new ElasticsearchConverterRegistrat() );
+    private ConverterExecutor executor = new ConverterExecutor( new EnricherExecutor(), new TransformerExecutor(), new MongoConverterRegistrat() );
 
     @Test
-    public void test_Text()
+    public void test_String()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_TEXT, "Boston" );
-        String convertedValue = ( String ) executor.convertProperty( property );
-
-        assertEquals( "Boston", convertedValue );
-    }
-
-    @Test
-    public void test_Keyword()
-    {
-        ImportSetProperty property = mockImportSetProperty( TYPE_KEYWORD, "Boston" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_STRING, "Boston" );
         String convertedValue = ( String ) executor.convertProperty( property );
 
         assertEquals( "Boston", convertedValue );
@@ -101,7 +91,7 @@ public class ElasticsearchConverterImportExecutorTest
     @Test
     public void test_Boolean_False()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_BOOLEAN, "false" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_BOOL, "false" );
         Boolean convertedValue = ( Boolean ) executor.convertProperty( property );
 
         assertFalse( convertedValue );
@@ -110,7 +100,7 @@ public class ElasticsearchConverterImportExecutorTest
     @Test
     public void test_Boolean_True()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_BOOLEAN, "true" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_BOOL, "true" );
         Boolean convertedValue = ( Boolean ) executor.convertProperty( property );
 
         assertTrue( convertedValue );
@@ -119,7 +109,7 @@ public class ElasticsearchConverterImportExecutorTest
     @Test
     public void test_Binary()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_BINARY, "Sm9obg==" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_BIN_DATA, "Sm9obg==" );
         byte[] convertedValue = ( byte[] ) executor.convertProperty( property );
 
         assertArrayEquals( new byte[]{'J', 'o', 'h', 'n'}, convertedValue );

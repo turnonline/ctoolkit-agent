@@ -19,6 +19,7 @@
 
 package org.ctoolkit.agent.service.converter;
 
+import org.ctoolkit.agent.model.LatLng;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSetPropertyBlobTransformer;
@@ -41,6 +42,7 @@ import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistr
 import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_BOOLEAN;
 import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DATE;
 import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DOUBLE;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_GEO_POINT;
 import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_KEYWORD;
 import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_LONG;
 import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_TEXT;
@@ -53,7 +55,7 @@ import static org.mockito.Mockito.when;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class ElasticsearchConverterMigrationExecutorTest
+public class ConverterExecutorMigrationElasticsearchTest
 {
     private ConverterExecutor executor = new ConverterExecutor(new EnricherExecutor(), new TransformerExecutor(), new ElasticsearchConverterRegistrat());
     
@@ -606,5 +608,18 @@ public class ElasticsearchConverterMigrationExecutorTest
         assertEquals( "name", importSetProperty.getName() );
         assertEquals( "binary", importSetProperty.getType() );
         assertEquals( "Sm9obg==", importSetProperty.getValue() );
+    }
+
+    // -- type geo point
+
+    @Test
+    public void test_GeoPoint()
+    {
+        MigrationSetProperty property = mockMigrationSetProperty( TYPE_GEO_POINT );
+        ImportSetProperty importSetProperty = executor.convertProperty( new LatLng( 12.3, 14.5 ), property );
+
+        assertEquals( "name", importSetProperty.getName() );
+        assertEquals( "geo-point", importSetProperty.getType() );
+        assertEquals( "12.3:14.5", importSetProperty.getValue() );
     }
 }

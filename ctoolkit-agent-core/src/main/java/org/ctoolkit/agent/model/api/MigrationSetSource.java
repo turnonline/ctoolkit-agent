@@ -23,20 +23,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T20:13:57.204Z")
-public class MigrationSetSource implements Serializable {
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-12T18:18:04.105Z")
+public class MigrationSetSource implements Serializable
+{
   
   private String namespace = null;
   private String kind = null;
   private Date changeDate = null;
   private String idSelector = null;
+  private Long limit = 0l;
+  private Long offset = 0l;
+  private List<QueryFilter> filter = new ArrayList<QueryFilter>();
 
   /**
    * Source namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)
@@ -110,6 +116,60 @@ public class MigrationSetSource implements Serializable {
     this.idSelector = idSelector;
   }
 
+  /**
+   * Query limit. Default is 0 which means no limit.
+   **/
+  public MigrationSetSource limit(Long limit) {
+    this.limit = limit;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Query limit. Default is 0 which means no limit.")
+  @JsonProperty("limit")
+  public Long getLimit() {
+    return limit;
+  }
+  public void setLimit(Long limit) {
+    this.limit = limit;
+  }
+
+  /**
+   * Query offset. Default is 0 which means no offset.
+   **/
+  public MigrationSetSource offset(Long offset) {
+    this.offset = offset;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Query offset. Default is 0 which means no offset.")
+  @JsonProperty("offset")
+  public Long getOffset() {
+    return offset;
+  }
+  public void setOffset(Long offset) {
+    this.offset = offset;
+  }
+
+  /**
+   * List of query filters
+   **/
+  public MigrationSetSource filter(List<QueryFilter> filter) {
+    this.filter = filter;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "List of query filters")
+  @JsonProperty("filter")
+  public List<QueryFilter> getFilter() {
+    return filter;
+  }
+  public void setFilter(List<QueryFilter> filter) {
+    this.filter = filter;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -123,12 +183,15 @@ public class MigrationSetSource implements Serializable {
     return Objects.equals(namespace, migrationSetSource.namespace) &&
         Objects.equals(kind, migrationSetSource.kind) &&
         Objects.equals(changeDate, migrationSetSource.changeDate) &&
-        Objects.equals(idSelector, migrationSetSource.idSelector);
+        Objects.equals(idSelector, migrationSetSource.idSelector) &&
+        Objects.equals(limit, migrationSetSource.limit) &&
+        Objects.equals(offset, migrationSetSource.offset) &&
+        Objects.equals(filter, migrationSetSource.filter);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(namespace, kind, changeDate, idSelector);
+    return Objects.hash(namespace, kind, changeDate, idSelector, limit, offset, filter);
   }
 
   @Override
@@ -140,6 +203,9 @@ public class MigrationSetSource implements Serializable {
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    changeDate: ").append(toIndentedString(changeDate)).append("\n");
     sb.append("    idSelector: ").append(toIndentedString(idSelector)).append("\n");
+    sb.append("    limit: ").append(toIndentedString(limit)).append("\n");
+    sb.append("    offset: ").append(toIndentedString(offset)).append("\n");
+    sb.append("    filter: ").append(toIndentedString(filter)).append("\n");
     sb.append("}");
     return sb.toString();
   }

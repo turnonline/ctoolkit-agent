@@ -28,17 +28,15 @@ import java.sql.Clob;
 import java.util.Date;
 
 /**
- * Converter registrat for elasticsearch
+ * Converter registrat for datastore
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 @Singleton
-public class ElasticsearchConverterRegistrat
+public class DatastoreConverterRegistrat
         extends BaseConverterRegistrat
 {
-    public static final String TYPE_TEXT = "text";
-
-    public static final String TYPE_KEYWORD = "keyword";
+    public static final String TYPE_STRING = "string";
 
     public static final String TYPE_LONG = "long";
 
@@ -50,34 +48,24 @@ public class ElasticsearchConverterRegistrat
 
     public static final String TYPE_BINARY = "binary";
 
-    public static final String TYPE_GEO_POINT = "geo-point";
+    public static final String TYPE_LAT_LNG = "lat-lng";
+
+    public static final String TYPE_KEY = "key";
 
     @Override
     public void initialize()
     {
-        register( String.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Integer.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Long.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Float.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Double.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( BigDecimal.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Boolean.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( byte[].class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Clob.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Blob.class, TYPE_TEXT, StringConverter.INSTANCE );
-        register( Date.class, TYPE_TEXT, StringConverter.INSTANCE );
-
-        register( String.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Integer.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Long.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Float.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Double.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( BigDecimal.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Boolean.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( byte[].class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Clob.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Blob.class, TYPE_KEYWORD, StringConverter.INSTANCE );
-        register( Date.class, TYPE_KEYWORD, StringConverter.INSTANCE );
+        register( String.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Integer.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Long.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Float.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Double.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( BigDecimal.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Boolean.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( byte[].class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Clob.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Blob.class, TYPE_STRING, StringConverter.INSTANCE );
+        register( Date.class, TYPE_STRING, StringConverter.INSTANCE );
 
         register( String.class, TYPE_LONG, LongConverter.INSTANCE );
         register( Integer.class, TYPE_LONG, LongConverter.INSTANCE );
@@ -104,6 +92,8 @@ public class ElasticsearchConverterRegistrat
         register( Blob.class, TYPE_BINARY, BinaryConverter.INSTANCE );
         register( Clob.class, TYPE_BINARY, BinaryConverter.INSTANCE );
 
-        register( LatLng.class, TYPE_GEO_POINT, LatLngConverter.INSTANCE );
+        register( LatLng.class, TYPE_LAT_LNG, LatLngConverter.INSTANCE );
+
+        register( String.class, TYPE_KEY, LatLngConverter.INSTANCE );
     }
 }

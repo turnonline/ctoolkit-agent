@@ -44,6 +44,6 @@ public class KeyValueResolver
     @Override
     public Map<String, String> resolve( String name, KeyValue value )
     {
-        return Collections.singletonMap( name, keyConverter.convert( value.get() ) );
+        return Collections.singletonMap( name, keyConverter.convertFromRawKey( value.get() ) );
     }
 }

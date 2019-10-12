@@ -17,28 +17,39 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.converter;
+package org.ctoolkit.agent.model;
 
-import com.google.cloud.datastore.LatLngValue;
-import org.ctoolkit.agent.model.LatLng;
-
-import javax.inject.Singleton;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-@Singleton
-public class LatLngValueResolver
-        implements ValueResolver<LatLng, LatLngValue>
+public class Context
+        extends LinkedHashMap<String, Object>
 {
-    @Override
-    public Map<String, LatLng> resolve( String name, LatLngValue value )
+    public Context()
     {
-        Map<String, LatLng> map = new LinkedHashMap<>();
-        map.put( name, new LatLng( value.get().getLatitude(), value.get().getLongitude() ) );
+    }
 
-        return map;
+    public Context( Context context)
+    {
+        putAll( context );
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "\n" );
+
+        this.forEach( ( name, value ) ->
+                sb.append( name ).append( " -> " )
+                        .append( "'" ).append( value ).append( "'" )
+                        .append( " (" ).append( value.getClass().getName() ).append( ")" )
+                        .append( "\n" ) );
+
+        sb.append( "==================================================\n" );
+
+        return sb.toString();
     }
 }

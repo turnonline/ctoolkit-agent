@@ -20,9 +20,10 @@
 package org.ctoolkit.agent.converter;
 
 import com.google.cloud.datastore.Key;
-import org.ctoolkit.agent.annotation.ProjectId;
+import com.google.datastore.v1.Key.PathElement;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,12 +42,12 @@ public class KeyConverter
     private final String projectId;
 
     @Inject
-    public KeyConverter( @ProjectId String projectId )
+    public KeyConverter( @Named( "projectId" ) String projectId )
     {
         this.projectId = projectId;
     }
 
-    public String convert( Key key )
+    public String convertFromRawKey( Key key )
     {
         StringBuilder converted = new StringBuilder();
 
@@ -73,9 +74,9 @@ public class KeyConverter
         return converted.toString();
     }
 
-    public Key convert( String keyRaw )
+    public Key convertFromRawKey( String rawKey )
     {
-        List<String> ancestors = Arrays.asList( keyRaw.trim().split( ">" ) );
+        List<String> ancestors = Arrays.asList( rawKey.trim().split( ">" ) );
 
         final AtomicReference<Key> parentKeyRef = new AtomicReference<>();
 
@@ -110,5 +111,50 @@ public class KeyConverter
         } );
 
         return parentKeyRef.get();
+    }
+
+    public List<PathElement> convertToPathElements( String rawKey )
+    {
+        List<PathElement> pathElements = new ArrayList<>();
+
+        Key key = convertFromRawKey( rawKey );
+        key.getAncestors().forEach( pathElement -> pathElements.add( PathElement.newBuilder()
+                .setName( pathElement.getName() )
+                .setId( pathElement.getId() )
+                .setKind( pathElement.getKind() )
+                .build()
+        ) );
+
+        PathElement.Builder builder = PathElement.newBuilder();
+        if ( key.getId() != null )
+        {
+            builder.setId( key.getId() );
+        }
+        if ( key.getName() != null )
+        {
+            builder.setName( key.getName() );
+        }
+        builder.setKind( key.getKind() );
+
+        pathElements.add( builder.build() );
+
+        return pathElements;
+    }
+
+    public String convertFromPathElements( List<PathElement> pathElements )
+    {
+        StringBuilder rawKey = new StringBuilder();
+
+        for ( PathElement pathElement : pathElements )
+        {
+            rawKey.append( pathElement.getKind() )
+                    .append( "," )
+                    .append( pathElement.getName().isEmpty() ?
+                            String.valueOf( pathElement.getId() ) :
+                            pathElement.getName()
+                    );
+        }
+
+        return rawKey.toString();
     }
 }

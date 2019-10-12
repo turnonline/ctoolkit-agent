@@ -138,10 +138,6 @@
           "type" : "string",
           "description" : "Optional comment for migration set"
         },
-        "query" : {
-          "type" : "string",
-          "description" : "Query which will narrow source kind records (partial changes). Keep 'null' if all records should be processed (initial import)"
-        },
         "source" : {
           "$ref" : "#/definitions/MigrationSetSource"
         },
@@ -158,7 +154,7 @@
         "ruleSet" : {
           "$ref" : "#/definitions/MigrationSetPropertyRuleSet"
         },
-        "enrichers" : {
+        "enricherGroups" : {
           "type" : "array",
           "description" : "Array of enricher groups",
           "items" : {
@@ -192,7 +188,7 @@
           "type" : "string",
           "description" : "Name of enricher. Will be used as prefix when adding enricher values into context"
         },
-        "enrichers" : {
+        "enricherGroups" : {
           "type" : "array",
           "description" : "Array of enrichers groups",
           "items" : {
@@ -262,6 +258,25 @@
         "idSelector" : {
           "type" : "string",
           "description" : "Selector used to create id in target agent. Result of this pattern can be encoded into base64 string and it will be used as a primary id of target kind.\n\nIf omitted id will be generated"
+        },
+        "limit" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Query limit. Default is 0 which means no limit.",
+          "default" : 0
+        },
+        "offset" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Query offset. Default is 0 which means no offset.",
+          "default" : 0
+        },
+        "filter" : {
+          "type" : "array",
+          "description" : "List of query filters",
+          "items" : {
+            "$ref" : "#/definitions/QueryFilter"
+          }
         }
       }
     },
@@ -613,6 +628,27 @@
           "type" : "string",
           "description" : "Query parameter converter",
           "default" : "string"
+        }
+      }
+    },
+    "QueryFilter" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "Property name to filter"
+        },
+        "operation" : {
+          "type" : "string",
+          "description" : "Filter operation"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "Property value to filter"
+        },
+        "valueType" : {
+          "type" : "string",
+          "description" : "Value data type"
         }
       }
     },

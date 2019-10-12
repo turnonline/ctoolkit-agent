@@ -34,6 +34,7 @@ import org.ctoolkit.agent.service.transformer.TransformerProcessor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -184,7 +185,7 @@ public class ConverterExecutor
     private ImportSetProperty newImportSetProperty( MigrationSetProperty property )
     {
         ImportSetProperty importSetProperty = new ImportSetProperty();
-        importSetProperty.setName( property.getTargetProperty() );
+        importSetProperty.setName( Optional.ofNullable( property.getTargetProperty() ).orElse( property.getSourceProperty() ) );
         importSetProperty.setType( property.getTargetType() );
 
         return importSetProperty;

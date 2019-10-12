@@ -19,13 +19,13 @@
 
 package org.ctoolkit.agent.service;
 
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.common.base.Preconditions;
+import com.google.datastore.v1.client.Datastore;
+import com.google.datastore.v1.client.DatastoreFactory;
+import com.google.datastore.v1.client.DatastoreOptions;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import org.apache.commons.lang.NotImplementedException;
-import org.ctoolkit.agent.annotation.ProjectId;
 import org.ctoolkit.agent.converter.BlobValueResolver;
 import org.ctoolkit.agent.converter.BooleanValueResolver;
 import org.ctoolkit.agent.converter.DoubleValueResolver;
@@ -38,8 +38,11 @@ import org.ctoolkit.agent.converter.StringValueResolver;
 import org.ctoolkit.agent.converter.TimestampValueResolver;
 import org.ctoolkit.agent.converter.ValueResolver;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
+import org.ctoolkit.agent.service.converter.DatastoreConverterRegistrat;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +58,7 @@ public class DatastoreAgentConfig
     private static final String GOOGLE_CLOUD_PROJECT = "GOOGLE_CLOUD_PROJECT";
 
     @Bean
-    @Singleton
-    @ProjectId
+    @Named( "projectId" )
     public String createProjectId()
     {
         String projectId = System.getenv( GOOGLE_CLOUD_PROJECT );
@@ -66,16 +68,38 @@ public class DatastoreAgentConfig
 
     @Bean
     @Singleton
-    public Datastore createDatastore()
+    public com.google.cloud.datastore.Datastore createDatastore( @Named( "projectId" ) String projectId )
     {
-        return DatastoreOptions.getDefaultInstance().getService();
+        return com.google.cloud.datastore.DatastoreOptions.getDefaultInstance().getService();
+    }
+
+    @Bean
+    @Singleton
+    public Datastore createPbDatastore( @Named( "projectId" ) String projectId )
+    {
+        GoogleCredential credential;
+        try
+        {
+            credential = GoogleCredential.getApplicationDefault();
+        }
+        catch ( IOException e )
+        {
+            throw new IllegalStateException( "Unable to load google credentials", e );
+        }
+
+        DatastoreOptions options = new DatastoreOptions.Builder()
+                .projectId( projectId )
+                .credential( credential )
+                .build();
+
+        return DatastoreFactory.get().create( options );
     }
 
     @Bean
     @Singleton
     public ConverterExecutor createConverterExecutor()
     {
-        throw new NotImplementedException( "Provide createConverterExecutor" );
+        return new ConverterExecutor( new DatastoreConverterRegistrat() );
     }
 
     @Bean

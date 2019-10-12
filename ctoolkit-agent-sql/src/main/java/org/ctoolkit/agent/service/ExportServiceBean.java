@@ -60,11 +60,12 @@ public class ExportServiceBean
     @Inject
     private Provider<NamedParameterJdbcTemplate> jdbcTemplate;
 
+    // TODO: refactor - implement offset, limit and filter - probably introduce QueryBuilder and remove 'query' if
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
         List<String> splitQueries = new ArrayList<>();
 
-        String query = migrationSet.getQuery();
+        String query = null;
         Select rootSelect;
         Select rootCountSelect;
 
@@ -128,14 +129,14 @@ public class ExportServiceBean
         return splitQueries;
     }
 
-    public List<Export> executeQuery( String sql, Map<String, Object> namedParameters )
+    public List<Export> executeQuery( String query, Map<String, Object> namedParameters )
     {
         List<Export> exportList = new ArrayList<>();
 
         MapSqlParameterSource sqlNamedParameters = new MapSqlParameterSource();
         namedParameters.forEach( sqlNamedParameters::addValue );
 
-        jdbcTemplate.get().query( sql, sqlNamedParameters, resultSet -> {
+        jdbcTemplate.get().query( query, sqlNamedParameters, resultSet -> {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             Export export = new Export();

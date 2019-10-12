@@ -44,9 +44,9 @@ public interface ExportService
     /**
      * Retrieve list of {@link Export} for specified sql query
      *
-     * @param sql             query
+     * @param query        query string
      * @param namedParameters named parameters used to replace parameters in query
      * @return list of {@link Export}
      */
-    List<Export> executeQuery( String sql, Map<String, Object> namedParameters );
+    List<Export> executeQuery( String query, Map<String, Object> namedParameters );
 }

@@ -36,7 +36,6 @@ public class MigrationSet implements Serializable {
   
   private String author = null;
   private String comment = null;
-  private String query = null;
   private MigrationSetSource source = null;
   private MigrationSetTarget target = null;
   private List<MigrationSetProperty> properties = new ArrayList<MigrationSetProperty>();
@@ -77,24 +76,6 @@ public class MigrationSet implements Serializable {
   }
   public void setComment(String comment) {
     this.comment = comment;
-  }
-
-  /**
-   * Query which will narrow source kind records (partial changes). Keep 'null' if all records should be processed (initial import)
-   **/
-  public MigrationSet query(String query) {
-    this.query = query;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "Query which will narrow source kind records (partial changes). Keep 'null' if all records should be processed (initial import)")
-  @JsonProperty("query")
-  public String getQuery() {
-    return query;
-  }
-  public void setQuery(String query) {
-    this.query = query;
   }
 
   /**
@@ -196,7 +177,6 @@ public class MigrationSet implements Serializable {
     MigrationSet migrationSet = (MigrationSet) o;
     return Objects.equals(author, migrationSet.author) &&
         Objects.equals(comment, migrationSet.comment) &&
-        Objects.equals(query, migrationSet.query) &&
         Objects.equals(source, migrationSet.source) &&
         Objects.equals(target, migrationSet.target) &&
         Objects.equals(properties, migrationSet.properties) &&
@@ -206,7 +186,7 @@ public class MigrationSet implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, comment, query, source, target, properties, ruleSet, enricherGroups );
+    return Objects.hash(author, comment, source, target, properties, ruleSet, enricherGroups );
   }
 
   @Override
@@ -216,7 +196,6 @@ public class MigrationSet implements Serializable {
     
     sb.append("    author: ").append(toIndentedString(author)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
-    sb.append("    query: ").append(toIndentedString(query)).append("\n");
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
     sb.append("    target: ").append(toIndentedString(target)).append("\n");
     sb.append("    properties: ").append(toIndentedString(properties)).append("\n");

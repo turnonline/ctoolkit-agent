@@ -149,9 +149,9 @@ public class ValueConverterTest
     {
         Map<String, Object> converted = converter.convert( "property", new LatLngValue( LatLng.of( 12.3, 14.8 ) ) );
 
-        assertEquals( 2, converted.size() );
-        assertEquals( 12.3, converted.get( "property.lat" ) );
-        assertEquals( 14.8, converted.get( "property.lng" ) );
+        assertEquals( 1, converted.size() );
+        assertEquals( 12.3, ( ( org.ctoolkit.agent.model.LatLng ) converted.get( "property" ) ).getLatitude(), 0 );
+        assertEquals( 14.8, ( ( org.ctoolkit.agent.model.LatLng ) converted.get( "property" ) ).getLongitude(), 0 );
     }
 
     @Test

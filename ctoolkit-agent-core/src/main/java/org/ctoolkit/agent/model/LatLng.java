@@ -17,23 +17,46 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.annotation;
-
-import javax.inject.Qualifier;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+package org.ctoolkit.agent.model;
 
 /**
- * Annotations is used to annotate field to inject project id
- * <p>
- * Created by Jozef Pohorelec on 21. 10. 2015.
+ * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-@Target( {ElementType.PARAMETER,ElementType.METHOD} )
-@Retention( RUNTIME )
-@Qualifier
-public @interface ProjectId
+public class LatLng
 {
+    private double latitude;
+
+    private double longitude;
+
+    public LatLng( double latitude, double longitude )
+    {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public double getLatitude()
+    {
+        return latitude;
+    }
+
+    public void setLatitude( double latitude )
+    {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude()
+    {
+        return longitude;
+    }
+
+    public void setLongitude( double longitude )
+    {
+        this.longitude = longitude;
+    }
+
+    @Override
+    public String toString()
+    {
+        return latitude + ":" + longitude;
+    }
 }

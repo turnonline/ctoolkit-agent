@@ -19,10 +19,11 @@
 
 package org.ctoolkit.agent.service.beam.pipeline;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.ctoolkit.agent.model.Agent;
+import org.ctoolkit.agent.model.Context;
 import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportJob;
@@ -49,9 +50,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -132,7 +133,7 @@ public class PipelineServiceBean
 
         for ( Export export : exports )
         {
-            Map<String, Object> ctx = new HashMap<>( export );
+            Context ctx = new Context( export );
 
             // skip entity migration if rules return apply = 'false'
             if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), ctx ) )
@@ -146,6 +147,12 @@ public class PipelineServiceBean
 
             // enrich migration context
             converterExecutor.enrich( ctx, migrationSet.getEnricherGroups() );
+
+            // dump context
+            if ( log.isInfoEnabled() )
+            {
+                log.info( "Context dump:\n" + ctx );
+            }
 
             // set header values
             MigrationSetTarget target = migrationSet.getTarget();
@@ -209,7 +216,13 @@ public class PipelineServiceBean
 
         if ( migrationPipelineOptions.isDryRun() )
         {
-            log.info( new Gson().toJson( importBatch ) );
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            if ( migrationPipelineOptions.isPrettyPrint() )
+            {
+                gsonBuilder.setPrettyPrinting();
+            }
+
+            log.info( gsonBuilder.create().toJson( importBatch ) );
         }
         else
         {
@@ -237,7 +250,7 @@ public class PipelineServiceBean
                 case "list":
                 {
                     ImportSetProperty importSetProperty = new ImportSetProperty();
-                    importSetProperty.setName( migrationSetProperty.getTargetProperty() );
+                    importSetProperty.setName( Optional.ofNullable( migrationSetProperty.getTargetProperty() ).orElse( migrationSetProperty.getSourceProperty() ));
                     importSetProperty.setType( migrationSetProperty.getTargetType() );
                     importSetProperty.setValue( new ArrayList<>() );
 
@@ -272,7 +285,7 @@ public class PipelineServiceBean
                 case "object":
                 {
                     ImportSetProperty importSetProperty = new ImportSetProperty();
-                    importSetProperty.setName( migrationSetProperty.getTargetProperty() );
+                    importSetProperty.setName( Optional.ofNullable( migrationSetProperty.getTargetProperty() ).orElse( migrationSetProperty.getSourceProperty() ) );
                     importSetProperty.setType( migrationSetProperty.getTargetType() );
 
                     List<ImportSetProperty> currentObjectProperties = initializeImportSetProperties(
@@ -310,7 +323,7 @@ public class PipelineServiceBean
     {
         List<ImportSetProperty> existingImportSetProperties = importSetProperties
                 .stream()
-                .filter( isp -> isp.getName().equals( migrationSetProperty.getTargetProperty() ) )
+                .filter( isp -> isp.getName().equals( Optional.ofNullable( migrationSetProperty.getTargetProperty() ).orElse( migrationSetProperty.getSourceProperty() ) ) )
                 .collect( Collectors.toList() );
 
         if ( existingImportSetProperties.isEmpty() )

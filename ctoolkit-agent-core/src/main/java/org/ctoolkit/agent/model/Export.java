@@ -19,14 +19,20 @@
 
 package org.ctoolkit.agent.model;
 
-import java.util.HashMap;
-
 /**
  * Migration context holds information about current entity
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 public class Export
-        extends HashMap<String, Object>
+        extends Context
 {
+    public Export()
+    {
+    }
+
+    public Export( Context context)
+    {
+        super( context );
+    }
 }

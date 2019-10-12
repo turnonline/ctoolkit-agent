@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class MongoConverterMigrationExecutorTest
+public class ConverterExecutorMigrationMongoTest
 {
     private ConverterExecutor executor = new ConverterExecutor(new EnricherExecutor(), new TransformerExecutor(), new MongoConverterRegistrat());
     

@@ -39,12 +39,14 @@ public class RegistratFactory
     @Singleton
     public Map<Agent, BaseConverterRegistrat> provideRegistrats(
             ElasticsearchConverterRegistrat elasticsearchConverterRegistrat,
-            MongoConverterRegistrat mongoConverterRegistrat
+            MongoConverterRegistrat mongoConverterRegistrat,
+            DatastoreConverterRegistrat datastoreConverterRegistrat
     )
     {
         Map<Agent, BaseConverterRegistrat> registrats = new HashMap<>(  );
         registrats.put( Agent.ELASTICSEARCH, elasticsearchConverterRegistrat );
         registrats.put( Agent.MONGO, mongoConverterRegistrat );
+        registrats.put( Agent.DATASTORE, datastoreConverterRegistrat );
         return registrats;
     }
 }

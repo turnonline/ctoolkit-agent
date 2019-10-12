@@ -19,6 +19,7 @@
 
 package org.ctoolkit.agent.service.converter;
 
+import org.ctoolkit.agent.model.LatLng;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.service.enricher.EnricherExecutor;
 import org.ctoolkit.agent.service.transformer.TransformerExecutor;
@@ -29,30 +30,41 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.ctoolkit.agent.Mocks.mockImportSetProperty;
-import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_BIN_DATA;
-import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_BOOL;
-import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_DATE;
-import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_DOUBLE;
-import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_LONG;
-import static org.ctoolkit.agent.service.converter.MongoConverterRegistrat.TYPE_STRING;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_BINARY;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_BOOLEAN;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DATE;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_DOUBLE;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_GEO_POINT;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_KEYWORD;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_LONG;
+import static org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat.TYPE_TEXT;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Unit test for {@link ConverterExecutor} - mongo registrat - convert for import
+ * Unit test for {@link ConverterExecutor} - elasticsearch registrat - convert for import
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class MongoConverterImportExecutorTest
+public class ConverterExecutorImportElasticsearchTest
 {
-    private ConverterExecutor executor = new ConverterExecutor( new EnricherExecutor(), new TransformerExecutor(), new MongoConverterRegistrat() );
+    private ConverterExecutor executor = new ConverterExecutor( new EnricherExecutor(), new TransformerExecutor(), new ElasticsearchConverterRegistrat() );
 
     @Test
-    public void test_String()
+    public void test_Text()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_STRING, "Boston" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_TEXT, "Boston" );
+        String convertedValue = ( String ) executor.convertProperty( property );
+
+        assertEquals( "Boston", convertedValue );
+    }
+
+    @Test
+    public void test_Keyword()
+    {
+        ImportSetProperty property = mockImportSetProperty( TYPE_KEYWORD, "Boston" );
         String convertedValue = ( String ) executor.convertProperty( property );
 
         assertEquals( "Boston", convertedValue );
@@ -91,7 +103,7 @@ public class MongoConverterImportExecutorTest
     @Test
     public void test_Boolean_False()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_BOOL, "false" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_BOOLEAN, "false" );
         Boolean convertedValue = ( Boolean ) executor.convertProperty( property );
 
         assertFalse( convertedValue );
@@ -100,7 +112,7 @@ public class MongoConverterImportExecutorTest
     @Test
     public void test_Boolean_True()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_BOOL, "true" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_BOOLEAN, "true" );
         Boolean convertedValue = ( Boolean ) executor.convertProperty( property );
 
         assertTrue( convertedValue );
@@ -109,9 +121,19 @@ public class MongoConverterImportExecutorTest
     @Test
     public void test_Binary()
     {
-        ImportSetProperty property = mockImportSetProperty( TYPE_BIN_DATA, "Sm9obg==" );
+        ImportSetProperty property = mockImportSetProperty( TYPE_BINARY, "Sm9obg==" );
         byte[] convertedValue = ( byte[] ) executor.convertProperty( property );
 
         assertArrayEquals( new byte[]{'J', 'o', 'h', 'n'}, convertedValue );
+    }
+
+    @Test
+    public void test_GeoPoint()
+    {
+        ImportSetProperty property = mockImportSetProperty( TYPE_GEO_POINT, "13.4:14.5" );
+        LatLng convertedValue = ( LatLng ) executor.convertProperty( property );
+
+        assertEquals(  13.4, convertedValue.getLatitude(), 0);
+        assertEquals(  14.5, convertedValue.getLongitude(), 0);
     }
 }

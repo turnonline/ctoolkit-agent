@@ -35,8 +35,9 @@ import java.util.Map;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 @Singleton
-@Requires(missingBeans = ExportService.class)
-public class DefaultExportService implements ExportService
+@Requires( missingBeans = ExportService.class )
+public class DefaultExportService
+        implements ExportService
 {
     @Override
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
@@ -45,7 +46,7 @@ public class DefaultExportService implements ExportService
     }
 
     @Override
-    public List<Export> executeQuery( String sql, Map<String, Object> namedParameters )
+    public List<Export> executeQuery( String query, Map<String, Object> namedParameters )
     {
         throw new NotImplementedException( "ExportService is not implemented for this agent" );
     }
