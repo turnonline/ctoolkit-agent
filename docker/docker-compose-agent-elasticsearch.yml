@@ -17,8 +17,8 @@
 
 version: "3.3"
 services:
-  ctoolkit-agent-elasticsearch:
-    image: turnonline/ctoolkit-agent-elasticsearch
+  trimigi-agent-elasticsearch:
+    image: turnonline/trimigi-agent-elasticsearch
     ports:
       - 8081:8080
     networks:

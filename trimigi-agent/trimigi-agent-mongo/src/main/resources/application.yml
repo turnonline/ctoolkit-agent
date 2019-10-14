@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: ctoolkit-agent-mongo
+    name: trimigi-agent-mongo
   server:
     port: 8080
 

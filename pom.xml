@@ -54,12 +54,12 @@
         <developer>
             <name>Aurel Medvegy</name>
             <id>medvegy</id>
-            <email>aurel.medvegy@ctoolkit.org</email>
+            <email>medvegy@turnonline.biz</email>
         </developer>
         <developer>
             <name>Jozef Pohorelec</name>
             <id>pohorelec</id>
-            <email>jozef.pohorelec@ctoolkit.org</email>
+            <email>pohorelec@turnonline.biz</email>
         </developer>
     </developers>
 
@@ -159,6 +159,6 @@
         <mongo.version>3.8.2</mongo.version>
         <datastore.version>1.96.0</datastore.version>
 
-        <exec.mainClass>org.ctoolkit.agent.Application</exec.mainClass>
+        <exec.mainClass>biz.turnonline.ecosystem.Application</exec.mainClass>
     </properties>
 </project>

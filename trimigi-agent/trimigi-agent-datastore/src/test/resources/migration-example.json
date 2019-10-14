@@ -1,0 +1,48 @@
+{
+  "pipelineOptions": [
+    {
+      "name": "dryRun",
+      "value": "false"
+    },
+    {
+      "name": "targetAgent",
+      "value": "DATASTORE"
+    }
+  ],
+  "migrationSets": [
+    {
+      "comment": "Migration import of partner.physicalPerson",
+      "syncDateProperty": "syncDate",
+      "source": {
+        "namespace": "default",
+        "kind": "AM_Account"
+      },
+      "target": {
+      },
+      "properties": [
+        {
+          "sourceProperty": "businessName",
+          "targetType": "string"
+        },
+        {
+          "sourceProperty": "email",
+          "targetType": "string"
+        },
+        {
+          "sourceProperty": "hashCode",
+          "targetType": "key"
+        },
+        {
+          "sourceProperty": "postalAddress",
+          "targetType": "object",
+          "targetValue": [
+            {
+              "sourceProperty": "street",
+              "targetType": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

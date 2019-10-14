@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: ctoolkit-agent-gcp-datastore
+    name: trimigi-agent-datastore
   server:
     port: 8080
 

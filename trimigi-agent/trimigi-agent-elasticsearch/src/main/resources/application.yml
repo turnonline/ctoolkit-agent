@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: ctoolkit-agent-elasticsearch
+    name: trimigi-agent-elasticsearch
   server:
     port: 8080
 

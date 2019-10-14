@@ -7,7 +7,7 @@ Following these guidelines helps to communicate that you respect the time of the
 Cloud Toolkit Migration Agent is an open source project and we love to receive contributions from our community — you! There are many ways to contribute, from writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests or writing code which can be incorporated into Cloud Toolkit Migration Agent itself.
 
 # Ground Rules
-* Ensure that code that goes into core meets all requirements in this checklist: https://github.com/turnonline/ctoolkit-agent/blob/devel/PULL_REQUEST_TEMPLATE.md
+* Ensure that code that goes into core meets all requirements in this checklist: https://github.com/turnonline/trimigi/blob/devel/PULL_REQUEST_TEMPLATE.md
 * Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 * Don't add any classes to the codebase unless absolutely needed.
 * Keep feature versions as small as possible, preferably one new feature per version.

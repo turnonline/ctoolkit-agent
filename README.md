@@ -37,20 +37,21 @@ Recommended way of running agents is via docker. To setup docker follow these st
 > SQL (postgres) to elasticsearch migration stack:
 
 ```shell
-# docker stack deploy -c docker-compose-postgres.yml -c docker-compose-elasticsearch.yml -c docker-compose-agent-sql.yml -c docker-compose-agent-elasticsearch.yml migration 
+# docker stack deploy -c docker-compose-postgres.yml,docker-compose-elasticsearch.yml,docker-compose-agent-sql.yml,docker-compose-agent-elasticsearch.yml migration 
 
 ```
 > SQL (postgres) to mongo migration stack:
 
 ```shell
-# docker stack deploy -c docker-compose-postgres.yml -c docker-compose-mongo.yml -c docker-compose-agent-sql.yml -c docker-compose-agent-agent-mongo.yml migration 
+# docker stack deploy -c docker-compose-postgres.yml,docker-compose-mongo.yml,docker-compose-agent-sql.yml,docker-compose-agent-agent-mongo.yml migration 
 ```
 
-* optionally you can run UIs for datasources
+* To run database (optionaly with its UI) run following:
 ```shell
-# docker stack deploy -c docker-compose-sql-adminer.yml migration
-# docker stack deploy -c docker-compose-kibana.yml migration
-# docker stack deploy -c docker-compose-mongo-express.yml migration
+# docker stack deploy -c docker-compose-elasticsearch.yml migration
+# docker stack deploy -c docker-compose-mongo.yml migration
+# docker stack deploy -c docker-compose-mysql.yml migration
+# docker stack deploy -c docker-compose-postgres.yml migration
 ```
 * To setup apache spark processor engine run following command
 ```shell
@@ -91,14 +92,9 @@ Recommended way of running agents is via docker. To setup docker follow these st
 - DmongoUri=mongodb://root:admin123@morty:27017
 - Dmicronaut.server.port=8082
 
-## Datastore setup
-### Source (env variables)
+## Datastore setup (env variables)
 - GOOGLE_CLOUD_PROJECT=${gcp-project-name}
-- GOOGLE_APPLICATION_CREDENTIALS=${path-to-account-service-key.json}
-
-### Target (env variables)
-- GOOGLE_CLOUD_PROJECT=${gcp-project-name}
-- GOOGLE_APPLICATION_CREDENTIALS=${path-to-account-service-key.json}
+- GOOGLE_APPLICATION_CREDENTIALS=${path-to-service-account.json} (optional, if not set - well known locations will be used to get service-account.json)
 
 ## Maven build
 To run agents locally you need to build it with special maven profile. Each
