@@ -29,9 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -62,21 +60,17 @@ public class RestEnricherProcessorTest
         InputStream json = RestEnricherProcessorTest.class.getResourceAsStream( "/rest-enricher.json" );
         String response = CharStreams.toString( new InputStreamReader( json, Charsets.UTF_8 ) );
 
-        doAnswer( new Answer()
-        {
-            @Override
-            public Object answer( InvocationOnMock invocation ) throws Throwable
-            {
-                String url = ( String ) invocation.getArguments()[0];
-                Map<String, String> queryParams = ( Map<String, String> ) invocation.getArguments()[1];
+        doAnswer( invocation -> {
+            String url = ( String ) invocation.getArguments()[0];
+            Map<String, String> queryParams = ( Map<String, String> ) invocation.getArguments()[1];
 
-                assertEquals( "http://foo.com", url );
-                assertEquals( "123", queryParams.get( "id" ) );
-                assertEquals( "2019-02-01", queryParams.get( "birthDate" ) );
-                assertEquals( "2017-01-10T01:02:03.000+01", queryParams.get( "createDate" ) );
+            assertEquals( "http://foo.com", url );
+            assertEquals( "123", queryParams.get( "id" ) );
+            assertEquals( "45", queryParams.get( "age" ) );
+            assertEquals( "2019-02-01", queryParams.get( "birthDate" ) );
+            assertEquals( "2017-01-10T02:02:03.000+01", queryParams.get( "createDate" ) );
 
-                return response;
-            }
+            return response;
         } ).when( connectorFacade ).pull( anyString(), anyMap() );
 
         MigrationSetRestEnricher enricher = new MigrationSetRestEnricher();
@@ -85,18 +79,23 @@ public class RestEnricherProcessorTest
 
         QueryParameter id = new QueryParameter();
         id.setName( "id" );
-        id.setValue( "identifier" );
+        id.setValue( "${identifier}" );
         enricher.getQueryParameters().add( id );
+
+        QueryParameter age = new QueryParameter();
+        age.setName( "age" );
+        age.setValue( "45" );
+        enricher.getQueryParameters().add( age );
 
         QueryParameter birthDate = new QueryParameter();
         birthDate.setName( "birthDate" );
-        birthDate.setValue( "birthDat" );
+        birthDate.setValue( "${birthDat}" );
         birthDate.setConverter( "date" );
         enricher.getQueryParameters().add( birthDate );
 
         QueryParameter createDate = new QueryParameter();
         createDate.setName( "createDate" );
-        createDate.setValue( "creatDat" );
+        createDate.setValue( "${creatDat}" );
         createDate.setConverter( "datetime" );
         enricher.getQueryParameters().add( createDate );
 

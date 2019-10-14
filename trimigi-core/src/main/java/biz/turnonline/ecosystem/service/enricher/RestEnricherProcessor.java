@@ -21,6 +21,7 @@ package biz.turnonline.ecosystem.service.enricher;
 
 import biz.turnonline.ecosystem.model.api.MigrationSetEnricher;
 import biz.turnonline.ecosystem.model.api.MigrationSetRestEnricher;
+import biz.turnonline.ecosystem.model.api.QueryParameter;
 import biz.turnonline.ecosystem.service.connector.ConnectorFacade;
 import com.github.wnameless.json.flattener.JsonFlattener;
 
@@ -48,7 +49,7 @@ public class RestEnricherProcessor
         Map<String, String> queryParameters = new HashMap<>();
 
         enricher.getQueryParameters().forEach( queryParameter -> {
-            Object value = ctx.get( queryParameter.getValue() );
+            Object value = queryParameterValue( queryParameter, ctx );
             String converter = queryParameter.getConverter();
 
             String converted = convert( value, converter );
@@ -94,5 +95,16 @@ public class RestEnricherProcessor
         }
 
         return "";
+    }
+
+    private Object queryParameterValue( QueryParameter queryParameter, Map<String, Object> ctx )
+    {
+        String val = queryParameter.getValue();
+        if ( val.startsWith( "${" ) )
+        {
+            return ctx.get( val.replace( "${", "" ).replace( "}", "" ) );
+        }
+
+        return val;
     }
 }

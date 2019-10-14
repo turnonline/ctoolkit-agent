@@ -87,14 +87,14 @@ public class Mocks
     {
         return Date.from( LocalDate.of( year, month, day )
                 .atStartOfDay()
-                .atZone( ZoneId.of("CET") )
+                .atZone( ZoneId.of("GMT") )
                 .toInstant() );
     }
 
     public static Date date( int day, int month, int year, int hour, int minute, int second )
     {
         return Date.from( LocalDateTime.of( year, month, day, hour, minute, second )
-                .atZone( ZoneId.of("CET") )
+                .atZone( ZoneId.of("GMT") )
                 .toInstant() );
     }
 }
