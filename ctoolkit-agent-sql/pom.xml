@@ -87,11 +87,10 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.5</version>
         </dependency>
-
         <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>0.9</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

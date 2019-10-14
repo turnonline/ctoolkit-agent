@@ -19,17 +19,11 @@
 
 package org.ctoolkit.agent.service;
 
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.schema.Table;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectVisitorAdapter;
-import net.sf.jsqlparser.util.SelectUtils;
 import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.api.MigrationSet;
-import org.ctoolkit.agent.service.sql.CountColumn;
-import org.ctoolkit.agent.service.sql.VendorIndependentLimit;
+import org.ctoolkit.agent.model.api.MigrationSetSource;
+import org.ctoolkit.agent.service.sql.Query;
+import org.ctoolkit.agent.service.sql.SqlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -42,7 +36,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -60,52 +53,25 @@ public class ExportServiceBean
     @Inject
     private Provider<NamedParameterJdbcTemplate> jdbcTemplate;
 
-    // TODO: refactor - implement offset, limit and filter - probably introduce QueryBuilder and remove 'query' if
+    private SqlBuilder sqlBuilder = new SqlBuilder();
+
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
         List<String> splitQueries = new ArrayList<>();
+        MigrationSetSource source = migrationSet.getSource();
 
-        String query = null;
-        Select rootSelect;
-        Select rootCountSelect;
-
-        // create select as 'select * from sourceNamespace.sourceKind'
-        if ( query == null )
-        {
-            Table table = new Table( migrationSet.getSource().getNamespace(), migrationSet.getSource().getKind() );
-            rootSelect = SelectUtils.buildSelectFromTable( table );
-            rootCountSelect = SelectUtils.buildSelectFromTable( table );
-        }
-        // create select as provided by query in MigrationSet
-        else
-        {
-            try
-            {
-                rootSelect = ( Select ) CCJSqlParserUtil.parse( query );
-                rootCountSelect = ( Select ) CCJSqlParserUtil.parse( query );
-            }
-            catch ( JSQLParserException e )
-            {
-                log.error( "Unable to parse root query: " + query, e );
-                throw new RuntimeException( "Unable to parse root query: " + query, e );
-            }
-        }
-
-        // replace select items with 'select count(*) ...'
-        rootCountSelect.getSelectBody().accept( new SelectVisitorAdapter()
-        {
-            @Override
-            public void visit( PlainSelect plainSelect )
-            {
-                plainSelect.setSelectItems( Collections.singletonList( new CountColumn() ) );
-            }
-        } );
+        Query query = new Query();
+        query.setNamespace( source.getNamespace() );
+        query.setKind( source.getKind() );
+        query.setLimit( source.getLimit().intValue() );
+        query.setOffset( source.getOffset().intValue() );
+        query.setFilter( new ArrayList<>( source.getFilter() ) );
 
         // get split numbers
-        String rootCountQuery = rootCountSelect.toString();
+        String rootCountQuery = sqlBuilder.toSqlCount( query );
 
         jdbcTemplate.get().query( rootCountQuery, resultSet -> {
-            int count = resultSet.getInt( 1 );
+            long count = resultSet.getLong( 1 );
 
             // wee ned to split query into multiple offset + limit splitQueries
             if ( count > rowsPerSplit )
@@ -115,14 +81,17 @@ public class ExportServiceBean
                 for ( int offset = 0; offset < splits.doubleValue(); offset++ )
                 {
                     // create offset + limit per split
-                    rootSelect.getSelectBody().accept( new VendorIndependentLimit( offset, rowsPerSplit ) );
-                    splitQueries.add( rootSelect.toString() );
+                    Query splitQuery = new Query( query );
+                    splitQuery.setOffset( offset );
+                    splitQuery.setLimit( rowsPerSplit );
+
+                    splitQueries.add( sqlBuilder.toSql( splitQuery ) );
                 }
             }
             // noo need to split query, because there is less rows then rowsPerSplit
             else
             {
-                splitQueries.add( rootSelect.toString() );
+                splitQueries.add( sqlBuilder.toSql( query ) );
             }
         } );
 
@@ -131,6 +100,8 @@ public class ExportServiceBean
 
     public List<Export> executeQuery( String query, Map<String, Object> namedParameters )
     {
+        log.info( "Executing query: " + query + ", " + namedParameters );
+
         List<Export> exportList = new ArrayList<>();
 
         MapSqlParameterSource sqlNamedParameters = new MapSqlParameterSource();

@@ -37,7 +37,7 @@ import com.google.datastore.v1.client.QuerySplitter;
 import com.google.protobuf.Int32Value;
 import org.ctoolkit.agent.converter.KeyConverter;
 import org.ctoolkit.agent.converter.ValueConverter;
-import org.ctoolkit.agent.datastore.QueryParser;
+import org.ctoolkit.agent.datastore.GqlBuilder;
 import org.ctoolkit.agent.datastore.StringToQueryPbValueResolver;
 import org.ctoolkit.agent.model.Export;
 import org.ctoolkit.agent.model.RawKey;
@@ -81,7 +81,7 @@ public class ExportServiceBean
     private ValueConverter valueConverter;
 
     @Inject
-    private QueryParser queryParser;
+    private GqlBuilder gqlBuilder;
 
     private Map<String, PropertyFilter.Operator> operatorMap = new HashMap<>();
     private Map<String, StringToQueryPbValueResolver> valueTypeResolverMap = new HashMap<>();
@@ -128,7 +128,7 @@ public class ExportServiceBean
         try
         {
             List<Query> querySplits = querySplitter.getSplits( query, PartitionId.getDefaultInstance(), rowsPerSplit, pbDatastore );
-            querySplits.forEach( query1 -> splits.add( queryParser.toGql( query1 ) ) );
+            querySplits.forEach( query1 -> splits.add( gqlBuilder.toGql( query1 ) ) );
         }
         catch ( DatastoreException e )
         {
@@ -141,7 +141,7 @@ public class ExportServiceBean
     @SuppressWarnings( "unchecked" )
     public List<Export> executeQuery( String query, Map<String, Object> namedParameters )
     {
-        log.info( "Executing query: " + query );
+        log.info( "Executing query: " + query + ", " + namedParameters );
 
         List<Export> exportList = new ArrayList<>();
         GqlQuery.Builder queryBuilder = com.google.cloud.datastore.Query.newGqlQueryBuilder( query );

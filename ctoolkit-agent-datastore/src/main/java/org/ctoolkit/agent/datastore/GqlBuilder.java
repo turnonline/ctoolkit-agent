@@ -35,12 +35,12 @@ import java.util.Map;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 @Singleton
-public class QueryParser
+public class GqlBuilder
 {
     private final KeyConverter keyConverter;
 
     @Inject
-    public QueryParser( KeyConverter keyConverter )
+    public GqlBuilder( KeyConverter keyConverter )
     {
         this.keyConverter = keyConverter;
     }
