@@ -29,10 +29,7 @@
 
     <modules>
         <module>trimigi-core</module>
-        <module>trimigi-agent-sql</module>
-        <module>trimigi-agent-elasticsearch</module>
-        <module>trimigi-agent-mongo</module>
-        <module>trimigi-agent-datastore</module>
+        <module>trimigi-agent</module>
     </modules>
 
     <groupId> biz.turnonline.ecosystem</groupId>

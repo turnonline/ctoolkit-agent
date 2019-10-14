@@ -20,56 +20,27 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>trimigi-agent-parent</artifactId>
+        <artifactId>trimigi-agent</artifactId>
         <groupId>biz.turnonline.ecosystem</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>trimigi-agent-elasticsearch</artifactId>
-    <name>Trimigi Agent [elasticsearch]</name>
-    <description>Trimigi Migration Agent [elasticsearch]</description>
+    <artifactId>trimigi-agent-mongo</artifactId>
+    <name>Trimigi Agent [mongo]</name>
+    <description>Trimigi Migration Agent [mongo]</description>
 
     <dependencies>
         <dependency>
-            <groupId>biz.turnonline.ecosystem</groupId>
-            <artifactId>trimigi-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>http-client</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>http-server-netty</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>inject</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>runtime</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>management</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>${elasticsearch.version}</version>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver</artifactId>
+            <version>${mongo.version}</version>
         </dependency>
     </dependencies>
 
     <profiles>
         <profile>
-            <id>elasticsearch</id>
+            <id>mongo</id>
             <build>
                 <plugins>
                     <plugin>
@@ -206,4 +177,5 @@
             </build>
         </profile>
     </profiles>
+
 </project>

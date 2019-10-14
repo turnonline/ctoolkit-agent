@@ -20,56 +20,49 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>trimigi-agent-parent</artifactId>
+        <artifactId>trimigi-agent</artifactId>
         <groupId>biz.turnonline.ecosystem</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>trimigi-agent-mongo</artifactId>
-    <name>Trimigi Agent [mongo]</name>
-    <description>Trimigi Migration Agent [mongo]</description>
+    <artifactId>trimigi-agent-sql</artifactId>
+    <name>Trimigi Agent [sql]</name>
+    <description>Trimigi Migration Agent [sql]</description>
 
     <dependencies>
         <dependency>
-            <groupId>biz.turnonline.ecosystem</groupId>
-            <artifactId>trimigi-core</artifactId>
+            <groupId>io.micronaut.configuration</groupId>
+            <artifactId>jdbc-tomcat</artifactId>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.zaxxer</groupId>-->
+            <!--<artifactId>HikariCP</artifactId>-->
+            <!--<version>2.7.3</version>-->
+        <!--</dependency>-->
 
         <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>http-client</artifactId>
-            <scope>compile</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>org.springframework.jdbc</artifactId>
+            <version>3.2.2.RELEASE</version>
+        </dependency>
+
+        <!--jdbc drivers-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.11</version>
         </dependency>
         <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>http-server-netty</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>inject</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>runtime</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.micronaut</groupId>
-            <artifactId>management</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
-            <version>${mongo.version}</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
         </dependency>
     </dependencies>
 
     <profiles>
         <profile>
-            <id>mongo</id>
+            <id>sql</id>
             <build>
                 <plugins>
                     <plugin>
@@ -206,5 +199,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

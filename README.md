@@ -10,10 +10,11 @@ from it.
 
 ## Project structure
 * trimigi-core - shared core for migration agents. It handles core busines logic like transformations, conversions, rule sets, beam creation and so on
-* trimigi-agent-elasticsearch - concrete agent implementation for elasticsearch data source
-* trimigi-agent-mongo - concrete agent implementation for mongo data source
-* trimigi-agent-sql - concrete agent implememtation for sql data sources
-* trimigi-agent-datastore - concrete agent implememtation for GCP datastore data sources
+* trimigi-agent - concreate agent implementations
+    * trimigi-agent-elasticsearch - concrete agent implementation for elasticsearch data source
+    * trimigi-agent-mongo - concrete agent implementation for mongo data source
+    * trimigi-agent-sql - concrete agent implememtation for sql data sources
+    * trimigi-agent-datastore - concrete agent implememtation for GCP datastore data sources
 
 ## Docker swarm setup
 Recommended way of running agents is via docker. To setup docker follow these steps:
@@ -90,6 +91,15 @@ Recommended way of running agents is via docker. To setup docker follow these st
 - DmongoUri=mongodb://root:admin123@morty:27017
 - Dmicronaut.server.port=8082
 
+## Datastore setup
+### Source (env variables)
+- GOOGLE_CLOUD_PROJECT=${gcp-project-name}
+- GOOGLE_APPLICATION_CREDENTIALS=${path-to-account-service-key.json}
+
+### Target (env variables)
+- GOOGLE_CLOUD_PROJECT=${gcp-project-name}
+- GOOGLE_APPLICATION_CREDENTIALS=${path-to-account-service-key.json}
+
 ## Maven build
 To run agents locally you need to build it with special maven profile. Each
 agent has its own profile:
@@ -102,20 +112,20 @@ agent has its own profile:
 ## Maven release
 To relase into maven central run following commands:
 ```shell
-mvn release:prepare -P sql,elasticsearch,mongo -DskipTests
-mvn release:perform -P sql,elasticsearch,mongo -DskipTests -Darguments="-Dmaven.javadoc.skip=true"
+mvn release:prepare -P sql,elasticsearch,mongo,datastore -DskipTests
+mvn release:perform -P sql,elasticsearch,mongo,datastore -DskipTests -Darguments="-Dmaven.javadoc.skip=true"
 ``` 
 
 ## Docker build image
 To build docker images run following command:
 ```shell
-# mvn clean install -P sql,elasticsearch,mongo,docker-build-image
+# mvn clean install -P sql,elasticsearch,mongo,datstore,docker-build-image
 ```
 
 ## Docker push
 To push docker images into docker hub run following command:
 ```shell
-# mvn clean install -P sql,elasticsearch,mongo,docker-push
+# mvn clean install -P sql,elasticsearch,mongo,datastore,docker-push
 ```
 
 ## Wiki
