@@ -19,6 +19,7 @@
 
 package org.ctoolkit.agent.converter;
 
+import com.google.cloud.Timestamp;
 import com.google.cloud.datastore.TimestampValue;
 
 import javax.inject.Singleton;
@@ -34,8 +35,14 @@ public class TimestampValueResolver
         implements ValueResolver<Date, TimestampValue>
 {
     @Override
-    public Map<String, Date> resolve( String name, TimestampValue value )
+    public Map<String, Date> fromValue( String name, TimestampValue value )
     {
         return Collections.singletonMap( name, value.get().toDate() );
+    }
+
+    @Override
+    public TimestampValue toValue( Date object )
+    {
+        return TimestampValue.of( Timestamp.of( object ) );
     }
 }

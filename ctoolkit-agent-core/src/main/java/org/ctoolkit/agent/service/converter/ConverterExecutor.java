@@ -22,6 +22,7 @@ package org.ctoolkit.agent.service.converter;
 import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
 import org.apache.commons.text.StringSubstitutor;
+import org.ctoolkit.agent.model.RawKey;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetEnricher;
@@ -70,7 +71,8 @@ public class ConverterExecutor
 
     public void enrich( Map<String, Object> ctx, List<MigrationSetEnricherGroup> groups )
     {
-        if (groups == null) {
+        if ( groups == null )
+        {
             return;
         }
 
@@ -144,6 +146,13 @@ public class ConverterExecutor
 
     public String convertId( MigrationSet migrationSet, Map<String, Object> ctx )
     {
+        // for GCP datastore
+        RawKey key = ( RawKey ) ctx.get( "__key__" );
+        if ( key != null )
+        {
+            return key.toString();
+        }
+
         String idSelectorRaw = migrationSet.getSource().getIdSelector();
         if ( idSelectorRaw == null )
         {
@@ -154,7 +163,6 @@ public class ConverterExecutor
 
         StringSubstitutor substitution = new StringSubstitutor( ctx, "${", "}" );
         String id = substitution.replace( idSelectorRaw.replaceAll( ID_ENCODE_PREFIX, "" ) );
-
 
         if ( encode )
         {

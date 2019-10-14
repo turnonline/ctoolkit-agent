@@ -57,8 +57,8 @@ public class ImportServiceBean
     @Override
     public void importData( ImportSet importSet )
     {
-        // delete index if requested
-        if ( importSet.getClean() )
+        // drop index if requested
+        if ( "DROP".equals( importSet.getClean() ) )
         {
             deleteIndex( importSet );
         }

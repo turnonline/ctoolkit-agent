@@ -29,7 +29,7 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-08T19:11:27.802Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-13T18:41:50.268Z")
 public class MigrationSetTarget implements Serializable
 {
   
@@ -37,7 +37,6 @@ public class MigrationSetTarget implements Serializable
   private String kind = null;
   private String syncDateProperty = "syncDate";
   private String idSelector = null;
-  private Boolean clean = false;
 
   /**
    * Target namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)
@@ -111,25 +110,6 @@ public class MigrationSetTarget implements Serializable
     this.idSelector = idSelector;
   }
 
-  /**
-   * Flag if all records for kind should be removed prior to data import
-   **/
-  public MigrationSetTarget clean(Boolean clean) {
-    this.clean = clean;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "Flag if all records for kind should be removed prior to data import")
-  @JsonProperty("clean")
-  public Boolean getClean() {
-    return clean;
-  }
-  public void setClean(Boolean clean) {
-    this.clean = clean;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -142,13 +122,12 @@ public class MigrationSetTarget implements Serializable
     return Objects.equals(namespace, migrationSetTarget.namespace) &&
         Objects.equals(kind, migrationSetTarget.kind) &&
         Objects.equals(syncDateProperty, migrationSetTarget.syncDateProperty) &&
-        Objects.equals(idSelector, migrationSetTarget.idSelector) &&
-        Objects.equals(clean, migrationSetTarget.clean);
+        Objects.equals(idSelector, migrationSetTarget.idSelector);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(namespace, kind, syncDateProperty, idSelector, clean);
+    return Objects.hash(namespace, kind, syncDateProperty, idSelector );
   }
 
   @Override
@@ -160,7 +139,6 @@ public class MigrationSetTarget implements Serializable
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    syncDateProperty: ").append(toIndentedString(syncDateProperty)).append("\n");
     sb.append("    idSelector: ").append(toIndentedString(idSelector)).append("\n");
-    sb.append("    clean: ").append(toIndentedString(clean)).append("\n");
     sb.append("}");
     return sb.toString();
   }

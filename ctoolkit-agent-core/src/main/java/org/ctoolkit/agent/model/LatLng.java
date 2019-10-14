@@ -19,10 +19,12 @@
 
 package org.ctoolkit.agent.model;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public class LatLng
+public class LatLng implements Serializable
 {
     private double latitude;
 

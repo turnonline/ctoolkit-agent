@@ -47,6 +47,7 @@ import org.ctoolkit.agent.converter.LongValueResolver;
 import org.ctoolkit.agent.converter.StringValueResolver;
 import org.ctoolkit.agent.converter.TimestampValueResolver;
 import org.ctoolkit.agent.converter.ValueConverter;
+import org.ctoolkit.agent.model.RawKey;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -99,7 +100,7 @@ public class ValueConverterTest
     @Test
     public void convertFromDbString()
     {
-        Map<String, Object> converted = converter.convert( "property", new StringValue( "Foo" ) );
+        Map<String, Object> converted = converter.fromValue( "property", new StringValue( "Foo" ) );
 
         assertEquals( 1, converted.size() );
         assertEquals( "Foo", converted.get( "property" ) );
@@ -108,7 +109,7 @@ public class ValueConverterTest
     @Test
     public void convertFromDbBoolean()
     {
-        Map<String, Object> converted = converter.convert( "property", new BooleanValue( true ) );
+        Map<String, Object> converted = converter.fromValue( "property", new BooleanValue( true ) );
 
         assertEquals( 1, converted.size() );
         assertTrue( ( Boolean ) converted.get( "property" ) );
@@ -117,7 +118,7 @@ public class ValueConverterTest
     @Test
     public void convertFromDbDouble()
     {
-        Map<String, Object> converted = converter.convert( "property", new DoubleValue( 100 ) );
+        Map<String, Object> converted = converter.fromValue( "property", new DoubleValue( 100 ) );
 
         assertEquals( 1, converted.size() );
         assertEquals( 100D, converted.get( "property" ) );
@@ -126,7 +127,7 @@ public class ValueConverterTest
     @Test
     public void convertFromDbLong()
     {
-        Map<String, Object> converted = converter.convert( "property", new LongValue( 100 ) );
+        Map<String, Object> converted = converter.fromValue( "property", new LongValue( 100 ) );
 
         assertEquals( 1, converted.size() );
         assertEquals( 100L, converted.get( "property" ) );
@@ -135,7 +136,7 @@ public class ValueConverterTest
     @Test
     public void convertFromDbTimestamp()
     {
-        Map<String, Object> converted = converter.convert( "property", TimestampValue
+        Map<String, Object> converted = converter.fromValue( "property", TimestampValue
                 .newBuilder( Timestamp.of( date( 8, 4, 2019 ) ) )
                 .build()
         );
@@ -147,7 +148,7 @@ public class ValueConverterTest
     @Test
     public void convertFromDbLatLng()
     {
-        Map<String, Object> converted = converter.convert( "property", new LatLngValue( LatLng.of( 12.3, 14.8 ) ) );
+        Map<String, Object> converted = converter.fromValue( "property", new LatLngValue( LatLng.of( 12.3, 14.8 ) ) );
 
         assertEquals( 1, converted.size() );
         assertEquals( 12.3, ( ( org.ctoolkit.agent.model.LatLng ) converted.get( "property" ) ).getLatitude(), 0 );
@@ -157,7 +158,7 @@ public class ValueConverterTest
     @Test
     public void convertFromDbBlob()
     {
-        Map<String, Object> converted = converter.convert( "property", new BlobValue( Blob.copyFrom( new byte[]{1} ) ) );
+        Map<String, Object> converted = converter.fromValue( "property", new BlobValue( Blob.copyFrom( new byte[]{1} ) ) );
 
         assertEquals( 1, converted.size() );
         assertArrayEquals( new byte[]{1}, ( byte[] ) converted.get( "property" ) );
@@ -166,10 +167,10 @@ public class ValueConverterTest
     @Test
     public void convertFromDbKey()
     {
-        Map<String, Object> converted = converter.convert( "property", new KeyValue( Key.newBuilder( "test", "Partner", "123" ).build() ) );
+        Map<String, Object> converted = converter.fromValue( "property", new KeyValue( Key.newBuilder( "test", "Partner", "123" ).build() ) );
 
         assertEquals( 1, converted.size() );
-        assertEquals( "Partner:123", converted.get( "property" ) );
+        assertEquals( new RawKey( "Partner:123" ), converted.get( "property" ) );
     }
 
     @Test
@@ -181,7 +182,7 @@ public class ValueConverterTest
                 .set( "age", new LongValue( 34 ) )
                 .build();
 
-        Map<String, Object> converted = converter.convert( "property", new EntityValue( entity ) );
+        Map<String, Object> converted = converter.fromValue( "property", new EntityValue( entity ) );
 
         assertEquals( 3, converted.size() );
         assertEquals( "John", converted.get( "property.name" ) );
@@ -204,7 +205,7 @@ public class ValueConverterTest
                 .set( "address", entityChild )
                 .build();
 
-        Map<String, Object> converted = converter.convert( "property", new EntityValue( entity ) );
+        Map<String, Object> converted = converter.fromValue( "property", new EntityValue( entity ) );
 
         assertEquals( 5, converted.size() );
         assertEquals( "John", converted.get( "property.name" ) );
@@ -222,7 +223,7 @@ public class ValueConverterTest
         list.add( new StringValue( "Foo" ) );
         list.add( new LongValue( 34 ) );
 
-        Map<String, Object> converted = converter.convert( "property", new ListValue( list ) );
+        Map<String, Object> converted = converter.fromValue( "property", new ListValue( list ) );
 
         assertEquals( 3, converted.size() );
         assertEquals( "John", converted.get( "property[0]" ) );
@@ -242,7 +243,7 @@ public class ValueConverterTest
         list.add( new StringValue( "Foo" ) );
         list.add( new EntityValue( entity ) );
 
-        Map<String, Object> converted = converter.convert( "property", new ListValue( list ) );
+        Map<String, Object> converted = converter.fromValue( "property", new ListValue( list ) );
 
         assertEquals( 3, converted.size() );
         assertEquals( "John", converted.get( "property[0]" ) );
@@ -263,7 +264,7 @@ public class ValueConverterTest
                 .set( "codes", new ListValue( list ) )
                 .build();
 
-        Map<String, Object> converted = converter.convert( "property", new EntityValue( entity ) );
+        Map<String, Object> converted = converter.fromValue( "property", new EntityValue( entity ) );
 
         assertEquals( 4, converted.size() );
         assertEquals( "John", converted.get( "property.name" ) );

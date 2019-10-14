@@ -19,6 +19,7 @@
 
 package org.ctoolkit.agent.converter;
 
+import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.Value;
 
 import javax.inject.Inject;
@@ -44,12 +45,12 @@ public class ValueConverter
     }
 
     @SuppressWarnings( "unchecked" )
-    public Map<String, Object> convert( String name, Value<?> value )
+    public Map<String, Object> fromValue( String name, Value<?> value )
     {
         Map<String, Object> valueMap = new HashMap<>();
 
         ValueResolver resolver = resolvers.stream()
-                .filter( r -> r.apply( value ) )
+                .filter( r -> r.applyValue( value ) )
                 .findFirst()
                 .orElse( null );
 
@@ -57,15 +58,29 @@ public class ValueConverter
         {
             if ( resolver instanceof EntityValueResolver || resolver instanceof ListValueResolver )
             {
-                Map<String, Value<?>> resolved = resolver.resolve( name, value );
-                resolved.forEach( ( embeddedName, val ) -> valueMap.putAll( convert( embeddedName, val ) ) );
+                Map<String, Value<?>> resolved = resolver.fromValue( name, value );
+                resolved.forEach( ( embeddedName, val ) -> valueMap.putAll( fromValue( embeddedName, val ) ) );
             }
             else
             {
-                valueMap.putAll( resolver.resolve( name, value ) );
+                valueMap.putAll( resolver.fromValue( name, value ) );
             }
         }
 
         return valueMap;
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public Value<?> toValue( Object object )
+    {
+        ValueResolver valueResolver = resolvers.stream().filter( resolver -> {
+            return resolver.applyObject( object );
+        } ).findFirst().orElse( null );
+
+        if (valueResolver != null) {
+            return valueResolver.toValue( object );
+        }
+
+        return NullValue.of();
     }
 }

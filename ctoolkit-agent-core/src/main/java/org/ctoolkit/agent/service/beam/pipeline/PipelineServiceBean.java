@@ -162,10 +162,9 @@ public class PipelineServiceBean
             importSets.add( importSet );
             importSet.setAuthor( migrationSet.getAuthor() );
             importSet.setComment( "Migration import of " + target.getNamespace() + "." + target.getKind() );
-            importSet.setNamespace( target.getNamespace() );
-            importSet.setKind( target.getKind() );
+            importSet.setNamespace( Optional.ofNullable( target.getNamespace() ).orElse( source.getNamespace() ) );
+            importSet.setKind( Optional.ofNullable( target.getKind() ).orElse( source.getKind() ) );
 
-            importSet.setClean( migrationSet.getTarget().getClean() );
             importSet.setId( converterExecutor.convertId( migrationSet, ctx ) );
             importSet.setChangeDate( source.getChangeDate() );
             importSet.setIdSelector( target.getIdSelector() );
@@ -250,7 +249,7 @@ public class PipelineServiceBean
                 case "list":
                 {
                     ImportSetProperty importSetProperty = new ImportSetProperty();
-                    importSetProperty.setName( Optional.ofNullable( migrationSetProperty.getTargetProperty() ).orElse( migrationSetProperty.getSourceProperty() ));
+                    importSetProperty.setName( Optional.ofNullable( migrationSetProperty.getTargetProperty() ).orElse( migrationSetProperty.getSourceProperty() ) );
                     importSetProperty.setType( migrationSetProperty.getTargetType() );
                     importSetProperty.setValue( new ArrayList<>() );
 

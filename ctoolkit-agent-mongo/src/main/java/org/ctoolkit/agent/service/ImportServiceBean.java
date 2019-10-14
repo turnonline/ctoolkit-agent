@@ -53,8 +53,8 @@ public class ImportServiceBean
     @Override
     public void importData( ImportSet importSet )
     {
-        // delete database if requested
-        if ( importSet.getClean() )
+        // drop collection if requested
+        if ( "DROP".equals( importSet.getClean() ) )
         {
             deleteCollection( importSet );
         }

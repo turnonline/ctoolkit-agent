@@ -300,11 +300,6 @@
         "idSelector" : {
           "type" : "string",
           "description" : "Selector which will be used to get identifier. Can be simple 'id' or embedded value, for instance 'identifications.type=SALESFORCE and identifications.value=${ids.id}'\n\nIt is used in conjunction with syncDateProperty with following logic:\n\n- if record does not exists, syncDate will be ignored and new record will be created\n- if record exists and syncDate is null or is before MigrationSetSource.changeDate, record will be updated\n- if record exists and syncDate is after MigrationSetSource.changeDate import will be skipped"
-        },
-        "clean" : {
-          "type" : "boolean",
-          "description" : "Flag if all records for kind should be removed prior to data import",
-          "default" : false
         }
       }
     },
@@ -502,9 +497,14 @@
           "description" : "Optional comment for import set"
         },
         "clean" : {
-          "type" : "boolean",
-          "description" : "Flag if all records for kind should be removed prior to data import",
-          "default" : false
+          "type" : "string",
+          "description" : "Flag if all records for kind should be removed or dropped prior to data import. Note that DROP is not supported for every database. When selecting DROP you can set number of batch items via 'cleanBatchItemsLimit' property"
+        },
+        "cleanBatchItemsLimit" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Number of items to select in batch when removing entities. Applies only when 'clean' property is set to 'DROP'",
+          "default" : 100
         },
         "namespace" : {
           "type" : "string",

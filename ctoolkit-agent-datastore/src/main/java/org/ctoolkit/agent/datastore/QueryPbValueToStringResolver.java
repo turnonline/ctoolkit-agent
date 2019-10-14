@@ -17,30 +17,15 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.converter;
+package org.ctoolkit.agent.datastore;
 
-import com.google.cloud.datastore.BooleanValue;
-
-import javax.inject.Singleton;
-import java.util.Collections;
-import java.util.Map;
+import com.google.datastore.v1.Value;
 
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-@Singleton
-public class BooleanValueResolver
-        implements ValueResolver<Boolean, BooleanValue>
+@FunctionalInterface
+public interface QueryPbValueToStringResolver
 {
-    @Override
-    public Map<String, Boolean> fromValue( String name, BooleanValue value )
-    {
-        return Collections.singletonMap( name, value.get() );
-    }
-
-    @Override
-    public BooleanValue toValue( Boolean object )
-    {
-        return BooleanValue.of( object );
-    }
+    String resolve( Value value );
 }

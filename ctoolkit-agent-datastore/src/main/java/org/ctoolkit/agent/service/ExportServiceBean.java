@@ -38,8 +38,9 @@ import com.google.protobuf.Int32Value;
 import org.ctoolkit.agent.converter.KeyConverter;
 import org.ctoolkit.agent.converter.ValueConverter;
 import org.ctoolkit.agent.datastore.QueryParser;
-import org.ctoolkit.agent.datastore.StringToQueryValueResolver;
+import org.ctoolkit.agent.datastore.StringToQueryPbValueResolver;
 import org.ctoolkit.agent.model.Export;
+import org.ctoolkit.agent.model.RawKey;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.model.api.MigrationSetSource;
 import org.slf4j.Logger;
@@ -83,7 +84,7 @@ public class ExportServiceBean
     private QueryParser queryParser;
 
     private Map<String, PropertyFilter.Operator> operatorMap = new HashMap<>();
-    private Map<String, StringToQueryValueResolver> valueTypeResolverMap = new HashMap<>();
+    private Map<String, StringToQueryPbValueResolver> valueTypeResolverMap = new HashMap<>();
 
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
@@ -150,9 +151,9 @@ public class ExportServiceBean
         results.forEachRemaining( entity -> {
             Export export = new Export();
 
-            export.put( "key", keyConverter.convertFromRawKey( entity.getKey() ) );
+            export.put( "__key__", new RawKey( keyConverter.convertFromRawKey( entity.getKey() ) ) );
             entity.getProperties().forEach( ( name, value )
-                    -> export.putAll( valueConverter.convert( name, value ) ) );
+                    -> export.putAll( valueConverter.fromValue( name, value ) ) );
 
             exportList.add( export );
         } );

@@ -23,20 +23,44 @@ import com.google.cloud.datastore.Value;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
+ * GCP datastore value converter. Each data type is represented by custom resolver.
+ *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-@FunctionalInterface
 public interface ValueResolver<T, V extends Value<?>>
         extends Serializable
 {
-    Map<String, T> resolve( String name, V value );
+    Map<String, T> fromValue( String name, V value );
 
-    default boolean apply( Value<?> value )
+    V toValue( T object );
+
+    default boolean applyValue( Value<?> value )
     {
         Class valueClass = ( Class ) ( ( ParameterizedTypeImpl ) getClass().getGenericInterfaces()[0] ).getActualTypeArguments()[1];
         return value.getClass().equals( valueClass );
+    }
+
+    default boolean applyObject( T object )
+    {
+        try
+        {
+            Type typeArguments = ( ( ParameterizedTypeImpl ) getClass().getGenericInterfaces()[0] ).getActualTypeArguments()[0];
+            if (typeArguments instanceof Class)
+            {
+                Class objectClass = ( Class ) typeArguments;
+                return object.getClass().equals( objectClass );
+            }
+
+            return false;
+        }
+        catch ( Exception e )
+        {
+            System.out.println( "XXX: " + getClass().getGenericInterfaces()[0] ); // TODO: fix exception for ListValueResolver
+            return false;
+        }
     }
 }

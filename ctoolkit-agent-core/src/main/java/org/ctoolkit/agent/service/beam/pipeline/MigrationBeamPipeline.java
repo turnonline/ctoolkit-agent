@@ -25,6 +25,7 @@ import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.beam.sdk.values.TypeDescriptor;
 import org.ctoolkit.agent.model.api.MigrationBatch;
 import org.ctoolkit.agent.model.api.MigrationSet;
 import org.ctoolkit.agent.service.beam.function.MigrationRetrieveContextList;
@@ -33,6 +34,8 @@ import org.ctoolkit.agent.service.beam.function.MigrationTransformAndImportDoFn;
 import org.ctoolkit.agent.service.beam.options.MigrationPipelineOptions;
 
 import javax.inject.Singleton;
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Migration beam pipeline
@@ -53,7 +56,18 @@ public class MigrationBeamPipeline
                     @Override
                     public PCollection<MigrationSet> expand( PBegin input )
                     {
-                        return input.apply( Create.of( batch.getMigrationSets() ) );
+                        List<MigrationSet> migrationSets = batch.getMigrationSets();
+                        Create.Values<MigrationSet> values;
+                        if ( migrationSets.isEmpty() )
+                        {
+                            values = Create.empty( new TypeDescriptor<MigrationSet>() {} );
+                        }
+                        else
+                        {
+                            values = Create.of( migrationSets );
+                        }
+
+                        return input.apply( values );
                     }
                 } )
                 .apply( "Split queries", ParDo.of( new MigrationSplitQueriesDoFn() ) )
@@ -61,5 +75,10 @@ public class MigrationBeamPipeline
                 .apply( "Transform to ImportSet and send to target agent", ParDo.of( new MigrationTransformAndImportDoFn() ) );
 
         return pipeline;
+    }
+
+    private static class MigrationSetListType
+            implements Type
+    {
     }
 }

@@ -19,6 +19,7 @@
 
 package org.ctoolkit.agent.converter;
 
+import com.google.cloud.datastore.Blob;
 import com.google.cloud.datastore.BlobValue;
 
 import javax.inject.Singleton;
@@ -33,8 +34,14 @@ public class BlobValueResolver
         implements ValueResolver<byte[], BlobValue>
 {
     @Override
-    public Map<String, byte[]> resolve( String name, BlobValue value )
+    public Map<String, byte[]> fromValue( String name, BlobValue value )
     {
         return Collections.singletonMap( name, value.get().toByteArray() );
+    }
+
+    @Override
+    public BlobValue toValue( byte[] object )
+    {
+        return BlobValue.of( Blob.copyFrom( object ) );
     }
 }

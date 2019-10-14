@@ -21,6 +21,7 @@ package org.ctoolkit.agent.converter;
 
 import com.google.cloud.datastore.EntityValue;
 import com.google.cloud.datastore.Value;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.inject.Singleton;
 import java.util.LinkedHashMap;
@@ -34,11 +35,17 @@ public class EntityValueResolver
         implements ValueResolver<Value<?>, EntityValue>
 {
     @Override
-    public Map<String, Value<?>> resolve( String prefixName, EntityValue value )
+    public Map<String, Value<?>> fromValue( String prefixName, EntityValue value )
     {
         Map<String, Value<?>> map = new LinkedHashMap<>();
         value.get().getProperties().forEach( ( name, val ) -> map.put( prefixName + "." + name, val ) );
 
         return map;
+    }
+
+    @Override
+    public EntityValue toValue( Value<?> object )
+    {
+        throw new NotImplementedException( "toValue() is not implemented for EntityValueResolver" );
     }
 }

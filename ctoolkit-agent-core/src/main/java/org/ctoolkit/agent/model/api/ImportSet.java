@@ -32,12 +32,14 @@ import java.util.Objects;
 
 
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
-public class ImportSet implements Serializable {
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2019-10-13T09:18:24.750Z")
+public class ImportSet implements Serializable
+{
   
   private String author = null;
   private String comment = null;
-  private Boolean clean = false;
+  private String clean = null;
+  private Long cleanBatchItemsLimit = 100l;
   private String namespace = null;
   private String kind = null;
   private String id = null;
@@ -83,21 +85,39 @@ public class ImportSet implements Serializable {
   }
 
   /**
-   * Flag if all records for kind should be removed prior to data import
+   * Flag if all records for kind should be removed or dropped prior to data import. Note that DROP is not supported for every database. When selecting DROP you can set number of batch items via 'cleanBatchItemsLimit' property
    **/
-  public ImportSet clean(Boolean clean) {
+  public ImportSet clean(String clean) {
     this.clean = clean;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Flag if all records for kind should be removed prior to data import")
+  @ApiModelProperty(value = "Flag if all records for kind should be removed or dropped prior to data import. Note that DROP is not supported for every database. When selecting DROP you can set number of batch items via 'cleanBatchItemsLimit' property")
   @JsonProperty("clean")
-  public Boolean getClean() {
+  public String getClean() {
     return clean;
   }
-  public void setClean(Boolean clean) {
+  public void setClean(String clean) {
     this.clean = clean;
+  }
+
+  /**
+   * Number of items to select in batch when removing entities. Applies only when 'clean' property is set to 'DROP'
+   **/
+  public ImportSet cleanBatchItemsLimit(Long cleanBatchItemsLimit) {
+    this.cleanBatchItemsLimit = cleanBatchItemsLimit;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Number of items to select in batch when removing entities. Applies only when 'clean' property is set to 'DROP'")
+  @JsonProperty("cleanBatchItemsLimit")
+  public Long getCleanBatchItemsLimit() {
+    return cleanBatchItemsLimit;
+  }
+  public void setCleanBatchItemsLimit(Long cleanBatchItemsLimit) {
+    this.cleanBatchItemsLimit = cleanBatchItemsLimit;
   }
 
   /**
@@ -239,6 +259,7 @@ public class ImportSet implements Serializable {
     return Objects.equals(author, importSet.author) &&
         Objects.equals(comment, importSet.comment) &&
         Objects.equals(clean, importSet.clean) &&
+        Objects.equals(cleanBatchItemsLimit, importSet.cleanBatchItemsLimit) &&
         Objects.equals(namespace, importSet.namespace) &&
         Objects.equals(kind, importSet.kind) &&
         Objects.equals(id, importSet.id) &&
@@ -250,7 +271,7 @@ public class ImportSet implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(author, comment, clean, namespace, kind, id, changeDate, syncDateProperty, idSelector, properties);
+    return Objects.hash(author, comment, clean, cleanBatchItemsLimit, namespace, kind, id, changeDate, syncDateProperty, idSelector, properties);
   }
 
   @Override
@@ -261,6 +282,7 @@ public class ImportSet implements Serializable {
     sb.append("    author: ").append(toIndentedString(author)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
     sb.append("    clean: ").append(toIndentedString(clean)).append("\n");
+    sb.append("    cleanBatchItemsLimit: ").append(toIndentedString(cleanBatchItemsLimit)).append("\n");
     sb.append("    namespace: ").append(toIndentedString(namespace)).append("\n");
     sb.append("    kind: ").append(toIndentedString(kind)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");

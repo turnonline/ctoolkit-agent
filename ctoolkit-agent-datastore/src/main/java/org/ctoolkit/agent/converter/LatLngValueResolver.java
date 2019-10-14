@@ -34,11 +34,17 @@ public class LatLngValueResolver
         implements ValueResolver<LatLng, LatLngValue>
 {
     @Override
-    public Map<String, LatLng> resolve( String name, LatLngValue value )
+    public Map<String, LatLng> fromValue( String name, LatLngValue value )
     {
         Map<String, LatLng> map = new LinkedHashMap<>();
         map.put( name, new LatLng( value.get().getLatitude(), value.get().getLongitude() ) );
 
         return map;
+    }
+
+    @Override
+    public LatLngValue toValue( LatLng object )
+    {
+        return LatLngValue.of( com.google.cloud.datastore.LatLng.of( object.getLatitude(), object.getLongitude() ) ) ;
     }
 }

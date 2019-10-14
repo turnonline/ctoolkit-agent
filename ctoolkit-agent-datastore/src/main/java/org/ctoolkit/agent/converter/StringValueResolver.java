@@ -33,8 +33,14 @@ public class StringValueResolver
         implements ValueResolver<String, StringValue>
 {
     @Override
-    public Map<String, String> resolve( String name, StringValue value )
+    public Map<String, String> fromValue( String name, StringValue value )
     {
         return Collections.singletonMap( name, value.get() );
+    }
+
+    @Override
+    public StringValue toValue( String object )
+    {
+        return StringValue.of( object );
     }
 }

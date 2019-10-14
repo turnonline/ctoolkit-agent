@@ -20,6 +20,7 @@
 package org.ctoolkit.agent.service.converter;
 
 import org.ctoolkit.agent.model.LatLng;
+import org.ctoolkit.agent.model.RawKey;
 
 import javax.inject.Singleton;
 import java.math.BigDecimal;
@@ -94,6 +95,6 @@ public class DatastoreConverterRegistrat
 
         register( LatLng.class, TYPE_LAT_LNG, LatLngConverter.INSTANCE );
 
-        register( String.class, TYPE_KEY, LatLngConverter.INSTANCE );
+        register( RawKey.class, TYPE_KEY, RawKeyConverter.INSTANCE );
     }
 }

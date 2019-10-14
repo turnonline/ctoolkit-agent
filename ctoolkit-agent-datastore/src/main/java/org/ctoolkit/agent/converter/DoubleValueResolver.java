@@ -33,8 +33,14 @@ public class DoubleValueResolver
         implements ValueResolver<Double, DoubleValue>
 {
     @Override
-    public Map<String, Double> resolve( String name, DoubleValue value )
+    public Map<String, Double> fromValue( String name, DoubleValue value )
     {
         return Collections.singletonMap( name, value.get() );
+    }
+
+    @Override
+    public DoubleValue toValue( Double object )
+    {
+        return DoubleValue.of( object );
     }
 }

@@ -19,11 +19,26 @@
 
 package org.ctoolkit.agent.service;
 
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.EntityValue;
+import com.google.cloud.datastore.FullEntity;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.ListValue;
+import com.google.cloud.datastore.ProjectionEntity;
+import com.google.cloud.datastore.ProjectionEntityQuery;
+import com.google.cloud.datastore.Query;
+import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.Value;
+import org.ctoolkit.agent.converter.KeyConverter;
+import org.ctoolkit.agent.converter.ValueConverter;
 import org.ctoolkit.agent.model.api.ImportSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ctoolkit.agent.model.api.ImportSetProperty;
+import org.ctoolkit.agent.service.converter.ConverterExecutor;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of {@link ImportService}
@@ -34,18 +49,28 @@ import javax.inject.Singleton;
 public class ImportServiceBean
         implements ImportService
 {
-    private static final Logger log = LoggerFactory.getLogger( ImportServiceBean.class );
+    @Inject
+    private Datastore datastore;
+
+    @Inject
+    private ConverterExecutor converterExecutor;
+
+    @Inject
+    private KeyConverter keyConverter;
+
+    @Inject
+    private ValueConverter valueConverter;
 
     @Override
     public void importData( ImportSet importSet )
     {
-        // delete database if requested
-        if ( importSet.getClean() )
+        // delete collection if requested
+        if ( "DELETE".equals( importSet.getClean() ) )
         {
             deleteCollection( importSet );
         }
 
-        // import if namespace, kind and id is specified
+        // import if namespace and kind are specified
         if ( importSet.getNamespace() != null && importSet.getKind() != null )
         {
             insertRecord( importSet );
@@ -56,14 +81,92 @@ public class ImportServiceBean
 
     private void insertRecord( ImportSet importSet )
     {
-        String kind = importSet.getKind();
-        String namespace = importSet.getNamespace();
+        Key key = keyConverter.convertFromRawKey( importSet.getId() );
+        FullEntity.Builder rootEntity = FullEntity.newBuilder( key );
 
-       // TODO: implement
+        for ( ImportSetProperty property : importSet.getProperties() )
+        {
+            addProperty( property, rootEntity );
+        }
+
+        datastore.put( rootEntity.build() );
+    }
+
+    // -- private helpers
+
+    @SuppressWarnings( "unchecked" )
+    private <PARENT> void addProperty( ImportSetProperty importSetProperty, PARENT parentElement )
+    {
+        Value<?> value;
+
+        FullEntity.Builder parentElementAsEntity = parentElement instanceof FullEntity.Builder ? ( FullEntity.Builder ) parentElement : null;
+        List<Value<?>> parentElementAsList = parentElement instanceof List ? ( List<Value<?>> ) parentElement : null;
+
+        switch ( importSetProperty.getType() )
+        {
+            case "list":
+            {
+                List<Value<?>> list = new ArrayList<>();
+
+                List<ImportSetProperty> properties = ( List<ImportSetProperty> ) importSetProperty.getValue();
+                for ( ImportSetProperty property : properties )
+                {
+                    addProperty( property, list );
+                }
+
+                value = ListValue.newBuilder().set( list ).build();
+
+                break;
+            }
+            case "object":
+            {
+                FullEntity.Builder embedded = FullEntity.newBuilder();
+
+                List<ImportSetProperty> properties = ( List<ImportSetProperty> ) importSetProperty.getValue();
+                for ( ImportSetProperty property : properties )
+                {
+                    addProperty( property, embedded );
+                }
+
+                value = EntityValue.of( embedded.build() );
+
+                break;
+            }
+            default:
+            {
+                Object convertedValueObject = converterExecutor.convertProperty( importSetProperty );
+                value = valueConverter.toValue( convertedValueObject );
+            }
+        }
+
+        if ( parentElementAsEntity != null )
+        {
+            parentElementAsEntity.set( importSetProperty.getName(), value );
+        }
+        if ( parentElementAsList != null )
+        {
+            parentElementAsList.add( value );
+        }
     }
 
     private void deleteCollection( ImportSet importSet )
     {
-        // TODO: implement
+        boolean process = true;
+
+        while ( process )
+        {
+            ProjectionEntityQuery.Builder deleteQuery = Query.newProjectionEntityQueryBuilder();
+            deleteQuery.setKind( importSet.getKind() );
+            deleteQuery.addProjection( "__key__" );
+            deleteQuery.setLimit( importSet.getCleanBatchItemsLimit().intValue() );
+
+            QueryResults<ProjectionEntity> results = datastore.run( deleteQuery.build() );
+            process = results.hasNext();
+
+            List<Key> keysToDelete = new ArrayList<>();
+            results.forEachRemaining( projectionEntity -> keysToDelete.add( projectionEntity.getKey() ) );
+
+            datastore.delete( keysToDelete.toArray( new Key[]{} ) );
+        }
     }
 }

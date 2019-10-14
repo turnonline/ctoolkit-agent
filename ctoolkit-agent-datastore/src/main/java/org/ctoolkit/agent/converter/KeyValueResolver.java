@@ -20,6 +20,7 @@
 package org.ctoolkit.agent.converter;
 
 import com.google.cloud.datastore.KeyValue;
+import org.ctoolkit.agent.model.RawKey;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -31,7 +32,7 @@ import java.util.Map;
  */
 @Singleton
 public class KeyValueResolver
-        implements ValueResolver<String, KeyValue>
+        implements ValueResolver<RawKey, KeyValue>
 {
     private final KeyConverter keyConverter;
 
@@ -42,8 +43,14 @@ public class KeyValueResolver
     }
 
     @Override
-    public Map<String, String> resolve( String name, KeyValue value )
+    public Map<String, RawKey> fromValue( String name, KeyValue value )
     {
-        return Collections.singletonMap( name, keyConverter.convertFromRawKey( value.get() ) );
+        return Collections.singletonMap( name, new RawKey( keyConverter.convertFromRawKey( value.get() ) ) );
+    }
+
+    @Override
+    public KeyValue toValue( RawKey object )
+    {
+        return KeyValue.of( keyConverter.convertFromRawKey( object.toString() ) );
     }
 }

@@ -17,15 +17,31 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.datastore;
+package org.ctoolkit.agent.service.converter;
 
-import com.google.datastore.v1.Value;
+import org.ctoolkit.agent.model.RawKey;
+import org.ctoolkit.agent.model.api.ImportSetProperty;
+import org.ctoolkit.agent.model.api.MigrationSetProperty;
 
 /**
+ * RawKey converter
+ *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-@FunctionalInterface
-public interface StringToQueryValueResolver
+public class RawKeyConverter
+        implements Converter
 {
-    Value resolve( String value );
+    public static RawKeyConverter INSTANCE = new RawKeyConverter();
+
+    @Override
+    public String convert( Object source, MigrationSetProperty property )
+    {
+        return source != null ? source.toString() : null;
+    }
+
+    @Override
+    public RawKey convert( ImportSetProperty property )
+    {
+        return property.getValue() != null ? new RawKey( ( String ) property.getValue() ) : null;
+    }
 }

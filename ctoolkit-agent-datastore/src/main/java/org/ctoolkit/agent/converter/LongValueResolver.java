@@ -33,8 +33,14 @@ public class LongValueResolver
         implements ValueResolver<Long, LongValue>
 {
     @Override
-    public Map<String, Long> resolve( String name, LongValue value )
+    public Map<String, Long> fromValue( String name, LongValue value )
     {
         return Collections.singletonMap( name, value.get() );
+    }
+
+    @Override
+    public LongValue toValue( Long object )
+    {
+        return LongValue.of( object );
     }
 }

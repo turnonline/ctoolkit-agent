@@ -25,12 +25,14 @@ import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.beam.sdk.values.TypeDescriptor;
 import org.ctoolkit.agent.model.api.ImportBatch;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.service.beam.function.ImportDoFn;
 import org.ctoolkit.agent.service.beam.options.ImportPipelineOptions;
 
 import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * Import beam pipeline
@@ -51,7 +53,18 @@ public class ImportBeamPipeline
                     @Override
                     public PCollection<ImportSet> expand( PBegin input )
                     {
-                        return input.apply( Create.of( batch.getImportSets() ) );
+                        List<ImportSet> importSets = batch.getImportSets();
+                        Create.Values<ImportSet> values;
+                        if ( importSets.isEmpty() )
+                        {
+                            values = Create.empty( new TypeDescriptor<ImportSet>() {} );
+                        }
+                        else
+                        {
+                            values = Create.of( importSets );
+                        }
+
+                        return input.apply( values );
                     }
                 } )
                 .apply( "Import sets", ParDo.of( new ImportDoFn() ) );

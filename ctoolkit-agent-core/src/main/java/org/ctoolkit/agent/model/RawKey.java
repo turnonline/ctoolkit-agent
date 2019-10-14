@@ -17,42 +17,51 @@
  * under the License.
  */
 
-package org.ctoolkit.agent.converter;
+package org.ctoolkit.agent.model;
 
-import com.google.cloud.datastore.ListValue;
-import com.google.cloud.datastore.Value;
-import org.apache.commons.lang.NotImplementedException;
-
-import javax.inject.Singleton;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-@Singleton
-public class ListValueResolver
-        implements ValueResolver<Value<?>, ListValue>
+public class RawKey implements Serializable
 {
-    @Override
-    public Map<String, Value<?>> fromValue( String name, ListValue value )
+    private String rawKey;
+
+    public RawKey( String rawKey )
     {
-        Map<String, Value<?>> map = new LinkedHashMap<>();
-        List<? extends Value<?>> list = value.get();
+        this.rawKey = rawKey;
+    }
 
-        for ( int i = 0; i < list.size(); i++ )
-        {
-            map.put( name + "[" + i + "]", list.get( i ) );
-        }
+    public String getRawKey()
+    {
+        return rawKey;
+    }
 
-
-        return map;
+    public void setRawKey( String rawKey )
+    {
+        this.rawKey = rawKey;
     }
 
     @Override
-    public ListValue toValue( Value<?> object )
+    public String toString()
     {
-        throw new NotImplementedException( "toValue() is not implemented for ListValueResolver" );
+        return rawKey;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o ) return true;
+        if ( !( o instanceof RawKey ) ) return false;
+        RawKey rawKey1 = ( RawKey ) o;
+        return Objects.equals( rawKey, rawKey1.rawKey );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( rawKey );
     }
 }
