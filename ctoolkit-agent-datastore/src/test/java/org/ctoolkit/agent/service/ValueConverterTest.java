@@ -32,6 +32,7 @@ import com.google.cloud.datastore.LatLng;
 import com.google.cloud.datastore.LatLngValue;
 import com.google.cloud.datastore.ListValue;
 import com.google.cloud.datastore.LongValue;
+import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.StringValue;
 import com.google.cloud.datastore.TimestampValue;
 import com.google.cloud.datastore.Value;
@@ -58,6 +59,7 @@ import java.util.Map;
 import static org.ctoolkit.agent.Mocks.date;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -271,5 +273,79 @@ public class ValueConverterTest
         assertEquals( "Foo", converted.get( "property.surname" ) );
         assertEquals( "KLO", converted.get( "property.codes[0]" ) );
         assertEquals( "BAB", converted.get( "property.codes[1]" ) );
+    }
+
+    // convert to DB
+
+    @Test
+    public void convertToDbString()
+    {
+        StringValue converted = ( StringValue ) converter.toValue( "Foo" );
+        assertEquals( "Foo", converted.get() );
+    }
+
+    @Test
+    public void convertToDbBoolean()
+    {
+        BooleanValue converted = ( BooleanValue ) converter.toValue( true );
+        assertTrue( converted.get() );
+    }
+
+    @Test
+    public void convertToDbDouble()
+    {
+        DoubleValue converted = ( DoubleValue ) converter.toValue( 100D );
+        assertEquals( Double.valueOf( 100 ), converted.get() );
+    }
+
+    @Test
+    public void convertToDbLong()
+    {
+        LongValue converted = ( LongValue ) converter.toValue( 100L );
+        assertEquals( Long.valueOf( 100 ), converted.get() );
+    }
+
+    @Test
+    public void convertToDbTimestamp()
+    {
+        TimestampValue converted = ( TimestampValue ) converter.toValue( date( 8, 4, 2019 ) );
+        assertEquals( Timestamp.of( date( 8, 4, 2019 ) ), converted.get() );
+    }
+
+    @Test
+    public void convertToDbLatLng()
+    {
+        LatLngValue converted = ( LatLngValue ) converter.toValue( new org.ctoolkit.agent.model.LatLng( 12.3, 14.8 ) );
+        assertEquals( 12.3, converted.get().getLatitude(), 0 );
+        assertEquals( 14.8, converted.get().getLongitude(), 0 );
+    }
+
+    @Test
+    public void convertToDbBlob()
+    {
+        BlobValue converted = ( BlobValue ) converter.toValue( new byte[]{1} );
+        assertArrayEquals( new byte[]{1}, converted.get().toByteArray() );
+    }
+
+    @Test
+    public void convertToDbKey()
+    {
+        KeyValue converted = ( KeyValue ) converter.toValue( new RawKey( "Partner:123" ) );
+        assertEquals( Long.valueOf( 123 ), converted.get().getId() );
+        assertEquals( "Partner", converted.get().getKind() );
+    }
+
+    @Test
+    public void convertToDbEmbedded()
+    {
+        NullValue converted = ( NullValue ) converter.toValue( FullEntity.newBuilder().build() );
+        assertNull( converted.get() );
+    }
+
+    @Test
+    public void convertToDbList()
+    {
+        NullValue converted = ( NullValue ) converter.toValue( ListValue.newBuilder().build() );
+        assertNull( converted.get() );
     }
 }

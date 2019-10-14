@@ -47,7 +47,7 @@ public class KeyConverter
         this.projectId = projectId;
     }
 
-    public String convertFromRawKey( Key key )
+    public String convertFromKey( Key key )
     {
         StringBuilder converted = new StringBuilder();
 
@@ -118,12 +118,18 @@ public class KeyConverter
         List<PathElement> pathElements = new ArrayList<>();
 
         Key key = convertFromRawKey( rawKey );
-        key.getAncestors().forEach( pathElement -> pathElements.add( PathElement.newBuilder()
-                .setName( pathElement.getName() )
-                .setId( pathElement.getId() )
-                .setKind( pathElement.getKind() )
-                .build()
-        ) );
+        key.getAncestors().forEach( pathElement -> {
+                    PathElement.Builder builder = PathElement.newBuilder().setKind( pathElement.getKind() );
+
+                    if (pathElement.getName() != null) {
+                        builder.setName( pathElement.getName() );
+                    } else {
+                        builder.setId( pathElement.getId() );
+                    }
+
+                    pathElements.add( builder.build() );
+                }
+        );
 
         PathElement.Builder builder = PathElement.newBuilder();
         if ( key.getId() != null )
@@ -141,6 +147,7 @@ public class KeyConverter
         return pathElements;
     }
 
+    // TODO: tested only for simple keys (not ancestors)
     public String convertFromPathElements( List<PathElement> pathElements )
     {
         StringBuilder rawKey = new StringBuilder();

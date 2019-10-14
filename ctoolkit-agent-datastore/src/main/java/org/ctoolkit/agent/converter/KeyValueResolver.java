@@ -45,7 +45,7 @@ public class KeyValueResolver
     @Override
     public Map<String, RawKey> fromValue( String name, KeyValue value )
     {
-        return Collections.singletonMap( name, new RawKey( keyConverter.convertFromRawKey( value.get() ) ) );
+        return Collections.singletonMap( name, new RawKey( keyConverter.convertFromKey( value.get() ) ) );
     }
 
     @Override

@@ -151,7 +151,7 @@ public class ExportServiceBean
         results.forEachRemaining( entity -> {
             Export export = new Export();
 
-            export.put( "__key__", new RawKey( keyConverter.convertFromRawKey( entity.getKey() ) ) );
+            export.put( "__key__", new RawKey( keyConverter.convertFromKey( entity.getKey() ) ) );
             entity.getProperties().forEach( ( name, value )
                     -> export.putAll( valueConverter.fromValue( name, value ) ) );
 

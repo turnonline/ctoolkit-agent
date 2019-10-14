@@ -23,8 +23,11 @@ import com.google.cloud.datastore.Key;
 import org.ctoolkit.agent.converter.KeyConverter;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
@@ -33,20 +36,20 @@ public class KeyConverterTest
 {
     private KeyConverter converter = new KeyConverter( "test" );
 
-    // -- key to string
+    // -- Key to raw key
 
     @Test
     public void convertKeyToString_SimpleId()
     {
         Key key = Key.newBuilder( "test", "Partner", 1 ).build();
-        assertEquals( "Partner:1", converter.convertFromRawKey( key ) );
+        assertEquals( "Partner:1", converter.convertFromKey( key ) );
     }
 
     @Test
     public void convertKeyToString_SimpleName()
     {
         Key key = Key.newBuilder( "test", "Country", "SK" ).build();
-        assertEquals( "Country:SK", converter.convertFromRawKey( key ) );
+        assertEquals( "Country:SK", converter.convertFromKey( key ) );
     }
 
     @Test
@@ -54,7 +57,7 @@ public class KeyConverterTest
     {
         Key keyParent = Key.newBuilder( "test", "Partner", 1 ).build();
         Key key = Key.newBuilder( keyParent, "Address", 10 ).build();
-        assertEquals( "Partner:1>Address:10", converter.convertFromRawKey( key ) );
+        assertEquals( "Partner:1>Address:10", converter.convertFromKey( key ) );
     }
 
     @Test
@@ -62,7 +65,7 @@ public class KeyConverterTest
     {
         Key keyParent = Key.newBuilder( "test", "Country", "SK" ).build();
         Key key = Key.newBuilder( keyParent, "Region", "BA" ).build();
-        assertEquals( "Country:SK>Region:BA", converter.convertFromRawKey( key ) );
+        assertEquals( "Country:SK>Region:BA", converter.convertFromKey( key ) );
     }
 
     @Test
@@ -71,10 +74,10 @@ public class KeyConverterTest
         Key keyParentParent = Key.newBuilder( "test", "Partner", 1 ).build();
         Key keyParent = Key.newBuilder( keyParentParent, "Address", 10 ).build();
         Key key = Key.newBuilder( keyParent, "Country", "SK" ).build();
-        assertEquals( "Partner:1>Address:10>Country:SK", converter.convertFromRawKey( key ) );
+        assertEquals( "Partner:1>Address:10>Country:SK", converter.convertFromKey( key ) );
     }
 
-    // -- string to key
+    // -- raw key to Key
 
     @Test
     public void convertStringToKey_SimpleId()
@@ -144,5 +147,81 @@ public class KeyConverterTest
         assertEquals( "Partner", parentParentKey.getKind() );
         assertEquals( Long.valueOf( 1 ), parentParentKey.getId() );
         assertNull( parentParentKey.getName() );
+    }
+
+    // -- raw key to PathElements
+
+    @Test
+    public void convertStringToPathElements_SimpleId()
+    {
+        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Partner:1" );
+
+        assertEquals( 1, pathElements.size() );
+        assertEquals( "Partner", pathElements.get( 0 ).getKind() );
+        assertEquals( 1, pathElements.get( 0 ).getId() );
+        assertTrue( pathElements.get( 0 ).getName().isEmpty() );
+    }
+
+    @Test
+    public void convertStringToPathElements_SimpleName()
+    {
+        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Country:SK" );
+
+        assertEquals( 1, pathElements.size() );
+        assertEquals( "Country", pathElements.get( 0 ).getKind() );
+        assertEquals( 0, pathElements.get( 0 ).getId() );
+        assertEquals( "SK", pathElements.get( 0 ).getName() );
+    }
+
+    @Test
+    public void convertStringToPathElements_AncestorId()
+    {
+        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Partner:1>Address:10" );
+
+        assertEquals( 2, pathElements.size() );
+
+        assertEquals( "Partner", pathElements.get( 0 ).getKind() );
+        assertEquals( 1, pathElements.get( 0 ).getId() );
+        assertTrue( pathElements.get( 0 ).getName().isEmpty() );
+
+        assertEquals( "Address", pathElements.get( 1 ).getKind() );
+        assertEquals( 10, pathElements.get( 1 ).getId() );
+        assertTrue( pathElements.get( 1 ).getName().isEmpty() );
+    }
+
+    @Test
+    public void convertStringToPathElements_AncestorName()
+    {
+        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Country:SK>Region:BA" );
+
+        assertEquals( 2, pathElements.size() );
+
+        assertEquals( "Country", pathElements.get( 0 ).getKind() );
+        assertEquals( 0, pathElements.get( 0 ).getId() );
+        assertEquals( "SK", pathElements.get( 0 ).getName() );
+
+        assertEquals( "Region", pathElements.get( 1 ).getKind() );
+        assertEquals( 0, pathElements.get( 1 ).getId() );
+        assertEquals( "BA", pathElements.get( 1 ).getName() );
+    }
+
+    @Test
+    public void convertStringToPathElements_AncestorNameAndId()
+    {
+        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Partner:1>Address:10>Country:SK" );
+
+        assertEquals( 3, pathElements.size() );
+
+        assertEquals( "Partner", pathElements.get( 0 ).getKind() );
+        assertEquals( 1, pathElements.get( 0 ).getId() );
+        assertTrue( pathElements.get( 0 ).getName().isEmpty() );
+
+        assertEquals( "Address", pathElements.get( 1 ).getKind() );
+        assertEquals( 10, pathElements.get( 1 ).getId() );
+        assertTrue( pathElements.get( 1 ).getName().isEmpty() );
+
+        assertEquals( "Country", pathElements.get( 2 ).getKind() );
+        assertEquals( 0, pathElements.get( 2 ).getId() );
+        assertEquals( "SK", pathElements.get( 2 ).getName() );
     }
 }
