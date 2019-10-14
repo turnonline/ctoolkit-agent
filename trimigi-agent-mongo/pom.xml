@@ -20,20 +20,20 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>ctoolkit-agent-parent</artifactId>
-        <groupId>org.ctoolkit.agent</groupId>
-        <version>1.0.2-SNAPSHOT</version>
+        <artifactId>trimigi-agent-parent</artifactId>
+        <groupId>biz.turnonline.ecosystem</groupId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ctoolkit-agent-elasticsearch</artifactId>
-    <name>CtoolkiT Agent web [elasticsearch]</name>
-    <description>Cloud Toolkit Migration Agent web [elasticsearch]</description>
+    <artifactId>trimigi-agent-mongo</artifactId>
+    <name>Trimigi Agent [mongo]</name>
+    <description>Trimigi Migration Agent [mongo]</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.ctoolkit.agent</groupId>
-            <artifactId>ctoolkit-agent-core</artifactId>
+            <groupId>biz.turnonline.ecosystem</groupId>
+            <artifactId>trimigi-core</artifactId>
         </dependency>
 
         <dependency>
@@ -61,15 +61,15 @@
             <artifactId>management</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>${elasticsearch.version}</version>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver</artifactId>
+            <version>${mongo.version}</version>
         </dependency>
     </dependencies>
 
     <profiles>
         <profile>
-            <id>elasticsearch</id>
+            <id>mongo</id>
             <build>
                 <plugins>
                     <plugin>
@@ -206,4 +206,5 @@
             </build>
         </profile>
     </profiles>
+
 </project>

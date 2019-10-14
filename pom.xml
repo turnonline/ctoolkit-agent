@@ -28,29 +28,29 @@
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>ctoolkit-agent-core</module>
-        <module>ctoolkit-agent-sql</module>
-        <module>ctoolkit-agent-elasticsearch</module>
-        <module>ctoolkit-agent-mongo</module>
-        <module>ctoolkit-agent-datastore</module>
+        <module>trimigi-core</module>
+        <module>trimigi-agent-sql</module>
+        <module>trimigi-agent-elasticsearch</module>
+        <module>trimigi-agent-mongo</module>
+        <module>trimigi-agent-datastore</module>
     </modules>
 
-    <groupId>org.ctoolkit.agent</groupId>
-    <artifactId>ctoolkit-agent-parent</artifactId>
+    <groupId> biz.turnonline.ecosystem</groupId>
+    <artifactId>trimigi-agent-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2-SNAPSHOT</version>
-    <name>CtoolkiT Agent parent</name>
-    <description>Cloud Toolkit Migration Agent parent</description>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>Trimigi Agent parent</name>
+    <description>Trimigi Migration Agent parent</description>
 
     <scm>
-        <connection>scm:git:[fetch=]git@github.com:turnonline/ctoolkit-agent.git</connection>
-        <developerConnection>scm:git:[push=]git@github.com:turnonline/ctoolkit-agent.git</developerConnection>
-        <url>https://github.com/turnonline/ctoolkit-agent</url>
+        <connection>scm:git:[fetch=]git@github.com:turnonline/trimigi.git</connection>
+        <developerConnection>scm:git:[push=]git@github.com:turnonline/trimigi.git</developerConnection>
+        <url>https://github.com/turnonline/trimigi</url>
         <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
-        <url>https://github.com/turnonline/ctoolkit-agent/issues</url>
+        <url>https://github.com/turnonline/trimigi/issues</url>
     </issueManagement>
 
     <developers>
@@ -69,8 +69,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.ctoolkit.agent</groupId>
-                <artifactId>ctoolkit-agent-core</artifactId>
+                <groupId>biz.turnonline.ecosystem</groupId>
+                <artifactId>trimigi-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

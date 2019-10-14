@@ -1,4 +1,4 @@
-CtoolkiT Agent
+Trimigi cloud migration
 ==============
 
 Cloud Toolkit Migration Agent REST API (Micro) Service is tool which motivation is to be able migrate data from 
@@ -6,13 +6,14 @@ any to any data source. For every datasource there is written specific agent whi
 from it.
 
 # How it works
-![how-it-works](https://github.com/turnonline/ctoolkit-agent/blob/feature/multiple-agents/etc/how-it-works.png)
+![how-it-works](https://github.com/turnonline/trimigi/blob/feature/multiple-agents/etc/how-it-works.png)
 
 ## Project structure
-* ctoolkit-agent-core - shared core for migration agents. It handles core busines logic like transformations, conversions, rule sets, beam creation and so on
-* ctoolkit-agent-elasticsearch - concrete agent implementation for elasticsearch data source
-* ctoolkit-agent-mongo - concrete agent implementation for mongo data source
-* ctoolkit-agent-sql - concrete agent implememtation for sql data sources
+* trimigi-core - shared core for migration agents. It handles core busines logic like transformations, conversions, rule sets, beam creation and so on
+* trimigi-agent-elasticsearch - concrete agent implementation for elasticsearch data source
+* trimigi-agent-mongo - concrete agent implementation for mongo data source
+* trimigi-agent-sql - concrete agent implememtation for sql data sources
+* trimigi-agent-datastore - concrete agent implememtation for GCP datastore data sources
 
 ## Docker swarm setup
 Recommended way of running agents is via docker. To setup docker follow these steps:
@@ -58,9 +59,10 @@ Recommended way of running agents is via docker. To setup docker follow these st
 ### Exposed docker ports
 | Port  | Service name                 | Service type |
 |-------|------------------------------|--------------|
-| 8080  | ctoolkit-agent-sql           |[agent]       |
-| 8081  | ctoolkit-agent-elasticsearch |[agent]       |
-| 8082  | ctoolkit-agent-mongo         |[agent]       | 
+| 8080  | trimigi-agent-sql            |[agent]       |
+| 8081  | trimigi-agent-elasticsearch  |[agent]       |
+| 8082  | trimigi-agent-mongo          |[agent]       |
+| 8083  | trimigi-agent-datastore      |[agent]       | 
 | 5432  | postgres database            |[datasource]  |
 | 3306  | mysql database               |[datasource]  |
 | 9200  | elasticsearch database       |[datasource]  |
@@ -117,4 +119,4 @@ To push docker images into docker hub run following command:
 ```
 
 ## Wiki
-To learn more about ctoolkit-agent visit [wiki](https://github.com/turnonline/ctoolkit-agent/wiki)
+To learn more about trimigi visit [wiki](https://github.com/turnonline/trimigi/wiki)
