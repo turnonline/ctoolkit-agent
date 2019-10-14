@@ -19,6 +19,20 @@
 
 package org.ctoolkit.agent;
 
+import org.ctoolkit.agent.converter.BlobValueResolver;
+import org.ctoolkit.agent.converter.BooleanValueResolver;
+import org.ctoolkit.agent.converter.DoubleValueResolver;
+import org.ctoolkit.agent.converter.EntityValueResolver;
+import org.ctoolkit.agent.converter.KeyConverter;
+import org.ctoolkit.agent.converter.KeyValueResolver;
+import org.ctoolkit.agent.converter.LatLngValueResolver;
+import org.ctoolkit.agent.converter.ListValueResolver;
+import org.ctoolkit.agent.converter.LongValueResolver;
+import org.ctoolkit.agent.converter.StringValueResolver;
+import org.ctoolkit.agent.converter.TimestampValueResolver;
+import org.ctoolkit.agent.converter.ValueConverter;
+import org.ctoolkit.agent.service.DatastoreAgentConfig;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,18 +45,57 @@ import java.util.Date;
  */
 public class Mocks
 {
+    private static KeyConverter keyConverter = new KeyConverter( "test" );
+
+    private static StringValueResolver stringValueResolver = new StringValueResolver();
+    private static BooleanValueResolver booleanValueResolver = new BooleanValueResolver();
+    private static DoubleValueResolver doubleValueResolver = new DoubleValueResolver();
+    private static LongValueResolver longValueResolver = new LongValueResolver();
+    private static TimestampValueResolver timestampValueResolver = new TimestampValueResolver();
+    private static LatLngValueResolver latLngValueResolver = new LatLngValueResolver();
+    private static BlobValueResolver blobValueResolver = new BlobValueResolver();
+
+    private static KeyValueResolver keyValueResolver = new KeyValueResolver( keyConverter );
+    private static EntityValueResolver entityValueResolver = new EntityValueResolver();
+    private static ListValueResolver listValueResolver = new ListValueResolver();
+
+    private static ValueConverter valueConverter = new ValueConverter( new DatastoreAgentConfig()
+            .createValueResolvers(
+                    stringValueResolver,
+                    booleanValueResolver,
+                    doubleValueResolver,
+                    longValueResolver,
+                    timestampValueResolver,
+                    latLngValueResolver,
+                    blobValueResolver,
+
+                    keyValueResolver,
+                    entityValueResolver,
+                    listValueResolver )
+    );
+
     public static Date date( int day, int month, int year )
     {
         return Date.from( LocalDate.of( year, month, day )
                 .atStartOfDay()
-                .atZone( ZoneId.of("CET") )
+                .atZone( ZoneId.of( "CET" ) )
                 .toInstant() );
     }
 
     public static Date date( int day, int month, int year, int hour, int minute, int second )
     {
         return Date.from( LocalDateTime.of( year, month, day, hour, minute, second )
-                .atZone( ZoneId.of("CET") )
+                .atZone( ZoneId.of( "CET" ) )
                 .toInstant() );
+    }
+
+    public static ValueConverter valueConverter()
+    {
+        return valueConverter;
+    }
+
+    public static KeyConverter keyConverter()
+    {
+        return keyConverter;
     }
 }

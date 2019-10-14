@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.ctoolkit.agent.Mocks.keyConverter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class KeyConverterTest
 {
-    private KeyConverter converter = new KeyConverter( "test" );
+    private KeyConverter converter = keyConverter();
 
     // -- Key to raw key
 

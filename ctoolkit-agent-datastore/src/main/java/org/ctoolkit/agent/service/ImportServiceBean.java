@@ -20,20 +20,16 @@
 package org.ctoolkit.agent.service;
 
 import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.EntityValue;
 import com.google.cloud.datastore.FullEntity;
 import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.ListValue;
 import com.google.cloud.datastore.ProjectionEntity;
 import com.google.cloud.datastore.ProjectionEntityQuery;
 import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
-import com.google.cloud.datastore.Value;
 import org.ctoolkit.agent.converter.KeyConverter;
-import org.ctoolkit.agent.converter.ValueConverter;
+import org.ctoolkit.agent.mapper.ImportSetPropertyToEntityMapper;
 import org.ctoolkit.agent.model.api.ImportSet;
 import org.ctoolkit.agent.model.api.ImportSetProperty;
-import org.ctoolkit.agent.service.converter.ConverterExecutor;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,13 +49,10 @@ public class ImportServiceBean
     private Datastore datastore;
 
     @Inject
-    private ConverterExecutor converterExecutor;
+    private ImportSetPropertyToEntityMapper mapper;
 
     @Inject
     private KeyConverter keyConverter;
-
-    @Inject
-    private ValueConverter valueConverter;
 
     @Override
     public void importData( ImportSet importSet )
@@ -86,68 +79,13 @@ public class ImportServiceBean
 
         for ( ImportSetProperty property : importSet.getProperties() )
         {
-            addProperty( property, rootEntity );
+            mapper.map( property, rootEntity );
         }
 
         datastore.put( rootEntity.build() );
     }
 
     // -- private helpers
-
-    @SuppressWarnings( "unchecked" )
-    private <PARENT> void addProperty( ImportSetProperty importSetProperty, PARENT parentElement )
-    {
-        Value<?> value;
-
-        FullEntity.Builder parentElementAsEntity = parentElement instanceof FullEntity.Builder ? ( FullEntity.Builder ) parentElement : null;
-        List<Value<?>> parentElementAsList = parentElement instanceof List ? ( List<Value<?>> ) parentElement : null;
-
-        switch ( importSetProperty.getType() )
-        {
-            case "list":
-            {
-                List<Value<?>> list = new ArrayList<>();
-
-                List<ImportSetProperty> properties = ( List<ImportSetProperty> ) importSetProperty.getValue();
-                for ( ImportSetProperty property : properties )
-                {
-                    addProperty( property, list );
-                }
-
-                value = ListValue.newBuilder().set( list ).build();
-
-                break;
-            }
-            case "object":
-            {
-                FullEntity.Builder embedded = FullEntity.newBuilder();
-
-                List<ImportSetProperty> properties = ( List<ImportSetProperty> ) importSetProperty.getValue();
-                for ( ImportSetProperty property : properties )
-                {
-                    addProperty( property, embedded );
-                }
-
-                value = EntityValue.of( embedded.build() );
-
-                break;
-            }
-            default:
-            {
-                Object convertedValueObject = converterExecutor.convertProperty( importSetProperty );
-                value = valueConverter.toValue( convertedValueObject );
-            }
-        }
-
-        if ( parentElementAsEntity != null )
-        {
-            parentElementAsEntity.set( importSetProperty.getName(), value );
-        }
-        if ( parentElementAsList != null )
-        {
-            parentElementAsList.add( value );
-        }
-    }
 
     private void deleteCollection( ImportSet importSet )
     {

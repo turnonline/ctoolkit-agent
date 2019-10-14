@@ -36,7 +36,9 @@ import org.ctoolkit.agent.converter.ListValueResolver;
 import org.ctoolkit.agent.converter.LongValueResolver;
 import org.ctoolkit.agent.converter.StringValueResolver;
 import org.ctoolkit.agent.converter.TimestampValueResolver;
+import org.ctoolkit.agent.converter.ValueConverter;
 import org.ctoolkit.agent.converter.ValueResolver;
+import org.ctoolkit.agent.mapper.ImportSetPropertyToEntityMapper;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
 import org.ctoolkit.agent.service.converter.DatastoreConverterRegistrat;
 
@@ -133,5 +135,12 @@ public class DatastoreAgentConfig
         resolvers.add( listValueResolver );
 
         return resolvers;
+    }
+
+    @Bean
+    @Singleton
+    public ImportSetPropertyToEntityMapper createImportSetPropertyMapper( ConverterExecutor converterExecutor, ValueConverter valueConverter )
+    {
+        return new ImportSetPropertyToEntityMapper( converterExecutor, valueConverter );
     }
 }

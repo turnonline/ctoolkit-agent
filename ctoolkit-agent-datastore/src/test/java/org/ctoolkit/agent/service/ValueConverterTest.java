@@ -36,17 +36,6 @@ import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.StringValue;
 import com.google.cloud.datastore.TimestampValue;
 import com.google.cloud.datastore.Value;
-import org.ctoolkit.agent.converter.BlobValueResolver;
-import org.ctoolkit.agent.converter.BooleanValueResolver;
-import org.ctoolkit.agent.converter.DoubleValueResolver;
-import org.ctoolkit.agent.converter.EntityValueResolver;
-import org.ctoolkit.agent.converter.KeyConverter;
-import org.ctoolkit.agent.converter.KeyValueResolver;
-import org.ctoolkit.agent.converter.LatLngValueResolver;
-import org.ctoolkit.agent.converter.ListValueResolver;
-import org.ctoolkit.agent.converter.LongValueResolver;
-import org.ctoolkit.agent.converter.StringValueResolver;
-import org.ctoolkit.agent.converter.TimestampValueResolver;
 import org.ctoolkit.agent.converter.ValueConverter;
 import org.ctoolkit.agent.model.RawKey;
 import org.junit.Test;
@@ -57,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static org.ctoolkit.agent.Mocks.date;
+import static org.ctoolkit.agent.Mocks.valueConverter;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -68,34 +58,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith( MockitoJUnitRunner.class )
 public class ValueConverterTest
 {
-    private KeyConverter keyConverter = new KeyConverter( "test" );
-
-    private StringValueResolver stringValueResolver = new StringValueResolver();
-    private BooleanValueResolver booleanValueResolver = new BooleanValueResolver();
-    private DoubleValueResolver doubleValueResolver = new DoubleValueResolver();
-    private LongValueResolver longValueResolver = new LongValueResolver();
-    private TimestampValueResolver timestampValueResolver = new TimestampValueResolver();
-    private LatLngValueResolver latLngValueResolver = new LatLngValueResolver();
-    private BlobValueResolver blobValueResolver = new BlobValueResolver();
-
-    private KeyValueResolver keyValueResolver = new KeyValueResolver( keyConverter );
-    private EntityValueResolver entityValueResolver = new EntityValueResolver();
-    private ListValueResolver listValueResolver = new ListValueResolver();
-
-    private ValueConverter converter = new ValueConverter( new DatastoreAgentConfig()
-            .createValueResolvers(
-                    stringValueResolver,
-                    booleanValueResolver,
-                    doubleValueResolver,
-                    longValueResolver,
-                    timestampValueResolver,
-                    latLngValueResolver,
-                    blobValueResolver,
-
-                    keyValueResolver,
-                    entityValueResolver,
-                    listValueResolver )
-    );
+    private ValueConverter converter = valueConverter();
 
     // convert from DB
 

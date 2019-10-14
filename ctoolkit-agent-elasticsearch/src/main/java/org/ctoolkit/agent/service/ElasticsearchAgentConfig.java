@@ -25,7 +25,7 @@ import org.apache.http.HttpHost;
 import org.ctoolkit.agent.service.beam.options.ElasticsearchPipelineOptions;
 import org.ctoolkit.agent.service.converter.ConverterExecutor;
 import org.ctoolkit.agent.service.converter.ElasticsearchConverterRegistrat;
-import org.ctoolkit.agent.service.mapper.ImportSetPropertyToNoSqlMapper;
+import org.ctoolkit.agent.service.mapper.ImportSetPropertyToMapMapper;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
@@ -70,9 +70,9 @@ public class ElasticsearchAgentConfig
 
     @Bean
     @Singleton
-    public ImportSetPropertyToNoSqlMapper createImportSetPropertyToNoSqlMapper( ConverterExecutor converterExecutor )
+    public ImportSetPropertyToMapMapper createImportSetPropertyMapper( ConverterExecutor converterExecutor )
     {
-        return new ImportSetPropertyToNoSqlMapper( converterExecutor );
+        return new ImportSetPropertyToMapMapper( converterExecutor );
     }
 
     @PreDestroy
