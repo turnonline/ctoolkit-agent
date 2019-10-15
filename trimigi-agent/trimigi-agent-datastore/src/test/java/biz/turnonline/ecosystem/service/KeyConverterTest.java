@@ -21,8 +21,10 @@ package biz.turnonline.ecosystem.service;
 
 import biz.turnonline.ecosystem.converter.KeyConverter;
 import com.google.cloud.datastore.Key;
+import com.google.datastore.v1.Key.PathElement;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static biz.turnonline.ecosystem.Mocks.keyConverter;
@@ -155,7 +157,7 @@ public class KeyConverterTest
     @Test
     public void convertStringToPathElements_SimpleId()
     {
-        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Partner:1" );
+        List<PathElement> pathElements = converter.convertToPathElements( "Partner:1" );
 
         assertEquals( 1, pathElements.size() );
         assertEquals( "Partner", pathElements.get( 0 ).getKind() );
@@ -166,7 +168,7 @@ public class KeyConverterTest
     @Test
     public void convertStringToPathElements_SimpleName()
     {
-        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Country:SK" );
+        List<PathElement> pathElements = converter.convertToPathElements( "Country:SK" );
 
         assertEquals( 1, pathElements.size() );
         assertEquals( "Country", pathElements.get( 0 ).getKind() );
@@ -177,7 +179,7 @@ public class KeyConverterTest
     @Test
     public void convertStringToPathElements_AncestorId()
     {
-        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Partner:1>Address:10" );
+        List<PathElement> pathElements = converter.convertToPathElements( "Partner:1>Address:10" );
 
         assertEquals( 2, pathElements.size() );
 
@@ -193,7 +195,7 @@ public class KeyConverterTest
     @Test
     public void convertStringToPathElements_AncestorName()
     {
-        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Country:SK>Region:BA" );
+        List<PathElement> pathElements = converter.convertToPathElements( "Country:SK>Region:BA" );
 
         assertEquals( 2, pathElements.size() );
 
@@ -209,7 +211,7 @@ public class KeyConverterTest
     @Test
     public void convertStringToPathElements_AncestorNameAndId()
     {
-        List<com.google.datastore.v1.Key.PathElement> pathElements = converter.convertToPathElements( "Partner:1>Address:10>Country:SK" );
+        List<PathElement> pathElements = converter.convertToPathElements( "Partner:1>Address:10>Country:SK" );
 
         assertEquals( 3, pathElements.size() );
 
@@ -225,4 +227,27 @@ public class KeyConverterTest
         assertEquals( 0, pathElements.get( 2 ).getId() );
         assertEquals( "SK", pathElements.get( 2 ).getName() );
     }
+
+    // -- convert to key literal
+
+    @Test
+    public void convertToKeyLiteral_Simple()
+    {
+        List<PathElement> pathElements = new ArrayList<>();
+        pathElements.add( PathElement.newBuilder().setKind( "Partner" ).setId( 1 ).build() );
+
+        assertEquals( "Partner,1", converter.convertToKeyLiteral( pathElements ) );
+    }
+
+    @Test
+    public void convertToKeyLiteral_Complex()
+    {
+        List<PathElement> pathElements = new ArrayList<>();
+
+        pathElements.add( PathElement.newBuilder().setKind( "Partner" ).setId( 1 ).build() );
+        pathElements.add( PathElement.newBuilder().setKind( "Address" ).setId( 10 ).build()  );
+
+        assertEquals( "Partner,1,Address,10", converter.convertToKeyLiteral( pathElements ) );
+    }
+
 }

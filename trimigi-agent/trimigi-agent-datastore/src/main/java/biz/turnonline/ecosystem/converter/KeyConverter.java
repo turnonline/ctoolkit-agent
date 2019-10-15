@@ -121,9 +121,12 @@ public class KeyConverter
         key.getAncestors().forEach( pathElement -> {
                     PathElement.Builder builder = PathElement.newBuilder().setKind( pathElement.getKind() );
 
-                    if (pathElement.getName() != null) {
+                    if ( pathElement.getName() != null )
+                    {
                         builder.setName( pathElement.getName() );
-                    } else {
+                    }
+                    else
+                    {
                         builder.setId( pathElement.getId() );
                     }
 
@@ -147,13 +150,17 @@ public class KeyConverter
         return pathElements;
     }
 
-    // TODO: tested only for simple keys (not ancestors)
-    public String convertFromPathElements( List<PathElement> pathElements )
+    public String convertToKeyLiteral( List<PathElement> pathElements )
     {
         StringBuilder rawKey = new StringBuilder();
 
         for ( PathElement pathElement : pathElements )
         {
+            if ( rawKey.length() > 0 )
+            {
+                rawKey.append( "," );
+            }
+
             rawKey.append( pathElement.getKind() )
                     .append( "," )
                     .append( pathElement.getName().isEmpty() ?

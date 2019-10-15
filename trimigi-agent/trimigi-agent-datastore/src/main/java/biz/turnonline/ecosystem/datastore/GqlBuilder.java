@@ -94,6 +94,6 @@ public class GqlBuilder
     @PostConstruct
     public void init()
     {
-        resolverMap.put( "KEY_VALUE", value -> "KEY (" + keyConverter.convertFromPathElements( value.getKeyValue().getPathList() ) + ")" );
+        resolverMap.put( "KEY_VALUE", value -> "KEY (" + keyConverter.convertToKeyLiteral( value.getKeyValue().getPathList() ) + ")" );
     }
 }
