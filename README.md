@@ -104,6 +104,7 @@ agent has its own profile:
 # mvn clean install -P sql
 # mvn clean install -P elasticsearch
 # mvn clean install -P mongo
+# mvn clean install -P datastore
 ``` 
 
 ## Maven release
