@@ -22,7 +22,7 @@ package biz.turnonline.ecosystem.service;
 import biz.turnonline.ecosystem.converter.KeyConverter;
 import biz.turnonline.ecosystem.converter.ValueConverter;
 import biz.turnonline.ecosystem.datastore.GqlBuilder;
-import biz.turnonline.ecosystem.datastore.StringToQueryPbValueResolver;
+import biz.turnonline.ecosystem.datastore.StringToPbValueResolver;
 import biz.turnonline.ecosystem.model.Export;
 import biz.turnonline.ecosystem.model.RawKey;
 import biz.turnonline.ecosystem.model.api.MigrationSet;
@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementation of {@link ExportService}
@@ -83,8 +84,8 @@ public class ExportServiceBean
     @Inject
     private GqlBuilder gqlBuilder;
 
-    private Map<String, PropertyFilter.Operator> operatorMap = new HashMap<>();
-    private Map<String, StringToQueryPbValueResolver> valueTypeResolverMap = new HashMap<>();
+    private Map<String, PropertyFilter.Operator> operators = new HashMap<>();
+    private Map<String, StringToPbValueResolver> converters = new HashMap<>();
 
     public List<String> splitQueries( MigrationSet migrationSet, int rowsPerSplit )
     {
@@ -113,9 +114,9 @@ public class ExportServiceBean
                         .addFilters( Filter.newBuilder()
                                 .setPropertyFilter( PropertyFilter.newBuilder()
                                         .setProperty( PropertyReference.newBuilder().setName( queryFilter.getName() ).build() )
-                                        .setOp( operatorMap.get( queryFilter.getOperation() ) )
-                                        .setValue( valueTypeResolverMap
-                                                .get( queryFilter.getValueType() )
+                                        .setOp( operators.get( queryFilter.getOperation() ) )
+                                        .setValue( Optional.ofNullable( converters.get( queryFilter.getConverter() ) )
+                                                .orElse( value -> Value.newBuilder().setStringValue( value ).build() )
                                                 .resolve( queryFilter.getValue() )
                                         )
                                         .build() )
@@ -164,14 +165,14 @@ public class ExportServiceBean
     @PostConstruct
     public void init()
     {
-        operatorMap.put( "=", PropertyFilter.Operator.EQUAL );
-        operatorMap.put( "<", PropertyFilter.Operator.LESS_THAN );
-        operatorMap.put( "<=", PropertyFilter.Operator.LESS_THAN_OR_EQUAL );
-        operatorMap.put( ">", PropertyFilter.Operator.GREATER_THAN );
-        operatorMap.put( "=>", PropertyFilter.Operator.GREATER_THAN_OR_EQUAL );
-        operatorMap.put( "^", PropertyFilter.Operator.HAS_ANCESTOR );
+        operators.put( "=", PropertyFilter.Operator.EQUAL );
+        operators.put( "<", PropertyFilter.Operator.LESS_THAN );
+        operators.put( "<=", PropertyFilter.Operator.LESS_THAN_OR_EQUAL );
+        operators.put( ">", PropertyFilter.Operator.GREATER_THAN );
+        operators.put( "=>", PropertyFilter.Operator.GREATER_THAN_OR_EQUAL );
+        operators.put( "^", PropertyFilter.Operator.HAS_ANCESTOR );
 
-        valueTypeResolverMap.put( "key", ( value ) ->
+        converters.put( "key", ( value ) ->
                 Value.newBuilder().setKeyValue(
                         Key.newBuilder().addAllPath( keyConverter.convertToPathElements( value ) )
                 ).build() );

@@ -646,9 +646,9 @@
           "type" : "string",
           "description" : "Property value to filter"
         },
-        "valueType" : {
+        "converter" : {
           "type" : "string",
-          "description" : "Value data type"
+          "description" : "Value converter"
         }
       }
     },

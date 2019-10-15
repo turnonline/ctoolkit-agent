@@ -45,7 +45,7 @@ public class GqlBuilder
         this.keyConverter = keyConverter;
     }
 
-    private Map<String, QueryPbValueToStringResolver> resolverMap = new HashMap<>();
+    private Map<String, PbValueToStringResolver> resolverMap = new HashMap<>();
 
     public String toGql( Query query )
     {

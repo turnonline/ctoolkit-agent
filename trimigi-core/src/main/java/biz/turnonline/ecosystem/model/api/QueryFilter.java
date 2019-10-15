@@ -36,7 +36,7 @@ public class QueryFilter implements Serializable
   private String name = null;
   private String operation = null;
   private String value = null;
-  private String valueType = null;
+  private String converter = null;
 
   /**
    * Property name to filter
@@ -95,19 +95,19 @@ public class QueryFilter implements Serializable
   /**
    * Value data type
    **/
-  public QueryFilter valueType(String valueType) {
-    this.valueType = valueType;
+  public QueryFilter converter( String converter) {
+    this.converter = converter;
     return this;
   }
 
   
-  @ApiModelProperty(value = "Value data type")
-  @JsonProperty("valueType")
-  public String getValueType() {
-    return valueType;
+  @ApiModelProperty(value = "Value converter")
+  @JsonProperty("converter")
+  public String getConverter() {
+    return converter;
   }
-  public void setValueType(String valueType) {
-    this.valueType = valueType;
+  public void setConverter( String converter ) {
+    this.converter = converter;
   }
 
 
@@ -123,12 +123,12 @@ public class QueryFilter implements Serializable
     return Objects.equals(name, queryFilter.name) &&
         Objects.equals(operation, queryFilter.operation) &&
         Objects.equals(value, queryFilter.value) &&
-        Objects.equals(valueType, queryFilter.valueType);
+        Objects.equals( converter, queryFilter.converter );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, operation, value, valueType);
+    return Objects.hash(name, operation, value, converter );
   }
 
   @Override
@@ -139,7 +139,7 @@ public class QueryFilter implements Serializable
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    value: ").append(toIndentedString(value)).append("\n");
-    sb.append("    valueType: ").append(toIndentedString(valueType)).append("\n");
+    sb.append("    converter: ").append(toIndentedString( converter )).append("\n");
     sb.append("}");
     return sb.toString();
   }

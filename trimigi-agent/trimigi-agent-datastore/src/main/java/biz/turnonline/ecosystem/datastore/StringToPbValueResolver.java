@@ -25,7 +25,7 @@ import com.google.datastore.v1.Value;
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
 @FunctionalInterface
-public interface StringToQueryPbValueResolver
+public interface StringToPbValueResolver
 {
     Value resolve( String value );
 }
