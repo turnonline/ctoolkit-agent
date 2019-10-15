@@ -65,7 +65,7 @@ public class ExportServiceBean
         query.setKind( source.getKind() );
         query.setLimit( source.getLimit().intValue() );
         query.setOffset( source.getOffset().intValue() );
-        query.setFilter( new ArrayList<>( source.getFilter() ) );
+        query.setFilter( new ArrayList<>( source.getFilters() ) );
 
         // get split numbers
         String rootCountQuery = sqlBuilder.toSqlCount( query );

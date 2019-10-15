@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 
@@ -32,21 +30,42 @@ import java.util.Objects;
 
 
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2018-08-29T18:41:11.119Z")
-public class MigrationSetPropertyRuleSet implements Serializable {
+public class MigrationSetRule
+        implements Serializable {
   
-  private String operation = "and";
-  private List<MigrationSetPropertyRule> rules = new ArrayList<MigrationSetPropertyRule>();
+  private String property = null;
+  private String operation = null;
+  private String value = null;
+  private MigrationSetRuleGroup ruleGroups = null;
 
   /**
-   * Rule logical operation
+   * Property name
    **/
-  public MigrationSetPropertyRuleSet operation(String operation) {
+  public MigrationSetRule property( String property) {
+    this.property = property;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = "Property name")
+  @JsonProperty("property")
+  public String getProperty() {
+    return property;
+  }
+  public void setProperty(String property) {
+    this.property = property;
+  }
+
+  /**
+   * Operation expression
+   **/
+  public MigrationSetRule operation( String operation) {
     this.operation = operation;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "Rule logical operation")
+  @ApiModelProperty(required = true, value = "Operation expression")
   @JsonProperty("operation")
   public String getOperation() {
     return operation;
@@ -56,21 +75,38 @@ public class MigrationSetPropertyRuleSet implements Serializable {
   }
 
   /**
-   * Array of rules
+   * Property value
    **/
-  public MigrationSetPropertyRuleSet rules(List<MigrationSetPropertyRule> rules) {
-    this.rules = rules;
+  public MigrationSetRule value( String value) {
+    this.value = value;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "Array of rules")
-  @JsonProperty("rules")
-  public List<MigrationSetPropertyRule> getRules() {
-    return rules;
+  @ApiModelProperty(required = true, value = "Property value")
+  @JsonProperty("value")
+  public String getValue() {
+    return value;
   }
-  public void setRules(List<MigrationSetPropertyRule> rules) {
-    this.rules = rules;
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  /**
+   **/
+  public MigrationSetRule ruleSet( MigrationSetRuleGroup ruleSet) {
+    this.ruleGroups = ruleSet;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "")
+  @JsonProperty("ruleSet")
+  public MigrationSetRuleGroup getRuleGroups() {
+    return ruleGroups;
+  }
+  public void setRuleGroups( MigrationSetRuleGroup ruleGroups ) {
+    this.ruleGroups = ruleGroups;
   }
 
 
@@ -82,23 +118,27 @@ public class MigrationSetPropertyRuleSet implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MigrationSetPropertyRuleSet migrationSetPropertyRuleSet = (MigrationSetPropertyRuleSet) o;
-    return Objects.equals(operation, migrationSetPropertyRuleSet.operation) &&
-        Objects.equals(rules, migrationSetPropertyRuleSet.rules);
+    MigrationSetRule migrationSetRule = ( MigrationSetRule ) o;
+    return Objects.equals(property, migrationSetRule.property) &&
+        Objects.equals(operation, migrationSetRule.operation) &&
+        Objects.equals(value, migrationSetRule.value) &&
+        Objects.equals( ruleGroups, migrationSetRule.ruleGroups );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operation, rules);
+    return Objects.hash(property, operation, value, ruleGroups );
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MigrationSetPropertyRuleSet {\n");
+    sb.append("class MigrationSetPropertyRule {\n");
     
+    sb.append("    property: ").append(toIndentedString(property)).append("\n");
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
-    sb.append("    rules: ").append(toIndentedString(rules)).append("\n");
+    sb.append("    value: ").append(toIndentedString(value)).append("\n");
+    sb.append("    ruleSet: ").append(toIndentedString( ruleGroups )).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -137,7 +137,7 @@ public class PipelineServiceBean
             ctx.putAll( migrationPipelineOptions.getExtraOptions() );
 
             // skip entity migration if rules return apply = 'false'
-            if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), ctx ) )
+            if ( !ruleSetResolver.apply( migrationSet.getRuleGroups(), ctx ) )
             {
                 continue;
             }

@@ -151,8 +151,8 @@
             "$ref" : "#/definitions/MigrationSetProperty"
           }
         },
-        "ruleSet" : {
-          "$ref" : "#/definitions/MigrationSetPropertyRuleSet"
+        "ruleGroups" : {
+          "$ref" : "#/definitions/MigrationSetRuleGroup"
         },
         "enricherGroups" : {
           "type" : "array",
@@ -271,7 +271,7 @@
           "description" : "Query offset. Default is 0 which means no offset.",
           "default" : 0
         },
-        "filter" : {
+        "filters" : {
           "type" : "array",
           "description" : "List of query filters",
           "items" : {
@@ -332,7 +332,7 @@
         }
       }
     },
-    "MigrationSetPropertyRuleSet" : {
+    "MigrationSetRuleGroup" : {
       "type" : "object",
       "required" : [ "operation", "rules" ],
       "properties" : {
@@ -345,12 +345,12 @@
           "type" : "array",
           "description" : "Array of rules",
           "items" : {
-            "$ref" : "#/definitions/MigrationSetPropertyRule"
+            "$ref" : "#/definitions/MigrationSetRule"
           }
         }
       }
     },
-    "MigrationSetPropertyRule" : {
+    "MigrationSetRule" : {
       "type" : "object",
       "required" : [ "operation", "property", "value" ],
       "properties" : {
@@ -366,8 +366,8 @@
           "type" : "string",
           "description" : "Property value"
         },
-        "ruleSet" : {
-          "$ref" : "#/definitions/MigrationSetPropertyRuleSet"
+        "ruleGroups" : {
+          "$ref" : "#/definitions/MigrationSetRuleGroup"
         }
       }
     },

@@ -19,7 +19,7 @@
 
 package biz.turnonline.ecosystem.service.rule;
 
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRule;
+import biz.turnonline.ecosystem.model.api.MigrationSetRule;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -64,9 +64,9 @@ public interface RuleStrategy
     /**
      * Return <code>true</code> if exported entity should by migrated by provide rule, <code>false</code> otherwise
      *
-     * @param rule             {@link MigrationSetPropertyRule} containing rule set operation {@code ('=', '>', '<=', regexp, etc.)}
+     * @param rule             {@link MigrationSetRule} containing rule set operation {@code ('=', '>', '<=', regexp, etc.)}
      * @param ctx {@link Map} contains values for rule decision logic
      * @return <code>true</code> if exported entity should be migrated
      */
-    boolean apply( MigrationSetPropertyRule rule, Map<String, Object> ctx );
+    boolean apply( MigrationSetRule rule, Map<String, Object> ctx );
 }

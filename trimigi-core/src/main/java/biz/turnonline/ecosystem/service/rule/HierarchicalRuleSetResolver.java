@@ -19,7 +19,7 @@
 
 package biz.turnonline.ecosystem.service.rule;
 
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRuleSet;
+import biz.turnonline.ecosystem.model.api.MigrationSetRuleGroup;
 import com.google.common.collect.Iterators;
 
 import javax.inject.Singleton;
@@ -49,7 +49,7 @@ public class HierarchicalRuleSetResolver
 
     @Override
     @SuppressWarnings( "ConstantConditions" )
-    public boolean apply( MigrationSetPropertyRuleSet ruleSet, Map<String, Object> ctx )
+    public boolean apply( MigrationSetRuleGroup ruleSet, Map<String, Object> ctx )
     {
         // by default allow entity ctx
         boolean apply = true;
@@ -66,9 +66,9 @@ public class HierarchicalRuleSetResolver
                         boolean strategyApply = strategy.apply( input, ctx );
 
                         // recursive to support nested rules
-                        if ( input.getRuleSet() != null )
+                        if ( input.getRuleGroups() != null )
                         {
-                            return apply( input.getRuleSet(), ctx ) && strategyApply;
+                            return apply( input.getRuleGroups(), ctx ) && strategyApply;
                         }
 
                         return strategyApply;
@@ -83,9 +83,9 @@ public class HierarchicalRuleSetResolver
                         boolean strategyApply = strategy.apply( input, ctx );
 
                         // recursive to support nested rules
-                        if ( input.getRuleSet() != null )
+                        if ( input.getRuleGroups() != null )
                         {
-                            return apply( input.getRuleSet(), ctx ) || strategyApply;
+                            return apply( input.getRuleGroups(), ctx ) || strategyApply;
                         }
 
                         return strategyApply;

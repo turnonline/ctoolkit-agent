@@ -108,7 +108,7 @@ public class ExportServiceBean
         }
 
         CompositeFilter.Builder compositeFilter = CompositeFilter.newBuilder();
-        source.getFilter().forEach( queryFilter ->
+        source.getFilters().forEach( queryFilter ->
                 compositeFilter
                         .addFilters( Filter.newBuilder()
                                 .setPropertyFilter( PropertyFilter.newBuilder()

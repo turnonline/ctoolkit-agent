@@ -19,7 +19,7 @@
 
 package biz.turnonline.ecosystem.service.rule;
 
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRule;
+import biz.turnonline.ecosystem.model.api.MigrationSetRule;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -37,7 +37,7 @@ public class RegexRuleStrategy
 
     @Override
     @SuppressWarnings( "unchecked" )
-    public boolean apply( MigrationSetPropertyRule rule, Map<String, Object> ctx )
+    public boolean apply( MigrationSetRule rule, Map<String, Object> ctx )
     {
         Object property = ctx.get( rule.getProperty() );
         String ruleValue = rule.getValue();

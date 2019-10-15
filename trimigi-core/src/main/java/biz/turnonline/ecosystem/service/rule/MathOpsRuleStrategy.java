@@ -19,7 +19,7 @@
 
 package biz.turnonline.ecosystem.service.rule;
 
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRule;
+import biz.turnonline.ecosystem.model.api.MigrationSetRule;
 import com.google.common.base.Charsets;
 
 import java.math.BigDecimal;
@@ -49,7 +49,7 @@ public class MathOpsRuleStrategy
 
     @Override
     @SuppressWarnings( "unchecked" )
-    public boolean apply( MigrationSetPropertyRule rule, Map<String, Object> ctx )
+    public boolean apply( MigrationSetRule rule, Map<String, Object> ctx )
     {
         Object property = ctx.get( rule.getProperty() );
         if ( property != null )
@@ -87,7 +87,7 @@ public class MathOpsRuleStrategy
 
     private Object convertValue( Object convertedValue,
                                  Object property,
-                                 MigrationSetPropertyRule rule )
+                                 MigrationSetRule rule )
     {
         if ( property instanceof Integer )
         {

@@ -20,7 +20,7 @@
 package biz.turnonline.ecosystem.service.rule;
 
 import biz.turnonline.ecosystem.model.Export;
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRule;
+import biz.turnonline.ecosystem.model.api.MigrationSetRule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -43,7 +43,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_PropertyNotFound()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
@@ -55,7 +55,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_StringLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
@@ -65,7 +65,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_StringEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
@@ -75,7 +75,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_StringGreater()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
@@ -87,7 +87,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_IntegerLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -97,7 +97,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_IntegerEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -107,7 +107,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_IntegerGreater()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -119,7 +119,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_LongLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -129,7 +129,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_LongEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -139,7 +139,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_LongGreater()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -151,7 +151,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_FloatLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -161,7 +161,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_FloatEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -171,7 +171,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_FloatGreater()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -183,7 +183,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_DoubleLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -193,7 +193,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_DoubleEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -203,7 +203,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_DoubleGreater()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -215,7 +215,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_BigDecimalLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -225,7 +225,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_BigDecimalEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -235,7 +235,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_BigDecimalGreater()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -247,7 +247,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_BooleanLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
@@ -257,7 +257,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_BooleanEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
@@ -269,7 +269,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_DateLower()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "createDate" );
         rule.setValue( "1514764900000" );
 
@@ -283,7 +283,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_DateEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "createDate" );
         rule.setValue( "1514764800000" );
 
@@ -297,7 +297,7 @@ public class MathOpsGreaterThanRuleStrategyTest
     @Test
     public void apply_DateGreater()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "createDate" );
         rule.setValue( "1514764600000" );
 

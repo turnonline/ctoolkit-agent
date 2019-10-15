@@ -20,8 +20,8 @@
 package biz.turnonline.ecosystem.service.rule;
 
 import biz.turnonline.ecosystem.model.Export;
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRule;
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRuleSet;
+import biz.turnonline.ecosystem.model.api.MigrationSetRule;
+import biz.turnonline.ecosystem.model.api.MigrationSetRuleGroup;
 import com.google.gson.GsonBuilder;
 import org.junit.Test;
 
@@ -51,16 +51,16 @@ public class HierarchicalRuleSetResolverTest
     @Test
     public void apply_AND_None()
     {
-        MigrationSetPropertyRuleSet ruleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup ruleSet = new MigrationSetRuleGroup();
         ruleSet.setOperation( "and" );
 
-        MigrationSetPropertyRule propertyRuleName = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleName = new MigrationSetRule();
         propertyRuleName.setProperty( "name" );
         propertyRuleName.setOperation( "eq" );
         propertyRuleName.setValue( "Jack" );
         ruleSet.getRules().add( propertyRuleName );
 
-        MigrationSetPropertyRule propertyRuleSurname = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname = new MigrationSetRule();
         propertyRuleSurname.setProperty( "surname" );
         propertyRuleSurname.setOperation( "eq" );
         propertyRuleSurname.setValue( "Bar" );
@@ -72,16 +72,16 @@ public class HierarchicalRuleSetResolverTest
     @Test
     public void apply_AND_One()
     {
-        MigrationSetPropertyRuleSet ruleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup ruleSet = new MigrationSetRuleGroup();
         ruleSet.setOperation( "and" );
 
-        MigrationSetPropertyRule propertyRuleName = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleName = new MigrationSetRule();
         propertyRuleName.setProperty( "name" );
         propertyRuleName.setOperation( "eq" );
         propertyRuleName.setValue( "John" );
         ruleSet.getRules().add( propertyRuleName );
 
-        MigrationSetPropertyRule propertyRuleSurname = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname = new MigrationSetRule();
         propertyRuleSurname.setProperty( "surname" );
         propertyRuleSurname.setOperation( "eq" );
         propertyRuleSurname.setValue( "Bar" );
@@ -93,16 +93,16 @@ public class HierarchicalRuleSetResolverTest
     @Test
     public void apply_AND_All()
     {
-        MigrationSetPropertyRuleSet ruleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup ruleSet = new MigrationSetRuleGroup();
         ruleSet.setOperation( "and" );
 
-        MigrationSetPropertyRule propertyRuleName = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleName = new MigrationSetRule();
         propertyRuleName.setProperty( "name" );
         propertyRuleName.setOperation( "eq" );
         propertyRuleName.setValue( "John" );
         ruleSet.getRules().add( propertyRuleName );
 
-        MigrationSetPropertyRule propertyRuleSurname = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname = new MigrationSetRule();
         propertyRuleSurname.setProperty( "surname" );
         propertyRuleSurname.setOperation( "eq" );
         propertyRuleSurname.setValue( "Foo" );
@@ -116,16 +116,16 @@ public class HierarchicalRuleSetResolverTest
     @Test
     public void apply_OR_None()
     {
-        MigrationSetPropertyRuleSet ruleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup ruleSet = new MigrationSetRuleGroup();
         ruleSet.setOperation( "or" );
 
-        MigrationSetPropertyRule propertyRuleName = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleName = new MigrationSetRule();
         propertyRuleName.setProperty( "name" );
         propertyRuleName.setOperation( "eq" );
         propertyRuleName.setValue( "Jack" );
         ruleSet.getRules().add( propertyRuleName );
 
-        MigrationSetPropertyRule propertyRuleSurname = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname = new MigrationSetRule();
         propertyRuleSurname.setProperty( "surname" );
         propertyRuleSurname.setOperation( "eq" );
         propertyRuleSurname.setValue( "Bar" );
@@ -137,16 +137,16 @@ public class HierarchicalRuleSetResolverTest
     @Test
     public void apply_OR_One()
     {
-        MigrationSetPropertyRuleSet ruleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup ruleSet = new MigrationSetRuleGroup();
         ruleSet.setOperation( "or" );
 
-        MigrationSetPropertyRule propertyRuleName = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleName = new MigrationSetRule();
         propertyRuleName.setProperty( "name" );
         propertyRuleName.setOperation( "eq" );
         propertyRuleName.setValue( "John" );
         ruleSet.getRules().add( propertyRuleName );
 
-        MigrationSetPropertyRule propertyRuleSurname = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname = new MigrationSetRule();
         propertyRuleSurname.setProperty( "surname" );
         propertyRuleSurname.setOperation( "eq" );
         propertyRuleSurname.setValue( "Bar" );
@@ -158,16 +158,16 @@ public class HierarchicalRuleSetResolverTest
     @Test
     public void apply_OR_All()
     {
-        MigrationSetPropertyRuleSet ruleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup ruleSet = new MigrationSetRuleGroup();
         ruleSet.setOperation( "or" );
 
-        MigrationSetPropertyRule propertyRuleName = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleName = new MigrationSetRule();
         propertyRuleName.setProperty( "name" );
         propertyRuleName.setOperation( "eq" );
         propertyRuleName.setValue( "John" );
         ruleSet.getRules().add( propertyRuleName );
 
-        MigrationSetPropertyRule propertyRuleSurname = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname = new MigrationSetRule();
         propertyRuleSurname.setProperty( "surname" );
         propertyRuleSurname.setOperation( "eq" );
         propertyRuleSurname.setValue( "Foo" );
@@ -182,10 +182,10 @@ public class HierarchicalRuleSetResolverTest
     public void apply_Nested_All() // name='John' AND (surname='Foo' OR surname='Bar')
     {
         // root rule set
-        MigrationSetPropertyRuleSet ruleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup ruleSet = new MigrationSetRuleGroup();
         ruleSet.setOperation( "and" );
 
-        MigrationSetPropertyRule propertyRuleName = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleName = new MigrationSetRule();
         propertyRuleName.setProperty( "name" );
         propertyRuleName.setOperation( "eq" );
         propertyRuleName.setValue( "John" );
@@ -193,17 +193,17 @@ public class HierarchicalRuleSetResolverTest
 
         // nested rule set
 
-        MigrationSetPropertyRuleSet nestedRuleSet = new MigrationSetPropertyRuleSet();
+        MigrationSetRuleGroup nestedRuleSet = new MigrationSetRuleGroup();
         nestedRuleSet.setOperation( "or" );
-        propertyRuleName.setRuleSet( nestedRuleSet );
+        propertyRuleName.setRuleGroups( nestedRuleSet );
 
-        MigrationSetPropertyRule propertyRuleSurname1 = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname1 = new MigrationSetRule();
         propertyRuleSurname1.setProperty( "surname" );
         propertyRuleSurname1.setOperation( "eq" );
         propertyRuleSurname1.setValue( "Foo" );
         nestedRuleSet.getRules().add( propertyRuleSurname1 );
 
-        MigrationSetPropertyRule propertyRuleSurname2 = new MigrationSetPropertyRule();
+        MigrationSetRule propertyRuleSurname2 = new MigrationSetRule();
         propertyRuleSurname2.setProperty( "surname" );
         propertyRuleSurname2.setOperation( "eq" );
         propertyRuleSurname2.setValue( "Bar" );
@@ -225,7 +225,7 @@ public class HierarchicalRuleSetResolverTest
         return exportData;
     }
 
-    private void prettyPrint( MigrationSetPropertyRuleSet ruleSet )
+    private void prettyPrint( MigrationSetRuleGroup ruleSet )
     {
         System.out.println( new GsonBuilder().setPrettyPrinting().create().toJson( ruleSet ) );
     }

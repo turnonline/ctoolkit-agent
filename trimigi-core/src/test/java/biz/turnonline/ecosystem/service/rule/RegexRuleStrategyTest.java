@@ -20,7 +20,7 @@
 package biz.turnonline.ecosystem.service.rule;
 
 import biz.turnonline.ecosystem.model.Export;
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRule;
+import biz.turnonline.ecosystem.model.api.MigrationSetRule;
 import org.junit.Test;
 
 import static biz.turnonline.ecosystem.Mocks.migrationContext;
@@ -39,7 +39,7 @@ public class RegexRuleStrategyTest
     @Test
     public void apply_NotString()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "^\\d(2)$" );
 
@@ -49,7 +49,7 @@ public class RegexRuleStrategyTest
     @Test
     public void apply_String_NoMatch()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "\\d{2}" );
 
@@ -59,7 +59,7 @@ public class RegexRuleStrategyTest
     @Test
     public void apply_String_Match()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "\\d{2}" );
 

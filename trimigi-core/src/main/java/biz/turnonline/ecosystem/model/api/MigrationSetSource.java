@@ -42,7 +42,7 @@ public class MigrationSetSource implements Serializable
   private String idSelector = null;
   private Long limit = 0l;
   private Long offset = 0l;
-  private List<QueryFilter> filter = new ArrayList<QueryFilter>();
+  private List<QueryFilter> filters = new ArrayList<QueryFilter>();
 
   /**
    * Source namespace (for elasticsearch it is ‘index’, for sql it is ‘schema’)
@@ -156,18 +156,18 @@ public class MigrationSetSource implements Serializable
    * List of query filters
    **/
   public MigrationSetSource filter(List<QueryFilter> filter) {
-    this.filter = filter;
+    this.filters = filter;
     return this;
   }
 
   
   @ApiModelProperty(value = "List of query filters")
   @JsonProperty("filter")
-  public List<QueryFilter> getFilter() {
-    return filter;
+  public List<QueryFilter> getFilters() {
+    return filters;
   }
-  public void setFilter(List<QueryFilter> filter) {
-    this.filter = filter;
+  public void setFilters( List<QueryFilter> filters ) {
+    this.filters = filters;
   }
 
 
@@ -186,12 +186,12 @@ public class MigrationSetSource implements Serializable
         Objects.equals(idSelector, migrationSetSource.idSelector) &&
         Objects.equals(limit, migrationSetSource.limit) &&
         Objects.equals(offset, migrationSetSource.offset) &&
-        Objects.equals(filter, migrationSetSource.filter);
+        Objects.equals( filters, migrationSetSource.filters );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(namespace, kind, changeDate, idSelector, limit, offset, filter);
+    return Objects.hash(namespace, kind, changeDate, idSelector, limit, offset, filters );
   }
 
   @Override
@@ -205,7 +205,7 @@ public class MigrationSetSource implements Serializable
     sb.append("    idSelector: ").append(toIndentedString(idSelector)).append("\n");
     sb.append("    limit: ").append(toIndentedString(limit)).append("\n");
     sb.append("    offset: ").append(toIndentedString(offset)).append("\n");
-    sb.append("    filter: ").append(toIndentedString(filter)).append("\n");
+    sb.append("    filter: ").append(toIndentedString( filters )).append("\n");
     sb.append("}");
     return sb.toString();
   }

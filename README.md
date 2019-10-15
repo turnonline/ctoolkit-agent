@@ -1,12 +1,13 @@
 Trimigi cloud migration
 ==============
 
-Cloud Toolkit Migration Agent REST API (Micro) Service is tool which motivation is to be able migrate data from 
-any to any data source. For every datasource there is written specific agent which knows how to import and export data
+Trimigi cloud migration is a tool which key motivation is to migrate hetrogenous databases (i.e. MySql to Mongo). 
+For every datasource there is specific agent which knows how to import and export data
 from it.
 
 # How it works
 ![how-it-works](https://github.com/turnonline/trimigi/blob/feature/multiple-agents/etc/how-it-works.png)
+For more info go to [wiki](https://github.com/turnonline/trimigi/wiki/How-it-works)
 
 ## Project structure
 * trimigi-core - shared core for migration agents. It handles core busines logic like transformations, conversions, rule sets, beam creation and so on

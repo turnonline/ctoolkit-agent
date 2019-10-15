@@ -20,7 +20,7 @@
 package biz.turnonline.ecosystem.service.rule;
 
 import biz.turnonline.ecosystem.model.Export;
-import biz.turnonline.ecosystem.model.api.MigrationSetPropertyRule;
+import biz.turnonline.ecosystem.model.api.MigrationSetRule;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -43,7 +43,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_PropertyNotFound()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
@@ -55,7 +55,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_StringNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
@@ -65,7 +65,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_StringEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "name" );
         rule.setValue( "John" );
 
@@ -77,7 +77,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_IntegerNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -87,7 +87,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_IntegerEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -99,7 +99,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_LongNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -109,7 +109,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_LongEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -121,7 +121,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_FloatNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -131,7 +131,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_FloatEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -143,7 +143,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_DoubleNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -153,7 +153,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_DoubleEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -165,7 +165,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_BigDecimalNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -175,7 +175,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_BigDecimalEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "age" );
         rule.setValue( "30" );
 
@@ -187,7 +187,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_BooleanNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
@@ -197,7 +197,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_BooleanEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "active" );
         rule.setValue( "true" );
 
@@ -209,7 +209,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_ByteArrayNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "data" );
         rule.setValue( "John" );
 
@@ -219,7 +219,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_ByteArrayEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "active" );
         rule.setValue( "John" );
 
@@ -231,7 +231,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_DateNotEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "createDate" );
         rule.setValue( "1" );
 
@@ -245,7 +245,7 @@ public class MathOpsEqualsRuleStrategyTest
     @Test
     public void apply_DateEquals()
     {
-        MigrationSetPropertyRule rule = new MigrationSetPropertyRule();
+        MigrationSetRule rule = new MigrationSetRule();
         rule.setProperty( "createDate" );
         rule.setValue( "1514764800000" );
 
