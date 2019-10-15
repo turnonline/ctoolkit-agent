@@ -6,7 +6,7 @@ For every datasource there is specific agent which knows how to import and expor
 from it.
 
 # How it works
-![how-it-works](https://github.com/turnonline/trimigi/blob/feature/multiple-agents/etc/how-it-works.png)
+![how-it-works](https://github.com/turnonline/trimigi/blob/master/etc/how-it-works.png)
 For more info go to [wiki](https://github.com/turnonline/trimigi/wiki/How-it-works)
 
 ## Project structure
