@@ -19,15 +19,22 @@
 
 package biz.turnonline.ecosystem.service.beam.options;
 
-import org.apache.beam.sdk.options.ApplicationNameOptions;
+import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 
+import java.util.Map;
+
 /**
- * Import pipeline options
+ * Raw pipeline options contains all input parameters provided by PipelineOptions key-value pair from MigrationBatch which
+ * starts with xoptions, also all system parameters provided by JAVA_OPTS which starts with xoptions* will be added (without xoptions prefix)
  *
  * @author <a href="mailto:pohorelec@turnonlie.biz">Jozef Pohorelec</a>
  */
-public interface ImportPipelineOptions
-        extends PipelineOptions, ExtraOptionsPipelineOptions, ApplicationNameOptions, JdbcPipelineOptions, ElasticsearchPipelineOptions, MongoPipelineOptions
+public interface ExtraOptionsPipelineOptions
+        extends PipelineOptions
 {
+    @Description( "Raw pipeline options. Contains all options provided by MigrationBatch.pipelineOptions (including omitted)" +
+            "and all system properties which starts with 'options.' prefix." )
+    Map<String, String> getExtraOptions();
+    void setExtraOptions( Map<String, String> url );
 }

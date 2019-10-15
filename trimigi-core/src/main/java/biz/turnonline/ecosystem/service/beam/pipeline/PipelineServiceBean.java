@@ -134,6 +134,7 @@ public class PipelineServiceBean
         for ( Export export : exports )
         {
             Context ctx = new Context( export );
+            ctx.putAll( migrationPipelineOptions.getExtraOptions() );
 
             // skip entity migration if rules return apply = 'false'
             if ( !ruleSetResolver.apply( migrationSet.getRuleSet(), ctx ) )

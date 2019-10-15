@@ -24,6 +24,7 @@ import biz.turnonline.ecosystem.model.api.ImportBatch;
 import biz.turnonline.ecosystem.model.api.MigrationBatch;
 import biz.turnonline.ecosystem.model.api.PipelineOption;
 import biz.turnonline.ecosystem.service.beam.options.ElasticsearchPipelineOptions;
+import biz.turnonline.ecosystem.service.beam.options.ExtraOptionsPipelineOptions;
 import biz.turnonline.ecosystem.service.beam.options.ImportPipelineOptions;
 import biz.turnonline.ecosystem.service.beam.options.JdbcPipelineOptions;
 import biz.turnonline.ecosystem.service.beam.options.MigrationPipelineOptions;
@@ -33,6 +34,7 @@ import org.apache.beam.sdk.Pipeline;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -44,6 +46,8 @@ import java.util.List;
 public class PipelineFactoryBean
         implements PipelineFactory
 {
+    private static final String XOPTIONS_PREFIX = "xoptions.";
+
     @Inject
     private ImportBeamPipeline importBeamPipeline;
 
@@ -73,6 +77,7 @@ public class PipelineFactoryBean
                 .fromArgs( toArgs( batch.getPipelineOptions() ) )
                 .as( ImportPipelineOptions.class );
 
+        setupRawPipelineOptions( batch.getPipelineOptions(), options );
         setupJdbcPipelineOptions( options );
         setupElasticsearchPipelineOptions( options );
         setupMongoPipelineOptions( options );
@@ -89,6 +94,7 @@ public class PipelineFactoryBean
                 .fromArgs( toArgs( batch.getPipelineOptions() ) )
                 .as( MigrationPipelineOptions.class );
 
+        setupRawPipelineOptions( batch.getPipelineOptions(), options );
         setupMigrationPipelineOptions( options );
         setupJdbcPipelineOptions( options );
         setupElasticsearchPipelineOptions( options );
@@ -97,6 +103,22 @@ public class PipelineFactoryBean
         options.setAppName( "Data migration" );
 
         return options;
+    }
+
+    private void setupRawPipelineOptions( List<PipelineOption> pipelineOptions, ExtraOptionsPipelineOptions options )
+    {
+        options.setExtraOptions( new LinkedHashMap<>() );
+        pipelineOptions.forEach( pipelineOption -> {
+            options.getExtraOptions().put( pipelineOption.getName().replace( XOPTIONS_PREFIX, "" ), pipelineOption.getValue() );
+        } );
+
+        System.getProperties().forEach( ( rawKey, rawValue ) -> {
+            String key = rawKey.toString();
+            if ( key.startsWith( XOPTIONS_PREFIX ) )
+            {
+                options.getExtraOptions().put( key.replace( XOPTIONS_PREFIX, "" ), rawValue.toString() );
+            }
+        } );
     }
 
     private void setupMigrationPipelineOptions( MigrationPipelineOptions options )
@@ -177,6 +199,11 @@ public class PipelineFactoryBean
         for ( int i = 0; i < options.size(); i++ )
         {
             PipelineOption option = options.get( i );
+            if ( option.getName().toLowerCase().startsWith( XOPTIONS_PREFIX ) )
+            {
+                continue;
+            }
+
             args[i] = "--" + option.getName() + "=" + option.getValue();
         }
 
